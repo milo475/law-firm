@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: 'Холбоо барих' };
 export default function ContactPage() {
   return (
     <>
-      <PageHeader eyebrow="Холбоо барих" title="Бидэнтэй холбогдох" description="Хүсэлтээ илгээснээр манай хуульч ажлын 1 өдрийн дотор тантай холбогдоно." />
+      <PageHeader overline="Холбоо барих" title="Бидэнтэй холбогдох" description="Хүсэлтээ илгээснээр манай хуульч ажлын 1 өдрийн дотор тантай холбогдоно." />
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-[1fr_320px]">
         <ContactForm />
         <aside className="space-y-4 text-sm text-slate-600">

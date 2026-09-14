@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Source_Serif_4 } from 'next/font/google';
+import { Toaster } from '@/components/ui/toast';
+import { QueryProvider } from '@/components/providers/query-provider';
 import './globals.css';
 
 // Figma: headings — Source Serif 4, body — Inter (both with Cyrillic subset).
@@ -28,7 +30,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="mn" className={`${inter.variable} ${sourceSerif.variable}`}>
       <body className="flex min-h-screen flex-col">
-        {children}
+        <QueryProvider>{children}</QueryProvider>
+        <Toaster />
       </body>
     </html>
   );

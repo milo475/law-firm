@@ -15,7 +15,7 @@ const SERVICES = [
 export default function ServicesPage() {
   return (
     <>
-      <PageHeader eyebrow="Үйлчилгээ" title="Хууль зүйн үйлчилгээний чиглэлүүд" description="Доорх чиглэлүүдээр зөвлөгөө өгч, төлөөлөн оролцож, баримт бичиг боловсруулна." />
+      <PageHeader overline="Үйлчилгээ" title="Хууль зүйн үйлчилгээний чиглэлүүд" description="Доорх чиглэлүүдээр зөвлөгөө өгч, төлөөлөн оролцож, баримт бичиг боловсруулна." />
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-12 md:grid-cols-2 lg:grid-cols-3">
         {SERVICES.map((service) => (
           <section key={service.title} className="rounded-lg border border-brand-100 p-6">

@@ -19,7 +19,7 @@ export default async function LawyersPage() {
   const lawyers = await loadLawyers();
   return (
     <>
-      <PageHeader eyebrow="Баг" title="Манай хуульчид" description="Туршлагатай, мэргэшсэн хуульчдын баг танд үйлчилнэ." />
+      <PageHeader overline="Баг" title="Манай хуульчид" description="Туршлагатай, мэргэшсэн хуульчдын баг танд үйлчилнэ." />
       <div className="mx-auto max-w-6xl px-4 py-12">
         {lawyers.length === 0 ? (
           <Placeholder label="Хуульчдын мэдээлэл олдсонгүй эсвэл API холбогдоогүй байна" />

@@ -38,7 +38,7 @@ export default async function NewsPage({ searchParams }: { searchParams: SearchP
 
   return (
     <>
-      <PageHeader eyebrow="Мэдээ" title="Мэдээ, зөвлөгөө" description="Фирмийн мэдээ, хуульчдын зөвлөгөө, хууль тогтоомжийн шинэчлэл." />
+      <PageHeader overline="Мэдээ" title="Мэдээ, зөвлөгөө" description="Фирмийн мэдээ, хуульчдын зөвлөгөө, хууль тогтоомжийн шинэчлэл." />
       <div className="mx-auto max-w-6xl px-4 py-10">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <nav className="flex flex-wrap gap-2" aria-label="Ангилал">

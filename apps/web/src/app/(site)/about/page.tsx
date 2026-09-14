@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: 'Бидний тухай' };
 export default function AboutPage() {
   return (
     <>
-      <PageHeader eyebrow="Бидний тухай" title="Хуулийн фирмийн танилцуулга" description="Бид 2014 оноос хойш иргэд, аж ахуйн нэгжид хууль зүйн үйлчилгээ үзүүлж байна." />
+      <PageHeader overline="Бидний тухай" title="Хуулийн фирмийн танилцуулга" description="Бид 2014 оноос хойш иргэд, аж ахуйн нэгжид хууль зүйн үйлчилгээ үзүүлж байна." />
       <div className="mx-auto max-w-6xl space-y-8 px-4 py-12">
         <section className="grid gap-8 md:grid-cols-2">
           <div>

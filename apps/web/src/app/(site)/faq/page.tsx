@@ -13,7 +13,7 @@ const FAQ = [
 export default function FaqPage() {
   return (
     <>
-      <PageHeader eyebrow="Тусламж" title="Түгээмэл асуулт, хариулт" />
+      <PageHeader overline="Тусламж" title="Түгээмэл асуулт, хариулт" />
       <div className="mx-auto max-w-3xl space-y-4 px-4 py-12">
         {FAQ.map((item) => (
           <details key={item.q} className="group rounded-lg border border-brand-100 p-5">
