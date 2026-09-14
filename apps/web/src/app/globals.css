@@ -1,39 +1,263 @@
 @import "tailwindcss";
 
-@theme {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-playfair), ui-serif, Georgia, serif;
-
-  /* Placeholder brand palette — will be replaced by the Figma design tokens. */
-  --color-brand-50: #f3f5f9;
-  --color-brand-100: #e2e7f0;
-  --color-brand-200: #c4cee0;
-  --color-brand-300: #97a8c6;
-  --color-brand-500: #3e5a8a;
-  --color-brand-700: #223a63;
-  --color-brand-900: #0f1f3d;
-  --color-accent-500: #b8933a;
-  --color-accent-600: #9a7a2e;
-}
-
+/*
+ * Design tokens — generated from Figma "00 Design System" (file orRAIFzEIO9o3X5a6cDFb3).
+ * Variable names are the Figma WEB code-syntax names, unchanged.
+ * Collections: 1) Primitives  2) Semantic (aliases → primitives)  3) Radius  4) Typography (text styles below).
+ *
+ * ⚠ GOLD RULE: the accent gold `--gold-500` (#C9A227) fails contrast on white and MUST NOT be used
+ *   for text on light backgrounds. Use `--gold-700` (#8F7118, = --text-accent) for gold text.
+ *   `--gold-500` is only for fills (buttons/marks on navy), borders (focus ring) and dots.
+ */
 :root {
   color-scheme: light;
+
+  /* ── 1. Primitives ─────────────────────────────────────────────── */
+  --navy-900: #0a1e33;
+  --navy-800: #0f2a44;
+  --navy-700: #17395a;
+  --navy-600: #204b75;
+  --navy-500: #2f6396;
+  --navy-200: #c3d2e2;
+  --navy-100: #e3eaf2;
+  --navy-50: #f0f4f9;
+
+  --gold-800: #6f570f;
+  --gold-700: #8f7118;
+  --gold-600: #a8851c;
+  --gold-500: #c9a227;
+  --gold-400: #d9b84e;
+  --gold-300: #e7ce7e;
+  --gold-100: #f7efd6;
+
+  --neutral-900: #14181f;
+  --neutral-800: #232a35;
+  --neutral-700: #3a4452;
+  --neutral-600: #55606f;
+  --neutral-500: #6b7684;
+  --neutral-400: #9aa3b0;
+  --neutral-300: #c3c9d2;
+  --neutral-200: #dfe3e9;
+  --neutral-100: #edeff3;
+  --neutral-50: #f7f8fa;
+  --neutral-0: #ffffff;
+
+  --success-700: #15603a;
+  --success-600: #1e7a4b;
+  --success-100: #e2f3ea;
+  --warning-700: #7a4f0c;
+  --warning-600: #b5761a;
+  --warning-100: #fbf0dc;
+  --danger-700: #8c1d16;
+  --danger-600: #b3261e;
+  --danger-100: #fbe7e5;
+  --info-700: #17578c;
+  --info-600: #1f6fb2;
+  --info-100: #e4f0fa;
+
+  /* ── 2. Semantic aliases ───────────────────────────────────────── */
+  --bg-page: var(--neutral-50);
+  --bg-surface: var(--neutral-0);
+  --bg-surface-alt: var(--neutral-100);
+  --bg-brand-soft: var(--navy-50);
+  --bg-accent-soft: var(--gold-100);
+  --bg-inverse: var(--navy-800);
+  --bg-inverse-strong: var(--navy-900);
+
+  --text-primary: var(--neutral-900);
+  --text-secondary: var(--neutral-600);
+  --text-muted: var(--neutral-500);
+  --text-brand: var(--navy-800);
+  --text-accent: var(--gold-700);
+  --text-on-inverse: var(--neutral-0);
+  --text-on-inverse-muted: var(--navy-100);
+  --text-on-accent: var(--navy-900);
+  --text-disabled: var(--neutral-400);
+
+  --border-subtle: var(--neutral-100);
+  --border-default: var(--neutral-200);
+  --border-strong: var(--neutral-300);
+  --border-focus: var(--gold-500);
+  --border-brand: var(--navy-800);
+  --border-inverse: var(--navy-700);
+
+  --brand-primary: var(--navy-800);
+  --brand-primary-hover: var(--navy-700);
+  --accent-default: var(--gold-500);
+  --accent-hover: var(--gold-600);
+  --state-disabled-bg: var(--neutral-200);
+
+  --status-new-bg: var(--info-100);
+  --status-new-fg: var(--info-700);
+  --status-progress-bg: var(--success-100);
+  --status-progress-fg: var(--success-700);
+  --status-pending-bg: var(--warning-100);
+  --status-pending-fg: var(--warning-700);
+  --status-closed-bg: var(--neutral-100);
+  --status-closed-fg: var(--neutral-600);
+  --status-danger-bg: var(--danger-100);
+  --status-danger-fg: var(--danger-700);
+  --status-danger-solid: var(--danger-600);
+
+  /* ── 3. Radius ─────────────────────────────────────────────────── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+  --radius-full: 999px;
+
+  /* ── Effect styles (4) ─────────────────────────────────────────── */
+  --shadow-focus-ring: 0 0 0 3px rgba(201, 162, 39, 0.25);
+  --shadow-menu: 0 8px 24px -4px rgba(15, 42, 68, 0.12);
+  --shadow-toast: 0 8px 12px rgba(15, 42, 68, 0.12);
+  --shadow-modal: 0 16px 48px -8px rgba(15, 42, 68, 0.2);
+}
+
+/* Tailwind v4 theme — every utility maps to the Figma variable of the same name
+   (e.g. `bg-bg-surface`, `text-text-primary`, `border-border-default`, `bg-brand-primary`). */
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-source-serif), ui-serif, Georgia, serif;
+
+  --color-navy-900: var(--navy-900);
+  --color-navy-800: var(--navy-800);
+  --color-navy-700: var(--navy-700);
+  --color-navy-600: var(--navy-600);
+  --color-navy-500: var(--navy-500);
+  --color-navy-200: var(--navy-200);
+  --color-navy-100: var(--navy-100);
+  --color-navy-50: var(--navy-50);
+  --color-gold-800: var(--gold-800);
+  --color-gold-700: var(--gold-700);
+  --color-gold-600: var(--gold-600);
+  --color-gold-500: var(--gold-500);
+  --color-gold-400: var(--gold-400);
+  --color-gold-300: var(--gold-300);
+  --color-gold-100: var(--gold-100);
+  --color-neutral-900: var(--neutral-900);
+  --color-neutral-800: var(--neutral-800);
+  --color-neutral-700: var(--neutral-700);
+  --color-neutral-600: var(--neutral-600);
+  --color-neutral-500: var(--neutral-500);
+  --color-neutral-400: var(--neutral-400);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-50: var(--neutral-50);
+  --color-neutral-0: var(--neutral-0);
+  --color-success-700: var(--success-700);
+  --color-success-600: var(--success-600);
+  --color-success-100: var(--success-100);
+  --color-warning-700: var(--warning-700);
+  --color-warning-600: var(--warning-600);
+  --color-warning-100: var(--warning-100);
+  --color-danger-700: var(--danger-700);
+  --color-danger-600: var(--danger-600);
+  --color-danger-100: var(--danger-100);
+  --color-info-700: var(--info-700);
+  --color-info-600: var(--info-600);
+  --color-info-100: var(--info-100);
+
+  --color-bg-page: var(--bg-page);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-surface-alt: var(--bg-surface-alt);
+  --color-bg-brand-soft: var(--bg-brand-soft);
+  --color-bg-accent-soft: var(--bg-accent-soft);
+  --color-bg-inverse: var(--bg-inverse);
+  --color-bg-inverse-strong: var(--bg-inverse-strong);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-brand: var(--text-brand);
+  --color-text-accent: var(--text-accent);
+  --color-text-on-inverse: var(--text-on-inverse);
+  --color-text-on-inverse-muted: var(--text-on-inverse-muted);
+  --color-text-on-accent: var(--text-on-accent);
+  --color-text-disabled: var(--text-disabled);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+  --color-border-focus: var(--border-focus);
+  --color-border-brand: var(--border-brand);
+  --color-border-inverse: var(--border-inverse);
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-hover: var(--brand-primary-hover);
+  --color-accent-default: var(--accent-default);
+  --color-accent-hover: var(--accent-hover);
+  --color-state-disabled-bg: var(--state-disabled-bg);
+  --color-status-new-bg: var(--status-new-bg);
+  --color-status-new-fg: var(--status-new-fg);
+  --color-status-progress-bg: var(--status-progress-bg);
+  --color-status-progress-fg: var(--status-progress-fg);
+  --color-status-pending-bg: var(--status-pending-bg);
+  --color-status-pending-fg: var(--status-pending-fg);
+  --color-status-closed-bg: var(--status-closed-bg);
+  --color-status-closed-fg: var(--status-closed-fg);
+  --color-status-danger-bg: var(--status-danger-bg);
+  --color-status-danger-fg: var(--status-danger-fg);
+  --color-status-danger-solid: var(--status-danger-solid);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  --shadow-focus-ring: var(--shadow-focus-ring);
+  --shadow-menu: var(--shadow-menu);
+  --shadow-toast: var(--shadow-toast);
+  --shadow-modal: var(--shadow-modal);
+}
+
+/* ── 4. Typography — Figma text styles as utilities ───────────────── */
+@utility text-h1 { font-family: var(--font-serif); font-weight: 700; font-size: 48px; line-height: 56px; letter-spacing: -1px; }
+@utility text-h2 { font-family: var(--font-serif); font-weight: 600; font-size: 36px; line-height: 44px; letter-spacing: -0.5px; }
+@utility text-h3 { font-family: var(--font-serif); font-weight: 600; font-size: 28px; line-height: 36px; letter-spacing: -0.2px; }
+@utility text-h4 { font-family: var(--font-serif); font-weight: 600; font-size: 22px; line-height: 30px; letter-spacing: 0; }
+@utility text-body-lg { font-family: var(--font-sans); font-weight: 400; font-size: 18px; line-height: 30px; }
+@utility text-body { font-family: var(--font-sans); font-weight: 400; font-size: 16px; line-height: 26px; }
+@utility text-body-medium { font-family: var(--font-sans); font-weight: 500; font-size: 16px; line-height: 26px; }
+@utility text-body-sm { font-family: var(--font-sans); font-weight: 400; font-size: 14px; line-height: 22px; }
+@utility text-body-sm-medium { font-family: var(--font-sans); font-weight: 500; font-size: 14px; line-height: 22px; }
+@utility text-caption { font-family: var(--font-sans); font-weight: 500; font-size: 12px; line-height: 18px; letter-spacing: 0.1px; }
+@utility text-overline { font-family: var(--font-sans); font-weight: 600; font-size: 12px; line-height: 16px; letter-spacing: 1.2px; text-transform: uppercase; }
+@utility text-label-sm { font-family: var(--font-sans); font-weight: 600; font-size: 14px; line-height: 20px; }
+@utility text-label-md { font-family: var(--font-sans); font-weight: 600; font-size: 16px; line-height: 24px; }
+@utility text-label-lg { font-family: var(--font-sans); font-weight: 600; font-size: 18px; line-height: 26px; }
+@utility text-label-field { font-family: var(--font-sans); font-weight: 500; font-size: 14px; line-height: 20px; }
+
+/* Focus ring — Figma accessibility rule: 2px gold outline + soft halo, visible on keyboard focus. */
+@utility focus-ring {
+  outline: none;
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+    box-shadow: var(--shadow-focus-ring);
+  }
 }
 
 body {
-  @apply bg-white text-slate-800 font-sans antialiased;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 26px;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4 {
-  @apply font-serif text-brand-900;
+  font-family: var(--font-serif);
+  color: var(--text-primary);
 }
 
-/* Minimal markdown styling for post content until the design system lands. */
-.prose-mn h2 { @apply mt-8 mb-3 text-2xl; }
-.prose-mn h3 { @apply mt-6 mb-2 text-xl; }
-.prose-mn p { @apply my-3 leading-relaxed; }
-.prose-mn ul { @apply my-3 list-disc pl-6 space-y-1; }
-.prose-mn ol { @apply my-3 list-decimal pl-6 space-y-1; }
-.prose-mn blockquote { @apply my-4 border-l-4 border-accent-500 pl-4 italic text-slate-600; }
-.prose-mn a { @apply text-brand-500 underline; }
-.prose-mn strong { @apply font-semibold text-brand-900; }
+/* Markdown article body (news detail) */
+.prose-mn { color: var(--text-primary); }
+.prose-mn > * + * { margin-top: 16px; }
+.prose-mn h2 { @apply text-h3 mt-10; }
+.prose-mn h3 { @apply text-h4 mt-8; }
+.prose-mn p { @apply text-body; }
+.prose-mn ul { @apply list-disc pl-6 space-y-2 text-body; }
+.prose-mn ol { @apply list-decimal pl-6 space-y-2 text-body; }
+.prose-mn blockquote { @apply border-l-4 border-accent-default pl-5 py-1 text-body-lg text-text-secondary; }
+.prose-mn a { color: var(--text-accent); text-decoration: underline; }
+.prose-mn strong { font-weight: 600; }
+.prose-mn img { border-radius: var(--radius-lg); }

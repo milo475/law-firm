@@ -1,31 +1,35 @@
 import type { Metadata } from 'next';
-import { Inter, Playfair_Display } from 'next/font/google';
+import { Inter, Source_Serif_4 } from 'next/font/google';
 import './globals.css';
 
+// Figma: headings — Source Serif 4, body — Inter (both with Cyrillic subset).
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
   variable: '--font-inter',
   display: 'swap',
 });
 
-const playfair = Playfair_Display({
+const sourceSerif = Source_Serif_4({
   subsets: ['latin', 'cyrillic'],
-  variable: '--font-playfair',
+  weight: ['600', '700'],
+  variable: '--font-source-serif',
   display: 'swap',
 });
 
 export const metadata: Metadata = {
   title: {
-    default: 'Хуулийн фирм',
-    template: '%s | Хуулийн фирм',
+    default: 'Тулгуур Хуулийн Фирм',
+    template: '%s | Тулгуур Хуулийн Фирм',
   },
-  description: 'Хуулийн зөвлөгөө, өмгөөлөл, харилцагчийн портал',
+  description: '2009 оноос хойш иргэд, аж ахуйн нэгжид найдвартай эрх зүйн туслалцаа үзүүлж байна.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="mn" className={`${inter.variable} ${playfair.variable}`}>
-      <body className="min-h-screen flex flex-col">{children}</body>
+    <html lang="mn" className={`${inter.variable} ${sourceSerif.variable}`}>
+      <body className="flex min-h-screen flex-col">
+        {children}
+      </body>
     </html>
   );
 }
