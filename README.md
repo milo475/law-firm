@@ -5,7 +5,7 @@ UI-ийн бүх текст монгол хэлээр, код болон comment
 
 | Хэсэг | Технологи | Порт |
 | --- | --- | --- |
-| `apps/web` | Next.js 15 (App Router, TypeScript, Tailwind v4, Inter + Playfair Display) | 3000 |
+| `apps/web` | Next.js 15 (App Router, TypeScript, Tailwind v4, Source Serif 4 + Inter) | 3001 |
 | `apps/api` | NestJS 11 (Passport JWT, argon2, nestjs-zod, Swagger, Throttler, MinIO) | 4000 |
 | `packages/shared` | Prisma 7 schema + client, zod schema, enum label, shared type | — |
 | `docker-compose.yml` | PostgreSQL 16, MinIO (S3-compatible) + bucket үүсгэгч | 5432 / 9000 / 9001 |
@@ -24,11 +24,11 @@ pnpm install
 docker compose up -d            # postgres + minio (+ bucket үүсгэнэ)
 pnpm db:migrate                 # prisma migrate dev
 pnpm db:seed                    # тест өгөгдөл (доорх нэвтрэх мэдээлэл)
-pnpm dev                        # web :3000 + api :4000 хамт асна
+pnpm dev                        # web :3001 + api :4000 хамт асна (3000-г өөр төсөл эзэлдэг)
 ```
 
-- Вэб сайт: <http://localhost:3000>
-- Портал: <http://localhost:3000/portal>
+- Вэб сайт: <http://localhost:3001>
+- Портал: <http://localhost:3001/portal>
 - API: <http://localhost:4000>, Swagger: <http://localhost:4000/docs> (зөвхөн dev)
 - MinIO console: <http://localhost:9001> (minioadmin / minioadmin)
 
@@ -50,7 +50,7 @@ Seed нь 6 нийтэлсэн + 1 ноорог нийтлэл, 3 хэрэг (ev
 
 | Команд | Тайлбар |
 | --- | --- |
-| `pnpm dev` | shared build → web + api dev горимд (turbo) |
+| `pnpm dev` | shared build → web :3001 + api :4000 dev горимд (turbo) |
 | `pnpm build` | бүх package build |
 | `pnpm lint` / `pnpm typecheck` | ESLint / tsc |
 | `pnpm test` | Jest (apps/api) |
@@ -76,7 +76,7 @@ web → `next.config.ts`).
 | `JWT_REFRESH_SECRET` | Refresh token hash-ийн HMAC түлхүүр | `openssl rand -hex 32` |
 | `JWT_ACCESS_TTL` | Access token хугацаа | `15m` |
 | `JWT_REFRESH_TTL_DAYS` | Refresh token хугацаа (хоног) | `7` |
-| `CORS_ORIGIN` | Зөвшөөрөгдсөн origin (таслалаар) | `http://localhost:3000` |
+| `CORS_ORIGIN` | Зөвшөөрөгдсөн origin (таслалаар) | `http://localhost:3001` |
 | `COOKIE_DOMAIN` | Prod cookie domain (хоосон = host) | `.lawfirm.mn` |
 | `MINIO_ENDPOINT/PORT/USE_SSL` | MinIO холболт | `localhost` / `9000` / `false` |
 | `MINIO_ACCESS_KEY/SECRET_KEY` | MinIO нэвтрэлт | `minioadmin` |

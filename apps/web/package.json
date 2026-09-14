@@ -4,9 +4,9 @@
   "private": true,
   "description": "Law firm public website + client portal (Next.js 15)",
   "scripts": {
-    "dev": "next dev --port 3000",
+    "dev": "next dev --port 3001",
     "build": "next build",
-    "start": "next start --port 3000",
+    "start": "next start --port 3001",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf .next"
