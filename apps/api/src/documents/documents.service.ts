@@ -87,7 +87,7 @@ export class DocumentsService {
   }
 
   /** Returns a short-lived presigned URL after checking case scope + client visibility. */
-  async downloadUrl(documentId: string, user: RequestUser) {
+  async downloadUrl(documentId: string, user: RequestUser, inline = false) {
     const document = await this.prisma.document.findUnique({
       where: { id: documentId },
       include: { case: { select: { clientId: true, lawyerId: true } } },
@@ -99,7 +99,8 @@ export class DocumentsService {
     }
 
     const expiresInSeconds = 300;
-    const url = await this.storage.presignedGetUrl(document.storageKey, document.name, expiresInSeconds);
+    // inline=true → no attachment disposition, so PDFs/images can be previewed in the browser
+    const url = await this.storage.presignedGetUrl(document.storageKey, inline ? undefined : document.name, expiresInSeconds);
     return { url, expiresInSeconds, name: document.name, mimeType: document.mimeType, size: document.size };
   }
 }

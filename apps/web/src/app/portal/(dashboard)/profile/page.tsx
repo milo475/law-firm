@@ -1,84 +1,92 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ChangePasswordSchema, PhoneSchema, type ChangePasswordInput } from '@law-firm/shared/schemas';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { useUser } from '@/components/portal/user-context';
+import { Avatar } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { toast } from '@/components/ui/toast';
 import { ApiError, api } from '@/lib/api';
 import { ROLE_LABELS, formatDate } from '@/lib/format';
+import { initials } from '@/lib/utils';
 
-const field = 'mt-1 w-full rounded-md border border-brand-100 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none';
+const ProfileSchema = z.object({
+  lastName: z.string().trim().min(2, 'Овог хамгийн багадаа 2 тэмдэгт байна').max(64),
+  firstName: z.string().trim().min(2, 'Нэр хамгийн багадаа 2 тэмдэгт байна').max(64),
+  phone: z.union([PhoneSchema, z.literal('')]),
+});
+type ProfileInput = z.infer<typeof ProfileSchema>;
 
 export default function ProfilePage() {
   const { user, refresh } = useUser();
-  const [profileMsg, setProfileMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const [passwordMsg, setPasswordMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
-  async function saveProfile(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const data = Object.fromEntries(new FormData(event.currentTarget).entries()) as Record<string, string>;
+  const profile = useForm<ProfileInput>({
+    resolver: zodResolver(ProfileSchema),
+    defaultValues: { lastName: user.lastName, firstName: user.firstName, phone: user.phone ?? '' },
+  });
+  const password = useForm<ChangePasswordInput>({
+    resolver: zodResolver(ChangePasswordSchema),
+    defaultValues: { currentPassword: '', newPassword: '' },
+  });
+
+  async function saveProfile(values: ProfileInput) {
     try {
-      await api.patch('/users/me', { ...data, phone: data.phone || null });
+      await api.patch('/users/me', { ...values, phone: values.phone || null });
       await refresh();
-      setProfileMsg({ ok: true, text: 'Профайл хадгалагдлаа.' });
-    } catch (err) {
-      setProfileMsg({ ok: false, text: err instanceof ApiError ? err.message : 'Алдаа гарлаа' });
+      toast.success('Профайл хадгалагдлаа');
+    } catch (error) {
+      toast.danger('Хадгалж чадсангүй', error instanceof ApiError ? error.message : undefined);
     }
   }
 
-  async function changePassword(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const data = Object.fromEntries(new FormData(form).entries());
+  async function changePassword(values: ChangePasswordInput) {
     try {
-      await api.patch('/users/me/password', data);
-      form.reset();
-      setPasswordMsg({ ok: true, text: 'Нууц үг солигдлоо. Бусад төхөөрөмж дээрх сесс хаагдсан.' });
-    } catch (err) {
-      setPasswordMsg({ ok: false, text: err instanceof ApiError ? err.message : 'Алдаа гарлаа' });
+      await api.patch('/users/me/password', values);
+      password.reset();
+      toast.success('Нууц үг солигдлоо', 'Бусад төхөөрөмж дээрх сесс хаагдсан.');
+    } catch (error) {
+      const message = error instanceof ApiError ? error.message : 'Алдаа гарлаа';
+      password.setError('currentPassword', { message });
+      toast.danger('Нууц үг солигдсонгүй', message);
     }
   }
 
   return (
-    <div className="max-w-2xl space-y-10">
-      <div>
-        <h1 className="text-2xl md:text-3xl">Профайл</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          {ROLE_LABELS[user.role]} · {user.email} · сүүлд нэвтэрсэн {formatDate(user.lastLoginAt, true)}
-        </p>
-      </div>
-
-      <form onSubmit={saveProfile} className="space-y-4 rounded-lg border border-brand-100 bg-white p-6">
-        <h2 className="text-lg">Хувийн мэдээлэл</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="block text-sm font-medium text-brand-900">
-            Овог
-            <input name="lastName" defaultValue={user.lastName} required minLength={2} className={field} />
-          </label>
-          <label className="block text-sm font-medium text-brand-900">
-            Нэр
-            <input name="firstName" defaultValue={user.firstName} required minLength={2} className={field} />
-          </label>
+    <div className="flex max-w-[760px] flex-col gap-6">
+      <Card className="flex flex-wrap items-center gap-5 p-6">
+        <Avatar size="lg" initials={initials(user.firstName, user.lastName)} src={user.avatarUrl} />
+        <div className="flex min-w-0 flex-col gap-1">
+          <h2 className="text-h3">{user.lastName.charAt(0)}. {user.firstName}</h2>
+          <p className="text-body-sm text-text-secondary">{ROLE_LABELS[user.role]} · {user.email}</p>
+          <p className="text-caption text-text-muted">Сүүлд нэвтэрсэн: {formatDate(user.lastLoginAt, true)}</p>
         </div>
-        <label className="block text-sm font-medium text-brand-900">
-          Утас
-          <input name="phone" defaultValue={user.phone ?? ''} pattern="(\+976)?[0-9]{8}" className={field} />
-        </label>
-        {profileMsg && <p className={`text-sm ${profileMsg.ok ? 'text-emerald-700' : 'text-red-700'}`}>{profileMsg.text}</p>}
-        <button type="submit" className="rounded-md bg-brand-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-700">Хадгалах</button>
-      </form>
+      </Card>
 
-      <form onSubmit={changePassword} className="space-y-4 rounded-lg border border-brand-100 bg-white p-6">
-        <h2 className="text-lg">Нууц үг солих</h2>
-        <label className="block text-sm font-medium text-brand-900">
-          Одоогийн нууц үг
-          <input name="currentPassword" type="password" required autoComplete="current-password" className={field} />
-        </label>
-        <label className="block text-sm font-medium text-brand-900">
-          Шинэ нууц үг
-          <input name="newPassword" type="password" required minLength={8} autoComplete="new-password" className={field} />
-        </label>
-        {passwordMsg && <p className={`text-sm ${passwordMsg.ok ? 'text-emerald-700' : 'text-red-700'}`}>{passwordMsg.text}</p>}
-        <button type="submit" className="rounded-md bg-brand-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-700">Нууц үг солих</button>
-      </form>
+      <Card className="p-6 md:p-8">
+        <h3 className="text-h4">Хувийн мэдээлэл</h3>
+        <form onSubmit={profile.handleSubmit(saveProfile)} noValidate className="mt-6 flex flex-col gap-5">
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Input label="Овог" autoComplete="family-name" required error={profile.formState.errors.lastName?.message} {...profile.register('lastName')} />
+            <Input label="Нэр" autoComplete="given-name" required error={profile.formState.errors.firstName?.message} {...profile.register('firstName')} />
+          </div>
+          <Input label="Утасны дугаар" placeholder="9911-2233" inputMode="tel" autoComplete="tel" helper="8 оронтой дугаар" error={profile.formState.errors.phone?.message} {...profile.register('phone')} />
+          <Input label="И-мэйл" value={user.email} disabled helper="И-мэйл хаягийг өөрчлөхийн тулд админтай холбогдоно уу" readOnly />
+          <div><Button type="submit" size="md" disabled={profile.formState.isSubmitting}>Хадгалах</Button></div>
+        </form>
+      </Card>
+
+      <Card className="p-6 md:p-8">
+        <h3 className="text-h4">Нууц үг солих</h3>
+        <form onSubmit={password.handleSubmit(changePassword)} noValidate className="mt-6 flex flex-col gap-5">
+          <Input label="Одоогийн нууц үг" type="password" autoComplete="current-password" required error={password.formState.errors.currentPassword?.message} {...password.register('currentPassword')} />
+          <Input label="Шинэ нууц үг" type="password" autoComplete="new-password" required helper="Дор хаяж 8 тэмдэгт, үсэг ба тоо" error={password.formState.errors.newPassword?.message} {...password.register('newPassword')} />
+          <div><Button type="submit" size="md" variant="secondary" disabled={password.formState.isSubmitting}>Нууц үг солих</Button></div>
+        </form>
+      </Card>
     </div>
   );
 }

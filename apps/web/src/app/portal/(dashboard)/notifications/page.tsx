@@ -1,71 +1,67 @@
 'use client';
 
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
-import { EmptyState, ErrorState, LoadingState } from '@/components/ui/states';
+import { Button } from '@/components/ui/button';
+import { EmptyState, ErrorState, Skeleton } from '@/components/ui/states';
+import { toast } from '@/components/ui/toast';
 import { ApiError, api, type NotificationItem } from '@/lib/api';
 import { formatDate } from '@/lib/format';
+import { cn } from '@/lib/utils';
+
+type Data = { items: NotificationItem[]; unreadCount: number };
 
 export default function NotificationsPage() {
-  const [data, setData] = useState<{ items: NotificationItem[]; unreadCount: number } | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const query = useQuery({ queryKey: ['notifications'], queryFn: () => api.get<Data>('/notifications') });
 
-  const load = useCallback(() => {
-    api
-      .get<{ items: NotificationItem[]; unreadCount: number }>('/notifications')
-      .then(setData)
-      .catch((err) => setError(err instanceof ApiError ? err.message : 'Алдаа гарлаа'));
-  }, []);
+  const markRead = useMutation({
+    mutationFn: (id: string) => api.patch(`/notifications/${id}/read`),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+    onError: (e) => toast.danger('Алдаа гарлаа', e instanceof ApiError ? e.message : undefined),
+  });
+  const markAll = useMutation({
+    mutationFn: () => api.patch<{ updated: number }>('/notifications/read-all'),
+    onSuccess: (r) => { toast.success('Бүгдийг уншсан болголоо', `${r.updated} мэдэгдэл`); void queryClient.invalidateQueries({ queryKey: ['notifications'] }); },
+    onError: (e) => toast.danger('Алдаа гарлаа', e instanceof ApiError ? e.message : undefined),
+  });
 
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  async function markRead(id: string) {
-    await api.patch(`/notifications/${id}/read`);
-    load();
-  }
-
-  async function markAll() {
-    await api.patch('/notifications/read-all');
-    load();
-  }
+  const items = query.data?.items ?? [];
+  const unread = query.data?.unreadCount ?? 0;
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl md:text-3xl">Мэдэгдэл</h1>
-          <p className="mt-1 text-sm text-slate-600">{data ? `${data.unreadCount} уншаагүй мэдэгдэл` : ''}</p>
+          <h2 className="text-h3">Мэдэгдэл</h2>
+          <p className="mt-1 text-body-sm text-text-secondary">{query.data ? `${unread} уншаагүй · нийт ${items.length}` : 'Хэргийн явц, төлбөр, баримтын мэдэгдлүүд.'}</p>
         </div>
-        {data && data.unreadCount > 0 && (
-          <button type="button" onClick={() => void markAll()} className="text-sm text-brand-500 hover:underline">
-            Бүгдийг уншсан болгох
-          </button>
-        )}
+        <Button variant="secondary" size="sm" disabled={unread === 0 || markAll.isPending} onClick={() => markAll.mutate()}>Бүгдийг уншсан болгох</Button>
       </div>
-      {error ? (
-        <ErrorState message={error} />
-      ) : !data ? (
-        <LoadingState />
-      ) : data.items.length === 0 ? (
-        <EmptyState message="Мэдэгдэл байхгүй байна." />
+
+      {query.isError ? (
+        <ErrorState message={query.error instanceof ApiError ? query.error.message : 'Алдаа гарлаа'} onRetry={() => void query.refetch()} />
+      ) : query.isLoading ? (
+        <div className="flex flex-col gap-3"><Skeleton className="h-20" /><Skeleton className="h-20" /><Skeleton className="h-20" /></div>
+      ) : items.length === 0 ? (
+        <EmptyState title="Мэдэгдэл байхгүй байна" description="Хэргийн явц, нэхэмжлэх, баримттай холбоотой мэдэгдэл энд харагдана." />
       ) : (
-        <ul className="divide-y divide-brand-100 rounded-lg border border-brand-100 bg-white">
-          {data.items.map((n) => (
-            <li key={n.id} className={`flex flex-wrap items-start justify-between gap-3 px-4 py-3 ${n.isRead ? '' : 'bg-brand-50/70'}`}>
-              <div>
-                <p className={`text-sm ${n.isRead ? 'text-slate-700' : 'font-medium text-brand-900'}`}>{n.title}</p>
-                <p className="mt-0.5 text-sm text-slate-600">{n.body}</p>
-                <p className="mt-1 text-xs text-slate-500">{formatDate(n.createdAt, true)}</p>
+        <ul className="divide-y divide-border-default overflow-hidden rounded-lg border border-border-default bg-bg-surface">
+          {items.map((n) => (
+            <li key={n.id} className={cn('flex flex-col gap-3 px-5 py-4 md:flex-row md:items-start md:justify-between', !n.isRead && 'bg-bg-brand-soft/60')}>
+              <div className="flex min-w-0 gap-3">
+                <span aria-hidden className={cn('mt-2 size-2 shrink-0 rounded-full', n.isRead ? 'bg-border-default' : 'bg-accent-default')} />
+                <div className="flex min-w-0 flex-col gap-0.5">
+                  <p className={cn('text-body-sm', n.isRead ? 'text-text-secondary' : 'text-body-sm-medium text-text-primary')}>
+                    {n.title}{!n.isRead && <span className="sr-only"> (уншаагүй)</span>}
+                  </p>
+                  <p className="text-body-sm text-text-secondary">{n.body}</p>
+                  <p className="text-caption text-text-muted">{formatDate(n.createdAt, true)}</p>
+                </div>
               </div>
-              <div className="flex gap-3 text-xs">
-                {n.link && <Link href={n.link} className="text-brand-500 hover:underline">Нээх</Link>}
-                {!n.isRead && (
-                  <button type="button" onClick={() => void markRead(n.id)} className="text-slate-500 hover:underline">
-                    Уншсан
-                  </button>
-                )}
+              <div className="flex shrink-0 items-center gap-1 md:pl-4">
+                {n.link && n.link.startsWith('/portal') && <Button asChild variant="ghost" size="sm"><Link href={n.link}>Нээх</Link></Button>}
+                {!n.isRead && <Button variant="ghost" size="sm" onClick={() => markRead.mutate(n.id)} disabled={markRead.isPending}>Уншсан</Button>}
               </div>
             </li>
           ))}

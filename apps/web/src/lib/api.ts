@@ -240,6 +240,8 @@ export interface InvoiceItem {
   status: 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE' | 'CANCELLED';
   dueDate: string;
   paidAt: string | null;
+  createdAt: string;
+  updatedAt: string;
   case: { id: string; caseNumber: string; title: string };
 }
 

@@ -60,6 +60,3 @@ export function StatusBadge({ map, status, className }: { map: Record<string, { 
   return <Badge tone={entry.tone} className={className}>{entry.label}</Badge>;
 }
 
-// ── temporary compatibility for pages not yet migrated (removed in the pages step) ──
-export function caseStatusTone(status: string): BadgeTone { return CASE_STATUS_BADGE[status]?.tone ?? 'closed'; }
-export function invoiceStatusTone(status: string): BadgeTone { return INVOICE_STATUS_BADGE[status]?.tone ?? 'closed'; }

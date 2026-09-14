@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 const LOGIN_PATH = '/portal/login';
+const PUBLIC_PORTAL_PATHS = ['/portal/login', '/portal/register', '/portal/forgot-password'];
 
 /**
  * Guards /portal/*: without a session cookie the visitor is sent to the login page.
@@ -12,7 +13,7 @@ export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const hasSession = request.cookies.has('access_token') || request.cookies.has('lf_session');
 
-  if (pathname.startsWith(LOGIN_PATH)) {
+  if (PUBLIC_PORTAL_PATHS.some((p) => pathname.startsWith(p))) {
     if (hasSession) {
       return NextResponse.redirect(new URL('/portal', request.url));
     }

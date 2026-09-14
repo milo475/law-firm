@@ -9,7 +9,9 @@
     "start": "next start --port 3001",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf .next"
+    "clean": "rm -rf .next",
+    "e2e": "playwright test --project=desktop --grep-invert screenshots",
+    "e2e:screenshots": "playwright test --grep screenshots"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
@@ -32,7 +34,8 @@
     "react-markdown": "^10.1.0",
     "rehype-sanitize": "^6.0.0",
     "sonner": "^2.0.8",
-    "tailwind-merge": "^3.7.0"
+    "tailwind-merge": "^3.7.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",

@@ -1,65 +1,82 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { Badge, caseStatusTone } from '@/components/ui/badge';
-import { EmptyState, ErrorState, LoadingState } from '@/components/ui/states';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { CASE_STATUS_BADGE, StatusBadge } from '@/components/ui/badge';
+import { CaseCard } from '@/components/ui/card';
+import { Select } from '@/components/ui/select';
+import { EmptyState, ErrorState, TableSkeleton } from '@/components/ui/states';
+import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@/components/ui/table';
 import { ApiError, api, type CaseListItem, type Paginated } from '@/lib/api';
 import { CASE_STATUS_LABELS, CASE_TYPE_LABELS, formatDate } from '@/lib/format';
+import { shortName } from '@/lib/utils';
+
+const STATUS_OPTIONS = [{ value: 'ALL', label: 'Бүх төлөв' }, ...Object.entries(CASE_STATUS_LABELS).map(([value, label]) => ({ value, label }))];
 
 export default function CasesPage() {
-  const [data, setData] = useState<Paginated<CaseListItem> | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    api
-      .get<Paginated<CaseListItem>>('/cases?limit=50')
-      .then(setData)
-      .catch((err) => setError(err instanceof ApiError ? err.message : 'Алдаа гарлаа'));
-  }, []);
+  const router = useRouter();
+  const [status, setStatus] = useState('ALL');
+  const query = useQuery({
+    queryKey: ['cases', status],
+    queryFn: () => api.get<Paginated<CaseListItem>>(`/cases?limit=50${status !== 'ALL' ? `&status=${status}` : ''}`),
+  });
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl md:text-3xl">Хэргүүд</h1>
-        <p className="mt-1 text-sm text-slate-600">Танд хамаарах бүх хэргийн жагсаалт.</p>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h2 className="text-h3">Хэргүүд</h2>
+          <p className="mt-1 text-body-sm text-text-secondary">Танд хамаарах бүх хэргийн жагсаалт.</p>
+        </div>
+        <Select wrapperClassName="md:w-[220px]" label="Төлөв" options={STATUS_OPTIONS} value={status} onValueChange={setStatus} />
       </div>
 
-      {error ? (
-        <ErrorState message={error} />
-      ) : !data ? (
-        <LoadingState />
-      ) : data.items.length === 0 ? (
-        <EmptyState message="Хэрэг бүртгэгдээгүй байна." />
+      {query.isError ? (
+        <ErrorState message={query.error instanceof ApiError ? query.error.message : 'Алдаа гарлаа'} onRetry={() => void query.refetch()} />
+      ) : query.isLoading ? (
+        <TableSkeleton />
+      ) : query.data!.items.length === 0 ? (
+        <EmptyState title="Хэрэг олдсонгүй" description={status === 'ALL' ? 'Таны нэр дээр хэрэг бүртгэгдээгүй байна.' : 'Энэ төлөвтэй хэрэг байхгүй.'} />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-brand-100 bg-white">
-          <table className="min-w-full text-sm">
-            <thead className="bg-brand-50 text-left text-xs uppercase tracking-wide text-slate-500">
-              <tr>
-                <th className="px-4 py-3">Дугаар</th>
-                <th className="px-4 py-3">Гарчиг</th>
-                <th className="px-4 py-3">Төрөл</th>
-                <th className="px-4 py-3">Хуульч</th>
-                <th className="px-4 py-3">Төлөв</th>
-                <th className="px-4 py-3">Нээгдсэн</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-brand-100">
-              {data.items.map((c) => (
-                <tr key={c.id} className="hover:bg-brand-50/60">
-                  <td className="px-4 py-3 font-mono text-xs">{c.caseNumber}</td>
-                  <td className="px-4 py-3">
-                    <Link href={`/portal/cases/${c.id}`} className="font-medium text-brand-900 hover:text-brand-500">{c.title}</Link>
-                  </td>
-                  <td className="px-4 py-3">{CASE_TYPE_LABELS[c.type] ?? c.type}</td>
-                  <td className="px-4 py-3">{c.lawyer.lastName.charAt(0)}. {c.lawyer.firstName}</td>
-                  <td className="px-4 py-3"><Badge tone={caseStatusTone(c.status)}>{CASE_STATUS_LABELS[c.status]}</Badge></td>
-                  <td className="px-4 py-3">{formatDate(c.openedAt)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <>
+          {/* Desktop table — Figma "Table row" 6 columns */}
+          <div className="hidden md:block">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeaderCell className="w-[140px]">Дугаар</TableHeaderCell>
+                  <TableHeaderCell>Хэргийн нэр</TableHeaderCell>
+                  <TableHeaderCell className="w-[180px]">Төрөл</TableHeaderCell>
+                  <TableHeaderCell className="w-[200px]">Хариуцсан хуульч</TableHeaderCell>
+                  <TableHeaderCell className="w-[160px]">Статус</TableHeaderCell>
+                  <TableHeaderCell className="w-[160px]">Шинэчлэгдсэн</TableHeaderCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {query.data!.items.map((c) => (
+                  <TableRow key={c.id} interactive className="cursor-pointer" onClick={() => router.push(`/portal/cases/${c.id}`)}>
+                    <TableCell>{c.caseNumber}</TableCell>
+                    <TableCell className="text-body-sm-medium text-text-primary">
+                      <Link href={`/portal/cases/${c.id}`} className="focus-ring rounded-sm" onClick={(e) => e.stopPropagation()}>{c.title}</Link>
+                    </TableCell>
+                    <TableCell>{CASE_TYPE_LABELS[c.type] ?? c.type}</TableCell>
+                    <TableCell>{shortName(c.lawyer.firstName, c.lawyer.lastName)}</TableCell>
+                    <TableCell><StatusBadge map={CASE_STATUS_BADGE} status={c.status} /></TableCell>
+                    <TableCell>{formatDate(c.updatedAt)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          {/* Mobile cards */}
+          <div className="grid gap-4 md:hidden">
+            {query.data!.items.map((c) => (
+              <CaseCard key={c.id} caseNumber={c.caseNumber} title={c.title} status={CASE_STATUS_BADGE[c.status]} lawyer={c.lawyer} href={`/portal/cases/${c.id}`} footer={`${CASE_TYPE_LABELS[c.type] ?? c.type} · ${formatDate(c.updatedAt)}`} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

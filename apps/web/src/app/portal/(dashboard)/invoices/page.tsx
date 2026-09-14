@@ -1,64 +1,96 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { Badge, invoiceStatusTone } from '@/components/ui/badge';
-import { EmptyState, ErrorState, LoadingState } from '@/components/ui/states';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { INVOICE_STATUS_BADGE, StatusBadge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { Select } from '@/components/ui/select';
+import { EmptyState, ErrorState, TableSkeleton } from '@/components/ui/states';
+import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@/components/ui/table';
 import { ApiError, api, type InvoiceItem, type Paginated } from '@/lib/api';
 import { INVOICE_STATUS_LABELS, formatDate, formatMoney } from '@/lib/format';
 
-export default function InvoicesPage() {
-  const [data, setData] = useState<Paginated<InvoiceItem> | null>(null);
-  const [error, setError] = useState<string | null>(null);
+const STATUS_OPTIONS = [{ value: 'ALL', label: 'Бүх төлөв' }, ...Object.entries(INVOICE_STATUS_LABELS).map(([value, label]) => ({ value, label }))];
 
-  useEffect(() => {
-    api
-      .get<Paginated<InvoiceItem>>('/invoices?limit=50')
-      .then(setData)
-      .catch((err) => setError(err instanceof ApiError ? err.message : 'Алдаа гарлаа'));
-  }, []);
+export default function InvoicesPage() {
+  const router = useRouter();
+  const [status, setStatus] = useState('ALL');
+  const query = useQuery({
+    queryKey: ['invoices', status],
+    queryFn: () => api.get<Paginated<InvoiceItem>>(`/invoices?limit=50${status !== 'ALL' ? `&status=${status}` : ''}`),
+  });
+  const items = query.data?.items ?? [];
+  const open = items.filter((i) => i.status === 'SENT' || i.status === 'OVERDUE').reduce((s, i) => s + Number(i.amount), 0);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl md:text-3xl">Нэхэмжлэх</h1>
-        <p className="mt-1 text-sm text-slate-600">Төлбөрийн нэхэмжлэхүүд ба тэдгээрийн төлөв.</p>
-      </div>
-      {error ? (
-        <ErrorState message={error} />
-      ) : !data ? (
-        <LoadingState />
-      ) : data.items.length === 0 ? (
-        <EmptyState message="Нэхэмжлэх байхгүй байна." />
-      ) : (
-        <div className="overflow-x-auto rounded-lg border border-brand-100 bg-white">
-          <table className="min-w-full text-sm">
-            <thead className="bg-brand-50 text-left text-xs uppercase tracking-wide text-slate-500">
-              <tr>
-                <th className="px-4 py-3">Дугаар</th>
-                <th className="px-4 py-3">Хэрэг</th>
-                <th className="px-4 py-3">Тайлбар</th>
-                <th className="px-4 py-3 text-right">Дүн</th>
-                <th className="px-4 py-3">Төлөх хугацаа</th>
-                <th className="px-4 py-3">Төлөв</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-brand-100">
-              {data.items.map((inv) => (
-                <tr key={inv.id}>
-                  <td className="px-4 py-3 font-mono text-xs">{inv.invoiceNumber}</td>
-                  <td className="px-4 py-3">
-                    <Link href={`/portal/cases/${inv.case.id}`} className="text-brand-900 hover:text-brand-500">{inv.case.caseNumber}</Link>
-                  </td>
-                  <td className="px-4 py-3 text-slate-600">{inv.description}</td>
-                  <td className="px-4 py-3 text-right font-medium">{formatMoney(inv.amount)}</td>
-                  <td className="px-4 py-3">{formatDate(inv.dueDate)}</td>
-                  <td className="px-4 py-3"><Badge tone={invoiceStatusTone(inv.status)}>{INVOICE_STATUS_LABELS[inv.status]}</Badge></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h2 className="text-h3">Нэхэмжлэх</h2>
+          <p className="mt-1 text-body-sm text-text-secondary">Төлбөрийн нэхэмжлэхүүд ба тэдгээрийн төлөв.</p>
         </div>
+        <Select wrapperClassName="md:w-[220px]" label="Төлөв" options={STATUS_OPTIONS} value={status} onValueChange={setStatus} />
+      </div>
+
+      {!query.isLoading && !query.isError && (
+        <Card className="flex flex-wrap items-center justify-between gap-3 p-5">
+          <p className="text-body-sm text-text-secondary">Төлөгдөөгүй нийт дүн</p>
+          <p className="font-serif text-h3 text-text-brand">{formatMoney(open)}</p>
+        </Card>
+      )}
+
+      {query.isError ? (
+        <ErrorState message={query.error instanceof ApiError ? query.error.message : 'Алдаа гарлаа'} onRetry={() => void query.refetch()} />
+      ) : query.isLoading ? (
+        <TableSkeleton />
+      ) : items.length === 0 ? (
+        <EmptyState title="Нэхэмжлэх байхгүй байна" />
+      ) : (
+        <>
+          <div className="hidden md:block">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeaderCell>Дугаар</TableHeaderCell>
+                  <TableHeaderCell>Хэрэг</TableHeaderCell>
+                  <TableHeaderCell>Тайлбар</TableHeaderCell>
+                  <TableHeaderCell className="text-right">Дүн</TableHeaderCell>
+                  <TableHeaderCell>Төлөх хугацаа</TableHeaderCell>
+                  <TableHeaderCell>Статус</TableHeaderCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {items.map((inv) => (
+                  <TableRow key={inv.id} interactive className="cursor-pointer" onClick={() => router.push(`/portal/invoices/${inv.id}`)}>
+                    <TableCell className="text-body-sm-medium text-text-primary"><Link href={`/portal/invoices/${inv.id}`} className="focus-ring rounded-sm" onClick={(e) => e.stopPropagation()}>{inv.invoiceNumber}</Link></TableCell>
+                    <TableCell>{inv.case.caseNumber}</TableCell>
+                    <TableCell className="max-w-[320px] truncate">{inv.description}</TableCell>
+                    <TableCell className="text-right text-body-sm-medium text-text-primary">{formatMoney(inv.amount)}</TableCell>
+                    <TableCell>{formatDate(inv.dueDate)}</TableCell>
+                    <TableCell><StatusBadge map={INVOICE_STATUS_BADGE} status={inv.status} /></TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <ul className="grid gap-3 md:hidden">
+            {items.map((inv) => (
+              <li key={inv.id}>
+                <Link href={`/portal/invoices/${inv.id}`} className="focus-ring flex flex-col gap-2 rounded-lg border border-border-default bg-bg-surface p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-caption text-text-muted">{inv.invoiceNumber}</span>
+                    <StatusBadge map={INVOICE_STATUS_BADGE} status={inv.status} />
+                  </div>
+                  <p className="font-serif text-h4 text-text-brand">{formatMoney(inv.amount)}</p>
+                  <p className="text-body-sm text-text-secondary">{inv.description}</p>
+                  <p className="text-caption text-text-muted">{inv.case.caseNumber} · төлөх хугацаа {formatDate(inv.dueDate)}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
     </div>
   );

@@ -4,11 +4,12 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { MAX_DOCUMENT_SIZE_BYTES } from '@law-firm/shared';
 import { CurrentUser } from '../common/decorators';
 import type { RequestUser } from '../common/types/request-user';
@@ -51,8 +52,9 @@ export class DocumentsController {
   }
 
   @Get('documents/:id/download')
-  @ApiOperation({ summary: 'Баримт татах presigned URL (5 мин хүчинтэй)' })
-  download(@Param('id') id: string, @CurrentUser() user: RequestUser) {
-    return this.documents.downloadUrl(id, user);
+  @ApiOperation({ summary: 'Баримт татах presigned URL (5 мин хүчинтэй); ?inline=true → урьдчилан харах' })
+  @ApiQuery({ name: 'inline', required: false, type: Boolean })
+  download(@Param('id') id: string, @CurrentUser() user: RequestUser, @Query('inline') inline?: string) {
+    return this.documents.downloadUrl(id, user, inline === 'true' || inline === '1');
   }
 }
