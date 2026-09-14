@@ -1,7 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { ImagePlaceholder } from '@/components/ui/card';
+import { PageHeader } from '@/components/ui/page-header';
 import { ApiError, apiFetch, type LawyerProfile } from '@/lib/api';
+import { shortName } from '@/lib/utils';
 
 export const revalidate = 60;
 
@@ -20,42 +24,55 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { id } = await params;
   const lawyer = await loadLawyer(id);
   if (!lawyer) return { title: 'Хуульч олдсонгүй' };
-  return { title: `${lawyer.user.lastName.charAt(0)}. ${lawyer.user.firstName} — ${lawyer.title}` };
+  const name = shortName(lawyer.user.firstName, lawyer.user.lastName);
+  return { title: `${name} — ${lawyer.title}`, description: lawyer.bio.slice(0, 160) };
 }
 
 export default async function LawyerDetailPage({ params }: Params) {
   const { id } = await params;
   const lawyer = await loadLawyer(id);
   if (!lawyer) notFound();
+  const name = shortName(lawyer.user.firstName, lawyer.user.lastName);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12">
-      <Link href="/lawyers" className="text-sm text-brand-500 hover:underline">← Бүх хуульчид</Link>
-      <div className="mt-6 grid gap-8 md:grid-cols-[240px_1fr]">
-        <div className="h-60 rounded-lg bg-brand-50" aria-hidden />
-        <div>
-          <h1 className="text-3xl">{lawyer.user.lastName.charAt(0)}. {lawyer.user.firstName}</h1>
-          <p className="mt-1 text-accent-600">{lawyer.title}</p>
-          <p className="mt-1 text-sm text-slate-500">{lawyer.yearsOfExperience} жилийн туршлага</p>
-
-          <h2 className="mt-8 text-xl">Танилцуулга</h2>
-          <p className="mt-2 text-slate-600">{lawyer.bio}</p>
-
-          <h2 className="mt-8 text-xl">Мэргэшил</h2>
-          <ul className="mt-2 flex flex-wrap gap-2">
-            {lawyer.specializations.map((s) => (
-              <li key={s} className="rounded-full bg-brand-50 px-3 py-1 text-sm text-brand-700">{s}</li>
-            ))}
-          </ul>
-
-          <h2 className="mt-8 text-xl">Боловсрол</h2>
-          <p className="mt-2 text-slate-600">{lawyer.education}</p>
-
-          <Link href="/contact" className="mt-8 inline-block rounded-md bg-brand-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-700">
-            Уулзалт товлох
-          </Link>
+    <>
+      <PageHeader overline={lawyer.title} title={name} crumbs={[{ label: 'Нүүр', href: '/' }, { label: 'Хуульчид', href: '/lawyers' }, { label: name }]} />
+      <section className="mx-auto grid max-w-[1200px] gap-12 px-4 py-16 md:px-6 md:py-24 lg:grid-cols-[360px_1fr]">
+        <div className="flex flex-col gap-6">
+          <div className="overflow-hidden rounded-lg border border-border-default bg-bg-surface">
+            <ImagePlaceholder src={lawyer.user.avatarUrl} className="h-[340px]" markSize={60} />
+            <div className="flex flex-col gap-1.5 px-6 pb-6 pt-5">
+              <p className="text-h4">{name}</p>
+              <p className="text-body-sm text-text-secondary">{lawyer.title}</p>
+              <p className="text-caption text-text-accent">{lawyer.yearsOfExperience} жилийн туршлага</p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-3 rounded-lg border border-border-default bg-bg-surface p-6">
+            <p className="text-body-medium text-text-primary">Холбоо барих</p>
+            <a href={`mailto:${lawyer.user.email}`} className="focus-ring rounded-sm text-body-sm text-text-secondary hover:text-text-brand">{lawyer.user.email}</a>
+            {lawyer.user.phone && <a href={`tel:${lawyer.user.phone}`} className="focus-ring rounded-sm text-body-sm text-text-secondary hover:text-text-brand">{lawyer.user.phone}</a>}
+            <Button asChild size="md" className="mt-2"><Link href="/contact">Уулзалт товлох</Link></Button>
+          </div>
         </div>
-      </div>
-    </div>
+        <div className="flex flex-col gap-10">
+          <div>
+            <h2 className="text-h3">Танилцуулга</h2>
+            <p className="mt-4 text-body-lg text-text-secondary">{lawyer.bio}</p>
+          </div>
+          <div>
+            <h2 className="text-h3">Мэргэшил</h2>
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {lawyer.specializations.map((s) => (
+                <li key={s} className="rounded-full bg-bg-brand-soft px-4 py-2 text-body-sm-medium text-text-brand">{s}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h2 className="text-h3">Боловсрол</h2>
+            <p className="mt-4 text-body text-text-secondary">{lawyer.education}</p>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

@@ -1,31 +1,28 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { ServiceCard } from '@/components/ui/card';
 import { PageHeader } from '@/components/ui/page-header';
+import { SERVICES } from '@/content/services';
 
-export const metadata: Metadata = { title: 'Үйлчилгээ' };
-
-const SERVICES = [
-  { title: 'Иргэний эрх зүй', items: ['Гэрээний маргаан', 'Хохирол нөхөн төлүүлэх', 'Өв залгамжлал', 'Үл хөдлөх хөрөнгийн гэрээ'] },
-  { title: 'Бизнесийн эрх зүй', items: ['Компани байгуулах, өөрчлөн байгуулах', 'Хувьцаа эзэмшигчдийн гэрээ', 'Хөрөнгө оруулалтын зөвлөгөө', 'Гэрээний хяналт (due diligence)'] },
-  { title: 'Гэр бүлийн эрх зүй', items: ['Гэрлэлт цуцлуулах', 'Хүүхдийн асрамж, тэтгэмж', 'Эд хөрөнгө хуваах', 'Үрчлэлт'] },
-  { title: 'Хөдөлмөрийн эрх зүй', items: ['Ажлаас халагдах маргаан', 'Цалин, олговор нэхэмжлэх', 'Хөдөлмөрийн гэрээ, дотоод журам боловсруулах'] },
-  { title: 'Эрүүгийн эрх зүй', items: ['Мөрдөн байцаалтын шатанд өмгөөлөл', 'Шүүхийн өмгөөлөл', 'Хохирогчийн төлөөлөл'] },
-  { title: 'Бусад', items: ['Захиргааны маргаан', 'Оюуны өмч', 'Хувийн мэдээллийн хамгаалалт'] },
-];
+export const metadata: Metadata = { title: 'Үйлчилгээ', description: 'Иргэний, эрүүгийн, гэр бүлийн, бизнесийн, хөдөлмөрийн эрх зүй, үл хөдлөх хөрөнгийн чиглэлээр хууль зүйн үйлчилгээ.' };
 
 export default function ServicesPage() {
   return (
     <>
-      <PageHeader overline="Үйлчилгээ" title="Хууль зүйн үйлчилгээний чиглэлүүд" description="Доорх чиглэлүүдээр зөвлөгөө өгч, төлөөлөн оролцож, баримт бичиг боловсруулна." />
-      <div className="mx-auto grid max-w-6xl gap-6 px-4 py-12 md:grid-cols-2 lg:grid-cols-3">
-        {SERVICES.map((service) => (
-          <section key={service.title} className="rounded-lg border border-brand-100 p-6">
-            <h2 className="text-xl">{service.title}</h2>
-            <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-600">
-              {service.items.map((item) => <li key={item}>{item}</li>)}
-            </ul>
-          </section>
-        ))}
-      </div>
+      <PageHeader overline="Үйлчилгээ" title="Үйлчилгээний чиглэлүүд" description="Зургаан үндсэн чиглэлээр зөвлөгөө өгч, төлөөлөн оролцож, баримт бичиг боловсруулна." crumbs={[{ label: 'Нүүр', href: '/' }, { label: 'Үйлчилгээ' }]} />
+      <section className="mx-auto max-w-[1200px] px-4 py-16 md:px-6 md:py-24">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {SERVICES.map((s) => <ServiceCard key={s.slug} title={s.title} description={s.short} href={`/services/${s.slug}`} />)}
+        </div>
+        <div className="mt-16 flex flex-col items-start gap-4 rounded-xl bg-bg-accent-soft p-8 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-h3">Аль чиглэлд хамаарахаа мэдэхгүй байна уу?</h2>
+            <p className="mt-2 text-body text-text-secondary">Асуудлаа товч бичээд илгээхэд манай хуульч тохирох чиглэлийг санал болгоно.</p>
+          </div>
+          <Button asChild size="lg"><Link href="/contact">Зөвлөгөө авах</Link></Button>
+        </div>
+      </section>
     </>
   );
 }

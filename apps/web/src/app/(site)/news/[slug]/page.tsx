@@ -2,8 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
-import { ApiError, apiFetch, type PostDetail } from '@/lib/api';
+import rehypeSanitize from 'rehype-sanitize';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { NewsCard } from '@/components/ui/card';
+import { ApiError, apiFetch, type Paginated, type PostDetail, type PostListItem } from '@/lib/api';
 import { CATEGORY_LABELS, formatDate } from '@/lib/format';
+import { shortName } from '@/lib/utils';
 
 export const revalidate = 60;
 
@@ -18,6 +22,15 @@ async function loadPost(slug: string): Promise<PostDetail | null> {
   }
 }
 
+async function loadRelated(category: string, slug: string): Promise<PostListItem[]> {
+  try {
+    const data = await apiFetch<Paginated<PostListItem>>(`/posts?category=${category}&limit=4`, { next: { revalidate: 60 } });
+    return data.items.filter((p) => p.slug !== slug).slice(0, 3);
+  } catch {
+    return [];
+  }
+}
+
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const post = await loadPost(slug);
@@ -25,13 +38,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return {
     title: post.title,
     description: post.excerpt,
-    openGraph: {
-      title: post.title,
-      description: post.excerpt,
-      type: 'article',
-      publishedTime: post.publishedAt ?? undefined,
-      images: post.coverImageUrl ? [post.coverImageUrl] : undefined,
-    },
+    openGraph: { title: post.title, description: post.excerpt, type: 'article', publishedTime: post.publishedAt ?? undefined, images: post.coverImageUrl ? [post.coverImageUrl] : undefined },
   };
 }
 
@@ -39,23 +46,45 @@ export default async function PostPage({ params }: Params) {
   const { slug } = await params;
   const post = await loadPost(slug);
   if (!post) notFound();
+  const related = await loadRelated(post.category, slug);
 
   return (
-    <article className="mx-auto max-w-3xl px-4 py-12">
-      <Link href="/news" className="text-sm text-brand-500 hover:underline">← Бүх мэдээ</Link>
-      <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-accent-600">{CATEGORY_LABELS[post.category]}</p>
-      <h1 className="mt-2 text-3xl md:text-4xl">{post.title}</h1>
-      <p className="mt-3 text-sm text-slate-500">
-        {formatDate(post.publishedAt)} · {post.author.lastName.charAt(0)}. {post.author.firstName} · {post.viewCount} үзсэн
-      </p>
-      {post.coverImageUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={post.coverImageUrl} alt="" className="mt-6 w-full rounded-lg" />
+    <>
+      <section className="border-b border-border-default bg-bg-brand-soft">
+        <div className="mx-auto flex max-w-[840px] flex-col gap-4 px-4 py-12 md:px-6 md:py-16">
+          <Breadcrumb items={[{ label: 'Нүүр', href: '/' }, { label: 'Мэдээ ба нийтлэл', href: '/news' }, { label: post.title }]} />
+          <p className="text-overline text-text-accent">{CATEGORY_LABELS[post.category]}</p>
+          <h1 className="text-h2 md:text-h1">{post.title}</h1>
+          <p className="text-body-sm text-text-muted">
+            {formatDate(post.publishedAt)} · {shortName(post.author.firstName, post.author.lastName)} · {post.viewCount} үзсэн
+          </p>
+        </div>
+      </section>
+      <article className="mx-auto max-w-[840px] px-4 py-12 md:px-6 md:py-16">
+        {post.coverImageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={post.coverImageUrl} alt="" className="mb-8 w-full rounded-lg" />
+        )}
+        <p className="text-body-lg text-text-secondary">{post.excerpt}</p>
+        <div className="prose-mn mt-8">
+          <ReactMarkdown rehypePlugins={[rehypeSanitize]}>{post.content}</ReactMarkdown>
+        </div>
+      </article>
+      {related.length > 0 && (
+        <section className="border-t border-border-default bg-bg-surface">
+          <div className="mx-auto max-w-[1200px] px-4 py-16 md:px-6">
+            <div className="flex items-end justify-between gap-4">
+              <h2 className="text-h3">Холбоотой нийтлэл</h2>
+              <Link href={`/news?category=${post.category}`} className="focus-ring inline-flex h-11 items-center rounded-sm text-body-medium text-text-accent hover:underline">Бүгдийг харах →</Link>
+            </div>
+            <div className="mt-8 grid gap-6 md:grid-cols-3">
+              {related.map((p) => (
+                <NewsCard key={p.id} overline={CATEGORY_LABELS[p.category]} title={p.title} excerpt={p.excerpt} meta={`${formatDate(p.publishedAt)} · ${p.viewCount} үзсэн`} href={`/news/${p.slug}`} imageUrl={p.coverImageUrl} />
+              ))}
+            </div>
+          </div>
+        </section>
       )}
-      <p className="mt-6 text-lg text-slate-700">{post.excerpt}</p>
-      <div className="prose-mn mt-6 text-slate-700">
-        <ReactMarkdown>{post.content}</ReactMarkdown>
-      </div>
-    </article>
+    </>
   );
 }

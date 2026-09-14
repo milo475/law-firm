@@ -1,66 +1,68 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ContactRequestSchema, type ContactRequestInput } from '@law-firm/shared/schemas';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from '@/components/ui/toast';
+import { SERVICES } from '@/content/services';
 import { ApiError, api } from '@/lib/api';
+import { useState } from 'react';
 
-type Status = { kind: 'idle' } | { kind: 'sending' } | { kind: 'done'; message: string } | { kind: 'error'; message: string };
+const SUBJECTS = SERVICES.map((s) => ({ value: s.title, label: s.title })).concat({ value: 'Бусад', label: 'Бусад' });
 
 export function ContactForm() {
-  const [status, setStatus] = useState<Status>({ kind: 'idle' });
+  const [agreed, setAgreed] = useState(false);
+  const { register, handleSubmit, setValue, watch, reset, formState: { errors, isSubmitting } } = useForm<ContactRequestInput>({
+    resolver: zodResolver(ContactRequestSchema),
+    defaultValues: { name: '', phone: '', email: undefined, subject: '', message: '' },
+  });
+  const subject = watch('subject');
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
-    if (!data.email) delete data.email;
-
-    setStatus({ kind: 'sending' });
+  async function onSubmit(values: ContactRequestInput) {
+    const payload = { ...values, email: values.email?.trim() ? values.email.trim() : undefined };
     try {
-      const result = await api.post<{ message: string }>('/contact', data);
-      setStatus({ kind: 'done', message: result.message });
-      form.reset();
+      const result = await api.post<{ message: string }>('/contact', payload);
+      toast.success('Хүсэлт илгээгдлээ', result.message);
+      reset();
+      setAgreed(false);
     } catch (error) {
-      setStatus({ kind: 'error', message: error instanceof ApiError ? error.message : 'Илгээхэд алдаа гарлаа' });
+      if (error instanceof ApiError && error.status === 429) {
+        toast.warning('Хэт олон хүсэлт', 'Нэг цагийн дотор 5-аас олон хүсэлт илгээх боломжгүй. Түр хүлээгээд дахин оролдоно уу.');
+      } else {
+        toast.danger('Илгээхэд алдаа гарлаа', error instanceof ApiError ? error.message : 'Дахин оролдоно уу.');
+      }
     }
   }
 
-  const field = 'mt-1 w-full rounded-md border border-brand-100 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none';
-
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block text-sm font-medium text-brand-900">
-          Нэр
-          <input name="name" required minLength={2} className={field} />
-        </label>
-        <label className="block text-sm font-medium text-brand-900">
-          Утас
-          <input name="phone" required pattern="(\+976)?[0-9]{8}" placeholder="99112233" className={field} />
-        </label>
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Input label="Нэр" placeholder="Таны нэр" autoComplete="name" required error={errors.name?.message} {...register('name')} />
+        <Input label="Утасны дугаар" placeholder="9911-2233" inputMode="tel" autoComplete="tel" required helper="8 оронтой дугаар" error={errors.phone?.message} {...register('phone')} />
       </div>
-      <label className="block text-sm font-medium text-brand-900">
-        И-мэйл (заавал биш)
-        <input name="email" type="email" className={field} />
-      </label>
-      <label className="block text-sm font-medium text-brand-900">
-        Сэдэв
-        <input name="subject" required minLength={3} className={field} />
-      </label>
-      <label className="block text-sm font-medium text-brand-900">
-        Мессеж
-        <textarea name="message" required minLength={10} rows={5} className={field} />
-      </label>
-
-      {status.kind === 'done' && <p className="rounded-md bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{status.message}</p>}
-      {status.kind === 'error' && <p className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{status.message}</p>}
-
-      <button
-        type="submit"
-        disabled={status.kind === 'sending'}
-        className="rounded-md bg-brand-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-60"
-      >
-        {status.kind === 'sending' ? 'Илгээж байна…' : 'Хүсэлт илгээх'}
-      </button>
+      <Input label="И-мэйл" placeholder="name@example.mn" type="email" autoComplete="email" helper="Заавал биш" error={errors.email?.message} {...register('email', { setValueAs: (v: string) => (v?.trim() ? v.trim() : undefined) })} />
+      <Select
+        label="Асуудлын төрөл"
+        placeholder="Асуудлын төрлөө сонгоно уу"
+        options={SUBJECTS}
+        value={subject || undefined}
+        onValueChange={(v) => setValue('subject', v, { shouldValidate: true })}
+        helper="Хамгийн тохирох чиглэлээ сонгоно уу"
+        error={errors.subject?.message}
+        required
+      />
+      <Textarea label="Асуудлын тайлбар" placeholder="Асуудлаа товч тайлбарлана уу..." rows={5} required helper="Дээд тал нь 4000 тэмдэгт" error={errors.message?.message} {...register('message')} />
+      <Checkbox label="Үйлчилгээний нөхцөлтэй танилцсан" checked={agreed} onCheckedChange={(v) => setAgreed(v === true)} />
+      <div>
+        <Button type="submit" size="lg" disabled={isSubmitting || !agreed}>
+          {isSubmitting ? 'Илгээж байна…' : 'Хүсэлт илгээх'}
+        </Button>
+      </div>
     </form>
   );
 }
