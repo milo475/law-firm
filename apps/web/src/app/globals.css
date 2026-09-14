@@ -235,18 +235,21 @@
   }
 }
 
-body {
-  background: var(--bg-page);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 26px;
-  -webkit-font-smoothing: antialiased;
-}
+/* Base styles live in the base layer so utilities (e.g. text-text-on-inverse) can override them. */
+@layer base {
+  body {
+    background: var(--bg-page);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 26px;
+    -webkit-font-smoothing: antialiased;
+  }
 
-h1, h2, h3, h4 {
-  font-family: var(--font-serif);
-  color: var(--text-primary);
+  h1, h2, h3, h4 {
+    font-family: var(--font-serif);
+    color: var(--text-primary);
+  }
 }
 
 /* Markdown article body (news detail) */

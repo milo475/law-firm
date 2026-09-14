@@ -1,5 +1,5 @@
 // Figma: Design System / Pagination (9:43) — 44×44 buttons, active = brand-primary
-'use client';
+// Server-safe when `hrefFor` is given (renders links); use `onPageChange` from client components.
 
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -37,7 +37,10 @@ export function Pagination({ page, totalPages, hrefFor, onPageChange, className 
       active && 'border-brand-primary bg-brand-primary text-text-on-inverse',
       disabled && 'pointer-events-none text-text-disabled',
     );
-    if (hrefFor && !disabled && !active) {
+    if (hrefFor) {
+      if (disabled || active) {
+        return <span aria-label={ariaLabel} aria-current={active ? 'page' : undefined} aria-disabled={disabled || undefined} className={classes}>{label}</span>;
+      }
       return <Link href={hrefFor(target)} aria-label={ariaLabel} className={classes}>{label}</Link>;
     }
     return (

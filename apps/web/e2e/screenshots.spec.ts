@@ -37,7 +37,8 @@ test.describe('screenshots', () => {
   test('public pages', async ({ page }, testInfo) => {
     const suffix = testInfo.project.name;
     for (const [name, path] of PUBLIC_PAGES) {
-      await page.goto(path, { waitUntil: 'networkidle' });
+      await page.goto(path, { waitUntil: 'load', timeout: 30_000 });
+      await page.waitForTimeout(600);
       await page.screenshot({ path: `screenshots/${name}.${suffix}.png`, fullPage: true });
     }
   });
@@ -46,24 +47,22 @@ test.describe('screenshots', () => {
     const suffix = testInfo.project.name;
     await login(page);
     for (const [name, path] of PORTAL_PAGES) {
-      await page.goto(path);
-      await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(500);
+      await page.goto(path, { waitUntil: 'load', timeout: 30_000 });
+      await page.waitForTimeout(1200);
       await page.screenshot({ path: `screenshots/${name}.${suffix}.png`, fullPage: true });
     }
     // detail pages: first case + first invoice
-    await page.goto('/portal/cases');
-    await page.waitForLoadState('networkidle');
-    const caseLink = page.locator('a[href^="/portal/cases/"]').first();
+    await page.goto('/portal/cases', { waitUntil: 'load' });
+    const caseLink = page.locator('a[href^="/portal/cases/"]:visible').first();
+    await caseLink.waitFor();
     await caseLink.click();
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1500);
     await page.screenshot({ path: `screenshots/portal-case-detail.${suffix}.png`, fullPage: true });
-    await page.goto('/portal/invoices');
-    await page.waitForLoadState('networkidle');
-    await page.locator('a[href^="/portal/invoices/"]').first().click();
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(500);
+    await page.goto('/portal/invoices', { waitUntil: 'load' });
+    const invLink = page.locator('a[href^="/portal/invoices/"]:visible').first();
+    await invLink.waitFor();
+    await invLink.click();
+    await page.waitForTimeout(1500);
     await page.screenshot({ path: `screenshots/portal-invoice-detail.${suffix}.png`, fullPage: true });
   });
 });

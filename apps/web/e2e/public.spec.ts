@@ -11,20 +11,26 @@ test.describe('Нийтийн сайт', () => {
     // API-backed sections
     await expect(page.getByRole('heading', { name: 'Хуульчдын баг' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Сүүлийн мэдээ, зөвлөгөө' })).toBeVisible();
-    await expect(page.locator('footer').getByText('Тулгуур Хуулийн Фирм ХХК')).toBeVisible();
+    await expect(page.locator('footer').getByText('Тулгуур Хуулийн Фирм ХХК').first()).toBeVisible();
   });
 
   test('мэдээ хайлт ба ангиллын шүүлт ажиллана', async ({ page }) => {
     await page.goto('/news');
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Мэдээ');
+    await expect(page.getByRole('heading', { level: 3 })).toHaveCount(6);
+
+    // category filter via URL search param
+    await page.getByRole('navigation', { name: 'Ангилал' }).getByRole('link', { name: 'Хууль тогтоомжийн шинэчлэл' }).click();
+    await expect(page).toHaveURL(/category=LEGAL_UPDATE/);
+    await expect(page.getByRole('heading', { level: 3 })).toHaveCount(2);
+
+    // search (across all categories)
+    await page.goto('/news');
     await page.getByRole('searchbox', { name: 'Нийтлэл хайх' }).fill('хөдөлмөр');
     await page.getByRole('button', { name: 'Хайх' }).click();
     await expect(page).toHaveURL(/search=/);
     await expect(page.getByText('хайлтын үр дүн')).toBeVisible();
+    await expect(page.getByRole('heading', { level: 3 })).toHaveCount(1);
     await expect(page.getByRole('heading', { level: 3 }).first()).toContainText('Хөдөлмөрийн');
-
-    await page.getByRole('link', { name: 'Хууль тогтоомжийн шинэчлэл' }).first().click();
-    await expect(page).toHaveURL(/category=LEGAL_UPDATE/);
-    await expect(page.getByRole('heading', { level: 3 })).toHaveCount(2);
   });
 });

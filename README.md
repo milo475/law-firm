@@ -54,6 +54,8 @@ Seed нь 6 нийтэлсэн + 1 ноорог нийтлэл, 3 хэрэг (ev
 | `pnpm build` | бүх package build |
 | `pnpm lint` / `pnpm typecheck` | ESLint / tsc |
 | `pnpm test` | Jest (apps/api) |
+| `pnpm --filter @law-firm/web e2e` | Playwright e2e (web :3001 + api :4000 ажиллаж байх ёстой) |
+| `pnpm --filter @law-firm/web e2e:screenshots` | Бүх хуудасны desktop/mobile screenshot → `apps/web/screenshots/` |
 | `pnpm db:generate` | Prisma client generate |
 | `pnpm db:migrate` | `prisma migrate dev` (dev) — prod-д `pnpm db:deploy` |
 | `pnpm db:seed` | `prisma db seed` |
@@ -109,20 +111,34 @@ law-firm/
 │   │       ├── prisma/          PrismaService (shared client + adapter) — global
 │   │       ├── common/          decorators (@Public, @Roles, @CurrentUser), guards, filter, utils
 │   │       └── config/env.ts    zod env schema
-│   └── web/                     Next.js 15
+│   └── web/                     Next.js 15 (Figma "00 Design System"-ээс хэрэгжүүлсэн UI)
+│       ├── e2e/                 Playwright тестүүд + screenshot скрипт
 │       └── src/
-│           ├── app/(site)/      /, about, services, lawyers[/id], news[/slug], faq, contact
-│           ├── app/portal/      login + (dashboard): cases[/id], documents, invoices, notifications, profile
-│           ├── components/      site header/footer, portal sidebar + user context, ui
+│           ├── app/globals.css  Figma variable → CSS var + Tailwind v4 @theme, text-h1…text-caption, shadow токен
+│           ├── app/(site)/      /, about, services[/slug], lawyers[/id], news[/slug], faq, contact, 404
+│           ├── app/portal/      login (нууц үг + OTP UI), register, forgot-password,
+│           │                    (dashboard): cases[/id] (tabs), documents (drag-drop + preview),
+│           │                    invoices[/id], messages (удахгүй), notifications, profile
+│           ├── components/ui/   21 Figma компонент (Button cva, Input, Select, Badge, Card ×4, Table,
+│           │                    NavHeader, Footer, Sidebar, BottomTabBar, Modal, Toast, …)
+│           ├── components/icons Figma-с экспортолсон inline SVG
+│           ├── content/         services.ts (CaseType-тэй уялдана), faq.ts, testimonials.ts
 │           ├── lib/api.ts       fetch wrapper (cookie credentials, 401 → refresh → retry)
 │           ├── lib/api.server.ts  SSR-д cookie дамжуулдаг хувилбар
-│           └── middleware.ts    /portal/* хамгаалалт
+│           └── middleware.ts    /portal/* хамгаалалт (login/register/forgot-password нээлттэй)
 └── packages/shared/
     ├── prisma/schema.prisma     бүх модель, enum, index
     ├── prisma/seed.ts           argon2 hash-тай seed
     ├── prisma.config.ts         Prisma 7 config (DATABASE_URL, seed command)
     └── src/                     db.ts (client factory + singleton), schemas/ (zod), labels.ts, utils/
 ```
+
+### Дизайн систем
+
+- Figma файл: `orRAIFzEIO9o3X5a6cDFb3` — "00 Design System" хуудас (variable 4 collection, 15 text style, 4 effect style, 21 компонент).
+- Токенууд `apps/web/src/app/globals.css`-д Figma-ийн WEB syntax нэрээрээ (`--navy-800`, `--bg-surface`, `--text-primary` …); Tailwind utility нь `bg-bg-surface`, `text-text-primary`, `border-border-default` гэх мэт.
+- Алтлаг `--gold-500` (#C9A227)-г цагаан дээр текстэнд хэрэглэхгүй; текстэнд `--text-accent` (= gold-700).
+- Фонт: Source Serif 4 (гарчиг) + Inter (бие), кирилл subset, `next/font/google`.
 
 ### Нэвтрэлтийн загвар
 

@@ -12,7 +12,7 @@ test.describe('Харилцагчийн портал', () => {
     await expect(page.getByRole('heading', { name: /Сайн байна уу, Ганбат/ })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Идэвхтэй хэрэг' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Миний хэргүүд' })).toBeVisible();
-    await expect(page.getByText('LF-2026-0001')).toBeVisible();
+    await expect(page.getByText('LF-2026-0001').first()).toBeVisible();
   });
 
   test('CLIENT өөр хүний хэрэг рүү URL-ээр орвол 403 хуудас харагдана', async ({ page }) => {
@@ -28,8 +28,9 @@ test.describe('Харилцагчийн портал', () => {
 
     await login(page); // client1
     await page.goto(`/portal/cases/${foreignCaseId}`);
-    await expect(page.getByRole('alert')).toContainText('403');
-    await expect(page.getByRole('alert')).toContainText('Энэ хэргийг үзэх эрх танд байхгүй');
+    const alert = page.getByRole('alert').filter({ hasText: '403' });
+    await expect(alert).toBeVisible();
+    await expect(alert).toContainText('Энэ хэргийг үзэх эрх танд байхгүй');
     await expect(page.getByRole('link', { name: 'Хэргүүд рүү буцах' })).toBeVisible();
   });
 });
