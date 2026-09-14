@@ -1,0 +1,271 @@
+// Law firm platform — Prisma 7 schema (PostgreSQL)
+// Connection URL lives in prisma.config.ts (DATABASE_URL).
+
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  runtime             = "nodejs"
+  moduleFormat        = "cjs"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  LAWYER
+  CLIENT
+}
+
+enum PostCategory {
+  NEWS
+  ADVICE
+  LEGAL_UPDATE
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum CaseType {
+  CIVIL
+  CRIMINAL
+  FAMILY
+  BUSINESS
+  LABOR
+  REAL_ESTATE
+  OTHER
+}
+
+enum CaseStatus {
+  NEW
+  IN_PROGRESS
+  WAITING
+  CLOSED
+}
+
+enum CaseEventType {
+  NOTE
+  HEARING
+  MEETING
+  DEADLINE
+  STATUS_CHANGE
+  DOCUMENT
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum ContactStatus {
+  NEW
+  CONTACTED
+  CLOSED
+}
+
+// ─── Users & auth ────────────────────────────────────────────────────────────
+
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique
+  phone        String?   @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  role         Role      @default(CLIENT)
+  avatarUrl    String?
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  refreshTokens     RefreshToken[]
+  lawyerProfile     LawyerProfile?
+  posts             Post[]
+  clientCases       Case[]          @relation("CaseClient")
+  lawyerCases       Case[]          @relation("CaseLawyer")
+  createdEvents     CaseEvent[]
+  uploadedDocuments Document[]
+  notifications     Notification[]
+  auditLogs         AuditLog[]
+
+  @@index([role])
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model LawyerProfile {
+  id                String   @id @default(uuid()) @db.Uuid
+  userId            String   @unique @db.Uuid
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title             String
+  bio               String   @db.Text
+  specializations   String[] @default([])
+  education         String   @db.Text
+  yearsOfExperience Int      @default(0)
+  isPublic          Boolean  @default(true)
+  sortOrder         Int      @default(0)
+
+  @@index([isPublic, sortOrder])
+}
+
+// ─── Content ─────────────────────────────────────────────────────────────────
+
+model Post {
+  id            String       @id @default(uuid()) @db.Uuid
+  title         String
+  slug          String       @unique
+  excerpt       String
+  content       String       @db.Text
+  coverImageUrl String?
+  category      PostCategory
+  status        PostStatus   @default(DRAFT)
+  publishedAt   DateTime?
+  authorId      String       @db.Uuid
+  author        User         @relation(fields: [authorId], references: [id])
+  viewCount     Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([slug, status, publishedAt])
+  @@index([status, category, publishedAt])
+}
+
+// ─── Cases ───────────────────────────────────────────────────────────────────
+
+model Case {
+  id          String     @id @default(uuid()) @db.Uuid
+  caseNumber  String     @unique // format: LF-2026-0001
+  title       String
+  description String?    @db.Text
+  type        CaseType
+  status      CaseStatus @default(NEW)
+  clientId    String     @db.Uuid
+  client      User       @relation("CaseClient", fields: [clientId], references: [id])
+  lawyerId    String     @db.Uuid
+  lawyer      User       @relation("CaseLawyer", fields: [lawyerId], references: [id])
+  openedAt    DateTime   @default(now())
+  closedAt    DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  events    CaseEvent[]
+  documents Document[]
+  invoices  Invoice[]
+
+  @@index([clientId])
+  @@index([lawyerId])
+  @@index([status])
+}
+
+model CaseEvent {
+  id                String        @id @default(uuid()) @db.Uuid
+  caseId            String        @db.Uuid
+  case              Case          @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  type              CaseEventType
+  title             String
+  description       String?       @db.Text
+  eventDate         DateTime
+  createdById       String        @db.Uuid
+  createdBy         User          @relation(fields: [createdById], references: [id])
+  isVisibleToClient Boolean       @default(true)
+  createdAt         DateTime      @default(now())
+
+  @@index([caseId, eventDate])
+}
+
+model Document {
+  id                String   @id @default(uuid()) @db.Uuid
+  caseId            String   @db.Uuid
+  case              Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  name              String
+  mimeType          String
+  size              Int
+  storageKey        String   @unique
+  uploadedById      String   @db.Uuid
+  uploadedBy        User     @relation(fields: [uploadedById], references: [id])
+  isVisibleToClient Boolean  @default(true)
+  createdAt         DateTime @default(now())
+
+  @@index([caseId])
+}
+
+model Invoice {
+  id            String        @id @default(uuid()) @db.Uuid
+  invoiceNumber String        @unique
+  caseId        String        @db.Uuid
+  case          Case          @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  amount        Decimal       @db.Decimal(12, 2)
+  description   String
+  status        InvoiceStatus @default(DRAFT)
+  dueDate       DateTime
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([caseId, status])
+}
+
+// ─── Misc ────────────────────────────────────────────────────────────────────
+
+model Notification {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  body      String
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
+}
+
+model ContactRequest {
+  id        String        @id @default(uuid()) @db.Uuid
+  name      String
+  phone     String
+  email     String?
+  subject   String
+  message   String        @db.Text
+  status    ContactStatus @default(NEW)
+  createdAt DateTime      @default(now())
+
+  @@index([status, createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @db.Uuid
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  entity    String
+  entityId  String?
+  metadata  Json?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([userId, createdAt])
+}

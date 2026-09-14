@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-playfair), ui-serif, Georgia, serif;
+
+  /* Placeholder brand palette — will be replaced by the Figma design tokens. */
+  --color-brand-50: #f3f5f9;
+  --color-brand-100: #e2e7f0;
+  --color-brand-200: #c4cee0;
+  --color-brand-300: #97a8c6;
+  --color-brand-500: #3e5a8a;
+  --color-brand-700: #223a63;
+  --color-brand-900: #0f1f3d;
+  --color-accent-500: #b8933a;
+  --color-accent-600: #9a7a2e;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-white text-slate-800 font-sans antialiased;
+}
+
+h1, h2, h3, h4 {
+  @apply font-serif text-brand-900;
+}
+
+/* Minimal markdown styling for post content until the design system lands. */
+.prose-mn h2 { @apply mt-8 mb-3 text-2xl; }
+.prose-mn h3 { @apply mt-6 mb-2 text-xl; }
+.prose-mn p { @apply my-3 leading-relaxed; }
+.prose-mn ul { @apply my-3 list-disc pl-6 space-y-1; }
+.prose-mn ol { @apply my-3 list-decimal pl-6 space-y-1; }
+.prose-mn blockquote { @apply my-4 border-l-4 border-accent-500 pl-4 italic text-slate-600; }
+.prose-mn a { @apply text-brand-500 underline; }
+.prose-mn strong { @apply font-semibold text-brand-900; }
