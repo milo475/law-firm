@@ -1,6 +1,6 @@
-# Law Firm — вэб сайт + харилцагчийн портал
+# Law Firm — вэб сайт, харилцагчийн портал, админ самбар
 
-Монголын хуулийн фирмийн нийтийн вэб сайт болон харилцагчийн порталын monorepo.
+Монголын хуулийн фирмийн нийтийн вэб сайт, харилцагчийн портал болон ажилтны (ADMIN / LAWYER) самбарын monorepo.
 UI-ийн бүх текст монгол хэлээр, код болон comment англиар.
 
 | Хэсэг | Технологи | Порт |
@@ -29,6 +29,7 @@ pnpm dev                        # web :3001 + api :4000 хамт асна (3000-
 
 - Вэб сайт: <http://localhost:3001>
 - Портал: <http://localhost:3001/portal>
+- Админ самбар: <http://localhost:3001/admin> (ADMIN, LAWYER-ээр нэвтэрнэ)
 - API: <http://localhost:4000>, Swagger: <http://localhost:4000/docs> (зөвхөн dev)
 - MinIO console: <http://localhost:9001> (minioadmin / minioadmin)
 
@@ -55,7 +56,7 @@ Seed нь 6 нийтэлсэн + 1 ноорог нийтлэл, 3 хэрэг (ev
 | `pnpm lint` / `pnpm typecheck` | ESLint / tsc |
 | `pnpm test` | Jest (apps/api) |
 | `pnpm --filter @law-firm/web e2e` | Playwright e2e (web :3001 + api :4000 ажиллаж байх ёстой) |
-| `pnpm --filter @law-firm/web e2e:screenshots` | Бүх хуудасны desktop/mobile screenshot → `apps/web/screenshots/` |
+| `pnpm --filter @law-firm/web e2e:screenshots` | Бүх хуудасны (админ орно) desktop/mobile screenshot → `apps/web/screenshots/` |
 | `pnpm db:generate` | Prisma client generate |
 | `pnpm db:migrate` | `prisma migrate dev` (dev) — prod-д `pnpm db:deploy` |
 | `pnpm db:seed` | `prisma db seed` |
@@ -83,6 +84,7 @@ web → `next.config.ts`).
 | `MINIO_ENDPOINT/PORT/USE_SSL` | MinIO холболт | `localhost` / `9000` / `false` |
 | `MINIO_ACCESS_KEY/SECRET_KEY` | MinIO нэвтрэлт | `minioadmin` |
 | `MINIO_BUCKET` | Баримт хадгалах bucket (байхгүй бол API үүсгэнэ) | `law-firm-documents` |
+| `MINIO_PUBLIC_URL` | Нийтлэлийн cover зургийн (bucket-ийн `public/` prefix, public-read) browser-т харагдах base URL. Хоосон бол `http://MINIO_ENDPOINT:MINIO_PORT` | `https://files.lawfirm.mn` |
 | `NEXT_PUBLIC_API_URL` | Browser талын API URL | `http://localhost:4000` |
 | `API_URL` | SSR/middleware талын API URL | `http://localhost:4000` |
 
@@ -98,15 +100,16 @@ law-firm/
 │   ├── api/                     NestJS 11
 │   │   └── src/
 │   │       ├── auth/            login / register / refresh (rotation) / logout / me, JWT strategy
-│   │       ├── users/           admin CRUD, PATCH /users/me, /users/me/password
+│   │       ├── users/           staff жагсаалт/шүүлт, ADMIN үүсгэх (түр нууц үг)/засах, PATCH /users/me, /users/me/password
 │   │       ├── posts/           public list + slug (viewCount++), admin/lawyer CRUD, /posts/manage
-│   │       ├── lawyers/         public хуульчдын профайл
-│   │       ├── cases/           scope: CLIENT→өөрийн, LAWYER→хариуцсан, ADMIN→бүгд; events
-│   │       ├── documents/       multipart upload → MinIO, presigned download (scope + visibility)
-│   │       ├── invoices/        хэргийн scope-оор
+│   │       ├── lawyers/         public хуульчдын профайл + /lawyers/:userId/profile удирдлага
+│   │       ├── cases/           scope: CLIENT→өөрийн, LAWYER→хариуцсан, ADMIN→бүгд; staff CRUD, events, STATUS_CHANGE
+│   │       ├── documents/       multipart upload → MinIO, presigned download (scope + visibility), DELETE
+│   │       ├── invoices/        хэргийн scope-оор; үүсгэх (INV-YYYY-NNNN), төлөвийн шилжилт
 │   │       ├── notifications/   list, read, read-all
 │   │       ├── contact/         public POST (5/цаг/IP), admin list + status
-│   │       ├── storage/         MinIO wrapper (upload, presignedGetUrl, delete) — global
+│   │       ├── admin/           GET /admin/stats (хянах самбарын тоо, ойрын үйл явдал)
+│   │       ├── storage/         MinIO wrapper (upload, uploadPublic, presignedGetUrl, delete) — global
 │   │       ├── audit/           global interceptor: POST/PATCH/PUT/DELETE → AuditLog — global
 │   │       ├── prisma/          PrismaService (shared client + adapter) — global
 │   │       ├── common/          decorators (@Public, @Roles, @CurrentUser), guards, filter, utils
@@ -119,13 +122,17 @@ law-firm/
 │           ├── app/portal/      login (нууц үг + OTP UI), register, forgot-password,
 │           │                    (dashboard): cases[/id] (tabs), documents (drag-drop + preview),
 │           │                    invoices[/id], messages (удахгүй), notifications, profile
+│           ├── app/admin/       ажилтны самбар: dashboard, cases[/new|/id], clients[/id], lawyers[/id],
+│           │                    posts[/new|/id/edit], invoices, contact, profile
+│           ├── app/api/revalidate  нийтлэл хадгалахад /, /news, /news/[slug]-ийг шууд шинэчилнэ
 │           ├── components/ui/   21 Figma компонент (Button cva, Input, Select, Badge, Card ×4, Table,
 │           │                    NavHeader, Footer, Sidebar, BottomTabBar, Modal, Toast, …)
 │           ├── components/icons Figma-с экспортолсон inline SVG
+│           ├── components/admin AdminShell, modal-ууд (event, invoice, user, confirm), PostEditor, query hook
 │           ├── content/         services.ts (CaseType-тэй уялдана), faq.ts, testimonials.ts
 │           ├── lib/api.ts       fetch wrapper (cookie credentials, 401 → refresh → retry)
 │           ├── lib/api.server.ts  SSR-д cookie дамжуулдаг хувилбар
-│           └── middleware.ts    /portal/* хамгаалалт (login/register/forgot-password нээлттэй)
+│           └── middleware.ts    /portal/*, /admin/* хамгаалалт; CLIENT → /portal, ADMIN/LAWYER → /admin
 └── packages/shared/
     ├── prisma/schema.prisma     бүх модель, enum, index
     ├── prisma/seed.ts           argon2 hash-тай seed
@@ -161,7 +168,77 @@ Zod validation → 400 + `details[{field,message}]`, Prisma P2002 → 409, P2025
 
 ---
 
-## 4. Тест
+## 4. Админ самбар (`/admin`)
+
+ADMIN болон LAWYER портал login-оор нэвтэрмэгц `/admin` руу орно. CLIENT `/admin/*` руу орвол `/portal` руу,
+нэвтрээгүй хэрэглэгч `/portal/login?next=…` руу шилжинэ. Middleware нь `access_token`-ийн role claim-ийг
+зөвхөн чиглүүлэхэд ашигладаг; эрхийн жинхэнэ шалгалт API дээр явагдана.
+
+### Эрхийн дүрэм
+
+- **ADMIN** бүх хэрэг, харилцагч, хуульч, нийтлэл, нэхэмжлэх, хүсэлтийг удирдана.
+- **LAWYER** зөвхөн өөрт хуваарилагдсан хэрэг, түүний үйл явдал, баримт, нэхэмжлэхийг удирдана.
+  Шинэ хэрэг үүсгэхдээ зөвхөн өөрийгөө хариуцагчаар сонгоно. Харилцагчдыг зөвхөн харна, нийтлэлээс өөрийнхөө нийтлэлийг л засна.
+- Хэргийг хариуцах хуульчийг зөвхөн ADMIN солино.
+- API дээр global `RolesGuard` + `CasesService`-ийн хэргийн хандалтын шалгалт (CLIENT scope-ийн логикийг дахин ашигладаг).
+  Бүх POST/PATCH/DELETE хүсэлт `AuditLog`-д бичигдэнэ.
+
+### Хуудсууд
+
+| Зам | Эрх | Агуулга |
+| --- | --- | --- |
+| `/admin` | ADMIN, LAWYER | Хянах самбар: тоон үзүүлэлт, ойрын үйл явдал |
+| `/admin/cases` | ADMIN, LAWYER | Хэргийн жагсаалт, төлөв/төрөл/хуульчийн шүүлт, хайлт (URL-д хадгалагдана) |
+| `/admin/cases/new` | ADMIN, LAWYER | Шинэ хэрэг, дугаар автоматаар олгогдоно |
+| `/admin/cases/[id]` | ADMIN, хариуцсан LAWYER | Тойм · Явцын түүх · Баримт (харилцагчид харагдах эсэх) · Нэхэмжлэх; төлөв солих, хаах |
+| `/admin/clients`, `/admin/clients/[id]` | ADMIN (LAWYER харна) | Харилцагч бүртгэх (түр нууц үг), засах, идэвхгүй болгох, хэргүүд |
+| `/admin/lawyers`, `/admin/lawyers/[id]` | ADMIN | Хуульчийн бүртгэл, нийтийн профайл |
+| `/admin/posts`, `/admin/posts/new`, `/admin/posts/[id]/edit` | ADMIN, LAWYER | Markdown editor + preview, cover зураг, slug автомат, Ноорог / Нийтлэх / Архивлах |
+| `/admin/invoices` | ADMIN, LAWYER | Нэхэмжлэх үүсгэх, төлөвийн шилжилт |
+| `/admin/contact` | ADMIN | «Холбоо барих» хүсэлтүүд: Шинэ → Холбогдсон → Хаагдсан |
+| `/admin/profile` | ADMIN, LAWYER | Бүртгэлийн мэдээлэл, нууц үг, (LAWYER) нийтийн профайл |
+
+### API endpoint-ууд
+
+| Endpoint | Эрх | Дүрэм |
+| --- | --- | --- |
+| `POST /cases` | ADMIN, LAWYER | `LF-YYYY-NNNN` автомат. ADMIN хуульч заавал сонгоно, LAWYER зөвхөн өөрийгөө |
+| `PATCH /cases/:id` | ADMIN, хариуцсан LAWYER | Төлөв солиход `STATUS_CHANGE` event үүснэ |
+| `PATCH /cases/:id/close` | ADMIN, хариуцсан LAWYER | `CLOSED` + `closedAt`, тэмдэглэлтэй event |
+| `POST /cases/:id/events` | ADMIN, хариуцсан LAWYER | Харилцагчид харагдах HEARING / MEETING / DEADLINE нь харилцагчид мэдэгдэл илгээнэ |
+| `PATCH /events/:id`, `DELETE /events/:id` | ADMIN, хариуцсан LAWYER | `STATUS_CHANGE` event-ийн төрлийг солихгүй |
+| `POST /cases/:id/documents` | Хэргийн scope | multipart + `isVisibleToClient` |
+| `DELETE /documents/:id` | ADMIN, upload хийсэн LAWYER | MinIO-оос мөн устгана |
+| `POST /invoices` | ADMIN, хариуцсан LAWYER | `INV-YYYY-NNNN`, `DRAFT` төлөвтэй |
+| `PATCH /invoices/:id` | ADMIN, хариуцсан LAWYER | DRAFT → SENT/CANCELLED, SENT → PAID/OVERDUE/CANCELLED, OVERDUE → PAID/CANCELLED. SENT үед мэдэгдэл, PAID үед `paidAt`. Дүн, тайлбарыг зөвхөн DRAFT үед засна |
+| `GET /users`, `GET /users/:id` | ADMIN, LAWYER | LAWYER зөвхөн CLIENT хэрэглэгчдийг харна |
+| `POST /users`, `PATCH /users/:id` | ADMIN | Нууц үг өгөөгүй бол 12 тэмдэгттэй түр нууц үг буцаана |
+| `GET/POST/PATCH /lawyers/:userId/profile` | ADMIN, LAWYER (өөрийн) | Нийтийн профайл |
+| `GET /admin/stats` | ADMIN, LAWYER | Хэрэглэгчийн scope-оор тооцно |
+| `GET /posts/manage`, `GET /posts/manage/:id` | ADMIN, LAWYER (өөрийн) | Ноорог, архив орно |
+| `POST /posts/cover` | ADMIN, LAWYER | JPG/PNG/WEBP, ≤5MB → MinIO `public/` → `{ url }` |
+| `GET /contact`, `PATCH /contact/:id` | ADMIN | NEW → CONTACTED → CLOSED, буцаах боломжгүй |
+
+Web талын `POST /api/revalidate` route нь нэвтэрсэн ADMIN/LAWYER-ийн хүсэлтээр `/`, `/news`, `/news/[slug]`-ийг
+шууд шинэчилдэг тул нийтлэл хадгалмагц нийтийн сайтад гарна.
+
+### E2E тестийг тусдаа DB дээр ажиллуулах
+
+Админ e2e тест хэрэг, үйл явдал, мэдэгдэл үүсгэдэг тул dev DB-г бохирдуулахгүйн тулд `lawfirm_test` DB ашиглана.
+
+```bash
+docker compose exec postgres createdb -U lawfirm lawfirm_test      # нэг удаа
+export DATABASE_URL="postgresql://lawfirm:lawfirm@localhost:5432/lawfirm_test?schema=public"
+pnpm db:deploy && pnpm db:seed                                      # нэг удаа
+pnpm build
+node apps/api/dist/main &                                           # api :4000 (test DB)
+pnpm --filter @law-firm/web start &                                 # web :3001
+pnpm --filter @law-firm/web e2e
+```
+
+---
+
+## 5. Тест
 
 ```bash
 pnpm test            # эсвэл: pnpm --filter @law-firm/api test
@@ -169,11 +246,24 @@ pnpm test            # эсвэл: pnpm --filter @law-firm/api test
 
 Jest (unit + HTTP): auth (login email/phone, argon2, refresh rotation, reuse detection, logout, cookie flags),
 cases scope (CLIENT өөр хүний хэрэг → 403, LAWYER scope, event visibility), posts public filter/viewCount/slug,
-RolesGuard, exception filter, audit entity mapping. DB шаардахгүй (Prisma mock).
+RolesGuard, exception filter, audit entity mapping. Админ хэсэг: хэрэг үүсгэх/засах/хаах (LAWYER scope,
+STATUS_CHANGE), event-ийн мэдэгдэл, нэхэмжлэхийн шилжилт, баримт устгах эрх, хэрэглэгч ба хуульчийн профайл,
+admin stats, contact-ийн шилжилт, staff endpoint-уудын эрх (`x-test-role` header-тэй HTTP тест).
+Нийт 151 тест, DB шаардахгүй (Prisma mock).
+
+```bash
+pnpm --filter @law-firm/web e2e     # Playwright, web :3001 + api :4000 ажиллаж байх ёстой
+```
+
+Playwright (8 тест): нийтийн сайт (2), портал (2), админ (4):
+- LAWYER хэрэг үүсгэж шүүх хурал нэмэхэд харилцагч порталдаа болон мэдэгдлээс харна.
+- ADMIN нийтлэл нийтлэхэд нийтийн `/news` болон нийтлэлийн хуудсанд шууд гарна (тест дараа нь устгана).
+- LAWYER өөр хуульчийн хэрэг рүү `/admin/cases/[id]`-ээр орвол 403 хуудас, `PATCH /cases/:id` нь 403.
+- Нэвтрээгүй хэрэглэгч login руу, CLIENT `/admin`-аас `/portal` руу шилжинэ.
 
 ---
 
-## 5. Production тэмдэглэл
+## 6. Production тэмдэглэл
 
 - `pnpm build` → `apps/api/dist`, `apps/web/.next`. API: `node dist/main`, web: `next start`.
 - API `trust proxy` = 1 (reverse proxy ард), cookie `secure` = true.

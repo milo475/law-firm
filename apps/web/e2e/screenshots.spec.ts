@@ -3,7 +3,7 @@
  * Run: pnpm --filter @law-firm/web e2e:screenshots
  */
 import { test } from '@playwright/test';
-import { login } from './fixtures';
+import { ADMIN, login } from './fixtures';
 
 const PUBLIC_PAGES: [string, string][] = [
   ['home', '/'],
@@ -29,6 +29,19 @@ const PORTAL_PAGES: [string, string][] = [
   ['portal-messages', '/portal/messages'],
   ['portal-notifications', '/portal/notifications'],
   ['portal-profile', '/portal/profile'],
+];
+
+const ADMIN_PAGES: [string, string][] = [
+  ['admin-dashboard', '/admin'],
+  ['admin-cases', '/admin/cases'],
+  ['admin-case-new', '/admin/cases/new'],
+  ['admin-clients', '/admin/clients'],
+  ['admin-lawyers', '/admin/lawyers'],
+  ['admin-posts', '/admin/posts'],
+  ['admin-post-new', '/admin/posts/new'],
+  ['admin-invoices', '/admin/invoices'],
+  ['admin-contact', '/admin/contact'],
+  ['admin-profile', '/admin/profile'],
 ];
 
 test.describe('screenshots', () => {
@@ -64,5 +77,26 @@ test.describe('screenshots', () => {
     await invLink.click();
     await page.waitForTimeout(1500);
     await page.screenshot({ path: `screenshots/portal-invoice-detail.${suffix}.png`, fullPage: true });
+  });
+
+  test('admin pages', async ({ page }, testInfo) => {
+    const suffix = testInfo.project.name;
+    await login(page, ADMIN);
+    for (const [name, path] of ADMIN_PAGES) {
+      await page.goto(path, { waitUntil: 'load', timeout: 30_000 });
+      await page.waitForTimeout(1200);
+      await page.screenshot({ path: `screenshots/${name}.${suffix}.png`, fullPage: true });
+    }
+    for (const [name, list, prefix] of [
+      ['admin-case-detail', '/admin/cases', '/admin/cases/'],
+      ['admin-client-detail', '/admin/clients', '/admin/clients/'],
+    ] as const) {
+      await page.goto(list, { waitUntil: 'load' });
+      const link = page.locator(`a[href^="${prefix}"]:not([href$="/new"]):visible`).first();
+      await link.waitFor();
+      await link.click();
+      await page.waitForTimeout(1500);
+      await page.screenshot({ path: `screenshots/${name}.${suffix}.png`, fullPage: true });
+    }
   });
 });
