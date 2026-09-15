@@ -62,6 +62,7 @@ describe('message.sent → notifications (EventEmitter2 wiring, dedup)', () => {
         title: 'Шинэ мессеж: LF-2026-0001',
         body: 'С. Ганбат: Сайн байна уу, эвлэрлийн санал ирлээ',
         link: '/admin/cases/case-1?tab=messages',
+        actorId: CLIENT_USER.id,
       },
     ]);
   });

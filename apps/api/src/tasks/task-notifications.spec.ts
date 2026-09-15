@@ -61,7 +61,7 @@ describe('Task events → notifications (EventEmitter2 wiring)', () => {
   it('task.assigned → the assignee is notified; assigning yourself sends nothing', async () => {
     await service.create({ title: 'Нотлох баримт цуглуулах', caseId: 'case-1', assigneeId: MEMBER_LAWYER.id, priority: 'HIGH' }, LAWYER_USER);
     expect(sent()).toEqual([
-      { userId: MEMBER_LAWYER.id, type: 'TASK', title: 'Танд даалгавар оноолоо: Нотлох баримт цуглуулах', body: 'LF-2026-0001', link: '/admin/tasks/task-1' },
+      { userId: MEMBER_LAWYER.id, type: 'TASK', title: 'Танд даалгавар оноолоо: Нотлох баримт цуглуулах', body: 'LF-2026-0001', link: '/admin/tasks/task-1', actorId: LAWYER_USER.id },
     ]);
 
     notifications.createMany.mockClear();

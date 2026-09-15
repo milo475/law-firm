@@ -39,6 +39,7 @@ export class DocumentRequestNotificationsListener {
       title: truncate(title),
       body: earliestDue ? `${caseRef.caseNumber} · эцсийн хугацаа ${formatDateMn(earliestDue)}` : caseRef.caseNumber,
       link: clientLink(caseRef.id),
+      actorId: event.actorId,
     });
   }
 
@@ -50,6 +51,7 @@ export class DocumentRequestNotificationsListener {
       title: truncate(`Баримт ирлээ: ${event.request.title}`),
       body: `${event.caseRef.caseNumber} · ${event.fileCount} файл`,
       link: staffLink(event.caseRef.id),
+      actorId: event.actorId,
     });
   }
 
@@ -62,6 +64,7 @@ export class DocumentRequestNotificationsListener {
       title: truncate(approved ? `Баримт хүлээн авлаа: ${event.request.title}` : `Дахин илгээнэ үү: ${event.rejectionReason ?? ''}`),
       body: approved ? event.caseRef.caseNumber : `${event.request.title} · ${event.caseRef.caseNumber}`,
       link: clientLink(event.caseRef.id),
+      actorId: event.actorId,
     });
   }
 

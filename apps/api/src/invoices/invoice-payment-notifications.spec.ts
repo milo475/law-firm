@@ -60,6 +60,7 @@ describe('Invoice payment events → notifications (EventEmitter2 wiring)', () =
         title: 'Төлбөр хийгдсэн гэж тэмдэглэлээ, баталгаажуулна уу: INV-2026-0002',
         body: 'LF-2026-0001 · 800 000₮ · Гүйлгээний утга INV-2026-0002',
         link: '/admin/invoices/inv-1',
+        actorId: CLIENT_USER.id,
       })),
     );
   });
@@ -68,7 +69,7 @@ describe('Invoice payment events → notifications (EventEmitter2 wiring)', () =
     prisma.invoice.findUnique.mockResolvedValue(invoiceRow('AWAITING_CONFIRMATION'));
     await service.confirm('inv-1', ADMIN_USER);
     expect(sent()).toEqual([
-      { userId: CLIENT_USER.id, type: 'INVOICE', title: 'Төлбөр баталгаажлаа: INV-2026-0002', body: '800 000₮ · LF-2026-0001', link: '/portal/invoices/inv-1' },
+      { userId: CLIENT_USER.id, type: 'INVOICE', title: 'Төлбөр баталгаажлаа: INV-2026-0002', body: '800 000₮ · LF-2026-0001', link: '/portal/invoices/inv-1', actorId: ADMIN_USER.id },
     ]);
   });
 

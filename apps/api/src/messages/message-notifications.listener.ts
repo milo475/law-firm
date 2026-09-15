@@ -29,6 +29,7 @@ export class MessageNotificationsListener {
           title: `Шинэ мессеж: ${caseRef.caseNumber}`,
           body: `${senderName(sender.firstName, sender.lastName)}: ${excerpt(message.body)}`,
           link,
+          actorId: sender.id,
         },
       ]);
     } catch (error) {

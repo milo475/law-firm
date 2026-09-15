@@ -47,6 +47,7 @@ export class CaseEventsService {
           title: `${CASE_EVENT_TYPE_LABELS[input.type]}: ${input.title}`,
           body: `${record.caseNumber} · ${formatDateTimeMn(input.eventDate)}`,
           link: `/portal/cases/${caseId}`,
+          actorId: user.id,
         },
       ]);
     }

@@ -44,7 +44,7 @@ describe('case.member-added → notification (EventEmitter2 wiring)', () => {
     prisma.user.findUnique.mockResolvedValue({ id: 'new-lawyer-id', role: 'LAWYER', isActive: true });
     await service.add('case-1', { userId: 'new-lawyer-id', role: 'MEMBER' }, LAWYER_USER);
     expect(notifications.createMany).toHaveBeenCalledWith([
-      { userId: 'new-lawyer-id', type: 'CASE_MEMBER', title: 'Танийг LF-2026-0001 багт нэмлээ', body: 'Түрээсийн маргаан', link: '/admin/cases/case-1' },
+      { userId: 'new-lawyer-id', type: 'CASE_MEMBER', title: 'Танийг LF-2026-0001 багт нэмлээ', body: 'Түрээсийн маргаан', link: '/admin/cases/case-1', actorId: LAWYER_USER.id },
     ]);
   });
 

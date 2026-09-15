@@ -22,6 +22,7 @@ export class CaseMemberNotificationsListener {
           title: `Танийг ${event.caseRef.caseNumber} багт нэмлээ`,
           body: event.role === CaseMemberRole.LEAD ? `${event.caseRef.title} · ахлах хуульчаар` : event.caseRef.title,
           link: `/admin/cases/${event.caseRef.id}`,
+          actorId: event.actorId,
         },
       ]);
     } catch (error) {

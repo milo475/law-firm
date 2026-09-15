@@ -39,6 +39,7 @@ export class InvoicePaymentNotificationsListener {
         title: `Төлбөр хийгдсэн гэж тэмдэглэлээ, баталгаажуулна уу: ${invoice.invoiceNumber}`,
         body: `${invoice.caseNumber} · ${formatMoneyMn(invoice.amount)}${note}`,
         link: staffLink(invoice.id),
+        actorId: event.actorId,
       }));
     });
   }
@@ -53,6 +54,7 @@ export class InvoicePaymentNotificationsListener {
         title: `Төлбөр баталгаажлаа: ${invoice.invoiceNumber}`,
         body: `${formatMoneyMn(invoice.amount)} · ${invoice.caseNumber}`,
         link: clientLink(invoice.id),
+        actorId: event.actorId,
       },
     ]);
   }
@@ -67,6 +69,7 @@ export class InvoicePaymentNotificationsListener {
         title: excerpt(`Төлбөр баталгаажсангүй: ${event.reason}`, 180),
         body: `${invoice.invoiceNumber} · ${formatMoneyMn(invoice.amount)} · дахин шалгаад тэмдэглэнэ үү`,
         link: clientLink(invoice.id),
+        actorId: event.actorId,
       },
     ]);
   }

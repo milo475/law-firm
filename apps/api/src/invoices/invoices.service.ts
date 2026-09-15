@@ -159,6 +159,7 @@ export class InvoicesService {
           title: 'Шинэ нэхэмжлэх ирлээ',
           body: `${updated.invoiceNumber} · ${formatMoneyMn(String(updated.amount))} · төлөх хугацаа ${formatDateMn(updated.dueDate)}`,
           link: `/portal/invoices/${id}`,
+          actorId: user.id,
         },
       ]);
     }

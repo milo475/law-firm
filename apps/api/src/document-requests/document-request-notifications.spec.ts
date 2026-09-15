@@ -65,6 +65,7 @@ describe('Document request events → notifications (EventEmitter2 wiring)', () 
         title: 'Танаас баримт хүсэлээ: Иргэний үнэмлэхний хуулбар',
         body: 'LF-2026-0001 · эцсийн хугацаа 2026.10.01',
         link: '/portal/cases/case-1?tab=requests',
+        actorId: LAWYER_USER.id,
       },
     ]);
   });
@@ -85,6 +86,7 @@ describe('Document request events → notifications (EventEmitter2 wiring)', () 
         title: 'Баримт ирлээ: Иргэний үнэмлэхний хуулбар',
         body: 'LF-2026-0001 · 1 файл',
         link: '/admin/cases/case-1?tab=requests',
+        actorId: CLIENT_USER.id,
       },
     ]);
   });

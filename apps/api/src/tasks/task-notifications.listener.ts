@@ -46,7 +46,7 @@ export class TaskNotificationsListener {
     const recipients = [...new Set(candidates)].filter((userId) => userId !== actorId);
     if (recipients.length === 0) return;
     try {
-      await this.notifications.createMany(recipients.map((userId) => ({ userId, type: TYPE, link: link(task), ...content })));
+      await this.notifications.createMany(recipients.map((userId) => ({ userId, type: TYPE, link: link(task), actorId, ...content })));
     } catch (error) {
       this.logger.error(`Could not notify about task ${task.id}: ${(error as Error).message}`);
     }
