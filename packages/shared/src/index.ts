@@ -16,6 +16,8 @@ export {
   ContactStatus,
   DocumentRequestStatus,
   CaseMemberRole,
+  TaskStatus,
+  TaskPriority,
 } from './generated/prisma/enums.js';
 
 // ─── Model types ─────────────────────────────────────────────────────────────
@@ -30,6 +32,8 @@ export type {
   DocumentRequest,
   Message,
   CaseMember,
+  Task,
+  TaskComment,
   Invoice,
   Notification,
   ContactRequest,

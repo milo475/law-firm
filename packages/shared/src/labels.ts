@@ -8,6 +8,8 @@ import type {
   InvoiceStatus,
   PostCategory,
   PostStatus,
+  TaskPriority,
+  TaskStatus,
   Role,
 } from './generated/prisma/enums.js';
 
@@ -83,4 +85,19 @@ export const DOCUMENT_REQUEST_STATUS_LABELS: Record<DocumentRequestStatus, strin
 export const CASE_MEMBER_ROLE_LABELS: Record<CaseMemberRole, string> = {
   LEAD: 'Ахлах',
   MEMBER: 'Гишүүн',
+};
+
+export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
+  TODO: 'Хийх',
+  IN_PROGRESS: 'Хийгдэж буй',
+  REVIEW: 'Хянах',
+  DONE: 'Дууссан',
+  CANCELLED: 'Цуцалсан',
+};
+
+export const TASK_PRIORITY_LABELS: Record<TaskPriority, string> = {
+  LOW: 'Бага',
+  MEDIUM: 'Дунд',
+  HIGH: 'Өндөр',
+  URGENT: 'Яаралтай',
 };
