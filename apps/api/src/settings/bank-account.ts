@@ -1,8 +1,10 @@
 import type { BankAccountSettings } from '@law-firm/shared';
 
-// ЖИШЭЭ данс — ашиглалтад гаргахаас өмнө бодит дансаар солино.
-// Бодит болгоход зөвхөн энэ гурван утгыг солиход хангалттай: портал дахь төлбөрийн заавар GET /settings/bank-account-аас уншдаг.
-export const BANK_ACCOUNT: BankAccountSettings = {
+/** Setting row key for the invoice payment account. */
+export const BANK_ACCOUNT_SETTING_KEY = 'bank-account';
+
+// ЖИШЭЭ данс — ADMIN «Тохиргоо» хуудаснаас бодит данс хадгалах хүртэл портал үүнийг харуулна.
+export const DEFAULT_BANK_ACCOUNT: BankAccountSettings = {
   bankName: 'Хаан банк',
   accountNumber: '5023118822',
   accountName: 'Тулгуур Хуулийн Фирм ХХН',
