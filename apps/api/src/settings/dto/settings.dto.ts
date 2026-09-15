@@ -1,4 +1,5 @@
 import { createZodDto } from 'nestjs-zod';
-import { BankAccountSettingsSchema } from '@law-firm/shared';
+import { BankAccountSettingsSchema, FirmSettingsSchema } from '@law-firm/shared';
 
 export class UpdateBankAccountDto extends createZodDto(BankAccountSettingsSchema) {}
+export class UpdateFirmDto extends createZodDto(FirmSettingsSchema) {}
