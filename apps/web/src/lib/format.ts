@@ -11,11 +11,11 @@ export function formatDate(value: string | Date | null | undefined, withTime = f
   return `${yyyy}.${mm}.${dd} ${hh}:${mi}`;
 }
 
-/** 1500000 → "1,500,000₮" */
+/** 1500000 → "1 500 000₮" (space thousands separator, as in the Figma portal frames) */
 export function formatMoney(value: string | number): string {
   const amount = typeof value === 'string' ? Number(value) : value;
   if (Number.isNaN(amount)) return '—';
-  return `${amount.toLocaleString('en-US', { maximumFractionDigits: 2 })}₮`;
+  return `${amount.toLocaleString('en-US', { maximumFractionDigits: 2 }).replace(/,/g, ' ')}₮`;
 }
 
 export function formatBytes(bytes: number): string {

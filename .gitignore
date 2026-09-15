@@ -32,3 +32,6 @@ pnpm-debug.log*
 
 # local data
 data/
+
+# local run logs
+.run/

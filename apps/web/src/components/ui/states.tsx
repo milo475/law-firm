@@ -1,26 +1,47 @@
-// Figma: Design System — EmptyState / ErrorState / loading skeletons
+// Figma: 02 Client Portal / Portal / 11 Empty State / Desktop (34:830), 11b Error & Empty States / Desktop (34:913),
+// 11 Empty & Error / Mobile (37:1391) — "Бүх төлөв нэг загвартай: дүрс, тодорхой гарчиг, тайлбар, үйлдлийн товч."
+import Link from 'next/link';
+import { EmptyCasesGlyph, ErrorStateGlyph } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { Button } from './button';
 
-export function EmptyState({ title, description, action, icon, className }: { title: string; description?: string; action?: React.ReactNode; icon?: React.ReactNode; className?: string }) {
+// State card: surface + border-default + radius-lg; 40/20px padding & 16px gap on mobile, 64/40px & 20px on desktop.
+const stateCard = 'flex w-full flex-col items-center gap-4 rounded-lg border border-border-default bg-bg-surface px-5 py-10 text-center md:gap-5 md:px-10 md:py-16';
+// Illustration disc: 96px mobile / 112px desktop. Tint follows the glyph's `data-tone` (defaults to info/new).
+const disc = cn(
+  'flex size-24 shrink-0 items-center justify-center rounded-full bg-status-new-bg text-status-new-fg md:size-28',
+  'has-[[data-tone=pending]]:bg-status-pending-bg has-[[data-tone=pending]]:text-status-pending-fg',
+  'has-[[data-tone=closed]]:bg-status-closed-bg has-[[data-tone=closed]]:text-status-closed-fg',
+  'has-[[data-tone=danger]]:bg-status-danger-bg has-[[data-tone=danger]]:text-status-danger-fg',
+);
+// Title: Mobile/H3 (serif 20/28) → Heading/H3 (28/36)
+const title = 'font-serif text-[20px] font-semibold leading-7 text-text-primary md:text-h3';
+// Description: Body/Small → Body/Base, text-secondary, 460px measure
+const description = 'max-w-[460px] text-body-sm text-text-secondary md:text-body';
+// Buttons: full-width stack (10px gap) on mobile, inline row (12px gap) from sm
+const actions = 'flex w-full flex-col gap-2.5 pt-1 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center sm:gap-3 md:pt-2 [&>*]:w-full sm:[&>*]:w-auto';
+
+export function EmptyState({ title: heading, description: text, action, icon, className }: { title: string; description?: string; action?: React.ReactNode; icon?: React.ReactNode; className?: string }) {
   return (
-    <div className={cn('flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border-default bg-bg-surface px-6 py-12 text-center', className)}>
-      {icon && <span className="flex size-14 items-center justify-center rounded-full bg-bg-brand-soft text-text-brand">{icon}</span>}
-      <p className="text-body-medium text-text-primary">{title}</p>
-      {description && <p className="max-w-md text-body-sm text-text-secondary">{description}</p>}
-      {action && <div className="mt-2">{action}</div>}
+    <div className={cn(stateCard, className)}>
+      <span className={disc} aria-hidden>{icon ?? <EmptyCasesGlyph />}</span>
+      <p className={title}>{heading}</p>
+      {text && <p className={description}>{text}</p>}
+      {action && <div className={actions}>{action}</div>}
     </div>
   );
 }
 
-export function ErrorState({ title = 'Алдаа гарлаа', message, onRetry, className }: { title?: string; message?: string; onRetry?: () => void; className?: string }) {
+export function ErrorState({ title: heading = 'Алдаа гарлаа', message, onRetry, className }: { title?: string; message?: string; onRetry?: () => void; className?: string }) {
   return (
-    <div role="alert" className={cn('flex flex-col items-start gap-3 rounded-lg border border-status-danger-solid/40 bg-status-danger-bg px-6 py-5', className)}>
-      <p className="text-body-medium text-status-danger-fg">{title}</p>
-      {message && <p className="text-body-sm text-text-secondary">{message}</p>}
-      {onRetry && (
-        <Button variant="secondary" size="sm" onClick={onRetry}>Дахин оролдох</Button>
-      )}
+    <div role="alert" className={cn(stateCard, className)}>
+      <span className={cn(disc, 'bg-status-danger-bg text-status-danger-fg')} aria-hidden><ErrorStateGlyph /></span>
+      <p className={title}>{heading}</p>
+      <p className={description}>{message || 'Мэдээллийг ачаалах явцад алдаа гарлаа. Дахин оролдоно уу.'}</p>
+      <div className={actions}>
+        {onRetry && <Button variant="primary" size="md" onClick={onRetry}>Дахин оролдох</Button>}
+        <Button asChild variant="secondary" size="md"><Link href="/contact">Тусламж авах</Link></Button>
+      </div>
     </div>
   );
 }
@@ -32,9 +53,9 @@ export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivEl
 export function TableSkeleton({ rows = 5 }: { rows?: number }) {
   return (
     <div className="overflow-hidden rounded-lg border border-border-default bg-bg-surface" aria-busy aria-label="Ачааллаж байна">
-      <div className="h-14 bg-bg-surface-alt" />
+      <div className="h-14 border-b border-border-default bg-bg-surface-alt" />
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex h-14 items-center gap-6 border-b border-border-default px-6 last:border-b-0">
+        <div key={i} className="flex h-14 items-center gap-6 border-b border-border-subtle px-6 last:border-b-0">
           <Skeleton className="h-4 w-24" />
           <Skeleton className="h-4 flex-1" />
           <Skeleton className="h-4 w-20" />
@@ -55,4 +76,3 @@ export function CardSkeleton({ className }: { className?: string }) {
     </div>
   );
 }
-

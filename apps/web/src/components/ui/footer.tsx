@@ -15,7 +15,7 @@ const COMPANY = [
   { label: 'Хуульчид', href: '/lawyers' },
   { label: 'Мэдээ ба нийтлэл', href: '/news' },
   { label: 'Түгээмэл асуулт', href: '/faq' },
-  { label: 'Ажлын байр', href: '/about#careers' },
+  { label: 'Ажлын байр', href: 'mailto:careers@tulguur.mn' },
 ];
 export const CONTACT = {
   addressLines: ['Улаанбаатар, Сүхбаатар дүүрэг,', '1-р хороо, Их тойруу 14'],
