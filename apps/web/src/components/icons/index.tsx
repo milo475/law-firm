@@ -301,6 +301,12 @@ export const InboxIcon = (p: IconProps) => (
     <path {...stroke} d="M2 11L4.5 3.5H15.5L18 11V16.5H2V11ZM2 11H6.5L8 13.5H12L13.5 11H18" />
   </svg>
 );
+// Drag handle (Kanban cards) — six dots on the 20×20 grid
+export const DragHandleIcon = (p: IconProps) => (
+  <svg viewBox="0 0 20 20" {...base(p, 20, 20)}>
+    {[5, 10, 15].flatMap((cy) => [7.5, 12.5].map((cx) => <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={1.4} fill="currentColor" />))}
+  </svg>
+);
 // Staff workload (admin sidebar) — bar chart on the 20×20 nav grid
 export const PerformanceIcon = (p: IconProps) => (
   <svg viewBox="0 0 20 20" {...base(p, 20, 20)}>

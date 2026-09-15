@@ -47,6 +47,19 @@ export interface TaskDetail extends TaskItem {
   permissions: { canEdit: boolean; canDelete: boolean; canChangeStatus: boolean };
 }
 
+/** GET /tasks/:id/attachments */
+export interface TaskAttachmentItem {
+  id: string;
+  taskId: string;
+  name: string;
+  mimeType: string;
+  size: number;
+  createdAt: string;
+  uploadedBy: PublicUser;
+}
+
+export const taskAttachmentsKey = (taskId: string) => ['tasks', 'attachments', taskId] as const;
+
 /** GET /tasks/my-summary */
 export interface TaskSummary {
   active: number;
@@ -77,6 +90,11 @@ export function canChangeTaskStatus(task: Pick<TaskItem, 'assigneeId' | 'created
 /** Where the task can move next; cancelling is offered separately on the detail page. */
 export function nextTaskStatuses(status: TaskStatus): TaskStatus[] {
   return (TASK_STATUS_TRANSITIONS as Record<TaskStatus, readonly TaskStatus[]>)[status].filter((next) => next !== 'CANCELLED');
+}
+
+/** The backend transition map (TODO ↔ IN_PROGRESS ↔ REVIEW → DONE, any → CANCELLED). */
+export function canMoveTask(from: TaskStatus, to: TaskStatus): boolean {
+  return (TASK_STATUS_TRANSITIONS as Record<TaskStatus, readonly TaskStatus[]>)[from].includes(to);
 }
 
 export const isForwardMove = (from: TaskStatus, to: TaskStatus) => BOARD_STATUSES.indexOf(to) > BOARD_STATUSES.indexOf(from);

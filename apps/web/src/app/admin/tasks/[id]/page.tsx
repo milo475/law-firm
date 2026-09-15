@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 import { ConfirmModal } from '@/components/admin/confirm-modal';
+import { TaskAttachmentsCard } from '@/components/admin/task-attachments-card';
 import { TaskStatusActions, useTaskStatusMutation } from '@/components/admin/task-list';
 import { TaskModal } from '@/components/admin/task-modal';
 import { useUser } from '@/components/portal/user-context';
@@ -118,6 +119,7 @@ export default function AdminTaskDetailPage() {
               <p className="text-body-sm text-text-muted">Тайлбар оруулаагүй.</p>
             )}
           </Card>
+          <TaskAttachmentsCard taskId={task.id} viewer={user} />
           <CommentsCard task={task} onAdded={invalidate} />
         </div>
         <Card className="flex h-fit flex-col p-5">
