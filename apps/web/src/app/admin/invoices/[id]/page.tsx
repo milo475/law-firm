@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { InvoiceActions } from '@/components/admin/invoice-actions';
+import { InvoiceModal } from '@/components/admin/invoice-modal';
 import { RejectPaymentModal } from '@/components/admin/reject-payment-modal';
 import { INVOICE_STATUS_BADGE, StatusBadge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -22,6 +23,7 @@ export default function AdminInvoiceDetailPage() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const [rejectOpen, setRejectOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const invoice = useQuery({ queryKey: ['admin', 'invoice', id], queryFn: () => api.get<InvoiceItem>(`/invoices/${id}`), retry: false });
 
   const refresh = async () => {
@@ -81,8 +83,12 @@ export default function AdminInvoiceDetailPage() {
             {inv.case.title}
           </p>
         </div>
-        {/* Final statuses and payment reviews have no PATCH actions; the payment card covers them */}
-        {!awaiting && inv.status !== 'PAID' && inv.status !== 'CANCELLED' && <InvoiceActions invoice={inv} onChanged={refresh} />}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Amount, description and due date stay editable only while the invoice is a draft */}
+          {inv.status === 'DRAFT' && <Button variant="secondary" size="sm" onClick={() => setEditOpen(true)}>Засах</Button>}
+          {/* Final statuses and payment reviews have no PATCH actions; the payment card covers them */}
+          {!awaiting && inv.status !== 'PAID' && inv.status !== 'CANCELLED' && <InvoiceActions invoice={inv} onChanged={refresh} />}
+        </div>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
@@ -157,6 +163,7 @@ export default function AdminInvoiceDetailPage() {
       </div>
 
       {awaiting && <RejectPaymentModal invoice={inv} open={rejectOpen} onOpenChange={setRejectOpen} onRejected={refresh} />}
+      {inv.status === 'DRAFT' && <InvoiceModal open={editOpen} onOpenChange={setEditOpen} invoice={inv} onSaved={() => void refresh()} />}
     </div>
   );
 }

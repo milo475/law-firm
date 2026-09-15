@@ -139,6 +139,8 @@ export const api = {
     apiFetch<T>(path, { ...options, method: 'POST', body }),
   patch: <T>(path: string, body?: unknown, options?: ApiRequestOptions) =>
     apiFetch<T>(path, { ...options, method: 'PATCH', body }),
+  put: <T>(path: string, body?: unknown, options?: ApiRequestOptions) =>
+    apiFetch<T>(path, { ...options, method: 'PUT', body }),
   delete: <T>(path: string, options?: ApiRequestOptions) => apiFetch<T>(path, { ...options, method: 'DELETE' }),
 };
 
@@ -331,11 +333,12 @@ export interface InvoiceItem {
   case: { id: string; caseNumber: string; title: string };
 }
 
-/** GET /settings/bank-account */
+/** GET/PUT /settings/bank-account — `updatedAt` is null while the built-in example account is shown. */
 export interface BankAccountSettings {
   bankName: string;
   accountNumber: string;
   accountName: string;
+  updatedAt: string | null;
 }
 
 /** GET /invoices/payment-summary */

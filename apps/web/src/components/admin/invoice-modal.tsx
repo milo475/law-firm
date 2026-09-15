@@ -13,7 +13,7 @@ import { Select, type SelectOption } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/toast';
 import { ApiError, api, type InvoiceItem } from '@/lib/api';
-import { localDateToIso } from '@/lib/admin';
+import { isoToLocalDate, localDateToIso } from '@/lib/admin';
 
 const InvoiceFormSchema = CreateInvoiceSchema.extend({
   caseId: z.string().min(1, 'Хэрэг сонгоно уу'),
@@ -22,31 +22,45 @@ const InvoiceFormSchema = CreateInvoiceSchema.extend({
 type InvoiceFormInput = z.input<typeof InvoiceFormSchema>;
 type InvoiceFormValues = z.output<typeof InvoiceFormSchema>;
 
-/** Creates a DRAFT invoice. Pass `caseId` to lock it to one case, or `caseOptions` to let the user pick. */
-export function InvoiceModal({ open, onOpenChange, caseId, caseOptions, onSaved }: {
+const emptyValues = (caseId?: string, invoice?: InvoiceItem | null): InvoiceFormInput =>
+  invoice
+    ? { caseId: invoice.case.id, amount: String(Number(invoice.amount)), description: invoice.description, dueDate: isoToLocalDate(invoice.dueDate) }
+    : { caseId: caseId ?? '', amount: '', description: '', dueDate: '' };
+
+/**
+ * Creates a DRAFT invoice (`caseId` locks it to one case, `caseOptions` lets the user pick),
+ * or edits the amount / description / due date of a DRAFT `invoice` — the API refuses content edits after sending.
+ */
+export function InvoiceModal({ open, onOpenChange, caseId, caseOptions, invoice, onSaved }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   caseId?: string;
   caseOptions?: SelectOption[];
+  invoice?: InvoiceItem | null;
   onSaved: (invoice: InvoiceItem) => void;
 }) {
+  const editing = Boolean(invoice);
   const form = useForm<InvoiceFormInput, unknown, InvoiceFormValues>({
     resolver: zodResolver(InvoiceFormSchema),
-    defaultValues: { caseId: caseId ?? '', amount: '', description: '', dueDate: '' },
+    defaultValues: emptyValues(caseId, invoice),
   });
 
   useEffect(() => {
-    if (open) form.reset({ caseId: caseId ?? '', amount: '', description: '', dueDate: '' });
-  }, [open, caseId, form]);
+    if (open) form.reset(emptyValues(caseId, invoice));
+  }, [open, caseId, invoice, form]);
 
   const save = useMutation({
-    mutationFn: (values: InvoiceFormValues) => api.post<InvoiceItem>('/invoices', { ...values, dueDate: localDateToIso(values.dueDate) }),
-    onSuccess: (invoice) => {
-      toast.success('Нэхэмжлэх үүслээ', `${invoice.invoiceNumber} ноорог төлөвтэй хадгалагдлаа. Илгээхэд харилцагчид мэдэгдэл очно.`);
-      onSaved(invoice);
+    mutationFn: ({ caseId: selectedCaseId, ...values }: InvoiceFormValues) =>
+      invoice
+        ? api.patch<InvoiceItem>(`/invoices/${invoice.id}`, { ...values, dueDate: localDateToIso(values.dueDate) })
+        : api.post<InvoiceItem>('/invoices', { ...values, caseId: selectedCaseId, dueDate: localDateToIso(values.dueDate) }),
+    onSuccess: (saved) => {
+      if (editing) toast.success('Нэхэмжлэх шинэчлэгдлээ', `${saved.invoiceNumber} · ноорог хэвээр. Илгээхэд харилцагчид шинэ дүн очно.`);
+      else toast.success('Нэхэмжлэх үүслээ', `${saved.invoiceNumber} ноорог төлөвтэй хадгалагдлаа. Илгээхэд харилцагчид мэдэгдэл очно.`);
+      onSaved(saved);
       onOpenChange(false);
     },
-    onError: (error) => toast.danger('Нэхэмжлэх үүсгэж чадсангүй', error instanceof ApiError ? error.message : undefined),
+    onError: (error) => toast.danger(editing ? 'Нэхэмжлэх хадгалж чадсангүй' : 'Нэхэмжлэх үүсгэж чадсангүй', error instanceof ApiError ? error.message : undefined),
   });
 
   const { register, control, handleSubmit, formState: { errors } } = form;
@@ -54,17 +68,21 @@ export function InvoiceModal({ open, onOpenChange, caseId, caseOptions, onSaved 
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent
-        title="Шинэ нэхэмжлэх"
-        description="Нэхэмжлэх ноорог төлөвтэй үүснэ. Шалгасны дараа «Илгээх» товчоор харилцагчид илгээнэ."
+        title={invoice ? `${invoice.invoiceNumber} засах` : 'Шинэ нэхэмжлэх'}
+        description={
+          invoice
+            ? 'Ноорог үед дүн, тайлбар, төлөх хугацааг засна. Харилцагчид илгээсний дараа өөрчлөх боломжгүй.'
+            : 'Нэхэмжлэх ноорог төлөвтэй үүснэ. Шалгасны дараа «Илгээх» товчоор харилцагчид илгээнэ.'
+        }
         footer={
           <>
             <Button variant="ghost" size="md" onClick={() => onOpenChange(false)} disabled={save.isPending}>Болих</Button>
-            <Button size="md" type="submit" form="invoice-form" disabled={save.isPending}>{save.isPending ? 'Хадгалж байна…' : 'Үүсгэх'}</Button>
+            <Button size="md" type="submit" form="invoice-form" disabled={save.isPending}>{save.isPending ? 'Хадгалж байна…' : editing ? 'Хадгалах' : 'Үүсгэх'}</Button>
           </>
         }
       >
         <form id="invoice-form" onSubmit={handleSubmit((values) => save.mutate(values))} noValidate className="flex flex-col gap-5">
-          {!caseId && (
+          {!caseId && !invoice && (
             <Controller
               control={control}
               name="caseId"

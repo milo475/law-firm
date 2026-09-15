@@ -12,13 +12,13 @@ export const isPayable = (invoice: Pick<InvoiceItem, 'status'>) => invoice.statu
 /** The client reported a transfer and staff have not confirmed it yet. */
 export const isAwaitingConfirmation = (invoice: Pick<InvoiceItem, 'status'>) => invoice.status === 'AWAITING_CONFIRMATION';
 
-/** Transfer account shown in the payment instructions (served by the API, so it changes in one place). */
+/** Transfer account shown in the payment instructions; ADMIN edits it on /admin/settings. */
 export function useBankAccount(enabled = true) {
   return useQuery({
     queryKey: BANK_ACCOUNT_KEY,
     queryFn: () => api.get<BankAccountSettings>('/settings/bank-account'),
     enabled,
-    staleTime: Infinity,
+    staleTime: 60_000,
   });
 }
 
@@ -33,7 +33,7 @@ export function useInvoicePaymentSummary(enabled = true) {
   });
 }
 
-/** "5023118822" → "5023 1188 22" */
+/** "5023118822" → "5023 1188 22", "mn120005005023118822" → "MN12 0005 0050 2311 8822" */
 export function formatAccountNumber(value: string): string {
-  return value.replace(/\s+/g, '').replace(/(\d{4})(?=\d)/g, '$1 ');
+  return value.replace(/\s+/g, '').toUpperCase().replace(/(.{4})(?=.)/g, '$1 ');
 }

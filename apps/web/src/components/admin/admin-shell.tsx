@@ -12,6 +12,7 @@ import {
   PerformanceIcon,
   LogoutIcon,
   ProfileIcon,
+  SettingsIcon,
   TabCasesIcon,
   TabHomeIcon,
   TabProfileIcon,
@@ -47,6 +48,7 @@ const NAV: NavEntry[] = [
   { href: '/admin/posts', label: 'Нийтлэл', icon: <DocumentsIcon /> },
   { href: '/admin/invoices', label: 'Нэхэмжлэх', icon: <InvoicesIcon /> },
   { href: '/admin/contact', label: 'Хүсэлтүүд', icon: <InboxIcon />, adminOnly: true },
+  { href: '/admin/settings', label: 'Тохиргоо', icon: <SettingsIcon />, adminOnly: true },
   { href: '/admin/profile', label: 'Профайл', icon: <ProfileIcon /> },
 ];
 
@@ -66,6 +68,7 @@ const TITLES: { match: (p: string) => boolean; title: string; back?: string }[] 
   { match: (p) => /^\/admin\/invoices\/[^/]+$/.test(p), title: 'Нэхэмжлэх', back: '/admin/invoices' },
   { match: (p) => p.startsWith('/admin/invoices'), title: 'Нэхэмжлэх' },
   { match: (p) => p.startsWith('/admin/contact'), title: 'Хүсэлтүүд' },
+  { match: (p) => p.startsWith('/admin/settings'), title: 'Тохиргоо' },
   { match: (p) => p.startsWith('/admin/profile'), title: 'Профайл' },
   { match: (p) => p.startsWith('/admin/notifications'), title: 'Мэдэгдэл' },
   { match: (p) => /^\/admin\/performance\/[^/]+$/.test(p), title: 'Гүйцэтгэл', back: '/admin/performance' },

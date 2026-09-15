@@ -31,6 +31,14 @@ export const DocumentsIcon = (p: IconProps) => (
 export const InvoicesIcon = (p: IconProps) => (
   <svg viewBox="0 0 20 20" {...base(p, 20, 20)}><path {...stroke} d="M7 7H13M7 11H13M4 2H16V18L13 16L10 18L7 16L4 18V2Z" /></svg>
 );
+export const SettingsIcon = (p: IconProps) => (
+  <svg viewBox="0 0 20 20" {...base(p, 20, 20)}>
+    <path {...stroke} d="M3 5H11M15 5H17M3 10H5M9 10H17M3 15H11M15 15H17" />
+    <circle {...stroke} cx="13" cy="5" r="2" />
+    <circle {...stroke} cx="7" cy="10" r="2" />
+    <circle {...stroke} cx="13" cy="15" r="2" />
+  </svg>
+);
 export const MessagesIcon = (p: IconProps) => (
   <svg viewBox="0 0 20 20" {...base(p, 20, 20)}><path {...stroke} d="M18 3H2V13H7V17L11 13H18V3Z" /></svg>
 );

@@ -59,7 +59,12 @@ export default function AdminInvoicesPage() {
       <AdminPageTitle
         title="Нэхэмжлэх"
         description={isAdmin ? 'Бүх хэргийн нэхэмжлэх.' : 'Таны хариуцсан хэргүүдийн нэхэмжлэх.'}
-        actions={<Button size="md" onClick={() => setCreateOpen(true)}><PlusIcon size={18} />Шинэ нэхэмжлэх</Button>}
+        actions={
+          <div className="flex flex-wrap gap-2">
+            {isAdmin && <Button asChild variant="secondary" size="md"><Link href="/admin/settings">Төлбөрийн данс</Link></Button>}
+            <Button size="md" onClick={() => setCreateOpen(true)}><PlusIcon size={18} />Шинэ нэхэмжлэх</Button>
+          </div>
+        }
       />
       {paymentSummary.data && paymentSummary.data.total > 0 && status !== 'AWAITING_CONFIRMATION' && (
         <div role="status" className="flex flex-col gap-3 rounded-lg border-l-[3px] border-status-pending-fg bg-status-pending-bg p-5 md:flex-row md:items-center md:justify-between md:gap-6">
