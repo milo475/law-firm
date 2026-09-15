@@ -58,7 +58,7 @@ export function NotificationBell() {
         >
           <span id={titleId} className="sr-only">Сүүлийн мэдэгдлүүд</span>
           <div className="flex items-center justify-between gap-3 border-b border-border-default px-4 py-3">
-            <p className="min-w-0 truncate whitespace-nowrap text-body-sm-medium text-text-primary">Мэдэгдэл{count > 0 ? ` · ${count} уншаагүй` : ''}</p>
+            <p className="min-w-0 truncate whitespace-nowrap text-body-sm-medium text-text-primary">Мэдэгдэл{count > 0 && <> · {count}<span className="hidden sm:inline"> уншаагүй</span></>}</p>
             <DropdownMenu.Item
               disabled={count === 0 || markAll.isPending}
               onSelect={(event) => {
