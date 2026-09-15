@@ -1,74 +1,88 @@
+// Figma: 01 Public Site / Public / 02 About / Desktop (18:173) + Mobile (24:1171)
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { ImagePlaceholder } from '@/components/ui/card';
 import { PageHeader } from '@/components/ui/page-header';
 
-export const metadata: Metadata = { title: 'Бидний тухай', description: 'Тулгуур Хуулийн Фирмийн түүх, эрхэм зорилго, үнэт зүйлс.' };
+export const metadata: Metadata = {
+  title: 'Бидний тухай',
+  description: 'Тулгуур Хуулийн Фирм нь 2009 оноос хойш Монгол Улсын иргэд, аж ахуйн нэгжид эрх зүйн иж бүрэн үйлчилгээ үзүүлж байна.',
+};
 
 const VALUES = [
-  { title: 'Итгэлцэл', text: 'Харилцагчийн нууцлал, итгэлийг бүхнээс дээгүүр тавина.' },
-  { title: 'Мэргэжлийн ёс зүй', text: 'Хуульчийн ёс зүйн дүрмийг чанд мөрдөж, шударгаар ажиллана.' },
-  { title: 'Ил тод байдал', text: 'Үнэ, хугацаа, эрсдэлийг эхнээс нь тодорхой тайлбарлана.' },
-  { title: 'Үр дүн', text: 'Хамгийн ашигтай шийдэлд хамгийн богино замаар хүргэнэ.' },
+  { title: 'Шударга байдал', text: 'Бид харилцагчдаа хэргийн бодит боломжийг үнэн зөвөөр хэлдэг. Амлаж чадахгүй зүйлээ хэзээ ч амладаггүй.' },
+  { title: 'Ил тод байдал', text: 'Төлбөрийн бүтэц, хэргийн явц, хугацааны төлөвлөгөөг эхнээс нь бичгээр тодорхойлж өгнө.' },
+  { title: 'Нууцлал', text: 'Харилцагчийн мэдээллийг хуулийн дагуу чанд хамгаална. Дотоод системд хандах эрхийг хатуу зохицуулдаг.' },
+  { title: 'Тасралтгүй хөгжил', text: 'Хуульч бүр жилд дор хаяж 40 цагийн мэргэжлийн сургалтад хамрагддаг.' },
 ];
 
 const MILESTONES = [
-  { year: '2009', text: 'Улаанбаатар хотод 3 хуульчтай байгуулагдав.' },
-  { year: '2014', text: 'Бизнесийн эрх зүйн хэлтэс нээгдэж, 40 гаруй байгууллагад байнгын зөвлөгөө өгч эхлэв.' },
-  { year: '2020', text: 'Гэр бүл, хөдөлмөрийн эрх зүйн баг өргөжиж, 1,000 дахь хэргээ шийдвэрлэв.' },
-  { year: '2026', text: 'Харилцагчийн онлайн портал нэвтрүүлж, Их тойрууд шинэ оффистоо нүүв.' },
+  { year: '2009', title: 'Фирм үүсэв', text: 'Гурван хуульчтай, Сүхбаатар дүүрэгт анхны оффис.' },
+  { year: '2013', title: 'Эрүүгийн алба', text: 'Өмгөөллийн тусгай алба байгуулж, 8 хуульч нэмэгдэв.' },
+  { year: '2018', title: 'Бизнесийн практик', text: 'Компанийн эрх зүйн чиглэлээр 40 гаруй ААН-тэй гэрээ байгуулав.' },
+  { year: '2022', title: 'Дижитал портал', text: 'Харилцагч хэргийн явцаа онлайнаар хянах систем нэвтрүүлэв.' },
+  { year: '2026', title: 'Олон улсын сүлжээ', text: 'Азийн 14 орны хуулийн фирмүүдийн сүлжээнд элсэв.' },
 ];
 
 export default function AboutPage() {
   return (
     <>
-      <PageHeader overline="Бидний тухай" title="2009 оноос хойш эрх зүйн найдвартай түнш" description="Иргэд, аж ахуйн нэгжид ойлгомжтой, ил тод, үр дүнтэй хууль зүйн үйлчилгээ үзүүлэх нь бидний эрхэм зорилго." crumbs={[{ label: 'Нүүр', href: '/' }, { label: 'Бидний тухай' }]} />
+      <PageHeader
+        title="Бидний тухай"
+        description="Тулгуур Хуулийн Фирм нь 2009 оноос хойш Монгол Улсын иргэд, аж ахуйн нэгжид эрх зүйн иж бүрэн үйлчилгээ үзүүлж байна."
+        crumbs={[{ label: 'Нүүр', href: '/' }, { label: 'Бидний тухай' }]}
+      />
 
-      <section className="mx-auto grid max-w-[1200px] gap-12 px-4 py-16 md:px-6 md:py-24 lg:grid-cols-2">
-        <div className="flex flex-col gap-5">
-          <p className="text-overline text-text-accent">Эрхэм зорилго</p>
-          <h2 className="text-h3 md:text-h2">Хууль зүйн асуудлыг хүн бүрт ойлгомжтой болгох</h2>
-          <p className="text-body-lg text-text-secondary">Бид хууль зүйн нарийн төвөгтэй асуудлыг энгийн үгээр тайлбарлаж, харилцагч бүр шийдвэрээ мэдээлэлтэйгээр гаргах боломжийг олгодог. 12 хуульч, 4 мэргэшсэн чиглэлээр ажилладаг.</p>
-          <div className="flex flex-wrap gap-3">
-            <Button asChild size="md"><Link href="/lawyers">Хуульчидтай танилцах</Link></Button>
-            <Button asChild variant="secondary" size="md"><Link href="/contact">Холбоо барих</Link></Button>
+      {/* Story — copy (560) + image placeholder (520×420); image stacks on top on mobile */}
+      <section className="bg-bg-surface">
+        <div className="mx-auto flex max-w-[1200px] flex-col gap-5 px-5 py-14 md:px-6 lg:flex-row lg:items-center lg:gap-20 lg:py-24">
+          <div className="flex flex-col gap-5 lg:w-[560px] lg:shrink-0 lg:gap-6">
+            <p className="text-overline text-text-accent">БИДНИЙ ТҮҮХ</p>
+            <h2 className="text-h3 md:text-h2">Гурван хуульчаас эхэлсэн зам</h2>
+            <p className="text-body text-text-secondary">2009 онд гурван хуульч Улаанбаатар хотод жижиг оффис түрээслэн Тулгуур Хуулийн Фирмийг үүсгэн байгуулсан. Анхны харилцагчид маань хөдөлмөрийн маргаантай иргэд байв.</p>
+            <p className="text-body text-text-secondary">Өнөөдөр бид 24 хуульчтай, зургаан үндсэн чиглэлээр мэргэшсэн, жилд дунджаар 180 гаруй хэрэг хөтөлдөг фирм болон өргөжсөн. Гэхдээ анхны зарчим маань хэвээр — харилцагч бүрийн хэрэг ижил чухал.</p>
           </div>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {VALUES.map((v) => (
-            <div key={v.title} className="flex flex-col gap-2 rounded-lg border border-border-default bg-bg-surface p-6">
-              <h3 className="text-h4">{v.title}</h3>
-              <p className="text-body-sm text-text-secondary">{v.text}</p>
-            </div>
-          ))}
+          <ImagePlaceholder className="order-first h-[220px] rounded-lg lg:order-none lg:h-[420px] lg:flex-1" markSize={56} />
         </div>
       </section>
 
-      <section className="border-y border-border-default bg-bg-surface">
-        <div className="mx-auto max-w-[1200px] px-4 py-16 md:px-6 md:py-24">
-          <p className="text-overline text-text-accent">Түүх</p>
-          <h2 className="mt-3 text-h3 md:text-h2">Бидний замнал</h2>
-          <ol className="mt-10 grid gap-6 md:grid-cols-4">
+      {/* Mission & values — 4 cards with a gold accent bar */}
+      <section className="bg-bg-page">
+        <div className="mx-auto flex max-w-[1200px] flex-col gap-8 px-5 py-14 md:px-6 lg:gap-12 lg:py-24">
+          <div className="flex flex-col gap-3 lg:gap-4">
+            <p className="text-overline text-text-accent">ЭРХЭМ ЗОРИЛГО БА ҮНЭТ ЗҮЙЛС</p>
+            <h2 className="max-w-[860px] text-h3 md:text-h2">Эрх зүйн туслалцааг хүн бүрт ойлгомжтой, хүртээмжтэй болгох</h2>
+          </div>
+          <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+            {VALUES.map((v) => (
+              <li key={v.title} className="flex flex-col gap-2.5 rounded-lg border border-border-default bg-bg-surface p-5 lg:gap-3 lg:p-7">
+                <span aria-hidden className="h-1 w-8 rounded-[2px] bg-accent-default lg:w-10" />
+                <h3 className="text-h4">{v.title}</h3>
+                <p className="text-body-sm text-text-secondary">{v.text}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Timeline — navy band, 5 steps in a row (desktop) / dot list (mobile) */}
+      <section className="bg-bg-inverse">
+        <div className="mx-auto flex max-w-[1200px] flex-col gap-8 px-5 py-14 md:px-6 lg:gap-12 lg:py-24">
+          <div className="flex flex-col gap-3 lg:gap-4">
+            <p className="text-overline text-accent-default">ТҮҮХЭН ЗАМНАЛ</p>
+            <h2 className="text-h3 text-text-on-inverse md:text-h2">Чухал үе шатууд</h2>
+          </div>
+          <ol className="flex flex-col gap-6 lg:flex-row lg:gap-0">
             {MILESTONES.map((m) => (
-              <li key={m.year} className="flex flex-col gap-3 border-t-2 border-accent-default pt-5">
-                <span className="font-serif text-h3 text-text-brand">{m.year}</span>
-                <p className="text-body-sm text-text-secondary">{m.text}</p>
+              <li key={m.year} className="flex gap-3.5 lg:flex-1 lg:flex-col lg:gap-2.5 lg:pr-6">
+                <span aria-hidden className="mt-2 size-2.5 shrink-0 rounded-full bg-accent-default lg:mt-0 lg:size-3.5" />
+                <div className="flex flex-col gap-1 lg:gap-2.5">
+                  <span className="text-h4 text-accent-default lg:text-h3">{m.year}</span>
+                  <p className="text-body-medium text-text-on-inverse">{m.title}</p>
+                  <p className="text-body-sm text-text-on-inverse-muted">{m.text}</p>
+                </div>
               </li>
             ))}
           </ol>
-        </div>
-      </section>
-
-      <section id="careers" className="mx-auto max-w-[1200px] px-4 py-16 md:px-6 md:py-24">
-        <div className="flex flex-col items-start gap-4 rounded-xl bg-bg-inverse p-8 text-text-on-inverse md:flex-row md:items-center md:justify-between md:p-12">
-          <div className="flex flex-col gap-2">
-            <p className="text-overline text-accent-default">Ажлын байр</p>
-            <h2 className="text-h3 text-text-on-inverse">Манай багт нэгдэх үү?</h2>
-            <p className="text-body text-text-on-inverse-muted">Анкетаа careers@tulguur.mn хаягаар илгээнэ үү.</p>
-          </div>
-          <Button asChild variant="secondary" size="lg" className="border-accent-default bg-transparent text-text-on-inverse hover:bg-navy-700">
-            <a href="mailto:careers@tulguur.mn">Анкет илгээх</a>
-          </Button>
         </div>
       </section>
     </>

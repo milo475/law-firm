@@ -1,3 +1,4 @@
+// Figma: 01 Public Site / Public / 10 Contact / Desktop (22:843, "Form") + Mobile (26:1538, "Form")
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -40,12 +41,13 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Input label="Нэр" placeholder="Таны нэр" autoComplete="name" required error={errors.name?.message} {...register('name')} />
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5 md:gap-6">
+      {/* Row — name + phone side by side on desktop (gap 20), stacked on mobile */}
+      <div className="grid gap-5 md:grid-cols-2">
+        <Input label="Таны нэр" placeholder="Ж. Батсайхан" autoComplete="name" required helper="Овог нэрээ бүтнээр бичнэ үү" error={errors.name?.message} {...register('name')} />
         <Input label="Утасны дугаар" placeholder="9911-2233" inputMode="tel" autoComplete="tel" required helper="8 оронтой дугаар" error={errors.phone?.message} {...register('phone')} />
       </div>
-      <Input label="И-мэйл" placeholder="name@example.mn" type="email" autoComplete="email" helper="Заавал биш" error={errors.email?.message} {...register('email', { setValueAs: (v: string) => (v?.trim() ? v.trim() : undefined) })} />
+      <Input label="Имэйл хаяг" placeholder="batsaikhan@example.mn" type="email" autoComplete="email" helper="Хариуг энэ хаягаар илгээнэ" error={errors.email?.message} {...register('email', { setValueAs: (v: string) => (v?.trim() ? v.trim() : undefined) })} />
       <Select
         label="Асуудлын төрөл"
         placeholder="Асуудлын төрлөө сонгоно уу"
@@ -56,13 +58,20 @@ export function ContactForm() {
         error={errors.subject?.message}
         required
       />
-      <Textarea label="Асуудлын тайлбар" placeholder="Асуудлаа товч тайлбарлана уу..." rows={5} required helper="Дээд тал нь 4000 тэмдэгт" error={errors.message?.message} {...register('message')} />
-      <Checkbox label="Үйлчилгээний нөхцөлтэй танилцсан" checked={agreed} onCheckedChange={(v) => setAgreed(v === true)} />
-      <div>
-        <Button type="submit" size="lg" disabled={isSubmitting || !agreed}>
-          {isSubmitting ? 'Илгээж байна…' : 'Хүсэлт илгээх'}
-        </Button>
-      </div>
+      <Textarea label="Асуудлын тайлбар" placeholder="Асуудлаа товч тайлбарлана уу..." rows={4} maxLength={1000} required helper="Дээд тал нь 1000 тэмдэгт" error={errors.message?.message} {...register('message')} />
+      <Checkbox
+        label={
+          <>
+            Нууцлалын бодлоготой танилцсан
+            <span className="hidden md:inline">, мэдээллээ боловсруулахыг зөвшөөрч байна</span>
+          </>
+        }
+        checked={agreed}
+        onCheckedChange={(v) => setAgreed(v === true)}
+      />
+      <Button type="submit" size="lg" className="w-full" disabled={isSubmitting || !agreed}>
+        {isSubmitting ? 'Илгээж байна…' : 'Хүсэлт илгээх'}
+      </Button>
     </form>
   );
 }

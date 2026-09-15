@@ -1,43 +1,101 @@
+// Figma: 01 Public Site / Public / 10 Contact / Desktop (22:843) + Mobile (26:1538)
 import type { Metadata } from 'next';
+import { ContactClockIcon, ContactMailIcon, ContactPhoneIcon, ContactPinIcon, MapPinIcon } from '@/components/icons';
 import { CONTACT } from '@/components/ui/footer';
 import { PageHeader } from '@/components/ui/page-header';
 import { ContactForm } from './contact-form';
 
 export const metadata: Metadata = { title: 'Холбоо барих', description: 'Тулгуур Хуулийн Фирмтэй холбогдох: хаяг, утас, и-мэйл, хүсэлт илгээх форм.' };
 
+const tel = (phone: string) => `tel:${phone.replace(/[^+\d]/g, '')}`;
+
+type OfficeLine = { text: string; href?: string; desktopOnly?: boolean };
+const OFFICE: { label: string; Icon: typeof ContactPinIcon; lines: OfficeLine[] }[] = [
+  {
+    label: 'Хаяг',
+    Icon: ContactPinIcon,
+    lines: [
+      { text: 'Улаанбаатар хот, Сүхбаатар дүүрэг,' },
+      { text: '1-р хороо, Их тойруу 14, Тулгуур төв, 4 давхар' },
+    ],
+  },
+  {
+    label: 'Утас',
+    Icon: ContactPhoneIcon,
+    lines: [
+      { text: CONTACT.phone, href: tel(CONTACT.phone) },
+      { text: '+976 9911-2233 (яаралтай)', href: tel('+976 9911-2233'), desktopOnly: true },
+    ],
+  },
+  {
+    label: 'Имэйл',
+    Icon: ContactMailIcon,
+    lines: [
+      { text: CONTACT.email, href: `mailto:${CONTACT.email}` },
+      { text: 'portal@tulguur.mn', href: 'mailto:portal@tulguur.mn', desktopOnly: true },
+    ],
+  },
+  {
+    label: 'Ажлын цаг',
+    Icon: ContactClockIcon,
+    lines: [
+      { text: CONTACT.hours },
+      { text: 'Бямба 10:00–14:00 (урьдчилан захиалгаар)', desktopOnly: true },
+    ],
+  },
+];
+
 export default function ContactPage() {
   return (
     <>
-      <PageHeader overline="Холбоо барих" title="Бидэнтэй холбогдох" description="Хүсэлтээ илгээснээр манай хуульч ажлын 1 өдрийн дотор тантай холбогдоно." crumbs={[{ label: 'Нүүр', href: '/' }, { label: 'Холбоо барих' }]} />
-      <section className="mx-auto grid max-w-[1200px] gap-12 px-4 py-16 md:px-6 md:py-24 lg:grid-cols-[1fr_360px]">
-        <div className="rounded-lg border border-border-default bg-bg-surface p-6 md:p-8">
-          <h2 className="text-h3">Хүсэлт илгээх</h2>
-          <p className="mt-2 text-body-sm text-text-secondary">Талбар бүрийг бөглөнө үү. Нууцлалыг чанд хадгална.</p>
-          <div className="mt-8">
+      <PageHeader
+        title="Холбоо барих"
+        description="Асуудлаа товч бичиж илгээнэ үү. Ажлын 1 өдрийн дотор хуульч тань руу холбогдоно."
+        crumbs={[{ label: 'Нүүр', href: '/' }, { label: 'Холбоо барих' }]}
+      />
+
+      {/* Contact — white band; desktop: form card + 420px info column (gap 64); mobile: flat form, then bg-page info section */}
+      <section className="bg-bg-surface">
+        <div className="mx-auto max-w-[1200px] px-5 pt-14 md:px-6 lg:flex lg:items-start lg:gap-16 lg:py-24">
+          {/* Form — bordered card from md up (p-40 on desktop), flat on mobile */}
+          <div className="flex min-w-0 flex-1 flex-col gap-5 md:gap-6 md:rounded-lg md:border md:border-border-default md:bg-bg-surface md:p-8 lg:p-10">
+            <h2 className="text-h3 text-text-primary">Зөвлөгөө хүсэх</h2>
             <ContactForm />
           </div>
+
+          {/* Info — mobile: full-bleed bg-page section; desktop: bg-page card (p-28) + map placeholder */}
+          <aside className="-mx-5 mt-14 flex flex-col gap-5 bg-bg-page px-5 py-14 md:-mx-6 md:px-6 lg:mx-0 lg:mt-0 lg:w-[420px] lg:shrink-0 lg:gap-6 lg:bg-transparent lg:p-0">
+            <div className="flex flex-col gap-5 lg:rounded-lg lg:bg-bg-page lg:p-7">
+              <h2 className="text-h3 text-text-primary lg:text-h4">Оффисын мэдээлэл</h2>
+              {OFFICE.map(({ label, Icon, lines }) => (
+                <div key={label} className="flex items-start gap-3.5">
+                  <span className="shrink-0 text-text-accent" aria-hidden>
+                    <Icon size={40} />
+                  </span>
+                  <div className="flex min-w-0 flex-1 flex-col gap-1">
+                    <p className="text-body-sm-medium text-text-primary">{label}</p>
+                    {lines.map((line) => (
+                      <p key={line.text} className={line.desktopOnly ? 'hidden text-body-sm text-text-secondary lg:block' : 'text-body-sm text-text-secondary'}>
+                        {line.href ? (
+                          <a href={line.href} className="focus-ring rounded-sm hover:text-text-brand">{line.text}</a>
+                        ) : (
+                          line.text
+                        )}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Map placeholder — navy-100 area with pin + caption (300px desktop / 200px mobile) */}
+            <div className="flex h-[200px] flex-col items-center justify-center gap-2 rounded-lg bg-navy-100 text-navy-600 lg:h-[300px] lg:gap-2.5" role="img" aria-label="Оффисын байршлын газрын зураг">
+              <MapPinIcon size={14} />
+              <span className="text-caption">Газрын зургийн байрлал</span>
+            </div>
+          </aside>
         </div>
-        <aside className="flex flex-col gap-6">
-          <div className="flex flex-col gap-4 rounded-lg border border-border-default bg-bg-surface p-6">
-            <Info label="Хаяг" value={CONTACT.addressLines.join(' ')} />
-            <Info label="Утас" value={<a href={`tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`} className="focus-ring rounded-sm text-text-brand hover:underline">{CONTACT.phone}</a>} />
-            <Info label="И-мэйл" value={<a href={`mailto:${CONTACT.email}`} className="focus-ring rounded-sm text-text-brand hover:underline">{CONTACT.email}</a>} />
-            <Info label="Ажлын цаг" value={CONTACT.hours} />
-          </div>
-          <div className="flex h-56 items-center justify-center rounded-lg border border-border-default bg-navy-100" role="img" aria-label="Оффисын байршлын газрын зураг">
-            <span className="rounded-[6px] border-2 border-navy-200" style={{ width: 64, height: 64 }} aria-hidden />
-          </div>
-        </aside>
       </section>
     </>
-  );
-}
-
-function Info({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <p className="text-caption text-text-muted">{label}</p>
-      <p className="text-body text-text-primary">{value}</p>
-    </div>
   );
 }

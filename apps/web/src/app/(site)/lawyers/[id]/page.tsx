@@ -1,11 +1,12 @@
+// Figma: 01 Public Site / Public / 04 Lawyer Detail / Desktop (19:367) + Mobile (24:1379)
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { ImagePlaceholder } from '@/components/ui/card';
-import { PageHeader } from '@/components/ui/page-header';
 import { ApiError, apiFetch, type LawyerProfile } from '@/lib/api';
-import { shortName } from '@/lib/utils';
+import { cn, shortName } from '@/lib/utils';
 
 export const revalidate = 60;
 
@@ -28,48 +29,123 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return { title: `${name} — ${lawyer.title}`, description: lawyer.bio.slice(0, 160) };
 }
 
+/** Split a free-text education string into list items: on newlines, or after a "(year)," boundary. */
+function educationItems(education: string): string[] {
+  const items = education
+    .split(/\n+|(?<=\))\s*[,;]\s*/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return items.length ? items : [education];
+}
+
+/** Figma "List" — 6px gold dot + Body/Base text. */
+function DotList({ items }: { items: string[] }) {
+  return (
+    <ul className="flex flex-col gap-2.5">
+      {items.map((item) => (
+        <li key={item} className="flex gap-2.5 lg:gap-3">
+          <span aria-hidden className="mt-[9px] size-1.5 shrink-0 rounded-full bg-accent-default lg:mt-2.5" />
+          <span className="text-body text-text-secondary">{item}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Figma "Contact card": label/value rows + primary button (desktop only). */
+function ContactCard({ lawyer, withButton, className }: { lawyer: LawyerProfile; withButton?: boolean; className?: string }) {
+  const rowLink = 'focus-ring rounded-sm text-body-sm-medium text-text-primary hover:text-text-brand';
+  return (
+    <div className={cn('flex flex-col gap-3.5 rounded-lg bg-bg-page p-5 lg:gap-4 lg:border lg:border-border-default lg:bg-bg-surface lg:p-6', className)}>
+      <p className="text-body-medium text-text-primary">Холбоо барих</p>
+      {lawyer.user.phone && (
+        <div className="flex items-start justify-between gap-4">
+          <span className="text-body-sm text-text-muted">Утас</span>
+          <a href={`tel:${lawyer.user.phone}`} className={rowLink}>{lawyer.user.phone}</a>
+        </div>
+      )}
+      <div className="flex items-start justify-between gap-4">
+        <span className="text-body-sm text-text-muted">Имэйл</span>
+        <a href={`mailto:${lawyer.user.email}`} className={cn(rowLink, 'break-all text-right')}>{lawyer.user.email}</a>
+      </div>
+      {withButton && (
+        <Button asChild size="md" className="w-full">
+          <Link href="/contact">Цаг захиалах</Link>
+        </Button>
+      )}
+    </div>
+  );
+}
+
 export default async function LawyerDetailPage({ params }: Params) {
   const { id } = await params;
   const lawyer = await loadLawyer(id);
   if (!lawyer) notFound();
   const name = shortName(lawyer.user.firstName, lawyer.user.lastName);
+  const crumbs = [{ label: 'Нүүр', href: '/' }, { label: 'Хуульчид', href: '/lawyers' }, { label: name }];
+  const summary = `${lawyer.specializations.slice(0, 2).join(', ') || lawyer.title} · ${lawyer.yearsOfExperience} жилийн туршлага`;
+
+  // Desktop: left column 360px (photo + contact card), right column (profile + bio). Mobile: single column, contact card last.
+  const leftCol = 'lg:grid lg:grid-cols-[360px_1fr] lg:gap-14';
 
   return (
     <>
-      <PageHeader overline={lawyer.title} title={name} crumbs={[{ label: 'Нүүр', href: '/' }, { label: 'Хуульчид', href: '/lawyers' }, { label: name }]} />
-      <section className="mx-auto grid max-w-[1200px] gap-12 px-4 py-16 md:px-6 md:py-24 lg:grid-cols-[360px_1fr]">
-        <div className="flex flex-col gap-6">
-          <div className="overflow-hidden rounded-lg border border-border-default bg-bg-surface">
-            <ImagePlaceholder src={lawyer.user.avatarUrl} className="h-[340px]" markSize={60} />
-            <div className="flex flex-col gap-1.5 px-6 pb-6 pt-5">
-              <p className="text-h4">{name}</p>
-              <p className="text-body-sm text-text-secondary">{lawyer.title}</p>
-              <p className="text-caption text-text-accent">{lawyer.yearsOfExperience} жилийн туршлага</p>
-            </div>
+      {/* Breadcrumb bar (desktop) */}
+      <div className="hidden bg-bg-page lg:block">
+        <div className="mx-auto max-w-[1200px] px-6 py-6">
+          <Breadcrumb items={crumbs} />
+        </div>
+      </div>
+
+      {/* Profile */}
+      <section className="bg-bg-page">
+        <div className={cn('mx-auto flex max-w-[1200px] flex-col gap-5 px-5 py-8 md:px-6 lg:pb-0 lg:pt-16', leftCol)}>
+          <Breadcrumb items={crumbs} className="lg:hidden" />
+          <div className="flex flex-col gap-6">
+            <ImagePlaceholder src={lawyer.user.avatarUrl} className="h-[320px] rounded-lg lg:h-[440px]" markSize={56} />
+            <ContactCard lawyer={lawyer} withButton className="hidden lg:flex" />
           </div>
-          <div className="flex flex-col gap-3 rounded-lg border border-border-default bg-bg-surface p-6">
-            <p className="text-body-medium text-text-primary">Холбоо барих</p>
-            <a href={`mailto:${lawyer.user.email}`} className="focus-ring rounded-sm text-body-sm text-text-secondary hover:text-text-brand">{lawyer.user.email}</a>
-            {lawyer.user.phone && <a href={`tel:${lawyer.user.phone}`} className="focus-ring rounded-sm text-body-sm text-text-secondary hover:text-text-brand">{lawyer.user.phone}</a>}
-            <Button asChild size="md" className="mt-2"><Link href="/contact">Уулзалт товлох</Link></Button>
+          <div className="flex flex-col gap-5 lg:gap-7">
+            <p className="text-overline text-text-accent">{lawyer.title}</p>
+            <h1 className="text-h2 md:text-h1">{name}</h1>
+            <p className="max-w-[740px] text-body text-text-secondary md:text-body-lg">{summary}</p>
+            {lawyer.specializations.length > 0 && (
+              <ul className="flex max-w-[740px] flex-wrap gap-2 lg:gap-2.5" aria-label="Мэргэшил">
+                {lawyer.specializations.map((s) => (
+                  <li key={s} className="rounded-full bg-bg-brand-soft px-3 py-1.5 text-caption text-text-brand lg:px-3.5 lg:py-[7px]">{s}</li>
+                ))}
+              </ul>
+            )}
+            <Button asChild size="lg" className="w-full lg:hidden">
+              <Link href="/contact">Цаг захиалах</Link>
+            </Button>
+            <div aria-hidden className="hidden h-px max-w-[740px] bg-border-default lg:block" />
           </div>
         </div>
-        <div className="flex flex-col gap-10">
-          <div>
-            <h2 className="text-h3">Танилцуулга</h2>
-            <p className="mt-4 text-body-lg text-text-secondary">{lawyer.bio}</p>
-          </div>
-          <div>
-            <h2 className="text-h3">Мэргэшил</h2>
-            <ul className="mt-4 flex flex-wrap gap-2">
-              {lawyer.specializations.map((s) => (
-                <li key={s} className="rounded-full bg-bg-brand-soft px-4 py-2 text-body-sm-medium text-text-brand">{s}</li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h2 className="text-h3">Боловсрол</h2>
-            <p className="mt-4 text-body text-text-secondary">{lawyer.education}</p>
+      </section>
+
+      {/* Bio — continues the right column on desktop, white block on mobile */}
+      <section className="bg-bg-surface lg:bg-bg-page">
+        <div className={cn('mx-auto max-w-[1200px] px-5 py-14 md:px-6 lg:pb-16 lg:pt-7', leftCol)}>
+          <div className="hidden lg:block" />
+          <div className="flex max-w-[740px] flex-col gap-5 lg:gap-7">
+            <h2 className="text-h3">Намтар</h2>
+            {lawyer.bio.split(/\n+/).filter(Boolean).map((p, i) => (
+              <p key={i} className="text-body text-text-secondary">{p}</p>
+            ))}
+            {lawyer.specializations.length > 0 && (
+              <>
+                <h3 className="text-h4">Мэргэшлийн чиглэл</h3>
+                <DotList items={lawyer.specializations} />
+              </>
+            )}
+            {lawyer.education && (
+              <>
+                <h3 className="text-h4">Боловсрол ба гэрчилгээ</h3>
+                <DotList items={educationItems(lawyer.education)} />
+              </>
+            )}
+            <ContactCard lawyer={lawyer} className="lg:hidden" />
           </div>
         </div>
       </section>
