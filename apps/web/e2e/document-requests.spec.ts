@@ -1,24 +1,8 @@
-import { type APIRequestContext, type Browser, type Page, expect, request as playwrightRequest, test } from '@playwright/test';
-import { API_URL, CLIENT1, CLIENT2, LAWYER1, login } from './fixtures';
+import { type Browser, type Page, expect, test } from '@playwright/test';
+import { CLIENT1, CLIENT2, LAWYER1, apiAs, createCaseForClient1, login } from './fixtures';
 
 const uniqueId = () => Date.now().toString(36);
 const pdf = (name: string) => ({ name, mimeType: 'application/pdf', buffer: Buffer.from(`%PDF-1.4 ${name}`) });
-
-async function apiAs(user: { identifier: string; password: string }): Promise<APIRequestContext> {
-  const api = await playwrightRequest.newContext({ baseURL: API_URL });
-  expect((await api.post('/auth/login', { data: user })).ok()).toBeTruthy();
-  return api;
-}
-
-/** A fresh case for client1, handled by lawyer1, so every run starts from an empty request list. */
-async function createCaseForClient1(lawyerApi: APIRequestContext, title: string): Promise<{ id: string; caseNumber: string }> {
-  const clients = (await (await lawyerApi.get('/users?role=CLIENT&limit=100')).json()) as { items: { id: string; email: string }[] };
-  const client = clients.items.find((user) => user.email === CLIENT1.identifier);
-  expect(client, 'seeded client1 exists').toBeTruthy();
-  const res = await lawyerApi.post('/cases', { data: { title, type: 'CIVIL', clientId: client!.id } });
-  expect(res.status()).toBe(201);
-  return (await res.json()) as { id: string; caseNumber: string };
-}
 
 async function clientPage(browser: Browser, baseURL: string | undefined): Promise<Page> {
   const context = await browser.newContext({ baseURL });

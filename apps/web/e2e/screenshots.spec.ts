@@ -108,8 +108,13 @@ test.describe('screenshots', () => {
     await page.goto('/admin/cases?search=0001', { waitUntil: 'load' });
     const requestCase = page.locator('a[href^="/admin/cases/"]:not([href$="/new"]):visible').first();
     await requestCase.waitFor();
-    await page.goto(`${await requestCase.getAttribute('href')}?tab=requests`, { waitUntil: 'load' });
+    const requestCaseHref = await requestCase.getAttribute('href');
+    await page.goto(`${requestCaseHref}?tab=requests`, { waitUntil: 'load' });
     await page.waitForTimeout(1500);
     await page.screenshot({ path: `screenshots/admin-case-requests.${suffix}.png`, fullPage: true });
+    // ADMIN only views the chat, so this does not mark the seeded messages read
+    await page.goto(`${requestCaseHref}?tab=messages`, { waitUntil: 'load' });
+    await page.waitForTimeout(1500);
+    await page.screenshot({ path: `screenshots/admin-case-messages.${suffix}.png`, fullPage: true });
   });
 });

@@ -107,6 +107,7 @@ law-firm/
 │   │       ├── documents/       multipart upload → MinIO, presigned download (scope + visibility), DELETE
 │   │       ├── invoices/        хэргийн scope-оор; үүсгэх (INV-YYYY-NNNN), төлөвийн шилжилт
 │   │       ├── document-requests/ баримтын хүсэлт: CRUD, submit (multipart), review, EventEmitter2 → мэдэгдэл
+│   │       ├── messages/        хэргийн мессеж: cursor жагсаалт, илгээх, уншсан болгох, unread summary, inbox
 │   │       ├── notifications/   list, read, read-all
 │   │       ├── contact/         public POST (5/цаг/IP), admin list + status
 │   │       ├── admin/           GET /admin/stats (хянах самбарын тоо, ойрын үйл явдал)
@@ -122,7 +123,7 @@ law-firm/
 │           ├── app/(site)/      /, about, services[/slug], lawyers[/id], news[/slug], faq, contact, 404
 │           ├── app/portal/      login (нууц үг + OTP UI), register, forgot-password,
 │           │                    (dashboard): cases[/id] (tabs), documents (drag-drop + preview),
-│           │                    invoices[/id], messages (удахгүй), notifications, profile
+│           │                    invoices[/id], messages (inbox), notifications, profile
 │           ├── app/admin/       ажилтны самбар: dashboard, cases[/new|/id], clients[/id], lawyers[/id],
 │           │                    posts[/new|/id/edit], invoices, contact, profile
 │           ├── app/api/revalidate  нийтлэл хадгалахад /, /news, /news/[slug]-ийг шууд шинэчилнэ
@@ -130,6 +131,7 @@ law-firm/
 │           │                    NavHeader, Footer, Sidebar, BottomTabBar, Modal, Toast, …)
 │           ├── components/icons Figma-с экспортолсон inline SVG
 │           ├── components/admin AdminShell, modal-ууд (event, invoice, user, confirm), PostEditor, query hook
+│           ├── components/messages ChatThread — админ болон порталын хэргийн чат
 │           ├── content/         services.ts (CaseType-тэй уялдана), faq.ts, testimonials.ts
 │           ├── lib/api.ts       fetch wrapper (cookie credentials, 401 → refresh → retry)
 │           ├── lib/api.server.ts  SSR-д cookie дамжуулдаг хувилбар
@@ -191,7 +193,7 @@ ADMIN болон LAWYER портал login-оор нэвтэрмэгц `/admin` 
 | `/admin` | ADMIN, LAWYER | Хянах самбар: тоон үзүүлэлт, ойрын үйл явдал |
 | `/admin/cases` | ADMIN, LAWYER | Хэргийн жагсаалт, төлөв/төрөл/хуульчийн шүүлт, хайлт (URL-д хадгалагдана) |
 | `/admin/cases/new` | ADMIN, LAWYER | Шинэ хэрэг, дугаар автоматаар олгогдоно |
-| `/admin/cases/[id]` | ADMIN, хариуцсан LAWYER | Тойм · Явцын түүх · Баримт (харилцагчид харагдах эсэх) · Баримтын хүсэлт · Нэхэмжлэх; төлөв солих, хаах |
+| `/admin/cases/[id]` | ADMIN, хариуцсан LAWYER | Тойм · Явцын түүх · Баримт (харилцагчид харагдах эсэх) · Баримтын хүсэлт · Мессеж · Нэхэмжлэх; төлөв солих, хаах |
 | `/admin/clients`, `/admin/clients/[id]` | ADMIN (LAWYER харна) | Харилцагч бүртгэх (түр нууц үг), засах, идэвхгүй болгох, хэргүүд |
 | `/admin/lawyers`, `/admin/lawyers/[id]` | ADMIN | Хуульчийн бүртгэл, нийтийн профайл |
 | `/admin/posts`, `/admin/posts/new`, `/admin/posts/[id]/edit` | ADMIN, LAWYER | Markdown editor + preview, cover зураг, slug автомат, Ноорог / Нийтлэх / Архивлах |
@@ -298,7 +300,46 @@ pnpm --filter @law-firm/web e2e
 
 ---
 
-## 6. Тест
+## 6. Хэргийн мессеж
+
+Хэрэг бүрт харилцагч болон хэргийг хариуцсан хуульч шууд харилцана. Эхний хувилбар зөвхөн текст дамжуулна;
+файл солилцохдоо «Баримтын хүсэлт»-ийг ашиглана. WebSocket байхгүй: нээлттэй чат 10 секунд тутам шинэчлэгдэнэ.
+
+### Эрх ба хүлээн авагч
+
+- Хэрэгт хандах эрхтэй хүн л уншиж, бичнэ: ADMIN, хариуцсан LAWYER, хэргийн CLIENT. Бусад хүсэлт 403 буцаана.
+- CLIENT бичвэл хариуцсан хуульч хүлээн авна. LAWYER эсвэл ADMIN бичвэл харилцагч хүлээн авна.
+- `readAt` нь хүлээн авагч тал уншсан цаг. ADMIN үзэгч тул уншаагүй тоо нь 0, чат нээхэд юу ч уншсан болохгүй.
+- Мессежийн текст AuditLog-д хадгалагдахгүй: interceptor зөвхөн route, params, query бичдэг.
+
+### Endpoint-ууд
+
+| Endpoint | Тайлбар |
+| --- | --- |
+| `GET /cases/:caseId/messages` | Шинэ нь эхэндээ. `?cursor=<ачаалсан хамгийн хуучин id>&limit=30` (≤100) → `{ items, nextCursor }` |
+| `POST /cases/:caseId/messages` | `{ body }`, trim хийсний дараа 1–2000 тэмдэгт. Илгээгч нь нэвтэрсэн хүн |
+| `GET /cases/:caseId/messages/unread-count` | `{ count }` |
+| `POST /cases/:caseId/messages/read` | Нөгөө талын уншаагүй мессежийг уншсан болгоно → `{ updated }` |
+| `GET /messages/unread-summary` | Хэргээр бүлэглэсэн уншаагүй тоо (sidebar badge, dashboard карт) |
+| `GET /messages/conversations` | Inbox: мессежтэй хэрэг бүрийн сүүлийн мессеж, уншаагүй тоо |
+
+### Event → мэдэгдэл
+
+`message.sent` event-ийг `MessageNotificationsListener` хүлээн авч «Шинэ мессеж: {хэргийн №}» мэдэгдэл үүсгэнэ.
+Холбоос нь харилцагчид `/portal/cases/:id?tab=messages`, хуульчид `/admin/cases/:id?tab=messages`.
+Тухайн чатын өмнөх мессежийн мэдэгдэл уншаагүй хэвээр байвал шинэ мэдэгдэл үүсгэхгүй (энгийн дедупликаци).
+
+### UI
+
+- **Админ** `/admin/cases/[id]` → «Мессеж» таб: өөрийн мессеж баруун, нөгөө талынх зүүн талд avatar, нэр, цагтай.
+  Enter илгээнэ, Shift+Enter шинэ мөр. Таб нээхэд харилцагчийн мессеж уншсан болж, sidebar-ын «Хэргүүд» тоо шинэчлэгдэнэ.
+- **Портал** `/portal/cases/[id]` → «Мессеж» таб ижил `ChatThread` компонентоор. `/portal/messages` нь хэрэг тус бүрийн
+  сүүлийн мессеж, уншаагүй тоотой inbox. Sidebar-ын «Мессеж» дээр badge, dashboard-д «Уншаагүй {n} мессеж байна» карт гарна.
+  «Хуульчтай холбогдох», «Мессеж бичих» товч чат табыг нээнэ.
+
+---
+
+## 7. Тест
 
 ```bash
 pnpm test            # эсвэл: pnpm --filter @law-firm/api test
@@ -310,13 +351,14 @@ RolesGuard, exception filter, audit entity mapping. Админ хэсэг: хэ�
 STATUS_CHANGE), event-ийн мэдэгдэл, нэхэмжлэхийн шилжилт, баримт устгах эрх, хэрэглэгч ба хуульчийн профайл,
 admin stats, contact-ийн шилжилт, staff endpoint-уудын эрх (`x-test-role` header-тэй HTTP тест).
 Баримтын хүсэлт: эрхийн scope (өөр хуульч, өөр харилцагч → 403), төлөвийн шилжилт, файл холбох, шалтгаангүй буцаалт → 400,
-файлтай хүсэлт устгах → 400, EventEmitter2 wiring-ээр мэдэгдэл үүсэх. Нийт 192 тест, DB шаардахгүй (Prisma mock).
+файлтай хүсэлт устгах → 400, EventEmitter2 wiring-ээр мэдэгдэл үүсэх. Мессеж: эрхгүй хүн → 403, хүлээн авагч,
+cursor pagination, уншаагүй тоо ба уншсан болгох, мэдэгдлийн дедупликаци, body-ийн урт → 400. Нийт 218 тест, DB шаардахгүй (Prisma mock).
 
 ```bash
 pnpm --filter @law-firm/web e2e     # Playwright, web :3001 + api :4000 ажиллаж байх ёстой
 ```
 
-Playwright (11 тест): нийтийн сайт (2), портал (2), админ (4), баримтын хүсэлт (3):
+Playwright (14 тест): нийтийн сайт (2), портал (2), админ (4), баримтын хүсэлт (3), мессеж (3):
 - LAWYER хэрэг үүсгэж шүүх хурал нэмэхэд харилцагч порталдаа болон мэдэгдлээс харна.
 - ADMIN нийтлэл нийтлэхэд нийтийн `/news` болон нийтлэлийн хуудсанд шууд гарна (тест дараа нь устгана).
 - LAWYER өөр хуульчийн хэрэг рүү `/admin/cases/[id]`-ээр орвол 403 хуудас, `PATCH /cases/:id` нь 403.
@@ -324,10 +366,13 @@ Playwright (11 тест): нийтийн сайт (2), портал (2), адм�
 - LAWYER баримт хүсэх → CLIENT порталд файл илгээх → LAWYER батлах → CLIENT талд «Хүлээн авсан».
 - LAWYER шалтгаантай буцаах → CLIENT шалтгааныг харж дахин илгээх → LAWYER талд дахин «Илгээсэн».
 - Өөр харилцагч хүсэлтэд файл илгээх, хүсэлтийг харах → 403; хэргийн хуудас нь 403.
+- CLIENT мессеж илгээх → LAWYER мэдэгдлийн холбоосоор чатад орж хариулах → CLIENT-ийн нээлттэй чатад хариу polling-оор гарах.
+- Inbox дээр уншаагүй тоо харагдаж, чатыг нээхэд 0 болох.
+- Өөр харилцагч, өөр хуульч мессежийн API болон чат табаар орвол 403.
 
 ---
 
-## 7. Production тэмдэглэл
+## 8. Production тэмдэглэл
 
 - `pnpm build` → `apps/api/dist`, `apps/web/.next`. API: `node dist/main`, web: `next start`.
 - API `trust proxy` = 1 (reverse proxy ард), cookie `secure` = true.
