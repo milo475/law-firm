@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CreateCaseSchema, INVOICE_STATUS_TRANSITIONS } from '@law-firm/shared/schemas';
+import { CreateCaseSchema } from '@law-firm/shared/schemas';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -10,6 +10,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { ConfirmModal } from '@/components/admin/confirm-modal';
 import { EventModal } from '@/components/admin/event-modal';
+import { InvoiceActions } from '@/components/admin/invoice-actions';
 import { InvoiceModal } from '@/components/admin/invoice-modal';
 import { useInvalidateCase, useLawyerOptions } from '@/components/admin/queries';
 import { PlusIcon } from '@/components/icons';
@@ -28,7 +29,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/toast';
 import { ApiError, api, type CaseDetail, type CaseEvent, type DocumentItem, type InvoiceItem, type Paginated, type PublicUser } from '@/lib/api';
-import { CASE_STATUSES, CASE_TYPES, type CaseStatus, type InvoiceStatus } from '@/lib/admin';
+import { CASE_STATUSES, CASE_TYPES, type CaseStatus } from '@/lib/admin';
 import { CASE_EVENT_LABELS, CASE_STATUS_LABELS, CASE_TYPE_LABELS, formatBytes, formatDate, formatMoney } from '@/lib/format';
 import { shortName } from '@/lib/utils';
 
@@ -36,13 +37,6 @@ type StaffPerson = PublicUser & { email: string; phone: string | null };
 type StaffCaseDetail = CaseDetail & { client: StaffPerson; lawyer: StaffPerson };
 
 const ACCEPT = '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt';
-const INVOICE_ACTION_LABELS: Record<InvoiceStatus, string> = {
-  DRAFT: 'Ноорог',
-  SENT: 'Илгээх',
-  PAID: 'Төлөгдсөн',
-  OVERDUE: 'Хугацаа хэтэрсэн',
-  CANCELLED: 'Цуцлах',
-};
 
 const OverviewSchema = z.object({
   title: CreateCaseSchema.shape.title,
@@ -416,14 +410,6 @@ function InvoicesTab({ caseId, onChanged }: { caseId: string; onChanged: () => P
     queryFn: () => api.get<Paginated<InvoiceItem>>(`/invoices?caseId=${caseId}&limit=100`),
   });
   const [createOpen, setCreateOpen] = useState(false);
-  const transition = useMutation({
-    mutationFn: ({ invoiceId, status }: { invoiceId: string; status: InvoiceStatus }) => api.patch<InvoiceItem>(`/invoices/${invoiceId}`, { status }),
-    onSuccess: async (invoice) => {
-      toast.success('Нэхэмжлэх шинэчлэгдлээ', invoice.status === 'SENT' ? `${invoice.invoiceNumber} харилцагчид илгээгдэж, мэдэгдэл очлоо.` : `${invoice.invoiceNumber} · ${INVOICE_STATUS_BADGE[invoice.status]?.label ?? invoice.status}`);
-      await onChanged();
-    },
-    onError: (error) => toast.danger('Төлөв солиход алдаа гарлаа', error instanceof ApiError ? error.message : undefined),
-  });
 
   return (
     <div className="flex flex-col gap-4">
@@ -450,37 +436,16 @@ function InvoicesTab({ caseId, onChanged }: { caseId: string; onChanged: () => P
             </TableRow>
           </TableHead>
           <TableBody>
-            {invoices.data!.items.map((inv) => {
-              const next = INVOICE_STATUS_TRANSITIONS[inv.status as InvoiceStatus] ?? [];
-              return (
-                <TableRow key={inv.id}>
-                  <TableCell className="whitespace-nowrap text-body-sm-medium text-text-primary">{inv.invoiceNumber}</TableCell>
-                  <TableCell className="max-w-[240px] truncate" title={inv.description}>{inv.description}</TableCell>
-                  <TableCell className="whitespace-nowrap text-right text-body-sm-medium text-text-primary">{formatMoney(inv.amount)}</TableCell>
-                  <TableCell className="whitespace-nowrap">{formatDate(inv.dueDate)}</TableCell>
-                  <TableCell className="whitespace-nowrap"><StatusBadge map={INVOICE_STATUS_BADGE} status={inv.status} /></TableCell>
-                  <TableCell className="py-2 text-right">
-                    <div className="flex flex-wrap justify-end gap-1">
-                      {next.length === 0 ? (
-                        <span className="text-caption text-text-muted">{inv.paidAt ? `Төлсөн ${formatDate(inv.paidAt)}` : 'Эцсийн төлөв'}</span>
-                      ) : (
-                        next.map((status) => (
-                          <Button
-                            key={status}
-                            variant={status === 'CANCELLED' ? 'ghost' : 'secondary'}
-                            size="sm"
-                            disabled={transition.isPending}
-                            onClick={() => transition.mutate({ invoiceId: inv.id, status })}
-                          >
-                            {INVOICE_ACTION_LABELS[status]}
-                          </Button>
-                        ))
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+            {invoices.data!.items.map((inv) => (
+              <TableRow key={inv.id}>
+                <TableCell className="whitespace-nowrap text-body-sm-medium text-text-primary">{inv.invoiceNumber}</TableCell>
+                <TableCell className="max-w-[240px] truncate" title={inv.description}>{inv.description}</TableCell>
+                <TableCell className="whitespace-nowrap text-right text-body-sm-medium text-text-primary">{formatMoney(inv.amount)}</TableCell>
+                <TableCell className="whitespace-nowrap">{formatDate(inv.dueDate)}</TableCell>
+                <TableCell className="whitespace-nowrap"><StatusBadge map={INVOICE_STATUS_BADGE} status={inv.status} /></TableCell>
+                <TableCell className="py-2 text-right"><InvoiceActions invoice={inv} onChanged={onChanged} /></TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       )}

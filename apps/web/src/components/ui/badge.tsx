@@ -55,6 +55,12 @@ export const CONTACT_STATUS_BADGE: Record<string, { tone: BadgeTone; label: stri
   CLOSED: { tone: 'closed', label: 'Хаагдсан' },
 };
 
+export const POST_STATUS_BADGE: Record<string, { tone: BadgeTone; label: string }> = {
+  DRAFT: { tone: 'closed', label: 'Ноорог' },
+  PUBLISHED: { tone: 'progress', label: 'Нийтэлсэн' },
+  ARCHIVED: { tone: 'pending', label: 'Архивласан' },
+};
+
 export function StatusBadge({ map, status, className }: { map: Record<string, { tone: BadgeTone; label: string }>; status: string; className?: string }) {
   const entry = map[status] ?? { tone: 'closed' as BadgeTone, label: status };
   return <Badge tone={entry.tone} className={className}>{entry.label}</Badge>;
