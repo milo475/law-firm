@@ -26,6 +26,11 @@ export const EnvSchema = z.object({
   MINIO_ACCESS_KEY: z.string().min(1),
   MINIO_SECRET_KEY: z.string().min(1),
   MINIO_BUCKET: z.string().min(1).default('law-firm-documents'),
+  /** Browser-facing base URL for public objects (post covers). Defaults to http(s)://MINIO_ENDPOINT:MINIO_PORT. */
+  MINIO_PUBLIC_URL: z
+    .string()
+    .optional()
+    .transform((value) => (value && value.trim().length > 0 ? value.trim().replace(/\/+$/, '') : undefined)),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

@@ -1,8 +1,8 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import {
   Role,
+  type AdminCreateUserInput,
   type ChangePasswordInput,
-  type CreateUserInput,
   type Paginated,
   type Prisma,
   type SafeUser,
@@ -11,9 +11,11 @@ import {
   type UserQueryInput,
 } from '@law-firm/shared';
 import { AuthService } from '../auth/auth.service';
+import type { RequestUser } from '../common/types/request-user';
 import { paginate, skipTake } from '../common/utils/pagination';
 import { SAFE_USER_SELECT } from '../common/utils/safe-user';
 import { PrismaService } from '../prisma/prisma.service';
+import { generateTemporaryPassword } from './temporary-password';
 
 const ADMIN_USER_SELECT = { ...SAFE_USER_SELECT, lawyerProfile: true } satisfies Prisma.UserSelect;
 
@@ -26,9 +28,11 @@ export class UsersService {
 
   // ─── Admin CRUD ────────────────────────────────────────────────────────────
 
-  async findAll(query: UserQueryInput): Promise<Paginated<unknown>> {
+  /** ADMIN lists everyone; a LAWYER can only look up clients (e.g. to open a case). */
+  async findAll(query: UserQueryInput, actor: RequestUser): Promise<Paginated<unknown>> {
+    const role = actor.role === Role.LAWYER ? Role.CLIENT : query.role;
     const where: Prisma.UserWhereInput = {
-      ...(query.role ? { role: query.role } : {}),
+      ...(role ? { role } : {}),
       ...(query.isActive !== undefined ? { isActive: query.isActive } : {}),
       ...(query.search
         ? {
@@ -53,30 +57,35 @@ export class UsersService {
     return paginate(items, total, query.page, query.limit);
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, actor: RequestUser) {
     const user = await this.prisma.user.findUnique({ where: { id }, select: ADMIN_USER_SELECT });
     if (!user) throw new NotFoundException('Хэрэглэгч олдсонгүй');
+    if (actor.role === Role.LAWYER && user.role !== Role.CLIENT) {
+      throw new ForbiddenException('Та зөвхөн харилцагчийн мэдээллийг харах боломжтой');
+    }
     return user;
   }
 
-  async create(input: CreateUserInput) {
+  /**
+   * Creates a LAWYER or CLIENT. Without a password a temporary one is generated and returned
+   * exactly once so the admin can hand it over; it is never stored in plain text.
+   */
+  async create(input: AdminCreateUserInput): Promise<{ user: unknown; temporaryPassword: string | null }> {
     await this.assertUnique(input.email, input.phone ?? null);
-    if (input.lawyerProfile && input.role !== Role.LAWYER) {
-      throw new BadRequestException('Хуульчийн профайл зөвхөн LAWYER эрхтэй хэрэглэгчид байна');
-    }
-    return this.prisma.user.create({
+    const temporaryPassword = input.password ? null : generateTemporaryPassword();
+    const user = await this.prisma.user.create({
       data: {
         email: input.email,
         phone: input.phone ?? null,
-        passwordHash: await this.auth.hashPassword(input.password),
+        passwordHash: await this.auth.hashPassword(input.password ?? (temporaryPassword as string)),
         firstName: input.firstName,
         lastName: input.lastName,
         role: input.role,
         isActive: input.isActive,
-        ...(input.lawyerProfile ? { lawyerProfile: { create: input.lawyerProfile } } : {}),
       },
       select: ADMIN_USER_SELECT,
     });
+    return { user, temporaryPassword };
   }
 
   async update(id: string, input: UpdateUserInput) {

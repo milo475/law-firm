@@ -28,23 +28,23 @@ export class UsersController {
     return this.users.changePassword(user.id, dto);
   }
 
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.LAWYER)
   @Get()
-  @ApiOperation({ summary: '[ADMIN] Хэрэглэгчдийн жагсаалт' })
-  findAll(@Query() query: UserQueryDto) {
-    return this.users.findAll(query);
+  @ApiOperation({ summary: '[ADMIN] Хэрэглэгчдийн жагсаалт (role, search, page); LAWYER → зөвхөн харилцагчид' })
+  findAll(@Query() query: UserQueryDto, @CurrentUser() actor: RequestUser) {
+    return this.users.findAll(query, actor);
   }
 
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.LAWYER)
   @Get(':id')
-  @ApiOperation({ summary: '[ADMIN] Хэрэглэгчийн дэлгэрэнгүй' })
-  findOne(@Param('id') id: string) {
-    return this.users.findOne(id);
+  @ApiOperation({ summary: '[ADMIN] Хэрэглэгчийн дэлгэрэнгүй; LAWYER → зөвхөн харилцагч' })
+  findOne(@Param('id') id: string, @CurrentUser() actor: RequestUser) {
+    return this.users.findOne(id, actor);
   }
 
   @Roles(Role.ADMIN)
   @Post()
-  @ApiOperation({ summary: '[ADMIN] Хэрэглэгч үүсгэх (дурын эрхтэй)' })
+  @ApiOperation({ summary: '[ADMIN] Хуульч эсвэл харилцагч үүсгэх (нууц үг өгөөгүй бол түр нууц үг буцаана)' })
   create(@Body() dto: CreateUserDto) {
     return this.users.create(dto);
   }

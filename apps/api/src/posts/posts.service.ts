@@ -135,6 +135,12 @@ export class PostsService {
     });
   }
 
+  /** Full post (any status) for the editor; LAWYER only their own. */
+  async findForManagementById(id: string, user: RequestUser) {
+    await this.findOwnedOrFail(id, user);
+    return this.prisma.post.findUnique({ where: { id }, include: { author: { select: PUBLIC_USER_SELECT } } });
+  }
+
   async remove(id: string, user: RequestUser): Promise<void> {
     await this.findOwnedOrFail(id, user);
     await this.prisma.post.delete({ where: { id } });

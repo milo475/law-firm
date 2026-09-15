@@ -18,6 +18,7 @@ export const TEST_ENV: Env = {
   MINIO_ACCESS_KEY: 'minioadmin',
   MINIO_SECRET_KEY: 'minioadmin',
   MINIO_BUCKET: 'test-bucket',
+  MINIO_PUBLIC_URL: undefined,
 };
 
 export function createConfigMock(overrides: Partial<Env> = {}): ConfigService<Env, true> {

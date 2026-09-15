@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ZodValidationPipe } from 'nestjs-zod';
+import { AdminModule } from './admin/admin.module';
 import { AppController } from './app.controller';
 import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
@@ -45,6 +46,7 @@ import { UsersModule } from './users/users.module';
     InvoicesModule,
     NotificationsModule,
     ContactModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [
