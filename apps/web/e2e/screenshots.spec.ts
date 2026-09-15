@@ -36,6 +36,7 @@ const ADMIN_PAGES: [string, string][] = [
   ['admin-cases', '/admin/cases'],
   ['admin-tasks', '/admin/tasks'],
   ['admin-tasks-board', '/admin/tasks?view=board'],
+  ['admin-notifications', '/admin/notifications'],
   ['admin-case-new', '/admin/cases/new'],
   ['admin-clients', '/admin/clients'],
   ['admin-lawyers', '/admin/lawyers'],
@@ -131,5 +132,10 @@ test.describe('screenshots', () => {
     await page.waitForURL(/\/admin\/tasks\/[0-9a-f-]{36}$/);
     await page.waitForTimeout(1500);
     await page.screenshot({ path: `screenshots/admin-task-detail.${suffix}.png`, fullPage: true });
+    await page.goto('/admin', { waitUntil: 'load' });
+    await page.getByRole('button', { name: /^Мэдэгдэл/ }).click();
+    await page.getByRole('menu', { name: 'Сүүлийн мэдэгдлүүд' }).waitFor();
+    await page.waitForTimeout(1200);
+    await page.screenshot({ path: `screenshots/admin-notification-bell.${suffix}.png` });
   });
 });
