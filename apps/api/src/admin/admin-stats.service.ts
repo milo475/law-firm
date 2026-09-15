@@ -58,7 +58,7 @@ export class AdminStatsService {
     }
 
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const [statusCounts, activeLawyers, monthInvoices, newContactRequests] = await Promise.all([
+    const [statusCounts, activeLawyers, monthInvoices, newServiceRequests] = await Promise.all([
       Promise.all(CASE_STATUSES.map((status) => this.prisma.case.count({ where: { status } }))),
       this.prisma.user.count({ where: { role: Role.LAWYER, isActive: true } }),
       this.prisma.invoice.aggregate({
@@ -66,7 +66,7 @@ export class AdminStatsService {
         _sum: { amount: true },
         _count: { _all: true },
       }),
-      this.prisma.contactRequest.count({ where: { status: 'NEW' } }),
+      this.prisma.serviceRequest.count({ where: { status: 'NEW' } }),
     ]);
     const casesByStatus = Object.fromEntries(CASE_STATUSES.map((status, i) => [status, statusCounts[i]])) as Record<CaseStatus, number>;
 
@@ -78,7 +78,7 @@ export class AdminStatsService {
         totalCases: statusCounts.reduce((sum, count) => sum + count, 0),
         activeLawyers,
         invoicesThisMonth: { count: monthInvoices._count._all, total: String(monthInvoices._sum.amount ?? 0) },
-        newContactRequests,
+        newServiceRequests,
       },
     };
   }

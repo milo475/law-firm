@@ -31,7 +31,7 @@ describe('AdminStatsService', () => {
     const counts: Record<string, number> = { NEW: 2, IN_PROGRESS: 5, WAITING: 1, CLOSED: 7 };
     prisma.case.count.mockImplementation(async ({ where }: any) => counts[where.status]);
     prisma.user.count.mockResolvedValue(4);
-    prisma.contactRequest.count.mockResolvedValue(6);
+    prisma.serviceRequest.count.mockResolvedValue(6);
     const stats = await service.stats(ADMIN_USER);
     expect(prisma.caseEvent.findMany.mock.calls[0][0].where.case).toEqual({});
     expect(stats.admin).toEqual({
@@ -39,7 +39,7 @@ describe('AdminStatsService', () => {
       totalCases: 15,
       activeLawyers: 4,
       invoicesThisMonth: { count: 2, total: '1250000' },
-      newContactRequests: 6,
+      newServiceRequests: 6,
     });
     expect(stats.lawyer).toBeUndefined();
   });

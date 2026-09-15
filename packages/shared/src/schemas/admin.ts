@@ -24,6 +24,7 @@ export interface AdminStats {
     totalCases: number;
     activeLawyers: number;
     invoicesThisMonth: { count: number; total: string };
-    newContactRequests: number;
+    /** Service requests waiting for a decision (NEW). */
+    newServiceRequests: number;
   };
 }
