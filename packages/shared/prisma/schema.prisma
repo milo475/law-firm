@@ -147,12 +147,17 @@ model RefreshToken {
   id        String    @id @default(uuid()) @db.Uuid
   userId    String    @db.Uuid
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// One login session: every token rotated from the same login shares it.
+  familyId  String    @default(uuid()) @db.Uuid
   tokenHash String    @unique
   expiresAt DateTime
   revokedAt DateTime?
+  /// Set when the token was exchanged for a new one (never by logout or revoke-all); drives the concurrent refresh grace window.
+  rotatedAt DateTime?
   createdAt DateTime  @default(now())
 
   @@index([userId])
+  @@index([familyId])
 }
 
 model LawyerProfile {
