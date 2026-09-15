@@ -192,6 +192,7 @@ export interface CurrentUser {
   role: 'ADMIN' | 'LAWYER' | 'CLIENT';
   avatarUrl: string | null;
   lastLoginAt: string | null;
+  createdAt?: string;
 }
 
 export interface CaseListItem {

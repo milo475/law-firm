@@ -284,3 +284,25 @@ export const EyeIcon = (p: IconProps) => (
 export const DownloadIcon = (p: IconProps) => (
   <svg viewBox="0 0 44 44" {...base(p, 44, 44)}><path {...stroke} d="M22 15.5V25.5M26 21.5L22 25.5L18 21.5M15 28.5H29" /></svg>
 );
+
+// ── Admin navigation (same 20×20 / 1.6px stroke style as the portal sidebar icons) ──
+export const UsersIcon = (p: IconProps) => (
+  <svg viewBox="0 0 20 20" {...base(p, 20, 20)}>
+    <path {...stroke} d="M1.5 17C1.5 13.8 4 12 7.5 12C11 12 13.5 13.8 13.5 17M10.5 6.5C10.5 8.2 9.2 9.5 7.5 9.5C5.8 9.5 4.5 8.2 4.5 6.5C4.5 4.8 5.8 3.5 7.5 3.5C9.2 3.5 10.5 4.8 10.5 6.5ZM13.5 3.7C14.9 4 16 5.2 16 6.6C16 8 14.9 9.2 13.5 9.5M15.5 12.4C17.3 13 18.5 14.6 18.5 17" />
+  </svg>
+);
+export const BriefcaseIcon = (p: IconProps) => (
+  <svg viewBox="0 0 20 20" {...base(p, 20, 20)}>
+    <path {...stroke} d="M2 6.5H18V16.5H2V6.5ZM7 6.5V3.5H13V6.5M2 10.5H18" />
+  </svg>
+);
+export const InboxIcon = (p: IconProps) => (
+  <svg viewBox="0 0 20 20" {...base(p, 20, 20)}>
+    <path {...stroke} d="M2 11L4.5 3.5H15.5L18 11V16.5H2V11ZM2 11H6.5L8 13.5H12L13.5 11H18" />
+  </svg>
+);
+export const PlusIcon = (p: IconProps) => (
+  <svg viewBox="0 0 20 20" {...base(p, 20, 20)}>
+    <path {...stroke} strokeWidth={1.8} d="M10 4V16M4 10H16" />
+  </svg>
+);

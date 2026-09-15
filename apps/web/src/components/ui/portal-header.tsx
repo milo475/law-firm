@@ -12,13 +12,17 @@ export interface PortalHeaderProps {
   unreadCount?: number;
   backHref?: string | null;
   onSearch?: (query: string) => void;
+  /** Bell link target; null hides the bell. */
+  notificationsHref?: string | null;
+  profileHref?: string;
+  searchPlaceholder?: string;
   className?: string;
 }
 
-export function PortalHeader({ title, user, unreadCount = 0, backHref, onSearch, className }: PortalHeaderProps) {
+export function PortalHeader({ title, user, unreadCount = 0, backHref, onSearch, notificationsHref = '/portal/notifications', profileHref = '/portal/profile', searchPlaceholder = 'Хэрэг, баримт хайх', className }: PortalHeaderProps) {
   const initials = `${user.lastName.charAt(0)}${user.firstName.charAt(0)}`.toUpperCase();
-  const bell = (
-    <Link href="/portal/notifications" aria-label={unreadCount ? `Мэдэгдэл, ${unreadCount} уншаагүй` : 'Мэдэгдэл'} className="focus-ring relative inline-flex size-11 items-center justify-center rounded-md text-text-secondary hover:bg-bg-surface-alt">
+  const bell = notificationsHref === null ? null : (
+    <Link href={notificationsHref} aria-label={unreadCount ? `Мэдэгдэл, ${unreadCount} уншаагүй` : 'Мэдэгдэл'} className="focus-ring relative inline-flex size-11 items-center justify-center rounded-md text-text-secondary hover:bg-bg-surface-alt">
       <NotificationsIcon size={44} />
       {unreadCount > 0 && <span aria-hidden className="absolute right-3 top-3 size-2 rounded-full bg-accent-default" />}
     </Link>
@@ -37,11 +41,11 @@ export function PortalHeader({ title, user, unreadCount = 0, backHref, onSearch,
               className="flex h-11 w-[280px] items-center gap-2.5 rounded-md border border-border-default bg-bg-surface-alt px-3.5 focus-within:border-2 focus-within:border-border-focus"
             >
               <SearchIcon size={16} className="shrink-0 text-text-muted" />
-              <input name="q" type="search" placeholder="Хэрэг, баримт хайх" aria-label="Хэрэг, баримт хайх" className="w-full bg-transparent text-body-sm text-text-primary outline-none placeholder:text-text-muted" />
+              <input name="q" type="search" placeholder={searchPlaceholder} aria-label={searchPlaceholder} className="w-full bg-transparent text-body-sm text-text-primary outline-none placeholder:text-text-muted" />
             </form>
           )}
           {bell}
-          <Link href="/portal/profile" className="focus-ring flex items-center gap-2.5 rounded-md pr-1">
+          <Link href={profileHref} className="focus-ring flex items-center gap-2.5 rounded-md pr-1">
             <Avatar size="sm" initials={initials} src={user.avatarUrl} className="size-9" />
             <span className="text-body-sm-medium text-text-primary">{user.lastName.charAt(0)}. {user.firstName}</span>
           </Link>
@@ -59,7 +63,7 @@ export function PortalHeader({ title, user, unreadCount = 0, backHref, onSearch,
         </div>
         <div className="flex items-center">
           {bell}
-          <Link href="/portal/profile" aria-label="Профайл" className="focus-ring inline-flex size-11 items-center justify-center rounded-md">
+          <Link href={profileHref} aria-label="Профайл" className="focus-ring inline-flex size-11 items-center justify-center rounded-md">
             <Avatar size="sm" initials={initials} src={user.avatarUrl} />
           </Link>
         </div>

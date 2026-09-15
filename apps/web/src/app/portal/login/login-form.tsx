@@ -27,9 +27,11 @@ export function LoginForm() {
 
   async function onSubmit(values: LoginInput) {
     try {
-      await api.post('/auth/login', values);
+      const { user } = await api.post<{ user: { role: string } }>('/auth/login', values);
       const next = searchParams.get('next');
-      router.replace(next && next.startsWith('/portal') ? next : '/portal');
+      const isStaff = user.role === 'ADMIN' || user.role === 'LAWYER';
+      const safeNext = next && (next.startsWith('/portal') || (isStaff && next.startsWith('/admin'))) ? next : null;
+      router.replace(safeNext ?? (isStaff ? '/admin' : '/portal'));
       router.refresh();
     } catch (error) {
       const message = error instanceof ApiError ? error.message : 'Нэвтрэхэд алдаа гарлаа';
