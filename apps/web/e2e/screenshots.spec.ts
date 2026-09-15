@@ -34,6 +34,8 @@ const PORTAL_PAGES: [string, string][] = [
 const ADMIN_PAGES: [string, string][] = [
   ['admin-dashboard', '/admin'],
   ['admin-cases', '/admin/cases'],
+  ['admin-tasks', '/admin/tasks'],
+  ['admin-tasks-board', '/admin/tasks?view=board'],
   ['admin-case-new', '/admin/cases/new'],
   ['admin-clients', '/admin/clients'],
   ['admin-lawyers', '/admin/lawyers'],
@@ -116,5 +118,18 @@ test.describe('screenshots', () => {
     await page.goto(`${requestCaseHref}?tab=messages`, { waitUntil: 'load' });
     await page.waitForTimeout(1500);
     await page.screenshot({ path: `screenshots/admin-case-messages.${suffix}.png`, fullPage: true });
+    await page.goto(`${requestCaseHref}?tab=team`, { waitUntil: 'load' });
+    await page.waitForTimeout(1500);
+    await page.screenshot({ path: `screenshots/admin-case-team.${suffix}.png`, fullPage: true });
+    await page.goto(`${requestCaseHref}?tab=tasks`, { waitUntil: 'load' });
+    await page.waitForTimeout(1500);
+    await page.screenshot({ path: `screenshots/admin-case-tasks.${suffix}.png`, fullPage: true });
+    await page.goto('/admin/tasks', { waitUntil: 'load' });
+    const taskLink = page.locator('a[href^="/admin/tasks/"]:visible').first();
+    await taskLink.waitFor();
+    await taskLink.click();
+    await page.waitForURL(/\/admin\/tasks\/[0-9a-f-]{36}$/);
+    await page.waitForTimeout(1500);
+    await page.screenshot({ path: `screenshots/admin-task-detail.${suffix}.png`, fullPage: true });
   });
 });

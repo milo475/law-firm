@@ -81,6 +81,7 @@ web → `next.config.ts`).
 | `JWT_REFRESH_TTL_DAYS` | Refresh token хугацаа (хоног) | `7` |
 | `CORS_ORIGIN` | Зөвшөөрөгдсөн origin (таслалаар) | `http://localhost:3001` |
 | `COOKIE_DOMAIN` | Prod cookie domain (хоосон = host) | `.lawfirm.mn` |
+| `THROTTLE_LIMIT` | API-ийн глобал хязгаар: нэг IP-ээс минутад илгээх хүсэлт (default 120). E2E-г нэг машинаас ажиллуулахад өсгөнө | `120` |
 | `MINIO_ENDPOINT/PORT/USE_SSL` | MinIO холболт | `localhost` / `9000` / `false` |
 | `MINIO_ACCESS_KEY/SECRET_KEY` | MinIO нэвтрэлт | `minioadmin` |
 | `MINIO_BUCKET` | Баримт хадгалах bucket (байхгүй бол API үүсгэнэ) | `law-firm-documents` |
@@ -181,9 +182,10 @@ ADMIN болон LAWYER портал login-оор нэвтэрмэгц `/admin` 
 ### Эрхийн дүрэм
 
 - **ADMIN** бүх хэрэг, харилцагч, хуульч, нийтлэл, нэхэмжлэх, хүсэлтийг удирдана.
-- **LAWYER** зөвхөн өөрт хуваарилагдсан хэрэг, түүний үйл явдал, баримт, нэхэмжлэхийг удирдана.
+- **LAWYER** зөвхөн өөрийн багийн гишүүн болсон хэрэг, түүний үйл явдал, баримт, нэхэмжлэхийг удирдана (8-р хэсэг).
   Шинэ хэрэг үүсгэхдээ зөвхөн өөрийгөө хариуцагчаар сонгоно. Харилцагчдыг зөвхөн харна, нийтлэлээс өөрийнхөө нийтлэлийг л засна.
-- Хэргийг хариуцах хуульчийг зөвхөн ADMIN солино.
+- Хэргийн үндсэн мэдээлэл, төлөв, багийг зөвхөн ахлах хуульч (LEAD) эсвэл ADMIN өөрчилнө. Ахлахыг ADMIN «Тойм»-оос,
+  эсвэл одоогийн ахлах хуульч «Баг» табаас шилжүүлнэ.
 - API дээр global `RolesGuard` + `CasesService`-ийн хэргийн хандалтын шалгалт (CLIENT scope-ийн логикийг дахин ашигладаг).
   Бүх POST/PATCH/DELETE хүсэлт `AuditLog`-д бичигдэнэ.
 
@@ -194,12 +196,14 @@ ADMIN болон LAWYER портал login-оор нэвтэрмэгц `/admin` 
 | `/admin` | ADMIN, LAWYER | Хянах самбар: тоон үзүүлэлт, ойрын үйл явдал |
 | `/admin/cases` | ADMIN, LAWYER | Хэргийн жагсаалт, төлөв/төрөл/хуульчийн шүүлт, хайлт (URL-д хадгалагдана) |
 | `/admin/cases/new` | ADMIN, LAWYER | Шинэ хэрэг, дугаар автоматаар олгогдоно |
-| `/admin/cases/[id]` | ADMIN, хариуцсан LAWYER | Тойм · Явцын түүх · Баримт (харилцагчид харагдах эсэх) · Баримтын хүсэлт · Мессеж · Нэхэмжлэх; төлөв солих, хаах |
+| `/admin/cases/[id]` | ADMIN, багийн LAWYER | Тойм · Явцын түүх · Баримт (харилцагчид харагдах эсэх) · Баримтын хүсэлт · Мессеж · Нэхэмжлэх · Баг · Даалгавар; төлөв солих, хаах (LEAD, ADMIN) |
+| `/admin/tasks` | ADMIN, LAWYER | Даалгаврын жагсаалт ба Kanban самбар, шүүлт (URL-д хадгалагдана) |
+| `/admin/tasks/[id]` | ADMIN, харах эрхтэй LAWYER | Даалгаврын дэлгэрэнгүй, төлөв, засах, устгах, коммент |
 | `/admin/clients`, `/admin/clients/[id]` | ADMIN (LAWYER харна) | Харилцагч бүртгэх (түр нууц үг), засах, идэвхгүй болгох, хэргүүд |
 | `/admin/lawyers`, `/admin/lawyers/[id]` | ADMIN | Хуульчийн бүртгэл, нийтийн профайл |
 | `/admin/posts`, `/admin/posts/new`, `/admin/posts/[id]/edit` | ADMIN, LAWYER | Markdown editor + preview, cover зураг, slug автомат, Ноорог / Нийтлэх / Архивлах |
 | `/admin/invoices` | ADMIN, LAWYER | Нэхэмжлэх үүсгэх, төлөвийн шилжилт, баталгаажуулах хүлээгдэж буй төлбөрийн шүүлт |
-| `/admin/invoices/[id]` | ADMIN, хариуцсан LAWYER | Нэхэмжлэхийн дэлгэрэнгүй, харилцагчийн төлбөрийн тэмдэглэл, баталгаажуулах / татгалзах |
+| `/admin/invoices/[id]` | ADMIN, багийн LAWYER | Нэхэмжлэхийн дэлгэрэнгүй, харилцагчийн төлбөрийн тэмдэглэл, баталгаажуулах / татгалзах |
 | `/admin/contact` | ADMIN | «Холбоо барих» хүсэлтүүд: Шинэ → Холбогдсон → Хаагдсан |
 | `/admin/profile` | ADMIN, LAWYER | Бүртгэлийн мэдээлэл, нууц үг, (LAWYER) нийтийн профайл |
 
@@ -208,14 +212,14 @@ ADMIN болон LAWYER портал login-оор нэвтэрмэгц `/admin` 
 | Endpoint | Эрх | Дүрэм |
 | --- | --- | --- |
 | `POST /cases` | ADMIN, LAWYER | `LF-YYYY-NNNN` автомат. ADMIN хуульч заавал сонгоно, LAWYER зөвхөн өөрийгөө |
-| `PATCH /cases/:id` | ADMIN, хариуцсан LAWYER | Төлөв солиход `STATUS_CHANGE` event үүснэ |
-| `PATCH /cases/:id/close` | ADMIN, хариуцсан LAWYER | `CLOSED` + `closedAt`, тэмдэглэлтэй event |
-| `POST /cases/:id/events` | ADMIN, хариуцсан LAWYER | Харилцагчид харагдах HEARING / MEETING / DEADLINE нь харилцагчид мэдэгдэл илгээнэ |
-| `PATCH /events/:id`, `DELETE /events/:id` | ADMIN, хариуцсан LAWYER | `STATUS_CHANGE` event-ийн төрлийг солихгүй |
+| `PATCH /cases/:id` | ADMIN, ахлах LAWYER | Төлөв солиход `STATUS_CHANGE` event үүснэ |
+| `PATCH /cases/:id/close` | ADMIN, ахлах LAWYER | `CLOSED` + `closedAt`, тэмдэглэлтэй event |
+| `POST /cases/:id/events` | ADMIN, багийн LAWYER | Харилцагчид харагдах HEARING / MEETING / DEADLINE нь харилцагчид мэдэгдэл илгээнэ |
+| `PATCH /events/:id`, `DELETE /events/:id` | ADMIN, багийн LAWYER | `STATUS_CHANGE` event-ийн төрлийг солихгүй |
 | `POST /cases/:id/documents` | Хэргийн scope | multipart + `isVisibleToClient` |
 | `DELETE /documents/:id` | ADMIN, upload хийсэн LAWYER | MinIO-оос мөн устгана |
-| `POST /invoices` | ADMIN, хариуцсан LAWYER | `INV-YYYY-NNNN`, `DRAFT` төлөвтэй |
-| `PATCH /invoices/:id` | ADMIN, хариуцсан LAWYER | DRAFT → SENT/CANCELLED, SENT → PAID/OVERDUE/CANCELLED, OVERDUE → PAID/CANCELLED. SENT үед мэдэгдэл, PAID үед `paidAt`. Дүн, тайлбарыг зөвхөн DRAFT үед засна |
+| `POST /invoices` | ADMIN, багийн LAWYER | `INV-YYYY-NNNN`, `DRAFT` төлөвтэй |
+| `PATCH /invoices/:id` | ADMIN, багийн LAWYER | DRAFT → SENT/CANCELLED, SENT → PAID/OVERDUE/CANCELLED, OVERDUE → PAID/CANCELLED. SENT үед мэдэгдэл, PAID үед `paidAt`. Дүн, тайлбарыг зөвхөн DRAFT үед засна |
 | `GET /users`, `GET /users/:id` | ADMIN, LAWYER | LAWYER зөвхөн CLIENT хэрэглэгчдийг харна |
 | `POST /users`, `PATCH /users/:id` | ADMIN | Нууц үг өгөөгүй бол 12 тэмдэгттэй түр нууц үг буцаана |
 | `GET/POST/PATCH /lawyers/:userId/profile` | ADMIN, LAWYER (өөрийн) | Нийтийн профайл |
@@ -236,7 +240,7 @@ docker compose exec postgres createdb -U lawfirm lawfirm_test      # нэг уд
 export DATABASE_URL="postgresql://lawfirm:lawfirm@localhost:5432/lawfirm_test?schema=public"
 pnpm db:deploy && pnpm db:seed                                      # нэг удаа
 pnpm build
-node apps/api/dist/main &                                           # api :4000 (test DB)
+THROTTLE_LIMIT=1000 node apps/api/dist/main &                       # api :4000 (test DB); e2e нэг IP-ээс олон хүсэлт илгээдэг
 pnpm --filter @law-firm/web start &                                 # web :3001
 pnpm --filter @law-firm/web e2e
 ```
@@ -309,8 +313,8 @@ pnpm --filter @law-firm/web e2e
 
 ### Эрх ба хүлээн авагч
 
-- Хэрэгт хандах эрхтэй хүн л уншиж, бичнэ: ADMIN, хариуцсан LAWYER, хэргийн CLIENT. Бусад хүсэлт 403 буцаана.
-- CLIENT бичвэл хариуцсан хуульч хүлээн авна. LAWYER эсвэл ADMIN бичвэл харилцагч хүлээн авна.
+- Хэрэгт хандах эрхтэй хүн л уншиж, бичнэ: ADMIN, багийн LAWYER, хэргийн CLIENT. Бусад хүсэлт 403 буцаана.
+- CLIENT бичвэл ахлах хуульч хүлээн авна. LAWYER эсвэл ADMIN бичвэл харилцагч хүлээн авна.
 - `readAt` нь хүлээн авагч тал уншсан цаг. ADMIN үзэгч тул уншаагүй тоо нь 0, чат нээхэд юу ч уншсан болохгүй.
 - Мессежийн текст AuditLog-д хадгалагдахгүй: interceptor зөвхөн route, params, query бичдэг.
 
@@ -351,8 +355,8 @@ ADMIN эсвэл хэргийг хариуцсан хуульч дансны х�
 | Одоогийн төлөв | Дараагийн төлөв | Хэн |
 | --- | --- | --- |
 | `SENT`, `OVERDUE` | `AWAITING_CONFIRMATION` («Баталгаажуулж буй») | хэргийн CLIENT, `mark-paid` |
-| `AWAITING_CONFIRMATION` | `PAID` | ADMIN, хариуцсан LAWYER, `confirm-payment` → `paidAt`, `confirmedById` |
-| `AWAITING_CONFIRMATION` | `SENT` | ADMIN, хариуцсан LAWYER, `reject-payment` → `paymentRejectionReason` |
+| `AWAITING_CONFIRMATION` | `PAID` | ADMIN, багийн LAWYER, `confirm-payment` → `paidAt`, `confirmedById` |
+| `AWAITING_CONFIRMATION` | `SENT` | ADMIN, багийн LAWYER, `reject-payment` → `paymentRejectionReason` |
 
 Бусад шилжилт (`DRAFT → SENT`, `SENT → PAID` гэх мэт) хуучин `PATCH /invoices/:id`-ээр хийгдэнэ. `PATCH` нь
 `AWAITING_CONFIRMATION` руу оруулах, эсвэл тэндээс гаргахыг 400-аар хориглоно. Буруу шилжилт бүр 400 буцаана.
@@ -363,8 +367,8 @@ ADMIN эсвэл хэргийг хариуцсан хуульч дансны х�
 | --- | --- | --- |
 | `GET /settings/bank-account` | нэвтэрсэн бүх хэрэглэгч | `{ bankName, accountNumber, accountName }` |
 | `POST /invoices/:id/mark-paid` | хэргийн CLIENT | `{ paymentNote? }` (≤500), `paymentMarkedAt` тавина |
-| `POST /invoices/:id/confirm-payment` | ADMIN, хариуцсан LAWYER | `PAID`, `paidAt`, `confirmedById` |
-| `POST /invoices/:id/reject-payment` | ADMIN, хариуцсан LAWYER | `{ reason }` заавал → `SENT` |
+| `POST /invoices/:id/confirm-payment` | ADMIN, багийн LAWYER | `PAID`, `paidAt`, `confirmedById` |
+| `POST /invoices/:id/reject-payment` | ADMIN, багийн LAWYER | `{ reason }` заавал → `SENT` |
 | `GET /invoices/payment-summary` | нэвтэрсэн бүх хэрэглэгч | Scope доторх баталгаажуулалт хүлээж буй төлбөр (sidebar badge) |
 
 Бүх бичих хүсэлт `AuditLog`-д `invoices` entity-ээр бичигдэнэ.
@@ -373,7 +377,7 @@ ADMIN эсвэл хэргийг хариуцсан хуульч дансны х�
 
 | Event | Хүлээн авагч | Мэдэгдлийн гарчиг |
 | --- | --- | --- |
-| `invoice.payment-marked` | хариуцсан LAWYER ба идэвхтэй бүх ADMIN | «Төлбөр хийгдсэн гэж тэмдэглэлээ, баталгаажуулна уу: {нэхэмжлэх №}» |
+| `invoice.payment-marked` | ахлах LAWYER ба идэвхтэй бүх ADMIN | «Төлбөр хийгдсэн гэж тэмдэглэлээ, баталгаажуулна уу: {нэхэмжлэх №}» |
 | `invoice.payment-confirmed` | CLIENT | «Төлбөр баталгаажлаа: {нэхэмжлэх №}» |
 | `invoice.payment-rejected` | CLIENT | «Төлбөр баталгаажсангүй: {reason}» |
 
@@ -398,7 +402,84 @@ ADMIN эсвэл хэргийг хариуцсан хуульч дансны х�
 
 ---
 
-## 8. Тест
+## 8. Хэргийн баг ба ажилтны даалгавар
+
+Хэрэг бүр ажилтны багтай (`CaseMember`): нэг ахлах хуульч (`LEAD` «Ахлах») ба гишүүд (`MEMBER` «Гишүүн»).
+`Case.lawyerId` нь үргэлж LEAD гишүүн байна. Migration нь одоо байгаа хэрэг бүрийн хариуцсан хуульчийг LEAD болгож нөхсөн.
+Даалгавар (`Task`, `TaskComment`) нь зөвхөн ажилтны тал: CLIENT ямар ч даалгавар харахгүй, `/tasks` бүхэлдээ CLIENT-д 403.
+
+### Эрхийн дүрэм
+
+- **Хэрэгт хандах:** ADMIN, хэргийн багийн гишүүн LAWYER, хэргийн CLIENT. Өмнө нь «хариуцсан LAWYER» гэж шалгаж байсан бүх газар
+  (хэрэг, үйл явдал, баримт, баримтын хүсэлт, мессеж, нэхэмжлэх, төлбөр, stats) одоо «багийн гишүүн» гэж шалгана.
+- **Хэргийн мэдээлэл, төлөв, хаах, баг:** зөвхөн LEAD эсвэл ADMIN. Бусад гишүүдэд эдгээр нь зөвхөн харагдана.
+- LEAD-ийг багаас хасах, шууд гишүүн болгох боломжгүй (400) — эхлээд өөр хуульчийг ахлах болгоно. Ахлахаар зөвхөн хуульч томилогдоно.
+  ADMIN «Тойм»-оос хуульч солиход хуучин ахлах багаас хасагдана.
+- Харилцагчийн мессеж, илгээсэн баримт, төлбөрийн тэмдэглэлийн мэдэгдэл ахлах хуульчид (`lawyerId`) очно.
+- **Даалгавар харах:** ADMIN бүгдийг; LAWYER өөрт оноогдсон, өөрийн үүсгэсэн, эсвэл багийн гишүүн болсон хэргийн даалгаврыг.
+- **Үүсгэх:** хэрэгт холбоотой бол үүсгэгч тухайн хэргийн багт байх ба гүйцэтгэгч нь багийн гишүүн байна (ADMIN аль ч идэвхтэй
+  хуульч, админд оноож болно). Хэрэгт холбоогүй дотоод даалгаврыг LAWYER зөвхөн өөртөө үүсгэнэ.
+- **Төлөв солих:** гүйцэтгэгч, үүсгэсэн хүн, ADMIN. **Засах** (гарчиг, тайлбар, хугацаа, ач холбогдол, гүйцэтгэгч) ба **устгах:**
+  үүсгэсэн хүн эсвэл ADMIN. Даалгаврыг харах эрхтэй хүн бүр коммент бичнэ.
+
+### Даалгаврын төлөв
+
+| Одоогийн төлөв | Шилжих боломжтой |
+| --- | --- |
+| `TODO` «Хийх» | `IN_PROGRESS`, `CANCELLED` |
+| `IN_PROGRESS` «Хийгдэж буй» | `TODO`, `REVIEW`, `CANCELLED` |
+| `REVIEW` «Хянах» | `IN_PROGRESS`, `DONE`, `CANCELLED` |
+| `DONE` «Дууссан» | `CANCELLED` |
+| `CANCELLED` «Цуцалсан» | — |
+
+`DONE` болоход `completedAt` тавигдана. Буруу шилжилт 400 буцаана. Ач холбогдол: `LOW` «Бага», `MEDIUM` «Дунд» (default),
+`HIGH` «Өндөр», `URGENT` «Яаралтай». Хугацаа хэтэрсэн = идэвхтэй (`TODO`/`IN_PROGRESS`/`REVIEW`) ба `dueDate` өнгөрсөн.
+
+### Endpoint-ууд
+
+| Endpoint | Эрх | Тайлбар |
+| --- | --- | --- |
+| `GET /cases/:id/members` | ADMIN, багийн гишүүн | LEAD эхэндээ |
+| `GET /cases/:id/members/candidates` | ADMIN, LEAD | Багт ороогүй идэвхтэй хуульч, админ |
+| `POST /cases/:id/members` | ADMIN, LEAD | `{ userId, role? }` (`MEMBER` default). `LEAD` бол одоогийн ахлах гишүүн болж `lawyerId` шилжинэ. Давхар нэмэх → 409 |
+| `PATCH /cases/:id/members/:userId` | ADMIN, LEAD | `{ role: 'LEAD' }` — ахлах шилжүүлэх. LEAD-ийг `MEMBER` болгох → 400 |
+| `DELETE /cases/:id/members/:userId` | ADMIN, LEAD | 204. LEAD-ийг хасах → 400 |
+| `GET /tasks` | ADMIN, LAWYER | `scope=mine`, `assigneeId`, `status`, `priority`, `caseId`, `overdue=true`, `sort=dueDate\|priority\|createdAt`, `page`, `limit` |
+| `GET /tasks/my-summary` | ADMIN, LAWYER | `{ active, overdue, byStatus }` — надад оноогдсон идэвхтэй даалгавар |
+| `GET /tasks/:id` | харах эрхтэй | Коммент болон `permissions { canEdit, canDelete, canChangeStatus }` |
+| `POST /tasks` | ADMIN, LAWYER | `{ title, description?, caseId?, assigneeId, priority?, dueDate? }` |
+| `PATCH /tasks/:id` | дээрх дүрмээр | `status` шилжилтийн дүрмээр шалгагдана |
+| `DELETE /tasks/:id` | ADMIN, үүсгэсэн хүн | 204, коммент хамт устна |
+| `POST /tasks/:id/comments` | харах эрхтэй | `{ body }` 1–2000 тэмдэгт |
+
+Бүх бичих хүсэлт `AuditLog`-д `members` эсвэл `tasks` entity-ээр бичигдэнэ (коммент нь `tasks`).
+
+### Event → мэдэгдэл
+
+| Event | Хүлээн авагч | Мэдэгдлийн гарчиг |
+| --- | --- | --- |
+| `case.member-added` | нэмэгдсэн ажилтан (өөрийгөө нэмсэн бол үгүй) | «Танийг {хэргийн №} багт нэмлээ» → `/admin/cases/:id` |
+| `task.assigned` | гүйцэтгэгч (өөртөө оноовол үгүй); гүйцэтгэгч солиход шинэ гүйцэтгэгч | «Танд даалгавар оноолоо: {гарчиг}» |
+| `task.status-changed` | үүсгэсэн хүн ба гүйцэтгэгч, өөрчилсөн хүнээс бусад | «Даалгавар «{төлөв}» боллоо: {гарчиг}» |
+| `task.commented` | гүйцэтгэгч ба үүсгэсэн хүн, бичсэн хүнээс бусад (давхардахгүй) | «Даалгаварт коммент: {гарчиг}» |
+
+Даалгаврын мэдэгдлийн холбоос `/admin/tasks/:id`. Ажилтны мэдэгдэл DB-д үүсдэг ч админ самбарт мэдэгдлийн жагсаалт одоогоор байхгүй.
+
+### UI
+
+- **`/admin/tasks`**: «Жагсаалт» (хүснэгт, mobile дээр карт, мөрөнд дараагийн алхмын товч) ба «Самбар» (Хийх · Хийгдэж буй · Хянах ·
+  Дууссан багана; чирэхгүй, картын товчоор шилжүүлнэ). Шүүлт: бүгд / надад оноогдсон, төлөв, ач холбогдол, хэрэг, эрэмбэ,
+  «Зөвхөн хугацаа хэтэрсэн». Хугацаа хэтэрсэн даалгавар улаанаар тодорно.
+- **Шинэ даалгавар modal**: LAWYER зөвхөн өөрийн багийн хэрэг, тухайн хэргийн багийн гишүүдийг сонгоно; хэрэг сонгоогүй бол гүйцэтгэгч нь өөрөө.
+  ADMIN бүх идэвхтэй ажилтныг сонгоно.
+- **`/admin/tasks/[id]`**: төлөв, ач холбогдол, хэрэг, гүйцэтгэгч, хугацаа; эрхээр харагдах төлөвийн товч, «Цуцлах», «Засах», «Устгах»; коммент.
+- **`/admin/cases/[id]`** → «Баг»: гишүүдийн карт, «Ахлах» badge, «Гишүүн нэмэх», «Ахлах болгох», «Хасах» (LEAD, ADMIN).
+  «Даалгавар»: хэргийн даалгавар, тэндээс үүсгэх.
+- **Хянах самбар**: «Миний идэвхтэй даалгавар», «Хугацаа хэтэрсэн даалгавар» карт; sidebar-ын «Даалгавар» дээр идэвхтэй тоо.
+
+---
+
+## 9. Тест
 
 ```bash
 pnpm test            # эсвэл: pnpm --filter @law-firm/api test
@@ -412,13 +493,17 @@ admin stats, contact-ийн шилжилт, staff endpoint-уудын эрх (`x
 Баримтын хүсэлт: эрхийн scope (өөр хуульч, өөр харилцагч → 403), төлөвийн шилжилт, файл холбох, шалтгаангүй буцаалт → 400,
 файлтай хүсэлт устгах → 400, EventEmitter2 wiring-ээр мэдэгдэл үүсэх. Мессеж: эрхгүй хүн → 403, хүлээн авагч,
 cursor pagination, уншаагүй тоо ба уншсан болгох, мэдэгдлийн дедупликаци, body-ийн урт → 400. Төлбөр: өөрийн нэхэмжлэх тэмдэглэх, өөр харилцагч → 403, DRAFT/PAID → 400, баталгаажуулах (`paidAt`, `confirmedById`),
-татгалзаад дахин тэмдэглэх, CLIENT баталгаажуулах → 403, бүх шатны мэдэгдэл, PATCH хамгаалалт. Нийт 249 тест, DB шаардахгүй (Prisma mock).
+татгалзаад дахин тэмдэглэх, CLIENT баталгаажуулах → 403, бүх шатны мэдэгдэл, PATCH хамгаалалт.
+Хэргийн баг: гишүүн нэмэх/хасах/ахлах шилжүүлэх зөвхөн LEAD, ADMIN; LEAD хасах → 400; багийн бус хуульч → 403; гишүүн хэргийг нээх,
+мэдэгдэл. Даалгавар: багийн бус хуульч үүсгэх → 403, багийн бус гүйцэтгэгч → 400, дотоод даалгаврыг зөвхөн өөртөө, CLIENT → 403,
+буруу шилжилт → 400, `completedAt`, засах/устгах/төлөв солих эрх, коммент, my-summary, гурван event-ийн хүлээн авагч (өөрийгөө оруулахгүй).
+Env (`THROTTLE_LIMIT` default ба шалгалт). Нийт 314 тест, DB шаардахгүй (Prisma mock). Баг нэмэхээс өмнөх 249 тест хэвээр ногоон.
 
 ```bash
 pnpm --filter @law-firm/web e2e     # Playwright, web :3001 + api :4000 ажиллаж байх ёстой
 ```
 
-Playwright (17 тест): нийтийн сайт (2), портал (2), админ (4), баримтын хүсэлт (3), мессеж (3), төлбөр (3):
+Playwright (20 тест): нийтийн сайт (2), портал (2), админ (4), баримтын хүсэлт (3), мессеж (3), төлбөр (3), даалгавар (3):
 - LAWYER хэрэг үүсгэж шүүх хурал нэмэхэд харилцагч порталдаа болон мэдэгдлээс харна.
 - ADMIN нийтлэл нийтлэхэд нийтийн `/news` болон нийтлэлийн хуудсанд шууд гарна (тест дараа нь устгана).
 - LAWYER өөр хуульчийн хэрэг рүү `/admin/cases/[id]`-ээр орвол 403 хуудас, `PATCH /cases/:id` нь 403.
@@ -432,10 +517,13 @@ Playwright (17 тест): нийтийн сайт (2), портал (2), адм�
 - CLIENT төлбөр тэмдэглэх → админд «Баталгаажуулж буй» харагдах → баталгаажуулах → CLIENT талд «Төлөгдсөн».
 - Татгалзах → шалтгаан порталд харагдах → дахин тэмдэглэх → админд дахин хүлээгдэж буй.
 - Өөр харилцагч тэмдэглэх, CLIENT баталгаажуулах → 403; ноорог нэхэмжлэх тэмдэглэх → 400.
+- ADMIN хоёр дахь хуульчийг багт нэмэх → тэр хуульч хэргийг нээх → ахлах хуульч даалгавар оноох → гүйцэтгэгч «Дууссан» болгох, мэдэгдэл.
+- Багийн бус хуульч даалгавар болон хэргийн URL-аар 403, API 403; CLIENT `/tasks` → 403.
+- LAWYER өөртөө дотоод даалгавар үүсгэж Kanban самбар дээр «Хийх»-ээс «Хийгдэж буй» руу шилжүүлэх, мэдэгдэл үүсэхгүй.
 
 ---
 
-## 9. Production тэмдэглэл
+## 10. Production тэмдэглэл
 
 - `pnpm build` → `apps/api/dist`, `apps/web/.next`. API: `node dist/main`, web: `next start`.
 - API `trust proxy` = 1 (reverse proxy ард), cookie `secure` = true.
