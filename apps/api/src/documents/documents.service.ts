@@ -28,9 +28,17 @@ export interface UploadedFile {
   buffer: Buffer;
 }
 
-const DOCUMENT_SELECT = {
+export interface StoredFile {
+  name: string;
+  mimeType: string;
+  size: number;
+  storageKey: string;
+}
+
+export const DOCUMENT_SELECT = {
   id: true,
   caseId: true,
+  requestId: true,
   name: true,
   mimeType: true,
   size: true,
@@ -60,33 +68,51 @@ export class DocumentsService {
 
   async upload(caseId: string, file: UploadedFile | undefined, input: UploadDocumentInput, user: RequestUser) {
     if (!file) throw new BadRequestException('Файл сонгоно уу (multipart талбар: "file")');
-    if (file.size > MAX_DOCUMENT_SIZE_BYTES) {
-      throw new PayloadTooLargeException('Файлын хэмжээ 20MB-аас хэтэрч болохгүй');
-    }
-    if (!(ALLOWED_DOCUMENT_MIME_TYPES as readonly string[]).includes(file.mimetype)) {
-      throw new UnsupportedMediaTypeException('Зөвхөн PDF, Word, Excel, зураг, текст файл хавсаргах боломжтой');
-    }
+    this.assertValidFile(file);
 
     const record = await this.cases.assertAccessById(caseId, user);
-    const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
-    const name = input.name?.trim() || originalName;
-    const storageKey = `cases/${record.caseNumber}/${randomUUID()}${extname(originalName).toLowerCase()}`;
-
-    await this.storage.upload({ key: storageKey, body: file.buffer, mimeType: file.mimetype, size: file.size });
+    const stored = await this.storeFile(record.caseNumber, file, input.name);
 
     return this.prisma.document.create({
       data: {
         caseId,
-        name,
-        mimeType: file.mimetype,
-        size: file.size,
-        storageKey,
+        ...stored,
         uploadedById: user.id,
         // A client's own upload is always visible to them.
         isVisibleToClient: user.role === Role.CLIENT ? true : input.isVisibleToClient,
       },
       select: DOCUMENT_SELECT,
     });
+  }
+
+  /** Size + MIME type checks shared by direct uploads and document request submissions. */
+  assertValidFile(file: UploadedFile): void {
+    if (file.size > MAX_DOCUMENT_SIZE_BYTES) {
+      throw new PayloadTooLargeException('Файлын хэмжээ 20MB-аас хэтэрч болохгүй');
+    }
+    if (!(ALLOWED_DOCUMENT_MIME_TYPES as readonly string[]).includes(file.mimetype)) {
+      throw new UnsupportedMediaTypeException('Зөвхөн PDF, Word, Excel, зураг, текст файл хавсаргах боломжтой');
+    }
+  }
+
+  /** Uploads the file to MinIO under the case prefix and returns the columns for a Document row. */
+  async storeFile(caseNumber: string, file: UploadedFile, displayName?: string): Promise<StoredFile> {
+    // multer decodes multipart filenames as latin1
+    const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+    const storageKey = `cases/${caseNumber}/${randomUUID()}${extname(originalName).toLowerCase()}`;
+    await this.storage.upload({ key: storageKey, body: file.buffer, mimeType: file.mimetype, size: file.size });
+    return { name: displayName?.trim() || originalName, mimeType: file.mimetype, size: file.size, storageKey };
+  }
+
+  /** Best-effort cleanup of objects whose database write failed. */
+  async discardStored(storageKeys: string[]): Promise<void> {
+    for (const key of storageKeys) {
+      try {
+        await this.storage.delete(key);
+      } catch (error) {
+        this.logger.warn(`Could not remove orphaned object ${key}: ${(error as Error).message}`);
+      }
+    }
   }
 
   /** Returns a short-lived presigned URL after checking case scope + client visibility. */

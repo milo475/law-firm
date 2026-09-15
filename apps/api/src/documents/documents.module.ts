@@ -7,5 +7,6 @@ import { DocumentsService } from './documents.service';
   imports: [CasesModule],
   controllers: [DocumentsController],
   providers: [DocumentsService],
+  exports: [DocumentsService],
 })
 export class DocumentsModule {}

@@ -7,6 +7,8 @@ describe('AuditInterceptor.entityFromRoute', () => {
     ['/posts', 'posts'],
     ['/posts/:id', 'posts'],
     ['/cases/:id/documents', 'documents'],
+    ['/cases/:caseId/document-requests', 'document-requests'],
+    ['/document-requests/:id/submit', 'document-requests'],
     ['/notifications/:id/read', 'notifications'],
     ['/notifications/read-all', 'notifications'],
     ['/users/me/password', 'users'],

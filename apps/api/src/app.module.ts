@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ZodValidationPipe } from 'nestjs-zod';
@@ -13,6 +14,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { validateEnv } from './config/env';
 import { ContactModule } from './contact/contact.module';
+import { DocumentRequestsModule } from './document-requests/document-requests.module';
 import { DocumentsModule } from './documents/documents.module';
 import { InvoicesModule } from './invoices/invoices.module';
 import { LawyersModule } from './lawyers/lawyers.module';
@@ -34,6 +36,8 @@ import { UsersModule } from './users/users.module';
     ThrottlerModule.forRoot({
       throttlers: [{ name: 'default', ttl: 60_000, limit: 120 }],
     }),
+    // Domain events (document-request.*) → notification listeners
+    EventEmitterModule.forRoot(),
     PrismaModule,
     StorageModule,
     AuditModule,
@@ -43,6 +47,7 @@ import { UsersModule } from './users/users.module';
     LawyersModule,
     CasesModule,
     DocumentsModule,
+    DocumentRequestsModule,
     InvoicesModule,
     NotificationsModule,
     ContactModule,
