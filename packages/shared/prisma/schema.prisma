@@ -289,6 +289,8 @@ model DocumentRequest {
   reviewedById    String?               @db.Uuid
   reviewedBy      User?                 @relation("DocumentRequestReviewer", fields: [reviewedById], references: [id])
   reviewedAt      DateTime?
+  /// Last daily reminder sent for this row (at most one per day).
+  lastReminderAt  DateTime?
   createdAt       DateTime              @default(now())
   updatedAt       DateTime              @updatedAt
 
@@ -331,6 +333,8 @@ model Invoice {
   /// Staff member who confirmed the payment (paidAt is set at the same time).
   confirmedById          String?       @db.Uuid
   confirmedBy            User?         @relation("InvoiceConfirmer", fields: [confirmedById], references: [id], onDelete: SetNull)
+  /// Last daily reminder sent for this row (at most one per day).
+  lastReminderAt         DateTime?
   createdAt              DateTime      @default(now())
   updatedAt              DateTime      @updatedAt
 
@@ -387,27 +391,30 @@ model AuditLog {
 
 /// Internal staff work item, optionally tied to a case. CLIENT users never see tasks.
 model Task {
-  id          String       @id @default(uuid()) @db.Uuid
-  title       String
-  description String?      @db.Text
-  caseId      String?      @db.Uuid
-  case        Case?        @relation(fields: [caseId], references: [id], onDelete: Cascade)
-  assigneeId  String       @db.Uuid
-  assignee    User         @relation("TaskAssignee", fields: [assigneeId], references: [id])
-  createdById String       @db.Uuid
-  createdBy   User         @relation("TaskCreator", fields: [createdById], references: [id])
-  status      TaskStatus   @default(TODO)
-  priority    TaskPriority @default(MEDIUM)
-  dueDate     DateTime?
-  completedAt DateTime?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id             String       @id @default(uuid()) @db.Uuid
+  title          String
+  description    String?      @db.Text
+  caseId         String?      @db.Uuid
+  case           Case?        @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  assigneeId     String       @db.Uuid
+  assignee       User         @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  createdById    String       @db.Uuid
+  createdBy      User         @relation("TaskCreator", fields: [createdById], references: [id])
+  status         TaskStatus   @default(TODO)
+  priority       TaskPriority @default(MEDIUM)
+  dueDate        DateTime?
+  completedAt    DateTime?
+  /// Last daily reminder sent for this row (at most one per day).
+  lastReminderAt DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   comments TaskComment[]
 
   @@index([assigneeId, status])
   @@index([caseId])
   @@index([createdById])
+  @@index([status, dueDate])
 }
 
 model TaskComment {
