@@ -3,6 +3,7 @@ import type {
   CaseStatus,
   CaseType,
   ContactStatus,
+  DocumentRequestStatus,
   InvoiceStatus,
   PostCategory,
   PostStatus,
@@ -67,4 +68,12 @@ export const CONTACT_STATUS_LABELS: Record<ContactStatus, string> = {
   NEW: 'Шинэ',
   CONTACTED: 'Холбогдсон',
   CLOSED: 'Хаагдсан',
+};
+
+export const DOCUMENT_REQUEST_STATUS_LABELS: Record<DocumentRequestStatus, string> = {
+  PENDING: 'Хүлээгдэж буй',
+  SUBMITTED: 'Илгээсэн',
+  UNDER_REVIEW: 'Хянагдаж буй',
+  APPROVED: 'Батлагдсан',
+  REJECTED: 'Буцаагдсан',
 };

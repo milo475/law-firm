@@ -10,6 +10,7 @@ import {
   CaseEventType,
   CaseStatus,
   CaseType,
+  DocumentRequestStatus,
   InvoiceStatus,
   PostCategory,
   PostStatus,
@@ -304,6 +305,52 @@ async function seedCases(users: Awaited<ReturnType<typeof seedUsers>>) {
         { invoiceNumber: `INV-${year}-0001`, amount: '1500000.00', description: 'Хэргийн урьдчилгаа — нэхэмжлэл бэлтгэх, шүүхэд төлөөлөх', status: InvoiceStatus.PAID, dueDate: daysAgo(20), paidAt: daysAgo(22) },
         { invoiceNumber: `INV-${year}-0002`, amount: '800000.00', description: 'Шүүх хуралд оролцох (1-р шат)', status: InvoiceStatus.SENT, dueDate: daysFromNow(10), paidAt: null },
       ],
+      // One approved, one rejected (client must resend) and one still pending.
+      documentRequests: [
+        {
+          title: 'Иргэний үнэмлэхний хуулбар',
+          description: 'Хоёр талын тод хуулбар (PDF эсвэл JPG).',
+          isRequired: true,
+          dueDate: daysAgo(38, 18),
+          status: DocumentRequestStatus.APPROVED,
+          requestedById: users.lawyer1.id,
+          reviewedById: users.lawyer1.id,
+          reviewedAt: daysAgo(40, 15),
+          rejectionReason: null,
+          createdAt: daysAgo(44),
+          documents: [
+            { name: 'Иргэний үнэмлэх.pdf', mimeType: 'application/pdf', size: 312_540, storageKey: `seed/${formatCaseNumber(year, 1)}/irgenii-unemleh.pdf`, uploadedById: users.client1.id, isVisibleToClient: true, createdAt: daysAgo(41) },
+          ],
+        },
+        {
+          title: 'Түрээсийн төлбөр төлсөн баримт',
+          description: 'Сүүлийн 12 сарын төлбөрийн баримт эсвэл банкны хуулга.',
+          isRequired: true,
+          dueDate: daysAgo(2, 18),
+          status: DocumentRequestStatus.REJECTED,
+          requestedById: users.lawyer1.id,
+          reviewedById: users.lawyer1.id,
+          reviewedAt: daysAgo(4, 11),
+          rejectionReason: 'Хуулга бүдэг, 3–6 дугаар сарын гүйлгээ дутуу байна. Бүтэн хуулгыг дахин илгээнэ үү.',
+          createdAt: daysAgo(14),
+          documents: [
+            { name: 'Банкны хуулга.jpg', mimeType: 'image/jpeg', size: 845_221, storageKey: `seed/${formatCaseNumber(year, 1)}/bankny-hulga.jpg`, uploadedById: users.client1.id, isVisibleToClient: true, createdAt: daysAgo(6) },
+          ],
+        },
+        {
+          title: 'Түрээслүүлэгчтэй хийсэн захидал харилцаа',
+          description: 'Гэрээ цуцлах тухай и-мэйл, албан бичгүүд.',
+          isRequired: false,
+          dueDate: daysFromNow(5, 18),
+          status: DocumentRequestStatus.PENDING,
+          requestedById: users.lawyer1.id,
+          reviewedById: null,
+          reviewedAt: null,
+          rejectionReason: null,
+          createdAt: daysAgo(3),
+          documents: [],
+        },
+      ],
     },
     {
       caseNumber: formatCaseNumber(year, 2),
@@ -353,7 +400,7 @@ async function seedCases(users: Awaited<ReturnType<typeof seedUsers>>) {
   ];
 
   for (const def of definitions) {
-    const { events, documents, invoices, ...data } = def;
+    const { events, documents, invoices, documentRequests = [], ...data } = def;
     const record = await prisma.case.upsert({
       where: { caseNumber: data.caseNumber },
       update: data,
@@ -363,8 +410,15 @@ async function seedCases(users: Awaited<ReturnType<typeof seedUsers>>) {
     // Child rows have no natural key; rebuild them so the seed stays idempotent.
     await prisma.caseEvent.deleteMany({ where: { caseId: record.id } });
     await prisma.document.deleteMany({ where: { caseId: record.id } });
+    await prisma.documentRequest.deleteMany({ where: { caseId: record.id } });
     await prisma.caseEvent.createMany({ data: events.map((event) => ({ ...event, caseId: record.id })) });
     await prisma.document.createMany({ data: documents.map((doc) => ({ ...doc, caseId: record.id })) });
+    for (const { documents: attached, ...request } of documentRequests) {
+      const created = await prisma.documentRequest.create({ data: { ...request, caseId: record.id } });
+      if (attached.length > 0) {
+        await prisma.document.createMany({ data: attached.map((doc) => ({ ...doc, caseId: record.id, requestId: created.id })) });
+      }
+    }
 
     for (const invoice of invoices) {
       await prisma.invoice.upsert({
@@ -408,7 +462,7 @@ async function main() {
   const posts = await seedPosts(users);
   console.log(`  posts: ${posts} published + 1 draft`);
   const cases = await seedCases(users);
-  console.log(`  cases: ${cases} (with events, documents, invoices)`);
+  console.log(`  cases: ${cases} (with events, documents, invoices, document requests)`);
   await seedNotifications(users);
   await seedContactRequests();
   console.log('Done.');

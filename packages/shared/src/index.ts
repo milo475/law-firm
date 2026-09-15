@@ -14,6 +14,7 @@ export {
   CaseEventType,
   InvoiceStatus,
   ContactStatus,
+  DocumentRequestStatus,
 } from './generated/prisma/enums.js';
 
 // ─── Model types ─────────────────────────────────────────────────────────────
@@ -25,6 +26,7 @@ export type {
   Case,
   CaseEvent,
   Document,
+  DocumentRequest,
   Invoice,
   Notification,
   ContactRequest,

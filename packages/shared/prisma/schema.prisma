@@ -73,6 +73,14 @@ enum ContactStatus {
   CLOSED
 }
 
+enum DocumentRequestStatus {
+  PENDING
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
 // ─── Users & auth ────────────────────────────────────────────────────────────
 
 model User {
@@ -89,15 +97,17 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  refreshTokens     RefreshToken[]
-  lawyerProfile     LawyerProfile?
-  posts             Post[]
-  clientCases       Case[]          @relation("CaseClient")
-  lawyerCases       Case[]          @relation("CaseLawyer")
-  createdEvents     CaseEvent[]
-  uploadedDocuments Document[]
-  notifications     Notification[]
-  auditLogs         AuditLog[]
+  refreshTokens            RefreshToken[]
+  lawyerProfile            LawyerProfile?
+  posts                    Post[]
+  clientCases              Case[]            @relation("CaseClient")
+  lawyerCases              Case[]            @relation("CaseLawyer")
+  createdEvents            CaseEvent[]
+  uploadedDocuments        Document[]
+  requestedDocuments       DocumentRequest[] @relation("DocumentRequestRequester")
+  reviewedDocumentRequests DocumentRequest[] @relation("DocumentRequestReviewer")
+  notifications            Notification[]
+  auditLogs                AuditLog[]
 
   @@index([role])
 }
@@ -169,9 +179,10 @@ model Case {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
-  events    CaseEvent[]
-  documents Document[]
-  invoices  Invoice[]
+  events           CaseEvent[]
+  documents        Document[]
+  invoices         Invoice[]
+  documentRequests DocumentRequest[]
 
   @@index([clientId])
   @@index([lawyerId])
@@ -195,19 +206,48 @@ model CaseEvent {
 }
 
 model Document {
-  id                String   @id @default(uuid()) @db.Uuid
-  caseId            String   @db.Uuid
-  case              Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  id                String           @id @default(uuid()) @db.Uuid
+  caseId            String           @db.Uuid
+  case              Case             @relation(fields: [caseId], references: [id], onDelete: Cascade)
   name              String
   mimeType          String
   size              Int
-  storageKey        String   @unique
-  uploadedById      String   @db.Uuid
-  uploadedBy        User     @relation(fields: [uploadedById], references: [id])
-  isVisibleToClient Boolean  @default(true)
-  createdAt         DateTime @default(now())
+  storageKey        String           @unique
+  uploadedById      String           @db.Uuid
+  uploadedBy        User             @relation(fields: [uploadedById], references: [id])
+  isVisibleToClient Boolean          @default(true)
+  /// null → uploaded on the client's own initiative; set → a file answering a DocumentRequest
+  requestId         String?          @db.Uuid
+  request           DocumentRequest? @relation(fields: [requestId], references: [id], onDelete: SetNull)
+  createdAt         DateTime         @default(now())
 
   @@index([caseId])
+  @@index([requestId])
+}
+
+/// A lawyer asks the client for a specific document; the client answers with files and the lawyer reviews them.
+model DocumentRequest {
+  id              String                @id @default(uuid()) @db.Uuid
+  caseId          String                @db.Uuid
+  case            Case                  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  requestedById   String                @db.Uuid
+  requestedBy     User                  @relation("DocumentRequestRequester", fields: [requestedById], references: [id])
+  title           String
+  description     String?               @db.Text
+  isRequired      Boolean               @default(true)
+  dueDate         DateTime?
+  status          DocumentRequestStatus @default(PENDING)
+  rejectionReason String?               @db.Text
+  reviewedById    String?               @db.Uuid
+  reviewedBy      User?                 @relation("DocumentRequestReviewer", fields: [reviewedById], references: [id])
+  reviewedAt      DateTime?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  documents Document[]
+
+  @@index([caseId, status])
+  @@index([requestedById])
 }
 
 model Invoice {
