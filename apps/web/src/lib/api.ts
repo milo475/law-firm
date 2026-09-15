@@ -220,6 +220,8 @@ export interface CaseEvent {
   description: string | null;
   eventDate: string;
   createdBy: PublicUser;
+  /** Returned for every event; CLIENT only ever receives visible ones. */
+  isVisibleToClient?: boolean;
 }
 
 export interface DocumentItem {
