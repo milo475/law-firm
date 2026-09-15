@@ -24,6 +24,8 @@ const PUBLIC_PAGES: [string, string][] = [
 const PORTAL_PAGES: [string, string][] = [
   ['portal-dashboard', '/portal'],
   ['portal-cases', '/portal/cases'],
+  ['portal-requests', '/portal/requests'],
+  ['portal-request-new', '/portal/requests/new'],
   ['portal-documents', '/portal/documents'],
   ['portal-invoices', '/portal/invoices'],
   ['portal-messages', '/portal/messages'],
@@ -44,7 +46,7 @@ const ADMIN_PAGES: [string, string][] = [
   ['admin-posts', '/admin/posts'],
   ['admin-post-new', '/admin/posts/new'],
   ['admin-invoices', '/admin/invoices'],
-  ['admin-contact', '/admin/contact'],
+  ['admin-requests', '/admin/requests'],
   ['admin-settings', '/admin/settings'],
   ['admin-profile', '/admin/profile'],
 ];
@@ -153,5 +155,19 @@ test.describe('screenshots', () => {
     await page.waitForURL(/\/admin\/performance\/[0-9a-f-]{36}/);
     await page.waitForTimeout(1500);
     await page.screenshot({ path: `screenshots/admin-performance-detail.${suffix}.png`, fullPage: true });
+    // A service request waiting for a lawyer, and its assign modal (only opened, never submitted)
+    const { items: accepted } = (await (await page.request.get(`${API_URL}/service-requests?status=ACCEPTED&limit=1`)).json()) as { items: { id: string }[] };
+    if (accepted[0]) {
+      await page.goto(`/admin/requests/${accepted[0].id}`, { waitUntil: 'load' });
+      const assign = page.getByRole('button', { name: 'Өмгөөлөгч хуваарилах' });
+      await assign.waitFor();
+      await page.waitForTimeout(1200);
+      await page.screenshot({ path: `screenshots/admin-request-detail.${suffix}.png`, fullPage: true });
+      await assign.click();
+      await page.getByRole('dialog', { name: 'Өмгөөлөгч хуваарилах' }).getByRole('radio', { name: 'Баг' }).waitFor();
+      await page.waitForTimeout(1500);
+      await page.screenshot({ path: `screenshots/admin-request-assign.${suffix}.png` });
+      await page.keyboard.press('Escape');
+    }
   });
 });

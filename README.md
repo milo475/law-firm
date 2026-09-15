@@ -114,7 +114,8 @@ law-firm/
 │   │       ├── document-requests/ баримтын хүсэлт: CRUD, submit (multipart), review, EventEmitter2 → мэдэгдэл
 │   │       ├── messages/        хэргийн мессеж: cursor жагсаалт, илгээх, уншсан болгох, unread summary, inbox
 │   │       ├── notifications/   list, read, read-all
-│   │       ├── contact/         public POST (5/цаг/IP), admin list + status
+│   │       ├── service-requests/ CLIENT хүсэлт гаргах/өөрийн; ADMIN жагсаалт, хүлээж авах, татгалзах, хуваарилах → Case; EventEmitter2
+│   │       ├── contact/         хуучин «Холбоо барих» маягтын мессежүүд — ADMIN зөвхөн унших
 │   │       ├── admin/           GET /admin/stats (хянах самбарын тоо, ойрын үйл явдал)
 │   │       ├── storage/         MinIO wrapper (upload, uploadPublic, presignedGetUrl, delete) — global
 │   │       ├── audit/           global interceptor: POST/PATCH/PUT/DELETE → AuditLog — global
@@ -128,9 +129,9 @@ law-firm/
 │           ├── app/(site)/      /, about, services[/slug], lawyers[/id], news[/slug], faq, contact, 404
 │           ├── app/portal/      login (нууц үг + OTP UI), register, forgot-password,
 │           │                    (dashboard): cases[/id] (tabs), documents (drag-drop + preview),
-│           │                    invoices[/id], messages (inbox), notifications, profile
+│           │                    invoices[/id], messages (inbox), requests[/new], notifications, profile
 │           ├── app/admin/       ажилтны самбар: dashboard, cases[/new|/id], clients[/id], lawyers[/id],
-│           │                    posts[/new|/id/edit], invoices, contact, profile
+│           │                    posts[/new|/id/edit], invoices[/id], requests[/id], settings, profile
 │           ├── app/api/revalidate  нийтлэл хадгалахад /, /news, /news/[slug]-ийг шууд шинэчилнэ
 │           ├── components/ui/   21 Figma компонент (Button cva, Input, Select, Badge, Card ×4, Table,
 │           │                    NavHeader, Footer, Sidebar, BottomTabBar, Modal, Toast, …)
@@ -214,7 +215,7 @@ ADMIN болон LAWYER портал login-оор нэвтэрмэгц `/admin` 
 | `/admin/posts`, `/admin/posts/new`, `/admin/posts/[id]/edit` | ADMIN, LAWYER | Markdown editor + preview, cover зураг, slug автомат, Ноорог / Нийтлэх / Архивлах |
 | `/admin/invoices` | ADMIN, LAWYER | Нэхэмжлэх үүсгэх, төлөвийн шилжилт, баталгаажуулах хүлээгдэж буй төлбөрийн шүүлт |
 | `/admin/invoices/[id]` | ADMIN, багийн LAWYER | Нэхэмжлэхийн дэлгэрэнгүй, харилцагчийн төлбөрийн тэмдэглэл, баталгаажуулах / татгалзах |
-| `/admin/contact` | ADMIN | «Холбоо барих» хүсэлтүүд: Шинэ → Холбогдсон → Хаагдсан |
+| `/admin/requests`, `/admin/requests/[id]` | ADMIN | Үйлчилгээний хүсэлт: шүүлт, хүлээж авах / татгалзах / өмгөөлөгч эсвэл баг хуваарилах. Хуучин `/admin/contact` энд шилждэг |
 | `/admin/profile` | ADMIN, LAWYER | Бүртгэлийн мэдээлэл, нууц үг, (LAWYER) нийтийн профайл |
 | `/admin/notifications` | ADMIN, LAWYER | Өөрийн мэдэгдэл: бүгд / уншаагүй / уншсан, «Цааш үзэх», бүгдийг уншсан болгох |
 | `/admin/performance` | ADMIN, LAWYER | Даалгаврын ачаалал ба явц: хугацааны таб, тоймын карт, график, хүн бүрийн хүснэгт |
@@ -239,7 +240,7 @@ ADMIN болон LAWYER портал login-оор нэвтэрмэгц `/admin` 
 | `GET /admin/stats` | ADMIN, LAWYER | Хэрэглэгчийн scope-оор тооцно |
 | `GET /posts/manage`, `GET /posts/manage/:id` | ADMIN, LAWYER (өөрийн) | Ноорог, архив орно |
 | `POST /posts/cover` | ADMIN, LAWYER | JPG/PNG/WEBP, ≤5MB → MinIO `public/` → `{ url }` |
-| `GET /contact`, `PATCH /contact/:id` | ADMIN | NEW → CONTACTED → CLOSED, буцаах боломжгүй |
+| `GET /contact` | ADMIN | Хуучин «Холбоо барих» маягтын мессежүүд, зөвхөн унших |
 
 Web талын `POST /api/revalidate` route нь нэвтэрсэн ADMIN/LAWYER-ийн хүсэлтээр `/`, `/news`, `/news/[slug]`-ийг
 шууд шинэчилдэг тул нийтлэл хадгалмагц нийтийн сайтад гарна.
@@ -524,7 +525,7 @@ ADMIN эсвэл хэргийг хариуцсан хуульч дансны х�
 - `/notifications` route-ууд role-оор хязгаарлагдахгүй: CLIENT, LAWYER, ADMIN бүгд ашиглана, гэхдээ **зөвхөн өөрийн** мэдэгдлийг
   (`userId` = нэвтэрсэн хүн). Өөр хүний мэдэгдлийг уншсан болгох гэвэл 404 (id-г тааж шалгах боломжгүй).
 - `actorId` — мэдэгдлийг үүсгэсэн үйлдлийг хийсэн хүн (даалгавар оноосон, мессеж бичсэн, төлбөр тэмдэглэсэн г.м.). Олон нийтийн
-  «Холбоо барих» маягт зэрэг системийн мэдэгдэлд `null`. Хэрэглэгч устгагдвал `null` болно.
+  өдөр тутмын сануулга зэрэг системийн мэдэгдэлд `null`. Хэрэглэгч устгагдвал `null` болно.
 - Холбоос: ажилтанд очих мэдэгдэл `/admin/...`, харилцагчид очих нь `/portal/...` руу заана (бүх listener-ийг шалгасан).
   Админ хонх зөвхөн `/admin` холбоос руу, портал зөвхөн `/portal` холбоос руу шилжүүлнэ.
 
@@ -643,7 +644,71 @@ API татгалзвал буцна. Картын төлөвийн товчну�
 
 ---
 
-## 13. Тест
+## 13. Үйлчилгээний хүсэлт (ServiceRequest)
+
+Нийтийн «Холбоо барих» маягтыг нэвтэрсэн харилцагчийн хүсэлтээр сольсон. Харилцагч өмгөөлөгч авах эсвэл зөвлөгөө авах
+хүсэлт гаргана → ADMIN хүлээж авах эсвэл шалтгаантай татгалзана → хүлээж авсан хүсэлтэд нэг өмгөөлөгч эсвэл баг
+хуваарилахад хэрэг нээгдэж, харилцагч ба өмгөөлөгч тэр хэргээр харилцана.
+
+### Төлөв
+
+| Төлөв | Утга | Дараагийн төлөв |
+| --- | --- | --- |
+| `NEW` «Шинэ» | Харилцагч илгээсэн | `ACCEPTED`, `REJECTED` |
+| `ACCEPTED` «Хүлээж авсан» | ADMIN хүлээж авсан, өмгөөлөгч хуваарилаагүй | `CONVERTED`, `REJECTED` |
+| `REJECTED` «Татгалзсан» | Шалтгаан заавал (`rejectionReason`) | — |
+| `CONVERTED` «Хэрэг нээгдсэн» | Хуваарилсан, `assignedCaseId` | — |
+
+`ASSIGNED` гэсэн тусдаа төлөв байхгүй: хуваарилах үйлдэл хэрэг нээхтэй нэг transaction-д явагдаж шууд `CONVERTED` болно.
+Эцсийн үр дүн хоёр л — татгалзах эсвэл хэрэг нээх. `NEW` хүсэлтийг шууд хуваарилах, давхар хуваарилах нь 400.
+Шийдвэр бүр төлөвөөр хамгаалсан update-аар хийгдэх тул хоёр админ зэрэг шийдвэрлэж чадахгүй.
+
+### Endpoint-ууд
+
+| Endpoint | Эрх | Тайлбар |
+| --- | --- | --- |
+| `POST /service-requests` | CLIENT | `{ type: LAWYER\|CONSULTATION, caseType, title, description }` (тайлбар ≥30 тэмдэгт) → `NEW` |
+| `GET /service-requests/mine` | CLIENT | Өөрийн хүсэлтүүд (шийдсэн админы нэр харагдахгүй) |
+| `GET /service-requests` | ADMIN | `status`, `type`, `caseType` шүүлт, хуудаслалт, хүсэлт гаргагчийн мэдээлэлтэй |
+| `GET /service-requests/summary` | ADMIN | `{ new, accepted }` — sidebar ба самбарын тоо |
+| `GET /service-requests/:id` | ADMIN, өөрийн CLIENT | Бусад → 403 |
+| `GET /service-requests/:id/suggested-lawyers` | ADMIN | `LawyerProfile.specializations` нь чиглэлтэй таарсан идэвхтэй өмгөөлөгчид (таарах хүн байхгүй бол бүгд), нээлттэй хэрэг цөөнөөс нь |
+| `POST /service-requests/:id/accept` | ADMIN | `NEW → ACCEPTED` |
+| `POST /service-requests/:id/reject` | ADMIN | `NEW/ACCEPTED → REJECTED`, `{ rejectionReason }` заавал |
+| `POST /service-requests/:id/assign` | ADMIN | `ACCEPTED → CONVERTED`. `{ lawyerId }` эсвэл `{ leadId, memberIds[] }`. Хэрэг: дугаар автомат; гарчиг, тайлбар, төрөл хүсэлтээс; `clientId` = хүсэлт гаргагч; `lawyerId` = ганц өмгөөлөгч эсвэл ахлах. CaseMember: ахлах `LEAD`, бусад `MEMBER` |
+
+LAWYER хүсэлтийг удирдахгүй (403): хуваарилагдсаны дараа тэр хэргээр л оролцоно (хэргийн scope). Бүх бичих хүсэлт
+`AuditLog`-д `service-requests` entity-ээр бичигдэнэ. `ContactRequest` хүснэгтийн өгөгдлийг устгаагүй: `GET /contact` нь хуучин
+маягтын мессежүүдийг ADMIN-д зөвхөн уншихаар үлдээсэн бөгөөд `/admin/requests` дээр эвхэгддэг хэсэгт харагдана.
+
+### Event → мэдэгдэл
+
+| Event | Хүлээн авагч | Гарчиг → холбоос |
+| --- | --- | --- |
+| `service-request.created` | идэвхтэй бүх ADMIN | «Шинэ үйлчилгээний хүсэлт: {гарчиг}» → `/admin/requests/:id` |
+| `service-request.accepted` | хүсэлт гаргагч | «Таны хүсэлтийг хүлээж авлаа» → `/portal/requests` |
+| `service-request.rejected` | хүсэлт гаргагч | «Таны хүсэлтийг татгалзлаа», биед шалтгаан → `/portal/requests` |
+| `service-request.assigned` | ахлах ба гишүүн өмгөөлөгч; хүсэлт гаргагч | «Танд шинэ хэрэг хуваарилагдлаа: {дугаар}» → `/admin/cases/:id`; «Таны хүсэлтэд өмгөөлөгч томилогдлоо, хэрэг нээгдлээ» → `/portal/cases/:id` |
+
+### UI
+
+- **Нийтийн** `/contact`: «Өмгөөлөгч авах», «Зөвлөгөө авах» → `/portal/requests/new?type=…` (нэвтрээгүй бол нэвтрэх хуудас, дараа нь форм руу буцна).
+- **Портал**: sidebar «Миний хүсэлт»; `/portal/requests` төлөв, татгалзсан шалтгаан, «Хэрэг рүү очих»; `/portal/requests/new` форм;
+  нүүр хуудсанд шийдвэрлэгдэж буй хүсэлтийн карт; «Хэргүүд» хуудасны «Шинэ хүсэлт илгээх».
+- **Админ**: sidebar «Хүсэлтүүд» (шинэ хүсэлтийн тоо), самбарын «Шинэ хүсэлт» тоо ба жагсаалт; `/admin/requests` шүүлт, шинэ мөр
+  тодорсон; `/admin/requests/[id]` хүлээж авах / татгалзах, «Өмгөөлөгч хуваарилах» modal — нэг өмгөөлөгч эсвэл баг + ахлах,
+  мэргэшил таарсан нь эхэнд.
+
+### Тун удахгүй
+
+- Хүсэлтэд баримт (гэрээ, мэдэгдэл) хавсаргах
+- Харилцагч `NEW` хүсэлтээ өөрөө цуцлах
+- 24 цагаас удаан `NEW` хэвээр байгаа хүсэлтийг өдөр тутмын сануулгад оруулах
+- Хүсэлт дээр админы дотоод тэмдэглэл
+
+---
+
+## 14. Тест
 
 ```bash
 pnpm test            # эсвэл: pnpm --filter @law-firm/api test
@@ -673,13 +738,17 @@ upsert-д ADMIN бичигдэх, GET бүх role-д, PUT зөвхөн ADMIN (LA
 Фирмийн мэдээлэл: жишээ (регистргүй), хадгалсан, эвдэрсэн утга → 500, `firm` түлхүүрт upsert, GET нийтийн (`@Public`), PUT зөвхөн ADMIN,
 утас/регистр/и-мэйл хэвийн болох, буруу утга → 400. Refresh: login бүр шинэ family, rotate хийхэд `rotatedAt` ба ижил family,
 grace дотор зэрэг ирсэн хүсэлт бүх сесс хаахгүй, grace хэтэрсэн / сесс дууссан / `0` үед theft, env default 30.
-Нийт 411 тест, DB шаардахгүй (Prisma mock). Баг нэмэхээс өмнөх 249 тест хэвээр ногоон.
+Үйлчилгээний хүсэлт: CLIENT үүсгэх (created event), өөрийн жагсаалт, өөр хүнийх → 403, ADMIN шүүлт, accept/reject төлөвийн
+хамгаалалт (400/404), нэг өмгөөлөгч ба багаар хуваарилахад Case + CaseMember, `NEW`/давхар/зэрэгцээ хуваарилалт → 400, идэвхгүй
+өмгөөлөгч → 400, хэргийн дугаар давхцахад дахин оролдох, хуваарилсны дараах хэргийн scope, мэргэшлээр санал болгох, эрх
+(CLIENT/LAWYER → 403) ба validation → 400, дөрвөн event-ийн мэдэгдэл. Хуучин contact: зөвхөн унших жагсаалт, PATCH → 404.
+Нийт 448 тест, DB шаардахгүй (Prisma mock). Баг нэмэхээс өмнөх 249 тест хэвээр ногоон.
 
 ```bash
 pnpm --filter @law-firm/web e2e     # Playwright, web :3001 + api :4000 ажиллаж байх ёстой
 ```
 
-Playwright (37 тест): нийтийн сайт (2), портал (2), админ (4), баримтын хүсэлт (3), мессеж (3), төлбөр (3), даалгавар (3), мэдэгдэл (2), гүйцэтгэл (3), хонх/Kanban/хавсралт (3), сесс (4), тохиргоо/ноорог нэхэмжлэх (5):
+Playwright (41 тест): нийтийн сайт (2), портал (2), админ (4), баримтын хүсэлт (3), мессеж (3), төлбөр (3), даалгавар (3), мэдэгдэл (2), гүйцэтгэл (3), хонх/Kanban/хавсралт (3), сесс (4), тохиргоо/ноорог нэхэмжлэх (5), үйлчилгээний хүсэлт (4):
 - LAWYER хэрэг үүсгэж шүүх хурал нэмэхэд харилцагч порталдаа болон мэдэгдлээс харна.
 - ADMIN нийтлэл нийтлэхэд нийтийн `/news` болон нийтлэлийн хуудсанд шууд гарна (тест дараа нь устгана).
 - LAWYER өөр хуульчийн хэрэг рүү `/admin/cases/[id]`-ээр орвол 403 хуудас, `PATCH /cases/:id` нь 403.
@@ -711,10 +780,16 @@ Playwright (37 тест): нийтийн сайт (2), портал (2), адм�
 - Нэг refresh токеныг хоёр удаа илгээхэд хоёулаа 200, тухайн хэрэглэгчийн өөр сесс хаагдахгүй; хоёр табын access token зэрэг дуусахад хоёулаа порталд үлдэх.
 - ADMIN фирмийн утсыг солиход (буруу регистр хадгалагдахгүй) нийтийн хөл, «Холбоо барих», нэвтрэх хуудас, CLIENT-ийн нэхэмжлэхийн «Нэхэмжлэгч» дээр шинэ утас гарах (тест дараа нь буцаана).
 - `GET /settings/firm` нэвтрэлтгүй 200, LAWYER-ийн `PUT` 403, `POST /api/revalidate/firm` нэвтрээгүй 401, LAWYER 403.
+- CLIENT `/contact`-оос «Өмгөөлөгч авах» → форм (богино тайлбар хадгалагдахгүй) → ADMIN жагсаалтаас нээж хүлээж авах → сонголтгүй
+  хуваарилах боломжгүй → нэг өмгөөлөгч хуваарилж хэрэг нээх → CLIENT «Хэрэг рүү очих» → өмгөөлөгчийн мессеж порталд харагдах, мэдэгдэл.
+- ADMIN шалтгаангүй татгалзах боломжгүй → шалтгаантай татгалзахад CLIENT талд шалтгаан ба мэдэгдэл; шийдсэн хүсэлтийг дахин хүлээж авах 400.
+- Багаар хуваарилах: ахлахыг сольж хэрэг нээхэд ахлах LEAD, гишүүн MEMBER; хоёулаа хэрэгт хандаж, багийн бус хуульч 403.
+- LAWYER хүсэлтийн API 403, CLIENT accept/assign 403, нэвтрээгүй POST 401; нэвтрээгүй зочин «Зөвлөгөө авах» → нэвтрээд
+  төрөл сонгогдсон форм руу буцах; хуучин `/admin/contact` → `/admin/requests`, LAWYER-т цэс байхгүй, хуудас 403.
 
 ---
 
-## 14. Production тэмдэглэл
+## 15. Production тэмдэглэл
 
 - `pnpm build` → `apps/api/dist`, `apps/web/.next`. API: `node dist/main`, web: `next start`.
 - API `trust proxy` = 1 (reverse proxy ард), cookie `secure` = true.

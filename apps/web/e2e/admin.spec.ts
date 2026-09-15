@@ -93,10 +93,11 @@ test.describe('Админ самбар', () => {
   test('LAWYER өөр хуульчийн хэрэг рүү URL-ээр орвол 403, засах API ч хаалттай', async ({ page }) => {
     const api = await playwrightRequest.newContext({ baseURL: API_URL });
     expect((await api.post('/auth/login', { data: LAWYER2 })).ok()).toBeTruthy();
-    const { items } = (await (await api.get('/cases?limit=100')).json()) as { items: { id: string; caseNumber: string; lawyer: { firstName: string } }[] };
+    const { items } = (await (await api.get('/cases?limit=100')).json()) as { items: { id: string; caseNumber: string; title: string; lawyer: { firstName: string } }[] };
     await api.dispose();
-    // A seeded case lawyer2 leads alone: other specs briefly add lawyer2 to lawyer1's cases, so "the newest case" is not reliable.
-    const foreignCase = items.find((item) => item.lawyer.firstName === 'Оюунбилэг');
+    // A seeded case lawyer2 leads alone: other specs briefly add lawyer2 to lawyer1's cases, and team assignments of service
+    // requests open E2E cases led by lawyer2 with lawyer1 on the team, so neither "the newest case" nor any lawyer2 case is reliable.
+    const foreignCase = items.find((item) => item.lawyer.firstName === 'Оюунбилэг' && !item.title.startsWith('E2E'));
     expect(foreignCase, 'a case led by lawyer2').toBeTruthy();
 
     await login(page, LAWYER1);
