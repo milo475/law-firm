@@ -23,6 +23,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { PerformanceModule } from './performance/performance.module';
 import { PostsModule } from './posts/posts.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { RemindersModule } from './reminders/reminders.module';
 import { SettingsModule } from './settings/settings.module';
 import { StorageModule } from './storage/storage.module';
 import { TasksModule } from './tasks/tasks.module';
@@ -63,6 +64,7 @@ import { UsersModule } from './users/users.module';
     SettingsModule,
     TasksModule,
     PerformanceModule,
+    RemindersModule,
   ],
   controllers: [AppController],
   providers: [

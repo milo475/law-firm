@@ -9,6 +9,14 @@ export const EnvSchema = z.object({
   PORT: z.coerce.number().int().min(1).max(65535).default(4000),
   /** Global rate limit: requests per minute per client IP. Raise it only for e2e or load runs from one machine. */
   THROTTLE_LIMIT: z.coerce.number().int().min(1).default(120),
+  /** Daily reminders for overdue / due-soon tasks, invoices and document requests. Never scheduled when NODE_ENV=test. */
+  REMINDERS_ENABLED: booleanFromString.default(true),
+  /** Cron expression in server local time (seconds minutes hours day month weekday); default every day at 08:00. */
+  REMINDERS_CRON: z
+    .string()
+    .trim()
+    .regex(/^(\S+\s+){4,5}\S+$/, 'REMINDERS_CRON must be a 5 or 6 field cron expression')
+    .default('0 0 8 * * *'),
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
 
   JWT_ACCESS_SECRET: z.string().min(16, 'JWT_ACCESS_SECRET must be at least 16 characters'),

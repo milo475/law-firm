@@ -13,6 +13,12 @@ describe('validateEnv', () => {
     expect(validateEnv(REQUIRED).THROTTLE_LIMIT).toBe(120);
   });
 
+  it('reminders run daily at 08:00 by default and reject a malformed cron expression', () => {
+    expect(validateEnv(REQUIRED)).toMatchObject({ REMINDERS_ENABLED: true, REMINDERS_CRON: '0 0 8 * * *' });
+    expect(validateEnv({ ...REQUIRED, REMINDERS_ENABLED: 'false', REMINDERS_CRON: '0 30 7 * * 1-5' })).toMatchObject({ REMINDERS_ENABLED: false, REMINDERS_CRON: '0 30 7 * * 1-5' });
+    expect(() => validateEnv({ ...REQUIRED, REMINDERS_CRON: 'every morning' })).toThrow(/REMINDERS_CRON/);
+  });
+
   it('reads THROTTLE_LIMIT from the environment and rejects values below 1', () => {
     expect(validateEnv({ ...REQUIRED, THROTTLE_LIMIT: '1000' }).THROTTLE_LIMIT).toBe(1000);
     expect(() => validateEnv({ ...REQUIRED, THROTTLE_LIMIT: '0' })).toThrow(/THROTTLE_LIMIT/);
