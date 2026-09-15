@@ -105,7 +105,8 @@ law-firm/
 │   │       ├── lawyers/         public хуульчдын профайл + /lawyers/:userId/profile удирдлага
 │   │       ├── cases/           scope: CLIENT→өөрийн, LAWYER→хариуцсан, ADMIN→бүгд; staff CRUD, events, STATUS_CHANGE
 │   │       ├── documents/       multipart upload → MinIO, presigned download (scope + visibility), DELETE
-│   │       ├── invoices/        хэргийн scope-оор; үүсгэх (INV-YYYY-NNNN), төлөвийн шилжилт
+│   │       ├── invoices/        хэргийн scope-оор; үүсгэх (INV-YYYY-NNNN), төлөвийн шилжилт; дансны төлбөр тэмдэглэх, баталгаажуулах
+│   │       ├── settings/        bank-account.ts — нэхэмжлэхийн төлбөр шилжүүлэх данс (одоогоор ЖИШЭЭ)
 │   │       ├── document-requests/ баримтын хүсэлт: CRUD, submit (multipart), review, EventEmitter2 → мэдэгдэл
 │   │       ├── messages/        хэргийн мессеж: cursor жагсаалт, илгээх, уншсан болгох, unread summary, inbox
 │   │       ├── notifications/   list, read, read-all
@@ -197,7 +198,8 @@ ADMIN болон LAWYER портал login-оор нэвтэрмэгц `/admin` 
 | `/admin/clients`, `/admin/clients/[id]` | ADMIN (LAWYER харна) | Харилцагч бүртгэх (түр нууц үг), засах, идэвхгүй болгох, хэргүүд |
 | `/admin/lawyers`, `/admin/lawyers/[id]` | ADMIN | Хуульчийн бүртгэл, нийтийн профайл |
 | `/admin/posts`, `/admin/posts/new`, `/admin/posts/[id]/edit` | ADMIN, LAWYER | Markdown editor + preview, cover зураг, slug автомат, Ноорог / Нийтлэх / Архивлах |
-| `/admin/invoices` | ADMIN, LAWYER | Нэхэмжлэх үүсгэх, төлөвийн шилжилт |
+| `/admin/invoices` | ADMIN, LAWYER | Нэхэмжлэх үүсгэх, төлөвийн шилжилт, баталгаажуулах хүлээгдэж буй төлбөрийн шүүлт |
+| `/admin/invoices/[id]` | ADMIN, хариуцсан LAWYER | Нэхэмжлэхийн дэлгэрэнгүй, харилцагчийн төлбөрийн тэмдэглэл, баталгаажуулах / татгалзах |
 | `/admin/contact` | ADMIN | «Холбоо барих» хүсэлтүүд: Шинэ → Холбогдсон → Хаагдсан |
 | `/admin/profile` | ADMIN, LAWYER | Бүртгэлийн мэдээлэл, нууц үг, (LAWYER) нийтийн профайл |
 
@@ -339,7 +341,64 @@ pnpm --filter @law-firm/web e2e
 
 ---
 
-## 7. Тест
+## 7. Нэхэмжлэхийн төлбөр (данс, гар баталгаажуулалт)
+
+Онлайн картын төлбөр байхгүй. Харилцагч фирмийн дансанд шилжүүлэг хийгээд порталаас «Төлбөр хийсэн» гэж тэмдэглэнэ.
+ADMIN эсвэл хэргийг хариуцсан хуульч дансны хуулгаас тулгаад баталгаажуулна, эсвэл шалтгаантай татгалзана.
+
+### Төлөвийн шилжилт
+
+| Одоогийн төлөв | Дараагийн төлөв | Хэн |
+| --- | --- | --- |
+| `SENT`, `OVERDUE` | `AWAITING_CONFIRMATION` («Баталгаажуулж буй») | хэргийн CLIENT, `mark-paid` |
+| `AWAITING_CONFIRMATION` | `PAID` | ADMIN, хариуцсан LAWYER, `confirm-payment` → `paidAt`, `confirmedById` |
+| `AWAITING_CONFIRMATION` | `SENT` | ADMIN, хариуцсан LAWYER, `reject-payment` → `paymentRejectionReason` |
+
+Бусад шилжилт (`DRAFT → SENT`, `SENT → PAID` гэх мэт) хуучин `PATCH /invoices/:id`-ээр хийгдэнэ. `PATCH` нь
+`AWAITING_CONFIRMATION` руу оруулах, эсвэл тэндээс гаргахыг 400-аар хориглоно. Буруу шилжилт бүр 400 буцаана.
+
+### Endpoint-ууд
+
+| Endpoint | Эрх | Тайлбар |
+| --- | --- | --- |
+| `GET /settings/bank-account` | нэвтэрсэн бүх хэрэглэгч | `{ bankName, accountNumber, accountName }` |
+| `POST /invoices/:id/mark-paid` | хэргийн CLIENT | `{ paymentNote? }` (≤500), `paymentMarkedAt` тавина |
+| `POST /invoices/:id/confirm-payment` | ADMIN, хариуцсан LAWYER | `PAID`, `paidAt`, `confirmedById` |
+| `POST /invoices/:id/reject-payment` | ADMIN, хариуцсан LAWYER | `{ reason }` заавал → `SENT` |
+| `GET /invoices/payment-summary` | нэвтэрсэн бүх хэрэглэгч | Scope доторх баталгаажуулалт хүлээж буй төлбөр (sidebar badge) |
+
+Бүх бичих хүсэлт `AuditLog`-д `invoices` entity-ээр бичигдэнэ.
+
+### Event → мэдэгдэл
+
+| Event | Хүлээн авагч | Мэдэгдлийн гарчиг |
+| --- | --- | --- |
+| `invoice.payment-marked` | хариуцсан LAWYER ба идэвхтэй бүх ADMIN | «Төлбөр хийгдсэн гэж тэмдэглэлээ, баталгаажуулна уу: {нэхэмжлэх №}» |
+| `invoice.payment-confirmed` | CLIENT | «Төлбөр баталгаажлаа: {нэхэмжлэх №}» |
+| `invoice.payment-rejected` | CLIENT | «Төлбөр баталгаажсангүй: {reason}» |
+
+### UI
+
+- **Портал** `/portal/invoices`, `/portal/invoices/[id]`: «Төлбөр төлөх» нь дансны мэдээлэл, төлөх дүн, гүйлгээний утгыг
+  хуулах товчтой «Төлбөрийн заавар» modal нээнэ. «Төлбөр хийсэн» дарахад «Таны төлбөрийг хянаж байна» гарч, төлөх товч идэвхгүй болно.
+  Татгалзсан бол шалтгаан улаанаар харагдаж, дахин тэмдэглэж болно. Dashboard-д «Төлбөр баталгаажуулж байна» карт тусдаа гарна.
+- **Админ** `/admin/invoices`: «Баталгаажуулах хүлээгдэж буй» баннер, мөрийн тодотгол, төлөвийн шүүлт, sidebar-ын «Нэхэмжлэх» дээр тоо.
+  `/admin/invoices/[id]`: харилцагчийн тэмдэглэл, тэмдэглэсэн цаг, «Төлбөр баталгаажуулах» болон «Татгалзах» (шалтгаан заавал).
+
+### Бодит дансаар солих
+
+Одоогийн данс нь **ЖИШЭЭ** утга: Хаан банк · 5023118822 · Тулгуур Хуулийн Фирм ХХН.
+
+1. `apps/api/src/settings/bank-account.ts` доторх `bankName`, `accountNumber`, `accountName`-г бодит утгаар солиод
+   «ЖИШЭЭ данс» гэсэн comment-ийг устгана. Дансны дугаарыг зайгүй бичнэ, портал өөрөө 4 оронгоор бүлэглэж харуулна.
+2. `pnpm build` хийгээд API-г дахин асаана. Портал дансыг `GET /settings/bank-account`-аас уншдаг тул вебийн код өөрчлөх шаардлагагүй.
+3. Нэвтэрсэн хэрэглэгчээр `GET /settings/bank-account` дуудаж, эсвэл порталын «Төлбөрийн заавар» modal-аас шалгана.
+4. `apps/api/src/settings/settings.controller.spec.ts` доторх хүлээгдэж буй утгыг шинэ данстай тааруулна.
+5. Seed-ийн `INV-YYYY-0002` дээрх «Хаан банкаар шилжүүлсэн» тэмдэглэл нь зөвхөн жишээ өгөгдөл.
+
+---
+
+## 8. Тест
 
 ```bash
 pnpm test            # эсвэл: pnpm --filter @law-firm/api test
@@ -352,13 +411,14 @@ STATUS_CHANGE), event-ийн мэдэгдэл, нэхэмжлэхийн шилж
 admin stats, contact-ийн шилжилт, staff endpoint-уудын эрх (`x-test-role` header-тэй HTTP тест).
 Баримтын хүсэлт: эрхийн scope (өөр хуульч, өөр харилцагч → 403), төлөвийн шилжилт, файл холбох, шалтгаангүй буцаалт → 400,
 файлтай хүсэлт устгах → 400, EventEmitter2 wiring-ээр мэдэгдэл үүсэх. Мессеж: эрхгүй хүн → 403, хүлээн авагч,
-cursor pagination, уншаагүй тоо ба уншсан болгох, мэдэгдлийн дедупликаци, body-ийн урт → 400. Нийт 218 тест, DB шаардахгүй (Prisma mock).
+cursor pagination, уншаагүй тоо ба уншсан болгох, мэдэгдлийн дедупликаци, body-ийн урт → 400. Төлбөр: өөрийн нэхэмжлэх тэмдэглэх, өөр харилцагч → 403, DRAFT/PAID → 400, баталгаажуулах (`paidAt`, `confirmedById`),
+татгалзаад дахин тэмдэглэх, CLIENT баталгаажуулах → 403, бүх шатны мэдэгдэл, PATCH хамгаалалт. Нийт 249 тест, DB шаардахгүй (Prisma mock).
 
 ```bash
 pnpm --filter @law-firm/web e2e     # Playwright, web :3001 + api :4000 ажиллаж байх ёстой
 ```
 
-Playwright (14 тест): нийтийн сайт (2), портал (2), админ (4), баримтын хүсэлт (3), мессеж (3):
+Playwright (17 тест): нийтийн сайт (2), портал (2), админ (4), баримтын хүсэлт (3), мессеж (3), төлбөр (3):
 - LAWYER хэрэг үүсгэж шүүх хурал нэмэхэд харилцагч порталдаа болон мэдэгдлээс харна.
 - ADMIN нийтлэл нийтлэхэд нийтийн `/news` болон нийтлэлийн хуудсанд шууд гарна (тест дараа нь устгана).
 - LAWYER өөр хуульчийн хэрэг рүү `/admin/cases/[id]`-ээр орвол 403 хуудас, `PATCH /cases/:id` нь 403.
@@ -369,10 +429,13 @@ Playwright (14 тест): нийтийн сайт (2), портал (2), адм�
 - CLIENT мессеж илгээх → LAWYER мэдэгдлийн холбоосоор чатад орж хариулах → CLIENT-ийн нээлттэй чатад хариу polling-оор гарах.
 - Inbox дээр уншаагүй тоо харагдаж, чатыг нээхэд 0 болох.
 - Өөр харилцагч, өөр хуульч мессежийн API болон чат табаар орвол 403.
+- CLIENT төлбөр тэмдэглэх → админд «Баталгаажуулж буй» харагдах → баталгаажуулах → CLIENT талд «Төлөгдсөн».
+- Татгалзах → шалтгаан порталд харагдах → дахин тэмдэглэх → админд дахин хүлээгдэж буй.
+- Өөр харилцагч тэмдэглэх, CLIENT баталгаажуулах → 403; ноорог нэхэмжлэх тэмдэглэх → 400.
 
 ---
 
-## 8. Production тэмдэглэл
+## 9. Production тэмдэглэл
 
 - `pnpm build` → `apps/api/dist`, `apps/web/.next`. API: `node dist/main`, web: `next start`.
 - API `trust proxy` = 1 (reverse proxy ард), cookie `secure` = true.

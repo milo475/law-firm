@@ -35,9 +35,12 @@ test.describe('Нийтийн сайт', () => {
     // search (across all categories) — submitted with Enter, as in the design
     await page.goto('/news');
     const search = page.getByRole('searchbox', { name: 'Нийтлэл хайх' });
-    await search.fill('хөдөлмөр');
-    await search.press('Enter');
-    await expect(page).toHaveURL(/search=/);
+    // Right after a server start the page may not be hydrated yet; retry until the client-side search navigates.
+    await expect(async () => {
+      await search.fill('хөдөлмөр');
+      await search.press('Enter');
+      await expect(page).toHaveURL(/search=/, { timeout: 2_000 });
+    }).toPass({ timeout: 15_000 });
     await expect(page.getByText('хайлтын үр дүн')).toBeVisible();
     await expect.poll(visibleArticles).toBe(1);
     await expect(articleTitles.first()).toContainText('Хөдөлмөрийн');
