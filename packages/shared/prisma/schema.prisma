@@ -87,6 +87,19 @@ enum CaseMemberRole {
   MEMBER
 }
 
+enum ServiceRequestType {
+  LAWYER
+  CONSULTATION
+}
+
+/// NEW → ACCEPTED → CONVERTED (assigning opens the case in one step), or NEW/ACCEPTED → REJECTED.
+enum ServiceRequestStatus {
+  NEW
+  ACCEPTED
+  REJECTED
+  CONVERTED
+}
+
 enum TaskStatus {
   TODO
   IN_PROGRESS
@@ -138,6 +151,8 @@ model User {
   actedNotifications       Notification[]    @relation("NotificationActor")
   taskAttachments          TaskAttachment[]  @relation("TaskAttachmentUploader")
   updatedSettings          Setting[]         @relation("SettingUpdater")
+  serviceRequests          ServiceRequest[]  @relation("ServiceRequestRequester")
+  reviewedServiceRequests  ServiceRequest[]  @relation("ServiceRequestReviewer")
   auditLogs                AuditLog[]
 
   @@index([role])
@@ -222,6 +237,8 @@ model Case {
   messages         Message[]
   members          CaseMember[]
   tasks            Task[]
+  /// The service request this case was opened from, if any.
+  serviceRequest   ServiceRequest?
 
   @@index([clientId])
   @@index([lawyerId])
@@ -378,6 +395,32 @@ model Notification {
   @@index([userId, createdAt])
 }
 
+/// A signed-in client's request for a lawyer or a consultation. ADMIN accepts or rejects it, then assigns one lawyer or a
+/// team, which opens a Case for the requester in the same step (assignedCaseId, status CONVERTED).
+model ServiceRequest {
+  id              String               @id @default(uuid()) @db.Uuid
+  requesterId     String               @db.Uuid
+  requester       User                 @relation("ServiceRequestRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  type            ServiceRequestType
+  caseType        CaseType
+  title           String
+  description     String               @db.Text
+  status          ServiceRequestStatus @default(NEW)
+  reviewedById    String?              @db.Uuid
+  reviewedBy      User?                @relation("ServiceRequestReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt      DateTime?
+  rejectionReason String?              @db.Text
+  assignedCaseId  String?              @unique @db.Uuid
+  assignedCase    Case?                @relation(fields: [assignedCaseId], references: [id], onDelete: SetNull)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@index([status])
+  @@index([requesterId])
+  @@index([type])
+}
+
+/// Legacy public contact form, replaced by ServiceRequest. Rows are kept (read-only for ADMIN) so earlier messages are not lost.
 model ContactRequest {
   id        String        @id @default(uuid()) @db.Uuid
   name      String

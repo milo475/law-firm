@@ -8,6 +8,8 @@ import type {
   InvoiceStatus,
   PostCategory,
   PostStatus,
+  ServiceRequestStatus,
+  ServiceRequestType,
   TaskPriority,
   TaskStatus,
   Role,
@@ -100,4 +102,16 @@ export const TASK_PRIORITY_LABELS: Record<TaskPriority, string> = {
   MEDIUM: 'Дунд',
   HIGH: 'Өндөр',
   URGENT: 'Яаралтай',
+};
+
+export const SERVICE_REQUEST_TYPE_LABELS: Record<ServiceRequestType, string> = {
+  LAWYER: 'Өмгөөлөгч авах',
+  CONSULTATION: 'Зөвлөгөө авах',
+};
+
+export const SERVICE_REQUEST_STATUS_LABELS: Record<ServiceRequestStatus, string> = {
+  NEW: 'Шинэ',
+  ACCEPTED: 'Хүлээж авсан',
+  REJECTED: 'Татгалзсан',
+  CONVERTED: 'Хэрэг нээгдсэн',
 };

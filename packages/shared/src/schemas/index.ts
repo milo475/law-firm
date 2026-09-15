@@ -14,3 +14,4 @@ export * from './tasks.js';
 export * from './performance.js';
 export * from './task-attachments.js';
 export * from './settings.js';
+export * from './service-requests.js';

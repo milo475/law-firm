@@ -550,15 +550,64 @@ async function seedStaffNotifications(users: Awaited<ReturnType<typeof seedUsers
   return data.length;
 }
 
-async function seedContactRequests() {
-  const count = await prisma.contactRequest.count();
-  if (count > 0) return;
-  await prisma.contactRequest.createMany({
-    data: [
-      { name: 'Мөнхбат', phone: '99887766', email: 'munkhbat@example.mn', subject: 'Компани байгуулах зөвлөгөө', message: 'ХХК байгуулахад шаардлагатай баримт бичиг, хугацааны талаар зөвлөгөө авмаар байна.' },
-      { name: 'Ариунаа', phone: '95123456', email: null, subject: 'Өв залгамжлал', message: 'Эцэг эхийн үл хөдлөх хөрөнгийг өвлөн авах журмын талаар асуух зүйл байна.' },
-    ],
-  });
+/** Demo service requests in each outcome; the converted one is the request the first seeded case was opened from. */
+async function seedServiceRequests(users: Awaited<ReturnType<typeof seedUsers>>) {
+  const existing = await prisma.serviceRequest.count();
+  if (existing > 0) return existing;
+  const year = new Date().getFullYear();
+  const firstCase = await prisma.case.findUnique({ where: { caseNumber: formatCaseNumber(year, 1) }, select: { id: true } });
+  const requests = [
+    {
+      requesterId: users.client2.id,
+      type: 'LAWYER' as const,
+      caseType: 'FAMILY' as const,
+      status: 'NEW' as const,
+      title: 'Гэрлэлт цуцлуулах, хүүхдийн тэтгэлэг',
+      description: 'Гэрлэлтээ цуцлуулж, хоёр хүүхдийн тэтгэлэг тогтоолгох шаардлагатай байна. Эд хөрөнгийн хуваарилалт дээр тохиролцож чадахгүй байгаа.',
+      createdAt: daysAgo(1, 10),
+    },
+    {
+      requesterId: users.client2.id,
+      type: 'CONSULTATION' as const,
+      caseType: 'LABOR' as const,
+      status: 'ACCEPTED' as const,
+      title: 'Ажлаас үндэслэлгүй халагдсан',
+      description: 'Ажил олгогч урьдчилан мэдэгдэлгүйгээр хөдөлмөрийн гэрээг цуцалсан. Нөхөн олговор авах, ажилд эгүүлэн тогтоолгох боломжийн талаар зөвлөгөө авмаар байна.',
+      reviewedById: users.admin.id,
+      reviewedAt: daysAgo(2, 15),
+      createdAt: daysAgo(3, 9),
+    },
+    {
+      requesterId: users.client1.id,
+      type: 'CONSULTATION' as const,
+      caseType: 'OTHER' as const,
+      status: 'REJECTED' as const,
+      title: 'Гадаад улсад охин компани бүртгүүлэх',
+      description: 'Сингапурт охин компани бүртгүүлэх, давхар татварын гэрээний талаар зөвлөгөө хэрэгтэй байна.',
+      reviewedById: users.admin.id,
+      reviewedAt: daysAgo(8, 11),
+      rejectionReason: 'Гадаад улсын компанийн эрх зүйгээр манай фирм үйлчилгээ үзүүлдэггүй. Олон улсын хуулийн фирмд хандахыг зөвлөж байна.',
+      createdAt: daysAgo(9, 16),
+    },
+    ...(firstCase
+      ? [
+          {
+            requesterId: users.client1.id,
+            type: 'LAWYER' as const,
+            caseType: 'CIVIL' as const,
+            status: 'CONVERTED' as const,
+            title: 'Түрээсийн гэрээний маргаан — "Мөнх Тулга" ХХК',
+            description: 'Оффисын байрны түрээсийн гэрээг хугацаанаас нь өмнө цуцалсан тул хохирол нэхэмжлэх өмгөөлөгч хэрэгтэй байна.',
+            reviewedById: users.admin.id,
+            reviewedAt: daysAgo(46, 10),
+            assignedCaseId: firstCase.id,
+            createdAt: daysAgo(47, 14),
+          },
+        ]
+      : []),
+  ];
+  await prisma.serviceRequest.createMany({ data: requests });
+  return requests.length;
 }
 
 async function main() {
@@ -575,7 +624,8 @@ async function main() {
   console.log(`  messages: ${messages} on the first case`);
   const staffNotifications = await seedNotifications(users);
   console.log(`  staff notifications: ${staffNotifications}`);
-  await seedContactRequests();
+  const serviceRequests = await seedServiceRequests(users);
+  console.log(`  service requests: ${serviceRequests} (new, accepted, rejected, converted)`);
   console.log('Done.');
   console.log('\nLogin credentials:');
   console.log('  ADMIN   admin@lawfirm.mn        / Admin123!');

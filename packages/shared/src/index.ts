@@ -14,6 +14,8 @@ export {
   CaseEventType,
   InvoiceStatus,
   ContactStatus,
+  ServiceRequestStatus,
+  ServiceRequestType,
   DocumentRequestStatus,
   CaseMemberRole,
   TaskStatus,
