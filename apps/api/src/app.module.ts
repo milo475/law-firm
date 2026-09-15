@@ -24,6 +24,7 @@ import { PostsModule } from './posts/posts.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { SettingsModule } from './settings/settings.module';
 import { StorageModule } from './storage/storage.module';
+import { TasksModule } from './tasks/tasks.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -56,6 +57,7 @@ import { UsersModule } from './users/users.module';
     ContactModule,
     AdminModule,
     SettingsModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [

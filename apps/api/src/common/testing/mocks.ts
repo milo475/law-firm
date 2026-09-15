@@ -41,6 +41,8 @@ export function createPrismaMock() {
     refreshToken: delegate('findUnique', 'create', 'update', 'updateMany'),
     post: delegate('findMany', 'findFirst', 'findUnique', 'count', 'create', 'update', 'delete'),
     case: delegate('findMany', 'findFirst', 'findUnique', 'count', 'create', 'update', 'groupBy'),
+    task: delegate('findMany', 'findUnique', 'count', 'create', 'update', 'delete', 'groupBy'),
+    taskComment: delegate('create', 'findMany'),
     caseMember: delegate('findMany', 'findUnique', 'findFirst', 'create', 'update', 'updateMany', 'upsert', 'delete', 'deleteMany', 'count'),
     caseEvent: delegate('findMany', 'findUnique', 'count', 'create', 'update', 'delete'),
     document: delegate('findMany', 'findUnique', 'create', 'delete'),
