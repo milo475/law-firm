@@ -27,6 +27,7 @@ export type {
   CaseEvent,
   Document,
   DocumentRequest,
+  Message,
   Invoice,
   Notification,
   ContactRequest,

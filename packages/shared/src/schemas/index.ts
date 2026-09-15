@@ -7,3 +7,4 @@ export * from './invoices.js';
 export * from './contact.js';
 export * from './admin.js';
 export * from './document-requests.js';
+export * from './messages.js';

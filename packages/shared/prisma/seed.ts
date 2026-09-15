@@ -432,6 +432,29 @@ async function seedCases(users: Awaited<ReturnType<typeof seedUsers>>) {
   return definitions.length;
 }
 
+/** A short client ↔ lawyer thread on the first case; the lawyer's last message is still unread. */
+async function seedMessages(users: Awaited<ReturnType<typeof seedUsers>>) {
+  const caseRecord = await prisma.case.findUnique({ where: { caseNumber: formatCaseNumber(new Date().getFullYear(), 1) }, select: { id: true } });
+  if (!caseRecord) return 0;
+  await prisma.message.deleteMany({ where: { caseId: caseRecord.id } });
+  const at = (days: number, hour: number, minute: number) => {
+    const date = daysAgo(days, hour);
+    date.setMinutes(minute);
+    return date;
+  };
+  const client = users.client1.id;
+  const lawyer = users.lawyer1.id;
+  const messages = [
+    { senderId: client, body: 'Сайн байна уу. Түрээслүүлэгч талаас эвлэрэх санал ирлээ. Хариу өгөхөөсөө өмнө тантай зөвлөмөөр байна.', createdAt: at(6, 10, 12), readAt: at(6, 10, 40) },
+    { senderId: lawyer, body: 'Сайн байна уу. Саналын хуулбарыг «Баримт» хэсэгт хавсаргаарай. Үзээд маргааш хариу өгье.', createdAt: at(6, 14, 5), readAt: at(6, 15, 20) },
+    { senderId: client, body: 'Хавсаргалаа. Хариу өгөх хугацаа нь энэ сарын 20-ны дотор гэж бичсэн байна.', createdAt: at(5, 9, 30), readAt: at(5, 10, 2) },
+    { senderId: lawyer, body: 'Саналын нөхцөл манай шаардлагаас доогуур байна. Шүүх хурлын өмнө дахин уулзаж ярилцъя.', createdAt: at(4, 16, 45), readAt: at(4, 18, 10) },
+    { senderId: lawyer, body: 'Урьдчилсан хэлэлцүүлэгт иргэний үнэмлэхээ авч, 15 минутын өмнө ирээрэй.', createdAt: at(1, 11, 5), readAt: null },
+  ];
+  await prisma.message.createMany({ data: messages.map((message) => ({ ...message, caseId: caseRecord.id })) });
+  return messages.length;
+}
+
 async function seedNotifications(users: Awaited<ReturnType<typeof seedUsers>>) {
   await prisma.notification.deleteMany({ where: { userId: { in: [users.client1.id, users.client2.id] } } });
   await prisma.notification.createMany({
@@ -463,6 +486,8 @@ async function main() {
   console.log(`  posts: ${posts} published + 1 draft`);
   const cases = await seedCases(users);
   console.log(`  cases: ${cases} (with events, documents, invoices, document requests)`);
+  const messages = await seedMessages(users);
+  console.log(`  messages: ${messages} on the first case`);
   await seedNotifications(users);
   await seedContactRequests();
   console.log('Done.');
