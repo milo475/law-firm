@@ -8,6 +8,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { CaseTeamTab } from '@/components/admin/case-team-tab';
 import { ConfirmModal } from '@/components/admin/confirm-modal';
 import { ChatThread } from '@/components/messages/chat-thread';
 import { DocumentRequestsTab } from '@/components/admin/document-requests-tab';
@@ -30,7 +31,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } fro
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/toast';
-import { ApiError, api, type CaseDetail, type CaseEvent, type DocumentItem, type DocumentRequestItem, type InvoiceItem, type Paginated, type PublicUser } from '@/lib/api';
+import { ApiError, api, type CaseDetail, type CaseEvent, type CaseMemberItem, type DocumentItem, type DocumentRequestItem, type InvoiceItem, type Paginated, type PublicUser } from '@/lib/api';
 import { CASE_STATUSES, CASE_TYPES, type CaseStatus } from '@/lib/admin';
 import { isAwaitingReview } from '@/lib/document-requests';
 import { useCaseUnreadCount } from '@/lib/messages';
@@ -38,10 +39,10 @@ import { CASE_EVENT_LABELS, CASE_STATUS_LABELS, CASE_TYPE_LABELS, formatBytes, f
 import { initials, shortName } from '@/lib/utils';
 
 type StaffPerson = PublicUser & { email: string; phone: string | null };
-type StaffCaseDetail = CaseDetail & { client: StaffPerson; lawyer: StaffPerson };
+type StaffCaseDetail = CaseDetail & { client: StaffPerson; lawyer: StaffPerson; members: CaseMemberItem[] };
 
 const ACCEPT = '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt';
-const TAB_VALUES = ['overview', 'timeline', 'documents', 'requests', 'messages', 'invoices'];
+const TAB_VALUES = ['overview', 'timeline', 'documents', 'requests', 'messages', 'invoices', 'team'];
 
 const OverviewSchema = z.object({
   title: CreateCaseSchema.shape.title,
@@ -103,7 +104,7 @@ export default function AdminCaseDetailPage() {
         <Breadcrumb items={[{ label: 'Хэргүүд', href: '/admin/cases' }, { label: forbidden ? 'Хандах эрхгүй' : 'Олдсонгүй' }]} />
         <ErrorState
           title={forbidden ? '403 — Энэ хэргийг удирдах эрх танд байхгүй' : '404 — Хэрэг олдсонгүй'}
-          message={forbidden ? 'Та зөвхөн өөрийн хариуцсан хэргийг нээх боломжтой.' : err instanceof ApiError ? err.message : 'Алдаа гарлаа'}
+          message={forbidden ? 'Та зөвхөн багийн гишүүн болсон хэргээ нээх боломжтой.' : err instanceof ApiError ? err.message : 'Алдаа гарлаа'}
         />
         <div><Button asChild variant="secondary" size="sm"><Link href="/admin/cases">Хэргүүд рүү буцах</Link></Button></div>
       </div>
@@ -115,6 +116,8 @@ export default function AdminCaseDetailPage() {
 
   const c = detail.data;
   const isClosed = c.status === 'CLOSED';
+  // Status, closing, case details and the team are managed by the lead lawyer or an admin.
+  const canLead = isAdmin || c.lawyer.id === user.id || c.members.some((member) => member.userId === user.id && member.role === 'LEAD');
   const awaitingReview = (requests.data ?? []).filter(isAwaitingReview).length;
   const unreadCount = unreadMessages.data?.count ?? 0;
 
@@ -141,7 +144,7 @@ export default function AdminCaseDetailPage() {
             wrapperClassName="w-[220px]"
             label="Төлөв"
             value={c.status}
-            disabled={updateStatus.isPending}
+            disabled={updateStatus.isPending || !canLead}
             onValueChange={(value) => {
               if (value === c.status) return;
               if (value === 'CLOSED') setCloseOpen(true);
@@ -149,7 +152,7 @@ export default function AdminCaseDetailPage() {
             }}
             options={CASE_STATUSES.map((s) => ({ value: s, label: CASE_STATUS_LABELS[s] }))}
           />
-          {!isClosed && <Button variant="secondary" size="md" onClick={() => setCloseOpen(true)}>Хэрэг хаах</Button>}
+          {!isClosed && canLead && <Button variant="secondary" size="md" onClick={() => setCloseOpen(true)}>Хэрэг хаах</Button>}
         </div>
       </div>
 
@@ -175,8 +178,9 @@ export default function AdminCaseDetailPage() {
             )}
           </TabsTrigger>
           <TabsTrigger value="invoices">Нэхэмжлэх</TabsTrigger>
+          <TabsTrigger value="team">Баг</TabsTrigger>
         </TabsList>
-        <TabsContent value="overview"><OverviewTab detail={c} isAdmin={isAdmin} onSaved={invalidate} /></TabsContent>
+        <TabsContent value="overview"><OverviewTab detail={c} isAdmin={isAdmin} canEdit={canLead} onSaved={invalidate} /></TabsContent>
         <TabsContent value="timeline"><TimelineTab caseId={id} onChanged={invalidate} /></TabsContent>
         <TabsContent value="documents"><DocumentsTab caseId={id} userId={user.id} isAdmin={isAdmin} onChanged={invalidate} /></TabsContent>
         <TabsContent value="requests"><DocumentRequestsTab caseId={id} isClosed={isClosed} requests={requests} onChanged={invalidate} /></TabsContent>
@@ -195,6 +199,7 @@ export default function AdminCaseDetailPage() {
           />
         </TabsContent>
         <TabsContent value="invoices"><InvoicesTab caseId={id} onChanged={invalidate} /></TabsContent>
+        <TabsContent value="team"><CaseTeamTab caseId={id} viewerId={user.id} canManage={canLead} onChanged={invalidate} /></TabsContent>
       </Tabs>
 
       <ConfirmModal
@@ -212,7 +217,7 @@ export default function AdminCaseDetailPage() {
 }
 
 // ─── Тойм: edit title / type / description / lawyer ─────────────────────────
-function OverviewTab({ detail, isAdmin, onSaved }: { detail: StaffCaseDetail; isAdmin: boolean; onSaved: () => Promise<void> }) {
+function OverviewTab({ detail, isAdmin, canEdit, onSaved }: { detail: StaffCaseDetail; isAdmin: boolean; canEdit: boolean; onSaved: () => Promise<void> }) {
   const lawyers = useLawyerOptions(isAdmin);
   const form = useForm<OverviewValues>({
     resolver: zodResolver(OverviewSchema),
@@ -244,24 +249,28 @@ function OverviewTab({ detail, isAdmin, onSaved }: { detail: StaffCaseDetail; is
       <Card className="p-6">
         <form onSubmit={handleSubmit((values) => save.mutate(values))} noValidate className="flex flex-col gap-5">
           <h3 className="text-h4">Хэргийн мэдээлэл</h3>
-          <Input label="Хэргийн нэр" required error={errors.title?.message} {...register('title')} />
+          <Input label="Хэргийн нэр" required disabled={!canEdit} error={errors.title?.message} {...register('title')} />
           <div className="grid gap-5 sm:grid-cols-2">
             <Controller control={control} name="type" render={({ field }) => (
-              <Select label="Хэргийн төрөл" required options={CASE_TYPES.map((t) => ({ value: t, label: CASE_TYPE_LABELS[t] }))} value={field.value} onValueChange={field.onChange} error={errors.type?.message} />
+              <Select label="Хэргийн төрөл" required options={CASE_TYPES.map((t) => ({ value: t, label: CASE_TYPE_LABELS[t] }))} value={field.value} onValueChange={field.onChange} disabled={!canEdit} error={errors.type?.message} />
             )} />
             {isAdmin ? (
               <Controller control={control} name="lawyerId" render={({ field }) => (
-                <Select label="Хариуцах хуульч" options={lawyers.data ?? [{ value: detail.lawyer.id, label: shortName(detail.lawyer.firstName, detail.lawyer.lastName) }]} value={field.value} onValueChange={field.onChange} helper="Хуульч солиход шинэ хуульч л хэргийг удирдана" />
+                <Select label="Хариуцах хуульч" options={lawyers.data ?? [{ value: detail.lawyer.id, label: shortName(detail.lawyer.firstName, detail.lawyer.lastName) }]} value={field.value} onValueChange={field.onChange} helper="Шинэ хуульч ахлахаар томилогдож, хуучин ахлах багаас хасагдана" />
               )} />
             ) : (
-              <Input label="Хариуцах хуульч" value={shortName(detail.lawyer.firstName, detail.lawyer.lastName)} disabled helper="Хуульчийг зөвхөн админ солино" readOnly />
+              <Input label="Хариуцах хуульч" value={shortName(detail.lawyer.firstName, detail.lawyer.lastName)} disabled helper={canEdit ? 'Ахлахыг «Баг» табаас шилжүүлнэ' : 'Хуульчийг ахлах хуульч эсвэл админ солино'} readOnly />
             )}
           </div>
-          <Textarea label="Тайлбар" rows={6} error={errors.description?.message} {...register('description')} />
-          <div className="flex gap-3">
-            <Button type="submit" size="md" disabled={save.isPending || !isDirty}>{save.isPending ? 'Хадгалж байна…' : 'Хадгалах'}</Button>
-            {isDirty && <Button variant="ghost" size="md" onClick={() => reset()}>Цуцлах</Button>}
-          </div>
+          <Textarea label="Тайлбар" rows={6} disabled={!canEdit} error={errors.description?.message} {...register('description')} />
+          {canEdit ? (
+            <div className="flex gap-3">
+              <Button type="submit" size="md" disabled={save.isPending || !isDirty}>{save.isPending ? 'Хадгалж байна…' : 'Хадгалах'}</Button>
+              {isDirty && <Button variant="ghost" size="md" onClick={() => reset()}>Цуцлах</Button>}
+            </div>
+          ) : (
+            <p className="text-body-sm text-text-muted">Хэргийн мэдээллийг зөвхөн ахлах хуульч эсвэл админ засна.</p>
+          )}
         </form>
       </Card>
       <div className="flex flex-col gap-4">

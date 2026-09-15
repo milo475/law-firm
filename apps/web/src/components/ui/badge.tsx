@@ -62,6 +62,11 @@ export const POST_STATUS_BADGE: Record<string, { tone: BadgeTone; label: string 
   ARCHIVED: { tone: 'pending', label: 'Архивласан' },
 };
 
+export const CASE_MEMBER_ROLE_BADGE: Record<string, { tone: BadgeTone; label: string }> = {
+  LEAD: { tone: 'progress', label: 'Ахлах' },
+  MEMBER: { tone: 'closed', label: 'Гишүүн' },
+};
+
 export const DOCUMENT_REQUEST_STATUS_BADGE: Record<string, { tone: BadgeTone; label: string }> = {
   PENDING: { tone: 'pending', label: 'Хүлээгдэж буй' },
   SUBMITTED: { tone: 'new', label: 'Илгээсэн' },

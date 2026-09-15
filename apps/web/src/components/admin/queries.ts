@@ -2,7 +2,7 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
-import { api, type Paginated } from '@/lib/api';
+import { api, type CaseMemberItem, type Paginated } from '@/lib/api';
 import type { AdminUser } from '@/lib/admin';
 import { shortName } from '@/lib/utils';
 
@@ -24,6 +24,17 @@ export function useLawyerOptions(enabled = true) {
     queryFn: () => api.get<Paginated<AdminUser>>('/users?role=LAWYER&isActive=true&limit=100'),
     enabled,
     select: (data) => data.items.map((u) => ({ value: u.id, label: shortName(u.firstName, u.lastName) })),
+  });
+}
+
+export const caseMembersKey = (caseId: string) => ['admin', 'case', caseId, 'members'] as const;
+
+/** The case team (LEAD first); nested under the case key, so useInvalidateCase refreshes it. */
+export function useCaseMembers(caseId: string, enabled = true) {
+  return useQuery({
+    queryKey: caseMembersKey(caseId),
+    queryFn: () => api.get<CaseMemberItem[]>(`/cases/${caseId}/members`),
+    enabled,
   });
 }
 

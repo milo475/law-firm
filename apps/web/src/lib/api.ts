@@ -213,6 +213,17 @@ export interface CaseDetail extends CaseListItem {
   description: string | null;
 }
 
+export type CaseMemberRole = 'LEAD' | 'MEMBER';
+
+/** GET /cases/:id/members — the staff team working on a case. */
+export interface CaseMemberItem {
+  id: string;
+  userId: string;
+  role: CaseMemberRole;
+  createdAt: string;
+  user: PublicUser & { email: string };
+}
+
 export interface CaseEvent {
   id: string;
   type: string;
