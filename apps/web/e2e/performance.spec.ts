@@ -9,6 +9,22 @@ const byUser = async (api: APIRequestContext, period = 'this-month') =>
 const tableNames = (page: Page) => page.getByRole('table').locator('tbody tr td:first-child a');
 /** The big number of an overview tile, found through its label. */
 const tile = (page: Page, label: string) => page.getByRole('region', { name: 'Тойм' }).getByText(label, { exact: true }).locator('xpath=..').locator('.font-serif');
+/**
+ * Other specs add tasks and teammates to lawyer1's cases while this runs, so a tile can briefly differ from the API.
+ * Reload until the page shows the value the API returns at that moment.
+ */
+const expectTileToMatchApi = (page: Page, label: string, apiValue: () => Promise<number>) =>
+  expect
+    .poll(
+      async () => {
+        const shown = (await tile(page, label).textContent())?.trim();
+        if (shown === String(await apiValue())) return true;
+        await page.reload();
+        return false;
+      },
+      { timeout: 30_000, intervals: [1_000, 2_000, 3_000] },
+    )
+    .toBe(true);
 
 test.describe('Гүйцэтгэл', () => {
   test('ADMIN /admin/performance дээр бүх идэвхтэй хуульч, админыг харна', async ({ page }) => {
@@ -72,14 +88,14 @@ test.describe('Гүйцэтгэл', () => {
 
     await login(page, LAWYER1);
     await page.goto('/admin/performance');
-    await expect(tile(page, 'Идэвхтэй даалгавар')).toHaveText(String((await overview('this-month')).activeTasks));
-    await expect(tile(page, 'Дууссан')).toHaveText(String((await overview('this-month')).completedTasks));
+    await expectTileToMatchApi(page, 'Идэвхтэй даалгавар', async () => (await overview('this-month')).activeTasks);
+    await expectTileToMatchApi(page, 'Дууссан', async () => (await overview('this-month')).completedTasks);
 
     for (const [label, period, unit] of [['Бүх цаг', 'all-time', 'сараар'], ['Сүүлийн 30 хоног', 'last-30-days', 'өдрөөр']] as const) {
       await page.getByRole('tab', { name: label }).click();
       await expect(page).toHaveURL(new RegExp(`period=${period}`));
       await expect(page.getByRole('tab', { name: label, selected: true })).toBeVisible();
-      await expect(tile(page, 'Дууссан')).toHaveText(String((await overview(period)).completedTasks));
+      await expectTileToMatchApi(page, 'Дууссан', async () => (await overview(period)).completedTasks);
       await expect(page.locator('figcaption').filter({ hasText: `Дууссан даалгавар ${unit}` })).toBeVisible();
     }
     await lawyerApi.dispose();

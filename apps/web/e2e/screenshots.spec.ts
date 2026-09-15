@@ -45,6 +45,7 @@ const ADMIN_PAGES: [string, string][] = [
   ['admin-post-new', '/admin/posts/new'],
   ['admin-invoices', '/admin/invoices'],
   ['admin-contact', '/admin/contact'],
+  ['admin-settings', '/admin/settings'],
   ['admin-profile', '/admin/profile'],
 ];
 
@@ -76,7 +77,8 @@ test.describe('screenshots', () => {
     await page.waitForTimeout(1500);
     await page.screenshot({ path: `screenshots/portal-case-detail.${suffix}.png`, fullPage: true });
     // document requests tab of the seeded case that has requests (LF-YYYY-0001); desktop lists cases as a table
-    const { items: clientCases } = (await (await page.request.get(`${API_URL}/cases?limit=50`)).json()) as { items: { id: string; caseNumber: string }[] };
+    // search: e2e runs keep adding cases for client1, so the seeded case can fall off the first page
+    const { items: clientCases } = (await (await page.request.get(`${API_URL}/cases?search=0001&limit=50`)).json()) as { items: { id: string; caseNumber: string }[] };
     const requestCase = clientCases.find((c) => c.caseNumber.endsWith('-0001'));
     if (!requestCase) throw new Error('Seeded case LF-YYYY-0001 not found for the client');
     await page.goto(`/portal/cases/${requestCase.id}?tab=requests`, { waitUntil: 'load' });

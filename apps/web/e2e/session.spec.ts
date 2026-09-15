@@ -4,6 +4,9 @@ import { CLIENT1, login } from './fixtures';
 test.describe('Сесс', () => {
   test('access token дууссан ч refresh хүчинтэй бол портал чимээгүй сэргээгдэж нээгдэнэ', async ({ page, context }) => {
     await login(page, CLIENT1);
+    // Leave the portal first: a polling request from the old page could refresh with the same token as the new page,
+    // and the API treats a second use of a rotated refresh token as theft (every session is revoked).
+    await page.goto('about:blank');
     await context.clearCookies({ name: 'access_token' });
 
     await page.goto('/portal');
