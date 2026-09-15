@@ -23,6 +23,8 @@ export const EnvSchema = z.object({
   JWT_REFRESH_SECRET: z.string().min(16, 'JWT_REFRESH_SECRET must be at least 16 characters'),
   JWT_ACCESS_TTL: z.string().regex(/^\d+[smhd]$/, 'JWT_ACCESS_TTL must look like 15m / 1h').default('15m'),
   JWT_REFRESH_TTL_DAYS: z.coerce.number().int().min(1).max(90).default(7),
+  /** Seconds a rotated refresh token may be presented again by a concurrent request (another tab) without revoking every session; 0 = off. */
+  REFRESH_REUSE_GRACE_SECONDS: z.coerce.number().int().min(0).max(300).default(30),
 
   CORS_ORIGIN: z.string().default('http://localhost:3000'),
   COOKIE_DOMAIN: z

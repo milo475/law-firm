@@ -19,6 +19,12 @@ describe('validateEnv', () => {
     expect(() => validateEnv({ ...REQUIRED, REMINDERS_CRON: 'every morning' })).toThrow(/REMINDERS_CRON/);
   });
 
+  it('lets a rotated refresh token be reused for 30 seconds by default; 0 turns it off, negatives are rejected', () => {
+    expect(validateEnv(REQUIRED).REFRESH_REUSE_GRACE_SECONDS).toBe(30);
+    expect(validateEnv({ ...REQUIRED, REFRESH_REUSE_GRACE_SECONDS: '0' }).REFRESH_REUSE_GRACE_SECONDS).toBe(0);
+    expect(() => validateEnv({ ...REQUIRED, REFRESH_REUSE_GRACE_SECONDS: '-5' })).toThrow(/REFRESH_REUSE_GRACE_SECONDS/);
+  });
+
   it('reads THROTTLE_LIMIT from the environment and rejects values below 1', () => {
     expect(validateEnv({ ...REQUIRED, THROTTLE_LIMIT: '1000' }).THROTTLE_LIMIT).toBe(1000);
     expect(() => validateEnv({ ...REQUIRED, THROTTLE_LIMIT: '0' })).toThrow(/THROTTLE_LIMIT/);

@@ -62,6 +62,18 @@ describe('AuthService', () => {
       expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { phone: '88110001' } });
     });
 
+    it('each login starts its own session family', async () => {
+      prisma.user.findUnique.mockResolvedValue(baseUser());
+
+      await service.login({ identifier: 'client1@example.mn', password: 'Client123!' });
+      await service.login({ identifier: 'client1@example.mn', password: 'Client123!' });
+
+      const [first, second] = prisma.refreshToken.create.mock.calls.map(([arg]: any) => arg.data.familyId);
+      expect(first).toMatch(/^[0-9a-f-]{36}$/);
+      expect(second).toMatch(/^[0-9a-f-]{36}$/);
+      expect(first).not.toBe(second);
+    });
+
     it('stores only a hash of the refresh token', async () => {
       prisma.user.findUnique.mockResolvedValue(baseUser());
 
@@ -125,18 +137,21 @@ describe('AuthService', () => {
   });
 
   describe('refresh (rotation)', () => {
+    const secondsAgo = (seconds: number) => new Date(Date.now() - seconds * 1000);
     const storedToken = (overrides: Record<string, unknown> = {}) => ({
       id: 'rt-old',
       userId: 'user-1',
+      familyId: 'family-1',
       tokenHash: 'irrelevant',
       expiresAt: new Date(Date.now() + 86_400_000),
       revokedAt: null,
+      rotatedAt: null,
       createdAt: new Date(),
       user: baseUser(),
       ...overrides,
     });
 
-    it('revokes the presented token and issues a new pair', async () => {
+    it('revokes the presented token as rotated and issues a new pair in the same session family', async () => {
       prisma.refreshToken.findUnique.mockResolvedValue(storedToken());
       prisma.refreshToken.update.mockResolvedValue({});
 
@@ -144,9 +159,10 @@ describe('AuthService', () => {
 
       expect(prisma.refreshToken.update).toHaveBeenCalledWith({
         where: { id: 'rt-old' },
-        data: { revokedAt: expect.any(Date) },
+        data: { revokedAt: expect.any(Date), rotatedAt: expect.any(Date) },
       });
       expect(prisma.refreshToken.create).toHaveBeenCalledTimes(1);
+      expect(prisma.refreshToken.create.mock.calls[0][0].data.familyId).toBe('family-1');
       expect(result.refreshToken).not.toBe('raw-refresh-token');
       expect(jwt.verify(result.accessToken)).toMatchObject({ sub: 'user-1' });
     });
@@ -162,8 +178,8 @@ describe('AuthService', () => {
       expect(lookup).not.toBe('raw-refresh-token');
     });
 
-    it('treats reuse of a revoked token as theft and revokes every session', async () => {
-      prisma.refreshToken.findUnique.mockResolvedValue(storedToken({ revokedAt: new Date() }));
+    it('treats reuse of a token revoked by logout or revoke-all as theft and revokes every session', async () => {
+      prisma.refreshToken.findUnique.mockResolvedValue(storedToken({ revokedAt: secondsAgo(2) }));
       prisma.refreshToken.updateMany.mockResolvedValue({ count: 3 });
 
       await expect(service.refresh('reused')).rejects.toBeInstanceOf(UnauthorizedException);
@@ -171,6 +187,51 @@ describe('AuthService', () => {
         where: { userId: 'user-1', revokedAt: null },
         data: { revokedAt: expect.any(Date) },
       });
+      expect(prisma.refreshToken.create).not.toHaveBeenCalled();
+    });
+
+    it('a second tab sending a token rotated moments ago gets its own pair in the same family, nobody is logged out', async () => {
+      prisma.refreshToken.findUnique.mockResolvedValue(storedToken({ revokedAt: secondsAgo(5), rotatedAt: secondsAgo(5) }));
+      prisma.refreshToken.count.mockResolvedValue(1);
+
+      const result = await service.refresh('raced');
+
+      expect(prisma.refreshToken.count).toHaveBeenCalledWith({
+        where: { familyId: 'family-1', revokedAt: null, expiresAt: { gt: expect.any(Date) } },
+      });
+      expect(prisma.refreshToken.updateMany).not.toHaveBeenCalled();
+      expect(prisma.refreshToken.update).not.toHaveBeenCalled();
+      expect(prisma.refreshToken.create.mock.calls[0][0].data.familyId).toBe('family-1');
+      expect(jwt.verify(result.accessToken)).toMatchObject({ sub: 'user-1' });
+    });
+
+    it('a token rotated longer ago than the grace window is theft again', async () => {
+      prisma.refreshToken.findUnique.mockResolvedValue(storedToken({ revokedAt: secondsAgo(31), rotatedAt: secondsAgo(31) }));
+      prisma.refreshToken.updateMany.mockResolvedValue({ count: 1 });
+
+      await expect(service.refresh('late')).rejects.toBeInstanceOf(UnauthorizedException);
+      expect(prisma.refreshToken.count).not.toHaveBeenCalled();
+      expect(prisma.refreshToken.updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'user-1', revokedAt: null } }));
+      expect(prisma.refreshToken.create).not.toHaveBeenCalled();
+    });
+
+    it('reuse inside the window after the session ended (logout, password change) is still theft', async () => {
+      prisma.refreshToken.findUnique.mockResolvedValue(storedToken({ revokedAt: secondsAgo(3), rotatedAt: secondsAgo(3) }));
+      prisma.refreshToken.count.mockResolvedValue(0);
+      prisma.refreshToken.updateMany.mockResolvedValue({ count: 0 });
+
+      await expect(service.refresh('after-logout')).rejects.toBeInstanceOf(UnauthorizedException);
+      expect(prisma.refreshToken.updateMany).toHaveBeenCalled();
+      expect(prisma.refreshToken.create).not.toHaveBeenCalled();
+    });
+
+    it('REFRESH_REUSE_GRACE_SECONDS=0 turns the window off', async () => {
+      service = new AuthService(prisma as unknown as PrismaService, jwt, createConfigMock({ REFRESH_REUSE_GRACE_SECONDS: 0 }));
+      prisma.refreshToken.findUnique.mockResolvedValue(storedToken({ revokedAt: secondsAgo(1), rotatedAt: secondsAgo(1) }));
+      prisma.refreshToken.updateMany.mockResolvedValue({ count: 1 });
+
+      await expect(service.refresh('raced')).rejects.toBeInstanceOf(UnauthorizedException);
+      expect(prisma.refreshToken.count).not.toHaveBeenCalled();
       expect(prisma.refreshToken.create).not.toHaveBeenCalled();
     });
 

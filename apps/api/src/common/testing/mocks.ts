@@ -13,6 +13,7 @@ export const TEST_ENV: Env = {
   JWT_REFRESH_SECRET: 'test-refresh-secret-0123456789abcdef',
   JWT_ACCESS_TTL: '15m',
   JWT_REFRESH_TTL_DAYS: 7,
+  REFRESH_REUSE_GRACE_SECONDS: 30,
   CORS_ORIGIN: 'http://localhost:3000',
   COOKIE_DOMAIN: undefined,
   MINIO_ENDPOINT: 'localhost',
@@ -41,7 +42,7 @@ export function createPrismaMock() {
 
   const mock = {
     user: delegate('findUnique', 'findFirst', 'findMany', 'create', 'update', 'count'),
-    refreshToken: delegate('findUnique', 'create', 'update', 'updateMany'),
+    refreshToken: delegate('findUnique', 'create', 'update', 'updateMany', 'count'),
     post: delegate('findMany', 'findFirst', 'findUnique', 'count', 'create', 'update', 'delete'),
     case: delegate('findMany', 'findFirst', 'findUnique', 'count', 'create', 'update', 'groupBy'),
     task: delegate('findMany', 'findUnique', 'count', 'create', 'update', 'delete', 'groupBy'),

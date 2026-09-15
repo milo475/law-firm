@@ -1,4 +1,4 @@
-import { createHmac, randomBytes } from 'node:crypto';
+import { createHmac, randomBytes, randomUUID } from 'node:crypto';
 import {
   ConflictException,
   ForbiddenException,
@@ -99,8 +99,10 @@ export class AuthService {
   }
 
   /**
-   * Rotates a refresh token: the presented token is revoked and a fresh pair is issued.
-   * Presenting an already-revoked token is treated as theft → every session of that user is revoked.
+   * Rotates a refresh token: the presented token is revoked (rotatedAt set) and a fresh pair is issued in the same session family.
+   * Presenting an already-revoked token is treated as theft → every session of that user is revoked. The one exception is a
+   * token rotated less than REFRESH_REUSE_GRACE_SECONDS ago whose session still has a live token: that is another tab or a
+   * retried request racing the first refresh, so it gets its own pair instead of logging the user out everywhere.
    */
   async refresh(rawToken: string | undefined): Promise<AuthResult> {
     if (!rawToken) throw new UnauthorizedException('Сесс олдсонгүй. Дахин нэвтэрнэ үү');
@@ -111,7 +113,7 @@ export class AuthService {
     });
     if (!stored) throw new UnauthorizedException('Сесс хүчингүй байна. Дахин нэвтэрнэ үү');
 
-    if (stored.revokedAt) {
+    if (stored.revokedAt && !(await this.isConcurrentRefresh(stored))) {
       this.logger.warn(`Refresh token reuse detected for user ${stored.userId}; revoking all sessions`);
       await this.revokeAllForUser(stored.userId);
       throw new UnauthorizedException('Сесс хүчингүй болсон. Аюулгүй байдлын үүднээс дахин нэвтэрнэ үү');
@@ -123,8 +125,13 @@ export class AuthService {
       throw new ForbiddenException('Таны хаяг идэвхгүй болсон байна');
     }
 
-    await this.prisma.refreshToken.update({ where: { id: stored.id }, data: { revokedAt: new Date() } });
-    const tokens = await this.issueTokens(stored.user);
+    if (stored.revokedAt) {
+      this.logger.debug(`Concurrent refresh for user ${stored.userId} within the grace window`);
+    } else {
+      const now = new Date();
+      await this.prisma.refreshToken.update({ where: { id: stored.id }, data: { revokedAt: now, rotatedAt: now } });
+    }
+    const tokens = await this.issueTokens(stored.user, stored.familyId);
     return { user: toSafeUser(stored.user), ...tokens };
   }
 
@@ -151,7 +158,18 @@ export class AuthService {
 
   // ─── Token internals ───────────────────────────────────────────────────────
 
-  private async issueTokens(user: User): Promise<AuthTokens> {
+  /** Rotated moments ago by another request, while its login session still has a live token (not logged out, no revoke-all). */
+  private async isConcurrentRefresh(stored: { familyId: string; rotatedAt: Date | null }): Promise<boolean> {
+    const graceMs = this.config.get('REFRESH_REUSE_GRACE_SECONDS', { infer: true }) * 1000;
+    if (!stored.rotatedAt || graceMs === 0 || Date.now() - stored.rotatedAt.getTime() > graceMs) return false;
+    const live = await this.prisma.refreshToken.count({
+      where: { familyId: stored.familyId, revokedAt: null, expiresAt: { gt: new Date() } },
+    });
+    return live > 0;
+  }
+
+  /** A login starts a new session family; a refresh passes the family of the token it replaces. */
+  private async issueTokens(user: User, familyId: string = randomUUID()): Promise<AuthTokens> {
     const payload: AccessTokenPayload = { sub: user.id, email: user.email, role: user.role };
     const accessToken = await this.jwt.signAsync(payload);
 
@@ -160,7 +178,7 @@ export class AuthService {
       Date.now() + this.config.get('JWT_REFRESH_TTL_DAYS', { infer: true }) * 86_400_000,
     );
     await this.prisma.refreshToken.create({
-      data: { userId: user.id, tokenHash: this.hashToken(refreshToken), expiresAt: refreshExpiresAt },
+      data: { userId: user.id, familyId, tokenHash: this.hashToken(refreshToken), expiresAt: refreshExpiresAt },
     });
 
     return { accessToken, refreshToken, refreshExpiresAt };
