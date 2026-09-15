@@ -17,6 +17,7 @@ import {
   TasksIcon,
   UsersIcon,
 } from '@/components/icons';
+import { NotificationBell } from '@/components/admin/notification-bell';
 import { useUser } from '@/components/portal/user-context';
 import { BottomTabBar } from '@/components/ui/bottom-tab-bar';
 import { PortalHeader } from '@/components/ui/portal-header';
@@ -64,6 +65,7 @@ const TITLES: { match: (p: string) => boolean; title: string; back?: string }[] 
   { match: (p) => p.startsWith('/admin/invoices'), title: 'Нэхэмжлэх' },
   { match: (p) => p.startsWith('/admin/contact'), title: 'Хүсэлтүүд' },
   { match: (p) => p.startsWith('/admin/profile'), title: 'Профайл' },
+  { match: (p) => p.startsWith('/admin/notifications'), title: 'Мэдэгдэл' },
 ];
 
 /** Staff-only shell: reuses the portal Sidebar / PortalHeader / BottomTabBar with the admin menu. */
@@ -112,7 +114,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           title={current.title}
           user={user}
           backHref={current.back ?? null}
-          notificationsHref={null}
+          bellSlot={<NotificationBell />}
           profileHref="/admin/profile"
           searchPlaceholder="Хэргийн дугаар, нэрээр хайх"
           onSearch={(q) => router.push(q.trim() ? `/admin/cases?search=${encodeURIComponent(q.trim())}` : '/admin/cases')}

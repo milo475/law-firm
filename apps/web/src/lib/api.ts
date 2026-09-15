@@ -348,4 +348,6 @@ export interface NotificationItem {
   link: string | null;
   isRead: boolean;
   createdAt: string;
+  /** Who caused it; null for system or public events. */
+  actor?: PublicUser | null;
 }

@@ -14,19 +14,21 @@ export interface PortalHeaderProps {
   onSearch?: (query: string) => void;
   /** Bell link target; null hides the bell. */
   notificationsHref?: string | null;
+  /** Replaces the bell link with a custom control (the admin notification dropdown). */
+  bellSlot?: React.ReactNode;
   profileHref?: string;
   searchPlaceholder?: string;
   className?: string;
 }
 
-export function PortalHeader({ title, user, unreadCount = 0, backHref, onSearch, notificationsHref = '/portal/notifications', profileHref = '/portal/profile', searchPlaceholder = 'Хэрэг, баримт хайх', className }: PortalHeaderProps) {
+export function PortalHeader({ title, user, unreadCount = 0, backHref, onSearch, notificationsHref = '/portal/notifications', bellSlot, profileHref = '/portal/profile', searchPlaceholder = 'Хэрэг, баримт хайх', className }: PortalHeaderProps) {
   const initials = `${user.lastName.charAt(0)}${user.firstName.charAt(0)}`.toUpperCase();
-  const bell = notificationsHref === null ? null : (
+  const bell = bellSlot ?? (notificationsHref === null ? null : (
     <Link href={notificationsHref} aria-label={unreadCount ? `Мэдэгдэл, ${unreadCount} уншаагүй` : 'Мэдэгдэл'} className="focus-ring relative inline-flex size-11 items-center justify-center rounded-md text-text-secondary hover:bg-bg-surface-alt">
       <NotificationsIcon size={44} />
       {unreadCount > 0 && <span aria-hidden className="absolute right-3 top-3 size-2 rounded-full bg-accent-default" />}
     </Link>
-  );
+  ));
 
   return (
     <header className={cn('sticky top-0 z-30 border-b border-border-default bg-bg-surface', className)}>
