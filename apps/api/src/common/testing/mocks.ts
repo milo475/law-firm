@@ -5,6 +5,7 @@ import type { RequestUser } from '../types/request-user';
 export const TEST_ENV: Env = {
   NODE_ENV: 'test',
   PORT: 4000,
+  THROTTLE_LIMIT: 120,
   DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
   JWT_ACCESS_SECRET: 'test-access-secret-0123456789abcdef',
   JWT_REFRESH_SECRET: 'test-refresh-secret-0123456789abcdef',

@@ -7,6 +7,8 @@ const booleanFromString = z
 export const EnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().min(1).max(65535).default(4000),
+  /** Global rate limit: requests per minute per client IP. Raise it only for e2e or load runs from one machine. */
+  THROTTLE_LIMIT: z.coerce.number().int().min(1).default(120),
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
 
   JWT_ACCESS_SECRET: z.string().min(16, 'JWT_ACCESS_SECRET must be at least 16 characters'),

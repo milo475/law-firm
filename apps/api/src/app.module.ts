@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -12,7 +12,7 @@ import { CasesModule } from './cases/cases.module';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
-import { validateEnv } from './config/env';
+import { type Env, validateEnv } from './config/env';
 import { ContactModule } from './contact/contact.module';
 import { DocumentRequestsModule } from './document-requests/document-requests.module';
 import { DocumentsModule } from './documents/documents.module';
@@ -36,8 +36,11 @@ import { UsersModule } from './users/users.module';
       envFilePath: ['.env', '../../.env'],
       validate: validateEnv,
     }),
-    ThrottlerModule.forRoot({
-      throttlers: [{ name: 'default', ttl: 60_000, limit: 120 }],
+    ThrottlerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService<Env, true>) => ({
+        throttlers: [{ name: 'default', ttl: 60_000, limit: config.get('THROTTLE_LIMIT', { infer: true }) }],
+      }),
     }),
     // Domain events (document-request.*) → notification listeners
     EventEmitterModule.forRoot(),
