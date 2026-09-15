@@ -4,6 +4,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
   PayloadTooLargeException,
   UnsupportedMediaTypeException,
@@ -40,6 +41,8 @@ const DOCUMENT_SELECT = {
 
 @Injectable()
 export class DocumentsService {
+  private readonly logger = new Logger(DocumentsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly cases: CasesService,
@@ -102,5 +105,31 @@ export class DocumentsService {
     // inline=true → no attachment disposition, so PDFs/images can be previewed in the browser
     const url = await this.storage.presignedGetUrl(document.storageKey, inline ? undefined : document.name, expiresInSeconds);
     return { url, expiresInSeconds, name: document.name, mimeType: document.mimeType, size: document.size };
+  }
+
+  /**
+   * ADMIN, or the LAWYER who uploaded the file while still assigned to the case.
+   * The MinIO object is removed first; a missing object does not block deleting the record.
+   */
+  async remove(documentId: string, user: RequestUser): Promise<void> {
+    const document = await this.prisma.document.findUnique({
+      where: { id: documentId },
+      include: { case: { select: { clientId: true, lawyerId: true } } },
+    });
+    if (!document) throw new NotFoundException('Баримт олдсонгүй');
+
+    if (user.role !== Role.ADMIN) {
+      if (user.role !== Role.LAWYER || document.uploadedById !== user.id) {
+        throw new ForbiddenException('Зөвхөн өөрийн оруулсан баримтыг устгах боломжтой');
+      }
+      this.cases.assertStaffAccess(document.case, user);
+    }
+
+    try {
+      await this.storage.delete(document.storageKey);
+    } catch (error) {
+      this.logger.warn(`Could not remove object ${document.storageKey}: ${(error as Error).message}`);
+    }
+    await this.prisma.document.delete({ where: { id: documentId } });
   }
 }

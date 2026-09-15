@@ -1,6 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import {
+  CONTACT_STATUS_LABELS,
   Role,
+  canTransitionContact,
   type ContactQueryInput,
   type ContactRequestInput,
   type ContactStatus,
@@ -34,7 +36,7 @@ export class ContactService {
         type: 'CONTACT_REQUEST',
         title: 'Шинэ холбоо барих хүсэлт',
         body: `${input.name} (${input.phone}): ${input.subject}`,
-        link: `/portal/contact-requests/${request.id}`,
+        link: `/admin/contact?focus=${request.id}`,
       })),
     );
 
@@ -54,9 +56,16 @@ export class ContactService {
     return paginate(items, total, query.page, query.limit);
   }
 
+  /** Forward-only: NEW → CONTACTED → CLOSED (NEW → CLOSED allowed). */
   async updateStatus(id: string, status: ContactStatus) {
-    const existing = await this.prisma.contactRequest.findUnique({ where: { id }, select: { id: true } });
+    const existing = await this.prisma.contactRequest.findUnique({ where: { id }, select: { id: true, status: true } });
     if (!existing) throw new NotFoundException('Хүсэлт олдсонгүй');
+    if (!canTransitionContact(existing.status, status)) {
+      throw new BadRequestException(
+        `Хүсэлтийн төлөвийг «${CONTACT_STATUS_LABELS[existing.status]}»-аас «${CONTACT_STATUS_LABELS[status]}» болгох боломжгүй`,
+      );
+    }
+    if (existing.status === status) return this.prisma.contactRequest.findUnique({ where: { id } });
     return this.prisma.contactRequest.update({ where: { id }, data: { status } });
   }
 }

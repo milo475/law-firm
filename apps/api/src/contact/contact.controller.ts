@@ -4,7 +4,7 @@ import { Throttle } from '@nestjs/throttler';
 import { Role } from '@law-firm/shared';
 import { Public, Roles } from '../common/decorators';
 import { ContactService } from './contact.service';
-import { ContactQueryDto, ContactRequestDto, UpdateContactStatusDto } from './dto/contact.dto';
+import { ContactQueryDto, ContactRequestDto, UpdateContactDto } from './dto/contact.dto';
 
 @ApiTags('contact')
 @Controller('contact')
@@ -28,10 +28,10 @@ export class ContactController {
   }
 
   @Roles(Role.ADMIN)
-  @Patch(':id/status')
+  @Patch(':id')
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[ADMIN] Хүсэлтийн төлөв солих' })
-  updateStatus(@Param('id') id: string, @Body() dto: UpdateContactStatusDto) {
+  @ApiOperation({ summary: '[ADMIN] Хүсэлтийн төлөв солих (NEW → CONTACTED → CLOSED)' })
+  update(@Param('id') id: string, @Body() dto: UpdateContactDto) {
     return this.contact.updateStatus(id, dto.status);
   }
 }
