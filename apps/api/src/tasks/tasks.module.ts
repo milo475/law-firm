@@ -9,5 +9,6 @@ import { TasksService } from './tasks.service';
   imports: [CasesModule, NotificationsModule],
   controllers: [TasksController],
   providers: [TasksService, TaskNotificationsListener],
+  exports: [TasksService],
 })
 export class TasksModule {}

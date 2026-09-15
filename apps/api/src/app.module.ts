@@ -20,6 +20,7 @@ import { InvoicesModule } from './invoices/invoices.module';
 import { LawyersModule } from './lawyers/lawyers.module';
 import { MessagesModule } from './messages/messages.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { PerformanceModule } from './performance/performance.module';
 import { PostsModule } from './posts/posts.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { SettingsModule } from './settings/settings.module';
@@ -61,6 +62,7 @@ import { UsersModule } from './users/users.module';
     AdminModule,
     SettingsModule,
     TasksModule,
+    PerformanceModule,
   ],
   controllers: [AppController],
   providers: [
