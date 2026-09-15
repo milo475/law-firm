@@ -14,7 +14,7 @@ export class AdminStatsService {
   async stats(user: RequestUser): Promise<AdminStats> {
     const now = new Date();
     const horizon = new Date(now.getTime() + UPCOMING_DAYS * 86_400_000);
-    const caseScope: Prisma.CaseWhereInput = user.role === Role.LAWYER ? { lawyerId: user.id } : {};
+    const caseScope: Prisma.CaseWhereInput = user.role === Role.LAWYER ? { members: { some: { userId: user.id } } } : {};
     const upcomingWhere: Prisma.CaseEventWhereInput = {
       eventDate: { gte: now, lte: horizon },
       type: { in: [...UPCOMING_TYPES] },
@@ -37,10 +37,10 @@ export class AdminStatsService {
 
     if (user.role === Role.LAWYER) {
       const [openCases, upcomingEventCount, unpaid] = await Promise.all([
-        this.prisma.case.count({ where: { lawyerId: user.id, status: { not: CaseStatus.CLOSED } } }),
+        this.prisma.case.count({ where: { ...caseScope, status: { not: CaseStatus.CLOSED } } }),
         this.prisma.caseEvent.count({ where: upcomingWhere }),
         this.prisma.invoice.aggregate({
-          where: { case: { lawyerId: user.id }, status: { in: [InvoiceStatus.SENT, InvoiceStatus.OVERDUE] } },
+          where: { case: caseScope, status: { in: [InvoiceStatus.SENT, InvoiceStatus.OVERDUE] } },
           _sum: { amount: true },
           _count: { _all: true },
         }),

@@ -5,7 +5,7 @@ import type { RequestWithUser } from '../common/types/request-user';
 import { AuditService } from './audit.service';
 
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
-const NESTED_RESOURCES = new Set(['documents', 'document-requests', 'events', 'invoices', 'messages']);
+const NESTED_RESOURCES = new Set(['documents', 'document-requests', 'events', 'invoices', 'members', 'messages']);
 
 /** Global interceptor: writes an AuditLog row for every mutating HTTP request. */
 @Injectable()

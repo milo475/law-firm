@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 import {
   CASE_NUMBER_PREFIX,
   CASE_STATUS_LABELS,
+  CaseMemberRole,
   CaseStatus,
   Role,
   nextSequenceNumber,
@@ -32,9 +33,23 @@ const CASE_LIST_SELECT = {
   _count: { select: { events: true, documents: true, invoices: true } },
 } satisfies Prisma.CaseSelect;
 
+/** Membership rows used by the access checks (a case has only a handful of staff). */
+export const CASE_MEMBERSHIP_SELECT = { select: { userId: true, role: true } } as const;
+
+/** What the access checks need from a case: its client, lead lawyer and team. */
+export interface CaseScopeRecord {
+  clientId?: string;
+  lawyerId: string;
+  members?: { userId: string; role: CaseMemberRole | string }[];
+}
+
 const CASE_DETAIL_INCLUDE = {
   client: { select: { ...PUBLIC_USER_SELECT, email: true, phone: true } },
   lawyer: { select: { ...PUBLIC_USER_SELECT, email: true, phone: true } },
+  members: {
+    select: { id: true, userId: true, role: true, createdAt: true, user: { select: { ...PUBLIC_USER_SELECT, email: true } } },
+    orderBy: [{ role: 'asc' }, { createdAt: 'asc' }],
+  },
   _count: { select: { events: true, documents: true, invoices: true } },
 } satisfies Prisma.CaseInclude;
 
@@ -46,6 +61,7 @@ export interface CaseAccessRecord {
   clientId: string;
   lawyerId: string;
   status: CaseStatus;
+  members?: { userId: string; role: CaseMemberRole }[];
 }
 
 const CASE_ACCESS_SELECT = {
@@ -55,6 +71,7 @@ const CASE_ACCESS_SELECT = {
   clientId: true,
   lawyerId: true,
   status: true,
+  members: CASE_MEMBERSHIP_SELECT,
 } satisfies Prisma.CaseSelect;
 
 const MAX_NUMBER_ATTEMPTS = 3;
@@ -66,7 +83,7 @@ export class CasesService {
   /**
    * Role-based visibility:
    *   CLIENT → cases where they are the client
-   *   LAWYER → cases they are assigned to
+   *   LAWYER → cases where they are on the team (the lead lawyer is always a member)
    *   ADMIN  → everything
    */
   scopeFor(user: RequestUser): Prisma.CaseWhereInput {
@@ -74,7 +91,7 @@ export class CasesService {
       case Role.ADMIN:
         return {};
       case Role.LAWYER:
-        return { lawyerId: user.id };
+        return { members: { some: { userId: user.id } } };
       case Role.CLIENT:
       default:
         return { clientId: user.id };
@@ -114,7 +131,8 @@ export class CasesService {
     const record = await this.prisma.case.findUnique({ where: { id }, include: CASE_DETAIL_INCLUDE });
     if (!record) throw new NotFoundException('Хэрэг олдсонгүй');
     this.assertAccess(record, user);
-    return record;
+    // The staff team is internal: clients get the case without it.
+    return user.role === Role.CLIENT && record.members ? { ...record, members: undefined } : record;
   }
 
   /** Timeline; CLIENTs only see events flagged visible to them. */
@@ -168,6 +186,8 @@ export class CasesService {
             clientId: input.clientId,
             lawyerId,
             openedAt: input.openedAt ?? new Date(),
+            // The assigned lawyer starts the case team as its LEAD.
+            members: { create: { userId: lawyerId, role: CaseMemberRole.LEAD, addedById: user.id } },
           },
           include: CASE_DETAIL_INCLUDE,
         });
@@ -179,9 +199,9 @@ export class CasesService {
     }
   }
 
-  /** ADMIN or the assigned LAWYER. Only ADMIN may reassign the lawyer. */
+  /** Core case data: ADMIN or the case LEAD. Only ADMIN may reassign the lead lawyer. */
   async update(id: string, input: UpdateCaseInput, user: RequestUser) {
-    const existing = await this.assertStaffAccessById(id, user);
+    const existing = await this.assertLeadAccessById(id, user);
 
     if (input.lawyerId && input.lawyerId !== existing.lawyerId) {
       if (user.role !== Role.ADMIN) {
@@ -203,7 +223,18 @@ export class CasesService {
       if (existing.status === CaseStatus.CLOSED) data.closedAt = null;
     }
 
+    const newLeadId = input.lawyerId && input.lawyerId !== existing.lawyerId ? input.lawyerId : null;
+
     return this.prisma.$transaction(async (tx) => {
+      if (newLeadId) {
+        // The new lawyer becomes the LEAD; the previous lead leaves the team and loses access, as before.
+        await tx.caseMember.deleteMany({ where: { caseId: id, userId: existing.lawyerId } });
+        await tx.caseMember.upsert({
+          where: { caseId_userId: { caseId: id, userId: newLeadId } },
+          create: { caseId: id, userId: newLeadId, role: CaseMemberRole.LEAD, addedById: user.id },
+          update: { role: CaseMemberRole.LEAD },
+        });
+      }
       const updated = await tx.case.update({ where: { id }, data, include: CASE_DETAIL_INCLUDE });
       if (statusChanged) {
         await tx.caseEvent.create({
@@ -216,7 +247,7 @@ export class CasesService {
 
   /** Sets status=CLOSED and closedAt, recording the change on the timeline. */
   async close(id: string, input: CloseCaseInput, user: RequestUser) {
-    const existing = await this.assertStaffAccessById(id, user);
+    const existing = await this.assertLeadAccessById(id, user);
     if (existing.status === CaseStatus.CLOSED) {
       throw new BadRequestException('Хэрэг аль хэдийн хаагдсан байна');
     }
@@ -251,19 +282,46 @@ export class CasesService {
     return record;
   }
 
-  /** Read access: ADMIN, the assigned LAWYER, or the case's CLIENT. */
-  assertAccess(record: { clientId: string; lawyerId: string }, user: RequestUser): void {
+  /** Loads the case (minimal) and throws 404/403 unless the user is ADMIN or the case LEAD. */
+  async assertLeadAccessById(caseId: string, user: RequestUser): Promise<CaseAccessRecord> {
+    const record = await this.prisma.case.findUnique({ where: { id: caseId }, select: CASE_ACCESS_SELECT });
+    if (!record) throw new NotFoundException('Хэрэг олдсонгүй');
+    this.assertLeadAccess(record, user);
+    return record;
+  }
+
+  /** Read access: ADMIN, a LAWYER on the case team, or the case's CLIENT. */
+  assertAccess(record: CaseScopeRecord, user: RequestUser): void {
     if (user.role === Role.ADMIN) return;
-    if (user.role === Role.LAWYER && record.lawyerId === user.id) return;
+    if (user.role === Role.LAWYER && this.isMember(record, user.id)) return;
     if (user.role === Role.CLIENT && record.clientId === user.id) return;
     throw new ForbiddenException('Энэ хэргийг үзэх эрх танд байхгүй байна');
   }
 
-  /** Write access: ADMIN or the assigned LAWYER only. */
-  assertStaffAccess(record: { lawyerId: string }, user: RequestUser): void {
+  /** Working on the case (events, documents, invoices, requests…): ADMIN or any LAWYER on the team. */
+  assertStaffAccess(record: CaseScopeRecord, user: RequestUser): void {
     if (user.role === Role.ADMIN) return;
-    if (user.role === Role.LAWYER && record.lawyerId === user.id) return;
+    if (user.role === Role.LAWYER && this.isMember(record, user.id)) return;
     throw new ForbiddenException('Энэ хэргийг удирдах эрх танд байхгүй байна');
+  }
+
+  /** Team management and core case data: ADMIN or the case LEAD. */
+  assertLeadAccess(record: CaseScopeRecord, user: RequestUser): void {
+    if (user.role === Role.ADMIN) return;
+    if (user.role === Role.LAWYER && this.isLead(record, user.id)) return;
+    throw new ForbiddenException('Энэ үйлдлийг зөвхөн хэргийн ахлах хуульч эсвэл админ хийнэ');
+  }
+
+  /** The lead lawyer (lawyerId) always counts, even for records loaded without the team. */
+  isMember(record: CaseScopeRecord, userId: string): boolean {
+    return record.lawyerId === userId || (record.members ?? []).some((member) => member.userId === userId);
+  }
+
+  isLead(record: CaseScopeRecord, userId: string): boolean {
+    return (
+      record.lawyerId === userId ||
+      (record.members ?? []).some((member) => member.userId === userId && member.role === CaseMemberRole.LEAD)
+    );
   }
 
   // ─── helpers ───────────────────────────────────────────────────────────────

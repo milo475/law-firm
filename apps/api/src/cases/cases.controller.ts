@@ -24,7 +24,7 @@ export class CasesController {
   ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Хэргүүд (CLIENT → өөрийн, LAWYER → хариуцсан, ADMIN → бүгд)' })
+  @ApiOperation({ summary: 'Хэргүүд (CLIENT → өөрийн, LAWYER → багийн гишүүн хэргүүд, ADMIN → бүгд)' })
   findAll(@Query() query: CaseQueryDto, @CurrentUser() user: RequestUser) {
     return this.cases.findAll(query, user);
   }
@@ -44,14 +44,14 @@ export class CasesController {
 
   @Roles(Role.ADMIN, Role.LAWYER)
   @Patch(':id')
-  @ApiOperation({ summary: '[ADMIN, хариуцсан LAWYER] Хэрэг засах; төлөв өөрчлөгдвөл STATUS_CHANGE event' })
+  @ApiOperation({ summary: '[ADMIN, ахлах хуульч] Хэрэг засах; төлөв өөрчлөгдвөл STATUS_CHANGE event' })
   update(@Param('id') id: string, @Body() dto: UpdateCaseDto, @CurrentUser() user: RequestUser) {
     return this.cases.update(id, dto, user);
   }
 
   @Roles(Role.ADMIN, Role.LAWYER)
   @Patch(':id/close')
-  @ApiOperation({ summary: '[ADMIN, хариуцсан LAWYER] Хэрэг хаах' })
+  @ApiOperation({ summary: '[ADMIN, ахлах хуульч] Хэрэг хаах' })
   close(@Param('id') id: string, @Body() dto: CloseCaseDto, @CurrentUser() user: RequestUser) {
     return this.cases.close(id, dto, user);
   }

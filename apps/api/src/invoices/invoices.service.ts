@@ -11,7 +11,7 @@ import {
   type Prisma,
   type UpdateInvoiceInput,
 } from '@law-firm/shared';
-import { CasesService } from '../cases/cases.service';
+import { CASE_MEMBERSHIP_SELECT, CasesService } from '../cases/cases.service';
 import type { RequestUser } from '../common/types/request-user';
 import { formatDateMn, formatMoneyMn, isUniqueViolation } from '../common/utils/format';
 import { paginate, skipTake } from '../common/utils/pagination';
@@ -69,7 +69,7 @@ export class InvoicesService {
   async findOne(id: string, user: RequestUser) {
     const invoice = await this.prisma.invoice.findUnique({
       where: { id },
-      select: { ...INVOICE_SELECT, case: { select: { id: true, caseNumber: true, title: true, clientId: true, lawyerId: true } } },
+      select: { ...INVOICE_SELECT, case: { select: { id: true, caseNumber: true, title: true, clientId: true, lawyerId: true, members: CASE_MEMBERSHIP_SELECT } } },
     });
     if (!invoice) throw new NotFoundException('Нэхэмжлэх олдсонгүй');
     this.cases.assertAccess(invoice.case, user);
@@ -115,7 +115,7 @@ export class InvoicesService {
         status: true,
         dueDate: true,
         amount: true,
-        case: { select: { id: true, caseNumber: true, clientId: true, lawyerId: true } },
+        case: { select: { id: true, caseNumber: true, clientId: true, lawyerId: true, members: CASE_MEMBERSHIP_SELECT } },
       },
     });
     if (!invoice) throw new NotFoundException('Нэхэмжлэх олдсонгүй');

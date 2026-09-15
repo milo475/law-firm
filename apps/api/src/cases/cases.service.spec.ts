@@ -29,9 +29,9 @@ describe('CasesService (scope)', () => {
       expect(prisma.case.findMany.mock.calls[0][0].where).toMatchObject({ clientId: CLIENT_USER.id });
     });
 
-    it('LAWYER only sees cases assigned to them', async () => {
+    it('LAWYER only sees cases of teams they belong to', async () => {
       await service.findAll({ page: 1, limit: 20 }, LAWYER_USER);
-      expect(prisma.case.findMany.mock.calls[0][0].where).toMatchObject({ lawyerId: LAWYER_USER.id });
+      expect(prisma.case.findMany.mock.calls[0][0].where).toMatchObject({ members: { some: { userId: LAWYER_USER.id } } });
       expect(prisma.case.findMany.mock.calls[0][0].where.clientId).toBeUndefined();
     });
 
@@ -103,12 +103,13 @@ describe('CasesService (scope)', () => {
 });
 
 describe('CasesService (staff filters stay inside scope)', () => {
-  it('a LAWYER passing another lawyerId still only gets their own cases', async () => {
+  it('a LAWYER passing another lawyerId still only gets cases of their own teams', async () => {
     const prisma = createPrismaMock();
     prisma.case.findMany.mockResolvedValue([]);
     prisma.case.count.mockResolvedValue(0);
     const service = new CasesService(prisma as unknown as PrismaService);
     await service.findAll({ page: 1, limit: 20, lawyerId: 'someone-else', clientId: 'client-x' }, LAWYER_USER);
-    expect(prisma.case.findMany.mock.calls[0][0].where).toMatchObject({ lawyerId: LAWYER_USER.id, clientId: 'client-x' });
+    // Filters only narrow the result: the team scope is always part of the query.
+    expect(prisma.case.findMany.mock.calls[0][0].where).toMatchObject({ members: { some: { userId: LAWYER_USER.id } }, clientId: 'client-x' });
   });
 });

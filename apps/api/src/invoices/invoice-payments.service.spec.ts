@@ -149,7 +149,7 @@ describe('InvoicePaymentsService', () => {
 
     const summary = await service.summary(LAWYER_USER);
 
-    expect(prisma.invoice.count).toHaveBeenCalledWith({ where: { status: 'AWAITING_CONFIRMATION', case: { lawyerId: LAWYER_USER.id } } });
+    expect(prisma.invoice.count).toHaveBeenCalledWith({ where: { status: 'AWAITING_CONFIRMATION', case: { members: { some: { userId: LAWYER_USER.id } } } } });
     expect(summary).toEqual({
       total: 1,
       invoices: [{ id: 'inv-1', invoiceNumber: 'INV-2026-0002', amount: '800000.00', caseId: 'case-1', caseNumber: 'LF-2026-0001', paymentMarkedAt: new Date('2026-09-14T08:00:00Z') }],

@@ -15,7 +15,7 @@ import {
   Role,
   type UploadDocumentInput,
 } from '@law-firm/shared';
-import { CasesService } from '../cases/cases.service';
+import { CASE_MEMBERSHIP_SELECT, CasesService } from '../cases/cases.service';
 import type { RequestUser } from '../common/types/request-user';
 import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
 import { PrismaService } from '../prisma/prisma.service';
@@ -119,7 +119,7 @@ export class DocumentsService {
   async downloadUrl(documentId: string, user: RequestUser, inline = false) {
     const document = await this.prisma.document.findUnique({
       where: { id: documentId },
-      include: { case: { select: { clientId: true, lawyerId: true } } },
+      include: { case: { select: { clientId: true, lawyerId: true, members: CASE_MEMBERSHIP_SELECT } } },
     });
     if (!document) throw new NotFoundException('Баримт олдсонгүй');
     this.cases.assertAccess(document.case, user);
@@ -134,13 +134,13 @@ export class DocumentsService {
   }
 
   /**
-   * ADMIN, or the LAWYER who uploaded the file while still assigned to the case.
+   * ADMIN, or the LAWYER who uploaded the file while still on the case team.
    * The MinIO object is removed first; a missing object does not block deleting the record.
    */
   async remove(documentId: string, user: RequestUser): Promise<void> {
     const document = await this.prisma.document.findUnique({
       where: { id: documentId },
-      include: { case: { select: { clientId: true, lawyerId: true } } },
+      include: { case: { select: { clientId: true, lawyerId: true, members: CASE_MEMBERSHIP_SELECT } } },
     });
     if (!document) throw new NotFoundException('Баримт олдсонгүй');
 

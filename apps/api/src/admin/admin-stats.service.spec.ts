@@ -19,9 +19,9 @@ describe('AdminStatsService', () => {
   it('LAWYER stats are scoped to their own cases and include no admin block', async () => {
     prisma.case.count.mockResolvedValue(3);
     const stats = await service.stats(LAWYER_USER);
-    expect(prisma.case.count.mock.calls[0][0].where).toMatchObject({ lawyerId: LAWYER_USER.id, status: { not: 'CLOSED' } });
-    expect(prisma.caseEvent.findMany.mock.calls[0][0].where.case).toEqual({ lawyerId: LAWYER_USER.id });
-    expect(prisma.invoice.aggregate.mock.calls[0][0].where.case).toEqual({ lawyerId: LAWYER_USER.id });
+    expect(prisma.case.count.mock.calls[0][0].where).toMatchObject({ members: { some: { userId: LAWYER_USER.id } }, status: { not: 'CLOSED' } });
+    expect(prisma.caseEvent.findMany.mock.calls[0][0].where.case).toEqual({ members: { some: { userId: LAWYER_USER.id } } });
+    expect(prisma.invoice.aggregate.mock.calls[0][0].where.case).toEqual({ members: { some: { userId: LAWYER_USER.id } } });
     expect(stats).toMatchObject({ role: 'LAWYER', lawyer: { openCases: 3, upcomingEventCount: 1, unpaidInvoiceCount: 2, unpaidInvoiceTotal: '1250000' } });
     expect(stats.admin).toBeUndefined();
     expect(stats.upcomingEvents[0].eventDate).toBe('2026-09-20T02:00:00.000Z');

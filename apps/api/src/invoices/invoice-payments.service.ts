@@ -10,7 +10,7 @@ import {
   type Prisma,
   type RejectPaymentInput,
 } from '@law-firm/shared';
-import { CasesService } from '../cases/cases.service';
+import { CASE_MEMBERSHIP_SELECT, CasesService } from '../cases/cases.service';
 import type { RequestUser } from '../common/types/request-user';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -27,7 +27,7 @@ const PAYMENT_LOAD_SELECT = {
   invoiceNumber: true,
   amount: true,
   status: true,
-  case: { select: { id: true, caseNumber: true, clientId: true, lawyerId: true } },
+  case: { select: { id: true, caseNumber: true, clientId: true, lawyerId: true, members: CASE_MEMBERSHIP_SELECT } },
 } satisfies Prisma.InvoiceSelect;
 
 type LoadedInvoice = Prisma.InvoiceGetPayload<{ select: typeof PAYMENT_LOAD_SELECT }>;

@@ -134,12 +134,12 @@ export class MessagesService {
   }
 
   /**
-   * Messages the user still has to read: a CLIENT reads what the staff wrote, the assigned LAWYER reads what the
+   * Messages the user still has to read: a CLIENT reads what the staff wrote, a LAWYER on the team reads what the
    * client wrote. ADMIN is a viewer — nothing is unread for them and opening a thread marks nothing.
    */
   private unreadWhere(user: RequestUser): Prisma.MessageWhereInput | null {
     if (user.role === Role.CLIENT) return { readAt: null, senderId: { not: user.id }, case: { clientId: user.id } };
-    if (user.role === Role.LAWYER) return { readAt: null, sender: { role: Role.CLIENT }, case: { lawyerId: user.id } };
+    if (user.role === Role.LAWYER) return { readAt: null, sender: { role: Role.CLIENT }, case: { members: { some: { userId: user.id } } } };
     return null;
   }
 }

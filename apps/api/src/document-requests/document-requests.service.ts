@@ -14,7 +14,7 @@ import {
   type ReviewDocumentRequestInput,
   type UpdateDocumentRequestInput,
 } from '@law-firm/shared';
-import { CasesService } from '../cases/cases.service';
+import { CASE_MEMBERSHIP_SELECT, CasesService } from '../cases/cases.service';
 import type { RequestUser } from '../common/types/request-user';
 import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
 import { DOCUMENT_SELECT, DocumentsService, type StoredFile, type UploadedFile } from '../documents/documents.service';
@@ -27,7 +27,7 @@ import {
   type DocumentRequestSubmittedEvent,
 } from './document-request.events';
 
-const CASE_REF_SELECT = { caseNumber: true, clientId: true, lawyerId: true, status: true } as const;
+const CASE_REF_SELECT = { caseNumber: true, clientId: true, lawyerId: true, status: true, members: CASE_MEMBERSHIP_SELECT } as const;
 
 /** Requests a lawyer still has to look at. */
 const AWAITING_REVIEW_STATUSES: DocumentRequestStatus[] = ['SUBMITTED', 'UNDER_REVIEW'];

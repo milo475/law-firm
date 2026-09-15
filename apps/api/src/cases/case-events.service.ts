@@ -10,7 +10,7 @@ import { formatDateTimeMn } from '../common/utils/format';
 import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { CasesService } from './cases.service';
+import { CASE_MEMBERSHIP_SELECT, CasesService } from './cases.service';
 
 const EVENT_INCLUDE = { createdBy: { select: PUBLIC_USER_SELECT } } as const;
 
@@ -80,7 +80,7 @@ export class CaseEventsService {
   private async loadWithAccess(eventId: string, user: RequestUser) {
     const event = await this.prisma.caseEvent.findUnique({
       where: { id: eventId },
-      include: { case: { select: { lawyerId: true, clientId: true } } },
+      include: { case: { select: { lawyerId: true, clientId: true, members: CASE_MEMBERSHIP_SELECT } } },
     });
     if (!event) throw new NotFoundException('Үйл явдал олдсонгүй');
     this.cases.assertStaffAccess(event.case, user);

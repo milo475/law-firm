@@ -140,7 +140,7 @@ describe('MessagesService', () => {
       await expect(service.unreadCount('case-1', LAWYER_USER)).resolves.toEqual({ count: 0 });
 
       expect(prisma.message.updateMany).toHaveBeenCalledWith({
-        where: { caseId: 'case-1', readAt: null, sender: { role: 'CLIENT' }, case: { lawyerId: LAWYER_USER.id } },
+        where: { caseId: 'case-1', readAt: null, sender: { role: 'CLIENT' }, case: { members: { some: { userId: LAWYER_USER.id } } } },
         data: { readAt: expect.any(Date) },
       });
     });
