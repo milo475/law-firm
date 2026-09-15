@@ -22,6 +22,7 @@ import { PortalHeader } from '@/components/ui/portal-header';
 import { Sidebar } from '@/components/ui/sidebar';
 import { isStaff } from '@/lib/admin';
 import { useDocumentRequestSummary } from '@/lib/document-requests';
+import { useInvoicePaymentSummary } from '@/lib/invoices';
 import { useMessageUnreadSummary } from '@/lib/messages';
 import { ROLE_LABELS } from '@/lib/format';
 
@@ -54,6 +55,7 @@ const TITLES: { match: (p: string) => boolean; title: string; back?: string }[] 
   { match: (p) => p.startsWith('/admin/lawyers'), title: 'Хуульчид' },
   { match: (p) => p === '/admin/posts/new' || /^\/admin\/posts\/[^/]+\/edit$/.test(p), title: 'Нийтлэл засварлагч', back: '/admin/posts' },
   { match: (p) => p.startsWith('/admin/posts'), title: 'Нийтлэл' },
+  { match: (p) => /^\/admin\/invoices\/[^/]+$/.test(p), title: 'Нэхэмжлэх', back: '/admin/invoices' },
   { match: (p) => p.startsWith('/admin/invoices'), title: 'Нэхэмжлэх' },
   { match: (p) => p.startsWith('/admin/contact'), title: 'Хүсэлтүүд' },
   { match: (p) => p.startsWith('/admin/profile'), title: 'Профайл' },
@@ -68,6 +70,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   // Submissions waiting for review, shown on the "Хэргүүд" menu item.
   const requestSummary = useDocumentRequestSummary(allowed);
   const messageSummary = useMessageUnreadSummary(allowed);
+  const paymentSummary = useInvoicePaymentSummary(allowed);
 
   useEffect(() => {
     // Middleware already redirects clients; this covers sessions that only had the refresh marker.
@@ -85,6 +88,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     ...item,
     active: active(item.href),
     ...(item.href === '/admin/cases' ? { count: pendingOnCases, countLabel: 'хянах баримт, уншаагүй мессеж' } : {}),
+    ...(item.href === '/admin/invoices' ? { count: paymentSummary.data?.total ?? 0, countLabel: 'баталгаажуулах төлбөр' } : {}),
   }));
 
   return (

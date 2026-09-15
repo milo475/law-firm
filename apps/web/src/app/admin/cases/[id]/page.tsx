@@ -493,7 +493,7 @@ function InvoicesTab({ caseId, onChanged }: { caseId: string; onChanged: () => P
           <TableBody>
             {invoices.data!.items.map((inv) => (
               <TableRow key={inv.id}>
-                <TableCell className="whitespace-nowrap text-body-sm-medium text-text-primary">{inv.invoiceNumber}</TableCell>
+                <TableCell className="whitespace-nowrap text-body-sm-medium text-text-primary"><Link href={`/admin/invoices/${inv.id}`} className="focus-ring rounded-sm hover:text-text-brand hover:underline">{inv.invoiceNumber}</Link></TableCell>
                 <TableCell className="max-w-[240px] truncate" title={inv.description}>{inv.description}</TableCell>
                 <TableCell className="whitespace-nowrap text-right text-body-sm-medium text-text-primary">{formatMoney(inv.amount)}</TableCell>
                 <TableCell className="whitespace-nowrap">{formatDate(inv.dueDate)}</TableCell>

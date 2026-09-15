@@ -3,6 +3,7 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { INVOICE_STATUS_TRANSITIONS } from '@law-firm/shared/schemas';
 import { useMutation } from '@tanstack/react-query';
+import Link from 'next/link';
 import { INVOICE_STATUS_BADGE } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/toast';
@@ -40,7 +41,11 @@ export function InvoiceActions({ invoice, onChanged }: { invoice: InvoiceItem; o
 
   const status = invoice.status as InvoiceStatus;
   if (status === 'AWAITING_CONFIRMATION') {
-    return <span className="whitespace-nowrap text-caption text-status-pending-fg">Төлбөр шалгах хүлээгдэж байна</span>;
+    return (
+      <Button asChild size="sm">
+        <Link href={`/admin/invoices/${invoice.id}`}>Төлбөр шалгах</Link>
+      </Button>
+    );
   }
   // Payment reports go through the dedicated confirm/reject actions, never through PATCH.
   const next: readonly InvoiceStatus[] = (INVOICE_STATUS_TRANSITIONS[status] ?? []).filter((s) => s !== 'AWAITING_CONFIRMATION');

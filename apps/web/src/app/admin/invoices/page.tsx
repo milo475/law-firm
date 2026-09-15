@@ -17,6 +17,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } fro
 import { ApiError, api, type CaseListItem, type InvoiceItem, type Paginated } from '@/lib/api';
 import { INVOICE_STATUSES } from '@/lib/admin';
 import { INVOICE_STATUS_LABELS, formatDate, formatMoney } from '@/lib/format';
+import { INVOICE_PAYMENT_SUMMARY_KEY, useInvoicePaymentSummary } from '@/lib/invoices';
+import { cn } from '@/lib/utils';
 
 export default function AdminInvoicesPage() {
   const { user } = useUser();
@@ -25,6 +27,7 @@ export default function AdminInvoicesPage() {
   const [status, setStatus] = useState('ALL');
   const [page, setPage] = useState(1);
   const [createOpen, setCreateOpen] = useState(false);
+  const paymentSummary = useInvoicePaymentSummary();
 
   const params = new URLSearchParams({ page: String(page), limit: '20' });
   if (status !== 'ALL') params.set('status', status);
@@ -45,6 +48,7 @@ export default function AdminInvoicesPage() {
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: ['admin', 'invoices'] }),
       queryClient.invalidateQueries({ queryKey: ['admin', 'stats'] }),
+      queryClient.invalidateQueries({ queryKey: INVOICE_PAYMENT_SUMMARY_KEY }),
     ]);
   };
 
@@ -57,6 +61,18 @@ export default function AdminInvoicesPage() {
         description={isAdmin ? 'Бүх хэргийн нэхэмжлэх.' : 'Таны хариуцсан хэргүүдийн нэхэмжлэх.'}
         actions={<Button size="md" onClick={() => setCreateOpen(true)}><PlusIcon size={18} />Шинэ нэхэмжлэх</Button>}
       />
+      {paymentSummary.data && paymentSummary.data.total > 0 && status !== 'AWAITING_CONFIRMATION' && (
+        <div role="status" className="flex flex-col gap-3 rounded-lg border-l-[3px] border-status-pending-fg bg-status-pending-bg p-5 md:flex-row md:items-center md:justify-between md:gap-6">
+          <div className="flex min-w-0 flex-col gap-1">
+            <p className="text-h4 text-status-pending-fg">Баталгаажуулах хүлээгдэж буй {paymentSummary.data.total} төлбөр</p>
+            <p className="text-body-sm text-text-secondary">
+              {paymentSummary.data.invoices.slice(0, 3).map((item) => item.invoiceNumber).join(', ')}
+              {paymentSummary.data.total > 3 ? '…' : ''} — харилцагч төлбөр хийсэн гэж тэмдэглэсэн.
+            </p>
+          </div>
+          <Button size="md" className="w-full shrink-0 md:w-auto" onClick={() => { setStatus('AWAITING_CONFIRMATION'); setPage(1); }}>Шүүж харах</Button>
+        </div>
+      )}
       <Select
         wrapperClassName="md:max-w-[260px]"
         label="Төлөв"
@@ -87,9 +103,9 @@ export default function AdminInvoicesPage() {
               </TableHead>
               <TableBody>
                 {data.items.map((inv) => (
-                  <TableRow key={inv.id}>
+                  <TableRow key={inv.id} className={inv.status === 'AWAITING_CONFIRMATION' ? 'bg-status-pending-bg' : undefined}>
                     <TableCell className="py-2">
-                      <span className="block whitespace-nowrap text-body-sm-medium text-text-primary">{inv.invoiceNumber}</span>
+                      <Link href={`/admin/invoices/${inv.id}`} className="focus-ring block whitespace-nowrap rounded-sm text-body-sm-medium text-text-primary hover:text-text-brand hover:underline">{inv.invoiceNumber}</Link>
                       <span className="block max-w-[220px] truncate text-caption text-text-muted" title={inv.description}>{inv.description}</span>
                     </TableCell>
                     <TableCell className="whitespace-nowrap">
@@ -106,9 +122,9 @@ export default function AdminInvoicesPage() {
           </div>
           <ul className="grid gap-3 md:hidden">
             {data.items.map((inv) => (
-              <li key={inv.id} className="flex flex-col gap-2 rounded-lg border border-border-default bg-bg-surface p-4">
+              <li key={inv.id} className={cn('flex flex-col gap-2 rounded-lg border border-border-default bg-bg-surface p-4', inv.status === 'AWAITING_CONFIRMATION' && 'border-l-[3px] border-l-status-pending-fg')}>
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-caption text-text-muted">{inv.invoiceNumber}</span>
+                  <Link href={`/admin/invoices/${inv.id}`} className="focus-ring rounded-sm text-caption text-text-muted hover:text-text-brand">{inv.invoiceNumber}</Link>
                   <StatusBadge map={INVOICE_STATUS_BADGE} status={inv.status} />
                 </div>
                 <p className="font-serif text-h4 text-text-brand">{formatMoney(inv.amount)}</p>
