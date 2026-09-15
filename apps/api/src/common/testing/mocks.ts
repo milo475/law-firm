@@ -57,6 +57,7 @@ export function createPrismaMock() {
     notification: delegate('findMany', 'findFirst', 'count', 'update', 'updateMany', 'createMany'),
     lawyerProfile: delegate('findUnique', 'findFirst', 'findMany', 'create', 'update'),
     contactRequest: delegate('findMany', 'findUnique', 'count', 'create', 'update'),
+    serviceRequest: delegate('findMany', 'findUnique', 'count', 'create', 'update', 'updateMany'),
     auditLog: delegate('create'),
     setting: delegate('findUnique', 'upsert'),
     $queryRaw: jest.fn(),

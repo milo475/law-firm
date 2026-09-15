@@ -14,7 +14,7 @@ describe('Invoice / document / contact staff endpoints (role guard over HTTP)', 
   let app: INestApplication;
   const invoices = { findAll: jest.fn(), findOne: jest.fn(), create: jest.fn(), update: jest.fn() };
   const documents = { findByCase: jest.fn(), upload: jest.fn(), downloadUrl: jest.fn(), remove: jest.fn() };
-  const contact = { create: jest.fn(), findAll: jest.fn(), updateStatus: jest.fn() };
+  const contact = { findAll: jest.fn() };
 
   beforeAll(async () => {
     app = await createGuardedApp({
@@ -38,8 +38,7 @@ describe('Invoice / document / contact staff endpoints (role guard over HTTP)', 
     ['CLIENT', 'patch', `/invoices/${UUID}`, { status: 'PAID' }],
     ['CLIENT', 'delete', `/documents/${UUID}`, undefined],
     ['CLIENT', 'get', '/contact', undefined],
-    ['CLIENT', 'patch', `/contact/${UUID}`, { status: 'CLOSED' }],
-    ['LAWYER', 'patch', `/contact/${UUID}`, { status: 'CLOSED' }],
+    ['LAWYER', 'get', '/contact', undefined],
   ] as const)('%s %s %s → 403', async (role, method, url, body) => {
     const req = request(app.getHttpServer())[method](url).set(TEST_ROLE_HEADER, role);
     const res = await (body ? req.send(body) : req);
@@ -55,10 +54,13 @@ describe('Invoice / document / contact staff endpoints (role guard over HTTP)', 
     expect(invoices.create).not.toHaveBeenCalled();
   });
 
-  it('ADMIN can PATCH /contact/:id (200)', async () => {
-    contact.updateStatus.mockResolvedValue({ id: UUID, status: 'CONTACTED' });
-    const res = await request(app.getHttpServer()).patch(`/contact/${UUID}`).set(TEST_ROLE_HEADER, 'ADMIN').send({ status: 'CONTACTED' });
-    expect(res.status).toBe(200);
-    expect(contact.updateStatus).toHaveBeenCalledWith(UUID, 'CONTACTED');
+  it('ADMIN reads the old contact form messages (GET /contact 200); changing them is gone (PATCH → 404)', async () => {
+    contact.findAll.mockResolvedValue({ items: [], total: 0, page: 1, limit: 20, totalPages: 0 });
+    const list = await request(app.getHttpServer()).get('/contact?status=NEW').set(TEST_ROLE_HEADER, 'ADMIN');
+    expect(list.status).toBe(200);
+    expect(contact.findAll).toHaveBeenCalledWith(expect.objectContaining({ status: 'NEW' }));
+
+    const patch = await request(app.getHttpServer()).patch(`/contact/${UUID}`).set(TEST_ROLE_HEADER, 'ADMIN').send({ status: 'CONTACTED' });
+    expect(patch.status).toBe(404);
   });
 });

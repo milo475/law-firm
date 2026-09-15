@@ -1,27 +1,21 @@
-import { BadRequestException } from '@nestjs/common';
 import { createPrismaMock, type PrismaMock } from '../common/testing/mocks';
-import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ContactService } from './contact.service';
 
-describe('ContactService.updateStatus', () => {
+describe('ContactService (legacy contact form, read-only)', () => {
   let service: ContactService;
   let prisma: PrismaMock;
 
   beforeEach(() => {
     prisma = createPrismaMock();
-    service = new ContactService(prisma as unknown as PrismaService, { createMany: jest.fn() } as unknown as NotificationsService);
-    prisma.contactRequest.update.mockImplementation(async ({ data }: any) => ({ id: 'req-1', ...data }));
+    service = new ContactService(prisma as unknown as PrismaService);
   });
 
-  it('NEW → CONTACTED is allowed', async () => {
-    prisma.contactRequest.findUnique.mockResolvedValue({ id: 'req-1', status: 'NEW' });
-    await expect(service.updateStatus('req-1', 'CONTACTED')).resolves.toMatchObject({ status: 'CONTACTED' });
-  });
+  it('lists the old messages newest first, filtered by status', async () => {
+    prisma.contactRequest.findMany.mockResolvedValue([{ id: 'c1', status: 'NEW' }]);
+    prisma.contactRequest.count.mockResolvedValue(1);
 
-  it('CLOSED → NEW is rejected with 400', async () => {
-    prisma.contactRequest.findUnique.mockResolvedValue({ id: 'req-1', status: 'CLOSED' });
-    await expect(service.updateStatus('req-1', 'NEW')).rejects.toBeInstanceOf(BadRequestException);
-    expect(prisma.contactRequest.update).not.toHaveBeenCalled();
+    await expect(service.findAll({ page: 1, limit: 20, status: 'NEW' })).resolves.toMatchObject({ items: [{ id: 'c1' }], total: 1 });
+    expect(prisma.contactRequest.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { status: 'NEW' }, orderBy: { createdAt: 'desc' } }));
   });
 });

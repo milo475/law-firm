@@ -174,7 +174,7 @@ export class CasesService {
     }
 
     for (let attempt = 1; ; attempt += 1) {
-      const caseNumber = await this.generateCaseNumber();
+      const caseNumber = await this.nextCaseNumber();
       try {
         return await this.prisma.case.create({
           data: {
@@ -326,7 +326,8 @@ export class CasesService {
 
   // ─── helpers ───────────────────────────────────────────────────────────────
 
-  private async generateCaseNumber(): Promise<string> {
+  /** Next case number of the current year; callers insert it and retry with a new one on a unique violation. */
+  async nextCaseNumber(): Promise<string> {
     const year = new Date().getFullYear();
     const last = await this.prisma.case.findFirst({
       where: { caseNumber: { startsWith: `${CASE_NUMBER_PREFIX}-${year}-` } },
