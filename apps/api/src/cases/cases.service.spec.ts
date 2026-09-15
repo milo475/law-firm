@@ -101,3 +101,14 @@ describe('CasesService (scope)', () => {
     });
   });
 });
+
+describe('CasesService (staff filters stay inside scope)', () => {
+  it('a LAWYER passing another lawyerId still only gets their own cases', async () => {
+    const prisma = createPrismaMock();
+    prisma.case.findMany.mockResolvedValue([]);
+    prisma.case.count.mockResolvedValue(0);
+    const service = new CasesService(prisma as unknown as PrismaService);
+    await service.findAll({ page: 1, limit: 20, lawyerId: 'someone-else', clientId: 'client-x' }, LAWYER_USER);
+    expect(prisma.case.findMany.mock.calls[0][0].where).toMatchObject({ lawyerId: LAWYER_USER.id, clientId: 'client-x' });
+  });
+});

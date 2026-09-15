@@ -35,18 +35,26 @@ export function createPrismaMock() {
   const delegate = (...methods: string[]): MockedDelegate =>
     Object.fromEntries(methods.map((method) => [method, jest.fn()]));
 
-  return {
+  const mock = {
     user: delegate('findUnique', 'findFirst', 'findMany', 'create', 'update', 'count'),
     refreshToken: delegate('findUnique', 'create', 'update', 'updateMany'),
     post: delegate('findMany', 'findFirst', 'findUnique', 'count', 'create', 'update', 'delete'),
-    case: delegate('findMany', 'findUnique', 'count'),
-    caseEvent: delegate('findMany'),
-    document: delegate('findMany', 'findUnique', 'create'),
-    invoice: delegate('findMany', 'findUnique', 'count'),
+    case: delegate('findMany', 'findFirst', 'findUnique', 'count', 'create', 'update', 'groupBy'),
+    caseEvent: delegate('findMany', 'findUnique', 'count', 'create', 'update', 'delete'),
+    document: delegate('findMany', 'findUnique', 'create', 'delete'),
+    invoice: delegate('findMany', 'findFirst', 'findUnique', 'count', 'create', 'update', 'aggregate'),
     notification: delegate('findMany', 'findFirst', 'count', 'update', 'updateMany', 'createMany'),
+    lawyerProfile: delegate('findUnique', 'findFirst', 'findMany', 'create', 'update'),
+    contactRequest: delegate('findMany', 'findUnique', 'count', 'create', 'update'),
     auditLog: delegate('create'),
     $queryRaw: jest.fn(),
+    /** Interactive transactions run the callback against the same mock. */
+    $transaction: jest.fn(),
   };
+  mock.$transaction.mockImplementation((arg: unknown) =>
+    typeof arg === 'function' ? (arg as (tx: unknown) => unknown)(mock) : Promise.all(arg as unknown[]),
+  );
+  return mock;
 }
 
 export type PrismaMock = ReturnType<typeof createPrismaMock>;
@@ -55,3 +63,5 @@ export const ADMIN_USER: RequestUser = { id: 'admin-id', email: 'admin@lawfirm.m
 export const LAWYER_USER: RequestUser = { id: 'lawyer-id', email: 'lawyer@lawfirm.mn', role: 'LAWYER' };
 export const CLIENT_USER: RequestUser = { id: 'client-id', email: 'client@example.mn', role: 'CLIENT' };
 export const OTHER_CLIENT: RequestUser = { id: 'other-client-id', email: 'other@example.mn', role: 'CLIENT' };
+
+export const OTHER_LAWYER: RequestUser = { id: 'other-lawyer-id', email: 'other.lawyer@lawfirm.mn', role: 'LAWYER' };
