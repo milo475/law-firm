@@ -16,7 +16,7 @@ type Filter = 'ALL' | 'UNREAD' | 'CASE' | 'INVOICE' | 'MESSAGE';
 
 // Figma "Filters" chips. Mobile hides "Мессеж" and drops the unread count, as in 37:1209.
 const FILTER_TYPES: Record<Exclude<Filter, 'ALL' | 'UNREAD'>, string[]> = {
-  CASE: ['CASE_EVENT', 'DOCUMENT', 'CONTACT_REQUEST'],
+  CASE: ['CASE_EVENT', 'DOCUMENT', 'DOCUMENT_REQUEST', 'CONTACT_REQUEST'],
   INVOICE: ['INVOICE'],
   MESSAGE: ['MESSAGE'],
 };
@@ -27,6 +27,7 @@ const TYPE_ICONS: Record<string, typeof NotifCaseIcon> = {
   CONTACT_REQUEST: NotifRequestIcon,
   MESSAGE: NotifMessageIcon,
   DOCUMENT: NotifDocumentIcon,
+  DOCUMENT_REQUEST: NotifDocumentIcon,
   INVOICE: NotifInvoiceIcon,
   MEETING: NotifClockIcon,
   HEARING: NotifClockIcon,

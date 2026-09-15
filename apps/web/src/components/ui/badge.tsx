@@ -69,6 +69,15 @@ export const DOCUMENT_REQUEST_STATUS_BADGE: Record<string, { tone: BadgeTone; la
   REJECTED: { tone: 'danger', label: 'Буцаагдсан' },
 };
 
+/** Client wording: what the client has to do next. */
+export const CLIENT_DOCUMENT_REQUEST_BADGE: Record<string, { tone: BadgeTone; label: string }> = {
+  PENDING: { tone: 'pending', label: 'Илгээгээгүй' },
+  SUBMITTED: { tone: 'new', label: 'Хянагдаж байна' },
+  UNDER_REVIEW: { tone: 'new', label: 'Хянагдаж байна' },
+  APPROVED: { tone: 'progress', label: 'Хүлээн авсан' },
+  REJECTED: { tone: 'danger', label: 'Дахин илгээх' },
+};
+
 export function StatusBadge({ map, status, className }: { map: Record<string, { tone: BadgeTone; label: string }>; status: string; className?: string }) {
   const entry = map[status] ?? { tone: 'closed' as BadgeTone, label: status };
   return <Badge tone={entry.tone} className={className}>{entry.label}</Badge>;

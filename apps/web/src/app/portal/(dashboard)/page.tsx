@@ -10,7 +10,8 @@ import { CASE_STATUS_BADGE } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CaseCard } from '@/components/ui/card';
 import { CardSkeleton, EmptyState, ErrorState, Skeleton } from '@/components/ui/states';
-import { ApiError, api, type CaseEvent, type CaseListItem, type InvoiceItem, type NotificationItem, type Paginated } from '@/lib/api';
+import { ApiError, api, type CaseEvent, type CaseListItem, type DocumentRequestSummary, type InvoiceItem, type NotificationItem, type Paginated } from '@/lib/api';
+import { useDocumentRequestSummary } from '@/lib/document-requests';
 import { CASE_EVENT_LABELS, formatDate, formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
@@ -60,6 +61,7 @@ export default function DashboardPage() {
   const cases = useQuery({ queryKey: ['cases', 'all'], queryFn: () => api.get<Paginated<CaseListItem>>('/cases?limit=50') });
   const invoices = useQuery({ queryKey: ['invoices', 'all'], queryFn: () => api.get<Paginated<InvoiceItem>>('/invoices?limit=50') });
   const notifications = useQuery({ queryKey: ['notifications'], queryFn: () => api.get<{ items: NotificationItem[]; unreadCount: number }>('/notifications') });
+  const requestSummary = useDocumentRequestSummary();
 
   // Today's date is rendered after mount so the server and client markup agree.
   const [today, setToday] = useState<{ long: string; short: string } | null>(null);
@@ -107,6 +109,8 @@ export default function DashboardPage() {
         <Stat label="Төлөгдөөгүй нэхэмжлэх" value={invoices.isLoading ? null : String(openInvoices.length)} href="/portal/invoices" tone="danger" icon={<StatInvoiceIcon />} />
         <Stat label="Удахгүй болох уулзалт" value={eventsLoading || cases.isLoading ? null : String(upcomingAll.length)} href="/portal/cases" tone="progress" icon={<StatClockIcon />} />
       </div>
+
+      {requestSummary.data && requestSummary.data.total > 0 && <DocumentRequestsCard summary={requestSummary.data} />}
 
       {/* My cases */}
       <section className="flex flex-col gap-4 md:gap-5">
@@ -207,6 +211,31 @@ export default function DashboardPage() {
           </div>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+/** "Танаас {n} баримт хүсэлттэй байна" — jumps to the case with the most open requests. */
+function DocumentRequestsCard({ summary }: { summary: DocumentRequestSummary }) {
+  const [first] = summary.cases;
+  if (!first) return null;
+  return (
+    <div role="status" className="flex flex-col gap-3 rounded-lg border-l-[3px] border-status-new-fg bg-status-new-bg p-5 md:flex-row md:items-center md:justify-between md:gap-6 md:px-7 md:py-6">
+      <div className="flex min-w-0 flex-col gap-1.5">
+        <p className="text-h4 text-status-new-fg">Танаас {summary.total} баримт хүсэлттэй байна</p>
+        <p className="text-body-sm text-text-secondary md:text-body">
+          {summary.cases.map((item, index) => (
+            <span key={item.caseId}>
+              {index > 0 && ' · '}
+              <Link href={`/portal/cases/${item.caseId}?tab=requests`} className="focus-ring rounded-sm text-text-primary hover:underline">{item.caseNumber}</Link>
+              {`: ${item.count} баримт`}
+            </span>
+          ))}
+        </p>
+      </div>
+      <Button asChild size="md" className="w-full shrink-0 md:w-auto">
+        <Link href={`/portal/cases/${first.caseId}?tab=requests`}>Баримт илгээх</Link>
+      </Button>
     </div>
   );
 }

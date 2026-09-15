@@ -3,9 +3,10 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { useParams, useSearchParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 import { DownloadIcon } from '@/components/icons';
+import { DocumentRequestsPanel } from '@/components/portal/document-requests-panel';
 import { Avatar } from '@/components/ui/avatar';
 import { CASE_STATUS_BADGE, INVOICE_STATUS_BADGE, StatusBadge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -16,7 +17,8 @@ import { CardSkeleton, EmptyState, ErrorState, Skeleton } from '@/components/ui/
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/toast';
-import { ApiError, api, type CaseDetail, type CaseEvent, type DocumentItem, type InvoiceItem, type Paginated, type PublicUser } from '@/lib/api';
+import { ApiError, api, type CaseDetail, type CaseEvent, type DocumentItem, type DocumentRequestItem, type InvoiceItem, type Paginated, type PublicUser } from '@/lib/api';
+import { isRequestOverdue, needsClientAction } from '@/lib/document-requests';
 import { CASE_EVENT_LABELS, CASE_TYPE_LABELS, INVOICE_STATUS_LABELS, ROLE_LABELS, formatBytes, formatDate, formatMoney } from '@/lib/format';
 import { cn, initials, shortName } from '@/lib/utils';
 
@@ -45,6 +47,7 @@ const TABS = [
   { value: 'overview', label: 'Тойм' },
   { value: 'timeline', label: 'Явцын түүх', mobileLabel: 'Явц' },
   { value: 'documents', label: 'Баримт' },
+  { value: 'requests', label: 'Баримтын хүсэлт', mobileLabel: 'Хүсэлт' },
   { value: 'invoices', label: 'Нэхэмжлэх' },
   { value: 'messages', label: 'Мессеж' },
 ];
@@ -56,12 +59,24 @@ export default function CaseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const fileInput = useRef<HTMLInputElement>(null);
-  const [tab, setTab] = useState('overview');
+  // Notification links open a tab directly, e.g. ?tab=requests
+  const tabParam = useSearchParams().get('tab');
+  const validTab = tabParam && TABS.some((t) => t.value === tabParam) ? tabParam : null;
+  const [tab, setTab] = useState(validTab ?? 'overview');
+  useEffect(() => {
+    if (validTab) setTab(validTab);
+  }, [validTab]);
 
   const detail = useQuery({ queryKey: ['case', id], queryFn: () => api.get<CaseDetail>(`/cases/${id}`), retry: false });
   const events = useQuery({ queryKey: ['case-events', id], queryFn: () => api.get<CaseEvent[]>(`/cases/${id}/events`), enabled: detail.isSuccess });
   const documents = useQuery({ queryKey: ['case-documents', id], queryFn: () => api.get<DocumentItem[]>(`/cases/${id}/documents`), enabled: detail.isSuccess });
   const invoices = useQuery({ queryKey: ['invoices', 'case', id], queryFn: () => api.get<Paginated<InvoiceItem>>(`/invoices?caseId=${id}&limit=50`), enabled: detail.isSuccess });
+  const requests = useQuery({ queryKey: ['case-document-requests', id], queryFn: () => api.get<DocumentRequestItem[]>(`/cases/${id}/document-requests`), enabled: detail.isSuccess });
+
+  // Keep the active tab visible in the horizontally scrolling mobile tab strip.
+  useEffect(() => {
+    document.querySelector<HTMLElement>('[role="tab"][data-state="active"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [tab, detail.isSuccess]);
 
   const upload = useMutation({
     mutationFn: (file: File) => { const form = new FormData(); form.append('file', file); return api.post<DocumentItem>(`/cases/${id}/documents`, form); },
@@ -102,6 +117,7 @@ export default function CaseDetailPage() {
   const nextEvent = [...timeline].reverse().find((e) => new Date(e.eventDate) >= now);
   const docs = documents.data ?? [];
   const invoiceItems = invoices.data?.items ?? [];
+  const openRequests = (requests.data ?? []).filter(needsClientAction);
 
   const overview = <OverviewCard c={c} />;
   const timelineCard = <TimelineCard events={timeline.slice(0, 5)} loading={events.isLoading} />;
@@ -154,11 +170,19 @@ export default function CaseDetailPage() {
           {TABS.map((t) => (
             <TabsTrigger key={t.value} value={t.value} className={TAB_TRIGGER}>
               {t.mobileLabel ? <><span className="md:hidden">{t.mobileLabel}</span><span className="hidden md:inline">{t.label}</span></> : t.label}
+              {t.value === 'requests' && openRequests.length > 0 && (
+                <span className="ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-status-danger-bg px-1.5 text-caption text-status-danger-fg" aria-label={`${openRequests.length} хүлээгдэж буй`}>
+                  {openRequests.length}
+                </span>
+              )}
             </TabsTrigger>
           ))}
         </TabsList>
 
         <TabsContent value="overview" className="pt-5 md:pt-6">
+          {openRequests.length > 0 && (
+            <RequestsAlert count={openRequests.length} overdue={openRequests.some((r) => isRequestOverdue(r))} onOpen={() => setTab('requests')} />
+          )}
           {/* Mobile + tablet: single column in the mobile frame's order (36:1096) */}
           <div className="flex flex-col gap-4 xl:hidden">
             {overview}
@@ -196,6 +220,18 @@ export default function CaseDetailPage() {
           </div>
         </TabsContent>
 
+        <TabsContent value="requests" className="pt-5 md:pt-6">
+          {requests.isError ? (
+            <ErrorState message={requests.error instanceof ApiError ? requests.error.message : 'Алдаа гарлаа'} onRetry={() => void requests.refetch()} />
+          ) : requests.isLoading ? (
+            <Skeleton className="h-40" />
+          ) : (requests.data?.length ?? 0) === 0 ? (
+            <EmptyState title="Баримтын хүсэлт алга" description="Хуульч танаас баримт хүсвэл энд жагсаалтаар харагдаж, мэдэгдэл очно." />
+          ) : (
+            <DocumentRequestsPanel caseId={id} requests={requests.data!} onDownload={(doc) => void download(doc)} />
+          )}
+        </TabsContent>
+
         <TabsContent value="invoices" className="pt-5 md:pt-6">
           {invoices.isLoading ? <Skeleton className="h-32" /> : invoiceItems.length === 0 ? (
             <EmptyState title="Нэхэмжлэх байхгүй" />
@@ -221,6 +257,25 @@ export default function CaseDetailPage() {
           <EmptyState title="Тун удахгүй" description="Хуульчтайгаа портал дээрээс шууд харилцах мессежийн хэсэг удахгүй нээгдэнэ. Одоогоор и-мэйл, утсаар холбогдоно уу." />
         </TabsContent>
       </Tabs>
+    </div>
+  );
+}
+
+/** Open document requests on the case — pending tone, danger once a due date has passed. */
+function RequestsAlert({ count, overdue, onOpen }: { count: number; overdue: boolean; onOpen: () => void }) {
+  return (
+    <div
+      role="status"
+      className={cn(
+        'mb-4 flex flex-col gap-3 rounded-lg border-l-[3px] p-5 md:flex-row md:items-center md:justify-between md:gap-6 md:px-7 xl:mb-6',
+        overdue ? 'border-status-danger-fg bg-status-danger-bg' : 'border-status-pending-fg bg-status-pending-bg',
+      )}
+    >
+      <div className="flex flex-col gap-1">
+        <p className={cn('text-h4', overdue ? 'text-status-danger-fg' : 'text-status-pending-fg')}>Танаас {count} баримт хүсэлттэй байна</p>
+        <p className="text-body-sm text-text-secondary">{overdue ? 'Зарим баримтын эцсийн хугацаа хэтэрсэн байна. ' : ''}Хуульчийн хүссэн баримтуудыг хавсаргаж илгээнэ үү.</p>
+      </div>
+      <Button size="md" className="w-full shrink-0 md:w-auto" onClick={onOpen}>Баримт илгээх</Button>
     </div>
   );
 }
