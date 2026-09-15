@@ -37,6 +37,7 @@ const ADMIN_PAGES: [string, string][] = [
   ['admin-tasks', '/admin/tasks'],
   ['admin-tasks-board', '/admin/tasks?view=board'],
   ['admin-notifications', '/admin/notifications'],
+  ['admin-performance', '/admin/performance'],
   ['admin-case-new', '/admin/cases/new'],
   ['admin-clients', '/admin/clients'],
   ['admin-lawyers', '/admin/lawyers'],
@@ -137,5 +138,13 @@ test.describe('screenshots', () => {
     await page.getByRole('menu', { name: 'Сүүлийн мэдэгдлүүд' }).waitFor();
     await page.waitForTimeout(1200);
     await page.screenshot({ path: `screenshots/admin-notification-bell.${suffix}.png` });
+    await page.keyboard.press('Escape');
+    await page.goto('/admin/performance', { waitUntil: 'load' });
+    const person = page.locator('a[href^="/admin/performance/"]:visible').first();
+    await person.waitFor();
+    await person.click();
+    await page.waitForURL(/\/admin\/performance\/[0-9a-f-]{36}/);
+    await page.waitForTimeout(1500);
+    await page.screenshot({ path: `screenshots/admin-performance-detail.${suffix}.png`, fullPage: true });
   });
 });
