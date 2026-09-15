@@ -62,6 +62,7 @@ enum CaseEventType {
 enum InvoiceStatus {
   DRAFT
   SENT
+  AWAITING_CONFIRMATION
   PAID
   OVERDUE
   CANCELLED
@@ -107,6 +108,7 @@ model User {
   requestedDocuments       DocumentRequest[] @relation("DocumentRequestRequester")
   reviewedDocumentRequests DocumentRequest[] @relation("DocumentRequestReviewer")
   sentMessages             Message[]
+  confirmedInvoices        Invoice[]         @relation("InvoiceConfirmer")
   notifications            Notification[]
   auditLogs                AuditLog[]
 
@@ -267,17 +269,26 @@ model Message {
 }
 
 model Invoice {
-  id            String        @id @default(uuid()) @db.Uuid
-  invoiceNumber String        @unique
-  caseId        String        @db.Uuid
-  case          Case          @relation(fields: [caseId], references: [id], onDelete: Cascade)
-  amount        Decimal       @db.Decimal(12, 2)
-  description   String
-  status        InvoiceStatus @default(DRAFT)
-  dueDate       DateTime
-  paidAt        DateTime?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id                     String        @id @default(uuid()) @db.Uuid
+  invoiceNumber          String        @unique
+  caseId                 String        @db.Uuid
+  case                   Case          @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  amount                 Decimal       @db.Decimal(12, 2)
+  description            String
+  status                 InvoiceStatus @default(DRAFT)
+  dueDate                DateTime
+  paidAt                 DateTime?
+  /// The client reported a bank transfer; staff still has to confirm it.
+  paymentMarkedAt        DateTime?
+  paymentNote            String?       @db.Text
+  /// Last rejected payment report (the invoice went back to SENT).
+  paymentRejectedAt      DateTime?
+  paymentRejectionReason String?       @db.Text
+  /// Staff member who confirmed the payment (paidAt is set at the same time).
+  confirmedById          String?       @db.Uuid
+  confirmedBy            User?         @relation("InvoiceConfirmer", fields: [confirmedById], references: [id], onDelete: SetNull)
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
 
   @@index([caseId, status])
 }

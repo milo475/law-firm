@@ -13,6 +13,7 @@ import { formatDate } from '@/lib/format';
 const ACTION_LABELS: Record<InvoiceStatus, string> = {
   DRAFT: 'Ноорог',
   SENT: 'Илгээх',
+  AWAITING_CONFIRMATION: 'Баталгаажуулж буй',
   PAID: 'Төлөгдсөн',
   OVERDUE: 'Хугацаа хэтэрсэн гэж тэмдэглэх',
   CANCELLED: 'Цуцлах',
@@ -38,7 +39,11 @@ export function InvoiceActions({ invoice, onChanged }: { invoice: InvoiceItem; o
   });
 
   const status = invoice.status as InvoiceStatus;
-  const next = INVOICE_STATUS_TRANSITIONS[status] ?? [];
+  if (status === 'AWAITING_CONFIRMATION') {
+    return <span className="whitespace-nowrap text-caption text-status-pending-fg">Төлбөр шалгах хүлээгдэж байна</span>;
+  }
+  // Payment reports go through the dedicated confirm/reject actions, never through PATCH.
+  const next: readonly InvoiceStatus[] = (INVOICE_STATUS_TRANSITIONS[status] ?? []).filter((s) => s !== 'AWAITING_CONFIRMATION');
   if (next.length === 0) {
     return <span className="whitespace-nowrap text-caption text-text-muted">{invoice.paidAt ? `Төлсөн ${formatDate(invoice.paidAt)}` : 'Эцсийн төлөв'}</span>;
   }

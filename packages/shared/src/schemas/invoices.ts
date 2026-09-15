@@ -32,14 +32,51 @@ export const UpdateInvoiceSchema = z
   .partial();
 export type UpdateInvoiceInput = z.infer<typeof UpdateInvoiceSchema>;
 
-/** Allowed invoice status transitions. PAID and CANCELLED are final. */
+/**
+ * Allowed invoice status transitions. PAID and CANCELLED are final.
+ * SENT/OVERDUE → AWAITING_CONFIRMATION when the client reports a transfer;
+ * AWAITING_CONFIRMATION → PAID (staff confirm) or → SENT (staff reject).
+ */
 export const INVOICE_STATUS_TRANSITIONS: Record<InvoiceStatus, readonly InvoiceStatus[]> = {
   DRAFT: ['SENT', 'CANCELLED'],
-  SENT: ['PAID', 'OVERDUE', 'CANCELLED'],
-  OVERDUE: ['PAID', 'CANCELLED'],
+  SENT: ['AWAITING_CONFIRMATION', 'PAID', 'OVERDUE', 'CANCELLED'],
+  OVERDUE: ['AWAITING_CONFIRMATION', 'PAID', 'CANCELLED'],
+  AWAITING_CONFIRMATION: ['PAID', 'SENT'],
   PAID: [],
   CANCELLED: [],
 };
+
+/** Invoices the client can report as paid. */
+export const CLIENT_PAYABLE_INVOICE_STATUSES = ['SENT', 'OVERDUE'] as const satisfies readonly InvoiceStatus[];
+
+/** POST /invoices/:id/mark-paid — optional transfer details (reference, amount, date). */
+export const MarkPaymentSchema = z.object({
+  paymentNote: z.string().trim().max(500, 'Тэмдэглэл 500 тэмдэгтээс хэтрэхгүй байна').optional(),
+});
+export type MarkPaymentInput = z.infer<typeof MarkPaymentSchema>;
+
+/** POST /invoices/:id/reject-payment — the reason is shown to the client. */
+export const RejectPaymentSchema = z.object({
+  reason: z
+    .string({ message: 'Татгалзах шалтгааныг бичнэ үү' })
+    .trim()
+    .min(3, 'Татгалзах шалтгааныг бичнэ үү')
+    .max(500, 'Шалтгаан 500 тэмдэгтээс хэтрэхгүй байна'),
+});
+export type RejectPaymentInput = z.infer<typeof RejectPaymentSchema>;
+
+/** GET /settings/bank-account — where clients transfer invoice payments. */
+export interface BankAccountSettings {
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+}
+
+/** GET /invoices/payment-summary — reported payments waiting for staff confirmation. */
+export interface InvoicePaymentSummary {
+  total: number;
+  invoices: { id: string; invoiceNumber: string; amount: string; caseId: string; caseNumber: string; paymentMarkedAt: Date | null }[];
+}
 
 export function canTransitionInvoice(from: InvoiceStatus, to: InvoiceStatus): boolean {
   return from === to || INVOICE_STATUS_TRANSITIONS[from].includes(to);

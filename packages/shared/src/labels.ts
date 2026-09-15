@@ -59,6 +59,7 @@ export const CASE_EVENT_TYPE_LABELS: Record<CaseEventType, string> = {
 export const INVOICE_STATUS_LABELS: Record<InvoiceStatus, string> = {
   DRAFT: 'Ноорог',
   SENT: 'Илгээсэн',
+  AWAITING_CONFIRMATION: 'Баталгаажуулж буй',
   PAID: 'Төлөгдсөн',
   OVERDUE: 'Хугацаа хэтэрсэн',
   CANCELLED: 'Цуцалсан',

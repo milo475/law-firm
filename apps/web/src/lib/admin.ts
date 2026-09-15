@@ -5,7 +5,7 @@ export type Role = 'ADMIN' | 'LAWYER' | 'CLIENT';
 export type CaseStatus = 'NEW' | 'IN_PROGRESS' | 'WAITING' | 'CLOSED';
 export type CaseType = 'CIVIL' | 'CRIMINAL' | 'FAMILY' | 'BUSINESS' | 'LABOR' | 'REAL_ESTATE' | 'OTHER';
 export type CaseEventType = 'NOTE' | 'HEARING' | 'MEETING' | 'DEADLINE' | 'STATUS_CHANGE' | 'DOCUMENT';
-export type InvoiceStatus = 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE' | 'CANCELLED';
+export type InvoiceStatus = 'DRAFT' | 'SENT' | 'AWAITING_CONFIRMATION' | 'PAID' | 'OVERDUE' | 'CANCELLED';
 export type ContactStatus = 'NEW' | 'CONTACTED' | 'CLOSED';
 export type PostCategory = 'NEWS' | 'ADVICE' | 'LEGAL_UPDATE';
 export type PostStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
@@ -79,7 +79,7 @@ export interface ManagedPost {
 export const CASE_STATUSES: CaseStatus[] = ['NEW', 'IN_PROGRESS', 'WAITING', 'CLOSED'];
 export const CASE_TYPES: CaseType[] = ['CIVIL', 'CRIMINAL', 'FAMILY', 'BUSINESS', 'LABOR', 'REAL_ESTATE', 'OTHER'];
 export const MANUAL_EVENT_TYPES: CaseEventType[] = ['NOTE', 'HEARING', 'MEETING', 'DEADLINE', 'DOCUMENT'];
-export const INVOICE_STATUSES: InvoiceStatus[] = ['DRAFT', 'SENT', 'PAID', 'OVERDUE', 'CANCELLED'];
+export const INVOICE_STATUSES: InvoiceStatus[] = ['DRAFT', 'SENT', 'AWAITING_CONFIRMATION', 'PAID', 'OVERDUE', 'CANCELLED'];
 
 export function isStaff(role: Role | string | undefined): boolean {
   return role === 'ADMIN' || role === 'LAWYER';

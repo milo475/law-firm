@@ -301,7 +301,7 @@ export interface InvoiceItem {
   invoiceNumber: string;
   amount: string;
   description: string;
-  status: 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE' | 'CANCELLED';
+  status: 'DRAFT' | 'SENT' | 'AWAITING_CONFIRMATION' | 'PAID' | 'OVERDUE' | 'CANCELLED';
   dueDate: string;
   paidAt: string | null;
   createdAt: string;

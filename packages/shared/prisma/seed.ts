@@ -303,7 +303,7 @@ async function seedCases(users: Awaited<ReturnType<typeof seedUsers>>) {
       ],
       invoices: [
         { invoiceNumber: `INV-${year}-0001`, amount: '1500000.00', description: 'Хэргийн урьдчилгаа — нэхэмжлэл бэлтгэх, шүүхэд төлөөлөх', status: InvoiceStatus.PAID, dueDate: daysAgo(20), paidAt: daysAgo(22) },
-        { invoiceNumber: `INV-${year}-0002`, amount: '800000.00', description: 'Шүүх хуралд оролцох (1-р шат)', status: InvoiceStatus.SENT, dueDate: daysFromNow(10), paidAt: null },
+        { invoiceNumber: `INV-${year}-0002`, amount: '800000.00', description: 'Шүүх хуралд оролцох (1-р шат)', status: InvoiceStatus.AWAITING_CONFIRMATION, dueDate: daysFromNow(10), paidAt: null, paymentMarkedAt: daysAgo(1, 16), paymentNote: `Хаан банкаар 800 000₮ шилжүүлсэн, гүйлгээний утга: INV-${year}-0002` },
       ],
       // One approved, one rejected (client must resend) and one still pending.
       documentRequests: [

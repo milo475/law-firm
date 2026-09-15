@@ -44,6 +44,7 @@ export const CASE_STATUS_BADGE: Record<string, { tone: BadgeTone; label: string 
 export const INVOICE_STATUS_BADGE: Record<string, { tone: BadgeTone; label: string }> = {
   DRAFT: { tone: 'closed', label: 'Ноорог' },
   SENT: { tone: 'new', label: 'Илгээсэн' },
+  AWAITING_CONFIRMATION: { tone: 'pending', label: 'Баталгаажуулж буй' },
   PAID: { tone: 'progress', label: 'Төлөгдсөн' },
   OVERDUE: { tone: 'danger', label: 'Хугацаа хэтэрсэн' },
   CANCELLED: { tone: 'closed', label: 'Цуцалсан' },
