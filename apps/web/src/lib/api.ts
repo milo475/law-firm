@@ -263,6 +263,39 @@ export interface DocumentRequestSummary {
   cases: { caseId: string; caseNumber: string; title: string; count: number }[];
 }
 
+export interface MessageItem {
+  id: string;
+  caseId: string;
+  body: string;
+  /** When the recipient side read it. */
+  readAt: string | null;
+  createdAt: string;
+  sender: PublicUser;
+}
+
+/** GET /cases/:caseId/messages — newest first. */
+export interface MessagePage {
+  items: MessageItem[];
+  nextCursor: string | null;
+}
+
+export interface MessageUnreadSummary {
+  total: number;
+  cases: { caseId: string; caseNumber: string; title: string; count: number }[];
+}
+
+/** GET /messages/conversations — one row per case that has messages. */
+export interface MessageConversation {
+  id: string;
+  caseNumber: string;
+  title: string;
+  status: string;
+  client: PublicUser;
+  lawyer: PublicUser;
+  lastMessage: MessageItem | null;
+  unreadCount: number;
+}
+
 export interface InvoiceItem {
   id: string;
   invoiceNumber: string;

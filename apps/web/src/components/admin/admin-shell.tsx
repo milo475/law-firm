@@ -22,6 +22,7 @@ import { PortalHeader } from '@/components/ui/portal-header';
 import { Sidebar } from '@/components/ui/sidebar';
 import { isStaff } from '@/lib/admin';
 import { useDocumentRequestSummary } from '@/lib/document-requests';
+import { useMessageUnreadSummary } from '@/lib/messages';
 import { ROLE_LABELS } from '@/lib/format';
 
 interface NavEntry {
@@ -66,6 +67,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const allowed = isStaff(user.role);
   // Submissions waiting for review, shown on the "Хэргүүд" menu item.
   const requestSummary = useDocumentRequestSummary(allowed);
+  const messageSummary = useMessageUnreadSummary(allowed);
 
   useEffect(() => {
     // Middleware already redirects clients; this covers sessions that only had the refresh marker.
@@ -77,11 +79,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const isAdmin = user.role === 'ADMIN';
   const current = TITLES.find((t) => t.match(pathname)) ?? TITLES[0];
   const active = (href: string) => (href === '/admin' ? pathname === href : pathname === href || pathname.startsWith(`${href}/`));
-  const awaitingReview = requestSummary.data?.total ?? 0;
+  // Work waiting on cases: submissions to review + unread client messages.
+  const pendingOnCases = (requestSummary.data?.total ?? 0) + (messageSummary.data?.total ?? 0);
   const items = NAV.filter((item) => isAdmin || !item.adminOnly).map((item) => ({
     ...item,
     active: active(item.href),
-    ...(item.href === '/admin/cases' ? { count: awaitingReview, countLabel: 'хянах баримт' } : {}),
+    ...(item.href === '/admin/cases' ? { count: pendingOnCases, countLabel: 'хянах баримт, уншаагүй мессеж' } : {}),
   }));
 
   return (

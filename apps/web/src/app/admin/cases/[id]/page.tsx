@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { ConfirmModal } from '@/components/admin/confirm-modal';
+import { ChatThread } from '@/components/messages/chat-thread';
 import { DocumentRequestsTab } from '@/components/admin/document-requests-tab';
 import { EventModal } from '@/components/admin/event-modal';
 import { InvoiceActions } from '@/components/admin/invoice-actions';
@@ -32,14 +33,15 @@ import { toast } from '@/components/ui/toast';
 import { ApiError, api, type CaseDetail, type CaseEvent, type DocumentItem, type DocumentRequestItem, type InvoiceItem, type Paginated, type PublicUser } from '@/lib/api';
 import { CASE_STATUSES, CASE_TYPES, type CaseStatus } from '@/lib/admin';
 import { isAwaitingReview } from '@/lib/document-requests';
+import { useCaseUnreadCount } from '@/lib/messages';
 import { CASE_EVENT_LABELS, CASE_STATUS_LABELS, CASE_TYPE_LABELS, formatBytes, formatDate, formatMoney } from '@/lib/format';
-import { shortName } from '@/lib/utils';
+import { initials, shortName } from '@/lib/utils';
 
 type StaffPerson = PublicUser & { email: string; phone: string | null };
 type StaffCaseDetail = CaseDetail & { client: StaffPerson; lawyer: StaffPerson };
 
 const ACCEPT = '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt';
-const TAB_VALUES = ['overview', 'timeline', 'documents', 'requests', 'invoices'];
+const TAB_VALUES = ['overview', 'timeline', 'documents', 'requests', 'messages', 'invoices'];
 
 const OverviewSchema = z.object({
   title: CreateCaseSchema.shape.title,
@@ -63,7 +65,16 @@ export default function AdminCaseDetailPage() {
   });
   // Notification links open a tab directly, e.g. ?tab=requests
   const tabParam = useSearchParams().get('tab');
-  const initialTab = tabParam && TAB_VALUES.includes(tabParam) ? tabParam : 'overview';
+  const validTab = tabParam && TAB_VALUES.includes(tabParam) ? tabParam : null;
+  const [tab, setTab] = useState(validTab ?? 'overview');
+  useEffect(() => {
+    if (validTab) setTab(validTab);
+  }, [validTab]);
+  const unreadMessages = useCaseUnreadCount(id, detail.isSuccess);
+  // Keep the active tab visible in the horizontally scrolling tab strip on mobile.
+  useEffect(() => {
+    document.querySelector<HTMLElement>('[role="tab"][data-state="active"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [tab, detail.isSuccess]);
   const [closeOpen, setCloseOpen] = useState(false);
 
   const updateStatus = useMutation({
@@ -105,6 +116,7 @@ export default function AdminCaseDetailPage() {
   const c = detail.data;
   const isClosed = c.status === 'CLOSED';
   const awaitingReview = (requests.data ?? []).filter(isAwaitingReview).length;
+  const unreadCount = unreadMessages.data?.count ?? 0;
 
   return (
     <div className="flex flex-col gap-6">
@@ -141,7 +153,7 @@ export default function AdminCaseDetailPage() {
         </div>
       </div>
 
-      <Tabs defaultValue={initialTab}>
+      <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
           <TabsTrigger value="overview">Тойм</TabsTrigger>
           <TabsTrigger value="timeline">Явцын түүх</TabsTrigger>
@@ -154,12 +166,34 @@ export default function AdminCaseDetailPage() {
               </span>
             )}
           </TabsTrigger>
+          <TabsTrigger value="messages">
+            Мессеж
+            {unreadCount > 0 && (
+              <span className="ml-2 inline-flex min-w-6 items-center justify-center rounded-full bg-accent-default px-2 py-px text-caption text-text-on-accent" aria-label={`${unreadCount} уншаагүй`}>
+                {unreadCount}
+              </span>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="invoices">Нэхэмжлэх</TabsTrigger>
         </TabsList>
         <TabsContent value="overview"><OverviewTab detail={c} isAdmin={isAdmin} onSaved={invalidate} /></TabsContent>
         <TabsContent value="timeline"><TimelineTab caseId={id} onChanged={invalidate} /></TabsContent>
         <TabsContent value="documents"><DocumentsTab caseId={id} userId={user.id} isAdmin={isAdmin} onChanged={invalidate} /></TabsContent>
         <TabsContent value="requests"><DocumentRequestsTab caseId={id} isClosed={isClosed} requests={requests} onChanged={invalidate} /></TabsContent>
+        <TabsContent value="messages">
+          <ChatThread
+            caseId={id}
+            viewer={user}
+            active={tab === 'messages'}
+            counterpart={{
+              name: shortName(c.client.firstName, c.client.lastName),
+              roleLabel: 'Харилцагч',
+              initials: initials(c.client.firstName, c.client.lastName),
+              avatarUrl: c.client.avatarUrl,
+            }}
+            emptyDescription="Харилцагчид мессеж бичиж харилцаа эхлүүлээрэй. Илгээхэд харилцагчид мэдэгдэл очно."
+          />
+        </TabsContent>
         <TabsContent value="invoices"><InvoicesTab caseId={id} onChanged={invalidate} /></TabsContent>
       </Tabs>
 
