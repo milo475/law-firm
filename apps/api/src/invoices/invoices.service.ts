@@ -16,9 +16,10 @@ import type { RequestUser } from '../common/types/request-user';
 import { formatDateMn, formatMoneyMn, isUniqueViolation } from '../common/utils/format';
 import { paginate, skipTake } from '../common/utils/pagination';
 import { NotificationsService } from '../notifications/notifications.service';
+import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
 import { PrismaService } from '../prisma/prisma.service';
 
-const INVOICE_SELECT = {
+export const INVOICE_SELECT = {
   id: true,
   invoiceNumber: true,
   amount: true,
@@ -26,6 +27,11 @@ const INVOICE_SELECT = {
   status: true,
   dueDate: true,
   paidAt: true,
+  paymentMarkedAt: true,
+  paymentNote: true,
+  paymentRejectedAt: true,
+  paymentRejectionReason: true,
+  confirmedBy: { select: PUBLIC_USER_SELECT },
   createdAt: true,
   updatedAt: true,
   case: { select: { id: true, caseNumber: true, title: true } },
@@ -121,6 +127,12 @@ export class InvoicesService {
         `Нэхэмжлэхийн төлөвийг «${INVOICE_STATUS_LABELS[invoice.status]}»-аас «${INVOICE_STATUS_LABELS[nextStatus]}» болгох боломжгүй`,
       );
     }
+    if (
+      nextStatus !== invoice.status &&
+      (nextStatus === InvoiceStatus.AWAITING_CONFIRMATION || invoice.status === InvoiceStatus.AWAITING_CONFIRMATION)
+    ) {
+      throw new BadRequestException('Төлбөрийн баталгаажуулалтыг «Төлбөр баталгаажуулах» эсвэл «Татгалзах» үйлдлээр хийнэ');
+    }
     const editsContent = input.amount !== undefined || input.description !== undefined || input.dueDate !== undefined;
     if (editsContent && invoice.status !== InvoiceStatus.DRAFT) {
       throw new BadRequestException('Зөвхөн ноорог нэхэмжлэхийн дүн, тайлбар, хугацааг засах боломжтой');
@@ -134,7 +146,7 @@ export class InvoicesService {
         ...(input.description !== undefined ? { description: input.description } : {}),
         ...(input.dueDate !== undefined ? { dueDate: input.dueDate } : {}),
         ...(statusChanged ? { status: nextStatus } : {}),
-        ...(statusChanged && nextStatus === InvoiceStatus.PAID ? { paidAt: new Date() } : {}),
+        ...(statusChanged && nextStatus === InvoiceStatus.PAID ? { paidAt: new Date(), confirmedById: user.id } : {}),
       },
       select: INVOICE_SELECT,
     });

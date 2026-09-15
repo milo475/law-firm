@@ -45,7 +45,7 @@ export function createPrismaMock() {
     document: delegate('findMany', 'findUnique', 'create', 'delete'),
     message: delegate('findMany', 'count', 'create', 'updateMany', 'groupBy'),
     documentRequest: delegate('findMany', 'findUnique', 'findUniqueOrThrow', 'count', 'create', 'update', 'updateMany', 'delete', 'groupBy'),
-    invoice: delegate('findMany', 'findFirst', 'findUnique', 'count', 'create', 'update', 'aggregate'),
+    invoice: delegate('findMany', 'findFirst', 'findUnique', 'findUniqueOrThrow', 'count', 'create', 'update', 'updateMany', 'aggregate'),
     notification: delegate('findMany', 'findFirst', 'count', 'update', 'updateMany', 'createMany'),
     lawyerProfile: delegate('findUnique', 'findFirst', 'findMany', 'create', 'update'),
     contactRequest: delegate('findMany', 'findUnique', 'count', 'create', 'update'),
