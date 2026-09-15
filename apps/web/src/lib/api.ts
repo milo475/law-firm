@@ -304,9 +304,29 @@ export interface InvoiceItem {
   status: 'DRAFT' | 'SENT' | 'AWAITING_CONFIRMATION' | 'PAID' | 'OVERDUE' | 'CANCELLED';
   dueDate: string;
   paidAt: string | null;
+  /** The client reported a bank transfer. */
+  paymentMarkedAt: string | null;
+  paymentNote: string | null;
+  /** Last rejected payment report (the invoice went back to SENT). */
+  paymentRejectedAt: string | null;
+  paymentRejectionReason: string | null;
+  confirmedBy: PublicUser | null;
   createdAt: string;
   updatedAt: string;
   case: { id: string; caseNumber: string; title: string };
+}
+
+/** GET /settings/bank-account */
+export interface BankAccountSettings {
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+}
+
+/** GET /invoices/payment-summary */
+export interface InvoicePaymentSummary {
+  total: number;
+  invoices: { id: string; invoiceNumber: string; amount: string; caseId: string; caseNumber: string; paymentMarkedAt: string | null }[];
 }
 
 export interface NotificationItem {

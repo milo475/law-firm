@@ -9,12 +9,12 @@ import { CardSkeleton, EmptyState, ErrorState, Skeleton } from '@/components/ui/
 import { ApiError, api, type InvoiceItem, type Paginated } from '@/lib/api';
 import { formatDate, formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
-import { InvoiceDetailPanel, InvoiceStatusBadge, PORTAL_INVOICE_BADGE, PayComingSoonModal, isPayable } from './invoice-panel';
+import { InvoiceDetailPanel, InvoiceStatusBadge, PORTAL_INVOICE_BADGE, PaymentModal, isPayable } from './invoice-panel';
 
 // Status chips (same pattern as the cases toolbar) — labels follow the client-facing badge copy.
 const STATUS_OPTIONS = [
   { value: 'ALL', label: 'Бүгд' },
-  ...['SENT', 'OVERDUE', 'PAID', 'CANCELLED', 'DRAFT'].map((value) => ({ value, label: PORTAL_INVOICE_BADGE[value].label })),
+  ...['SENT', 'AWAITING_CONFIRMATION', 'OVERDUE', 'PAID', 'CANCELLED', 'DRAFT'].map((value) => ({ value, label: PORTAL_INVOICE_BADGE[value].label })),
 ];
 
 // The side "Invoice detail" panel needs the 1180px desktop main column; below that, cards link to the detail route.
@@ -148,7 +148,7 @@ export default function InvoicesPage() {
         )}
       </div>
 
-      <PayComingSoonModal invoice={payInvoice} open={payOpen} onOpenChange={setPayOpen} />
+      <PaymentModal invoice={payInvoice} open={payOpen} onOpenChange={setPayOpen} />
     </div>
   );
 }
@@ -184,7 +184,12 @@ function SumCard({ label, value, tone, className }: { label: React.ReactNode; va
 /** Figma "Invoice" card (32:583 desktop · 36:1285 mobile). Unpaid invoices get the 1.5px status outline. */
 function InvoiceCard({ invoice, selectable, selected, onSelect, onPay }: { invoice: InvoiceItem; selectable: boolean; selected: boolean; onSelect: () => void; onPay: () => void }) {
   const payable = isPayable(invoice);
-  const dateLine = invoice.status === 'PAID' && invoice.paidAt ? `Төлсөн: ${formatDate(invoice.paidAt)}` : `Эцсийн хугацаа: ${formatDate(invoice.dueDate)}`;
+  const dateLine =
+    invoice.status === 'PAID' && invoice.paidAt
+      ? `Төлсөн: ${formatDate(invoice.paidAt)}`
+      : invoice.status === 'AWAITING_CONFIRMATION' && invoice.paymentMarkedAt
+        ? `Төлбөр тэмдэглэсэн: ${formatDate(invoice.paymentMarkedAt)} · баталгаажуулж байна`
+        : `Эцсийн хугацаа: ${formatDate(invoice.dueDate)}`;
   // Stretched hit area: the number control covers the whole card; the pay buttons sit above it (z-10).
   const stretched = 'focus-ring rounded-sm text-left text-body-sm-medium text-text-primary after:absolute after:inset-0 after:rounded-lg';
 

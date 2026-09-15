@@ -88,6 +88,7 @@ export default function DashboardPage() {
     .filter((i) => i.status === 'SENT' || i.status === 'OVERDUE')
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   const dueInvoice = openInvoices[0];
+  const awaitingInvoices = (invoices.data?.items ?? []).filter((i) => i.status === 'AWAITING_CONFIRMATION');
   const recentNotifications = (notifications.data?.items ?? []).slice(0, 4);
 
   const error = [cases, invoices, notifications].find((q) => q.isError)?.error;
@@ -214,6 +215,21 @@ export default function DashboardPage() {
           </div>
         </div>
       ) : null}
+
+      {/* Reported transfers still being confirmed — counted apart from unpaid invoices */}
+      {awaitingInvoices.length > 0 && (
+        <div role="status" className="flex flex-col gap-3 rounded-lg border-l-[3px] border-status-new-fg bg-status-new-bg p-5 md:flex-row md:items-center md:justify-between md:gap-6 md:px-7 md:py-6">
+          <div className="flex flex-col gap-1.5">
+            <p className="text-h4 text-status-new-fg">Төлбөр баталгаажуулж байна</p>
+            <p className="text-body-sm text-text-secondary md:text-body">
+              {awaitingInvoices.map((i) => `${i.invoiceNumber} · ${formatMoney(i.amount)}`).join(' · ')} — таны тэмдэглэсэн төлбөрийг шалгаж байна.
+            </p>
+          </div>
+          <Button asChild variant="secondary" size="md" className="w-full shrink-0 md:w-auto">
+            <Link href={`/portal/invoices/${awaitingInvoices[0].id}`}>Дэлгэрэнгүй</Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
