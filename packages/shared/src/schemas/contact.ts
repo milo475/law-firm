@@ -14,10 +14,25 @@ export const ContactRequestSchema = z.object({
 });
 export type ContactRequestInput = z.infer<typeof ContactRequestSchema>;
 
-export const UpdateContactStatusSchema = z.object({
+/** PATCH /contact/:id — forward-only status flow NEW → CONTACTED → CLOSED. */
+export const UpdateContactSchema = z.object({
   status: ContactStatusSchema,
 });
-export type UpdateContactStatusInput = z.infer<typeof UpdateContactStatusSchema>;
+export type UpdateContactInput = z.infer<typeof UpdateContactSchema>;
+
+/** @deprecated use UpdateContactSchema */
+export const UpdateContactStatusSchema = UpdateContactSchema;
+export type UpdateContactStatusInput = UpdateContactInput;
+
+export const CONTACT_STATUS_TRANSITIONS: Record<ContactStatus, readonly ContactStatus[]> = {
+  NEW: ['CONTACTED', 'CLOSED'],
+  CONTACTED: ['CLOSED'],
+  CLOSED: [],
+};
+
+export function canTransitionContact(from: ContactStatus, to: ContactStatus): boolean {
+  return from === to || CONTACT_STATUS_TRANSITIONS[from].includes(to);
+}
 
 export const ContactQuerySchema = PaginationSchema.extend({
   status: ContactStatusSchema.optional(),
