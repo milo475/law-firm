@@ -137,6 +137,7 @@ model User {
   notifications            Notification[]    @relation("NotificationRecipient")
   actedNotifications       Notification[]    @relation("NotificationActor")
   taskAttachments          TaskAttachment[]  @relation("TaskAttachmentUploader")
+  updatedSettings          Setting[]         @relation("SettingUpdater")
   auditLogs                AuditLog[]
 
   @@index([role])
@@ -343,6 +344,16 @@ model Invoice {
 }
 
 // ─── Misc ────────────────────────────────────────────────────────────────────
+
+/// Firm-wide settings edited by ADMIN, one row per key. `value` is validated by the key's zod schema
+/// (bank-account → BankAccountSettingsSchema) on every read and write.
+model Setting {
+  key         String   @id
+  value       Json
+  updatedById String?  @db.Uuid
+  updatedBy   User?    @relation("SettingUpdater", fields: [updatedById], references: [id], onDelete: SetNull)
+  updatedAt   DateTime @updatedAt
+}
 
 model Notification {
   id        String   @id @default(uuid()) @db.Uuid

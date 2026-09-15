@@ -65,13 +65,6 @@ export const RejectPaymentSchema = z.object({
 });
 export type RejectPaymentInput = z.infer<typeof RejectPaymentSchema>;
 
-/** GET /settings/bank-account — where clients transfer invoice payments. */
-export interface BankAccountSettings {
-  bankName: string;
-  accountNumber: string;
-  accountName: string;
-}
-
 /** GET /invoices/payment-summary — reported payments waiting for staff confirmation. */
 export interface InvoicePaymentSummary {
   total: number;
