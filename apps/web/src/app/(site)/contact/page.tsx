@@ -1,15 +1,21 @@
 // Figma: 01 Public Site / Public / 10 Contact / Desktop (22:843) + Mobile (26:1538)
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { ContactClockIcon, ContactMailIcon, ContactPhoneIcon, ContactPinIcon, MapPinIcon } from '@/components/icons';
 import { PageHeader } from '@/components/ui/page-header';
 import type { FirmSettings } from '@/lib/api';
 import { loadFirmSettings } from '@/lib/firm';
 import { formatPhone, phoneHref } from '@/lib/format';
-import { ContactForm } from './contact-form';
 
-export const metadata: Metadata = { title: 'Холбоо барих', description: 'Тулгуур Хуулийн Фирмтэй холбогдох: хаяг, утас, и-мэйл, хүсэлт илгээх форм.' };
+export const metadata: Metadata = { title: 'Холбоо барих', description: 'Тулгуур Хуулийн Фирмтэй холбогдох: хаяг, утас, и-мэйл, өмгөөлөгч авах, зөвлөгөө авах хүсэлт.' };
 
 const tel = (phone: string) => `tel:${phone.replace(/[^+\d]/g, '')}`;
+
+/** Signed-out visitors are sent to the sign-in page and come back to the form with the chosen type. */
+const REQUEST_OPTIONS = [
+  { type: 'LAWYER', title: 'Өмгөөлөгч авах', description: 'Хэргийг тань хариуцаж, шүүх болон байгууллагад төлөөлөх өмгөөлөгч томилуулна.' },
+  { type: 'CONSULTATION', title: 'Зөвлөгөө авах', description: 'Асуудлаа тодруулж, дараагийн алхмыг зөвлөх хуульчтай холбогдоно.' },
+] as const;
 
 type OfficeLine = { text: string; href?: string; desktopOnly?: boolean };
 /** Address, main phone, e-mail and hours come from the firm settings; the second lines are fixed office notes. */
@@ -51,17 +57,39 @@ export default async function ContactPage() {
     <>
       <PageHeader
         title="Холбоо барих"
-        description="Асуудлаа товч бичиж илгээнэ үү. Ажлын 1 өдрийн дотор хуульч тань руу холбогдоно."
+        description="Өмгөөлөгч авах, зөвлөгөө авах хүсэлтээ порталаас илгээнэ үү. Ажлын 1 өдрийн дотор хариу өгнө."
         crumbs={[{ label: 'Нүүр', href: '/' }, { label: 'Холбоо барих' }]}
       />
 
       {/* Contact — white band; desktop: form card + 420px info column (gap 64); mobile: flat form, then bg-page info section */}
       <section className="bg-bg-surface">
         <div className="mx-auto max-w-[1200px] px-5 pt-14 md:px-6 lg:flex lg:items-start lg:gap-16 lg:py-24">
-          {/* Form — bordered card from md up (p-40 on desktop), flat on mobile */}
+          {/* Request CTAs — bordered card from md up; requests are sent from the client portal (sign-in required) */}
           <div className="flex min-w-0 flex-1 flex-col gap-5 md:gap-6 md:rounded-lg md:border md:border-border-default md:bg-bg-surface md:p-8 lg:p-10">
-            <h2 className="text-h3 text-text-primary">Зөвлөгөө хүсэх</h2>
-            <ContactForm />
+            <div className="flex flex-col gap-2">
+              <h2 className="text-h3 text-text-primary">Хүсэлт илгээх</h2>
+              <p className="text-body text-text-secondary">
+                Өмгөөлөгч авах, зөвлөгөө авах хүсэлтээ харилцагчийн порталаас илгээнэ. Нэвтэрсний дараа хүсэлтийн явц, томилогдсон өмгөөлөгч, нээгдсэн хэргээ нэг дороос харна.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {REQUEST_OPTIONS.map((option) => (
+                <Link
+                  key={option.type}
+                  href={`/portal/requests/new?type=${option.type}`}
+                  className="focus-ring group flex flex-col gap-2 rounded-lg border border-border-default bg-bg-surface p-5 transition-colors hover:border-brand-primary hover:bg-bg-brand-soft"
+                >
+                  <span className="text-h4 text-text-primary group-hover:text-text-brand">{option.title}</span>
+                  <span className="text-body-sm text-text-secondary">{option.description}</span>
+                  <span className="mt-auto pt-2 text-body-sm-medium text-text-accent">Хүсэлт гаргах →</span>
+                </Link>
+              ))}
+            </div>
+            <p className="text-body-sm text-text-secondary">
+              Бүртгэлгүй бол{' '}
+              <Link href="/portal/register" className="focus-ring rounded-sm text-text-accent hover:underline">бүртгүүлээд</Link>{' '}
+              үргэлжлүүлнэ үү. Яаралтай асуудлаар {formatPhone(firm.phone)} дугаарт залгана уу.
+            </p>
           </div>
 
           {/* Info — mobile: full-bleed bg-page section; desktop: bg-page card (p-28) + map placeholder */}

@@ -71,7 +71,7 @@ function CasesPageContent() {
             {all.isLoading ? 'Ачааллаж байна…' : `Нийт ${all.data?.total ?? allItems.length} хэрэг · ${counts.active} идэвхтэй, ${counts.waiting} хүлээгдэж буй, ${counts.closed} хаагдсан`}
           </p>
         </div>
-        <Button asChild size="md"><Link href="/contact">Шинэ хүсэлт илгээх</Link></Button>
+        <Button asChild size="md"><Link href="/portal/requests/new">Шинэ хүсэлт илгээх</Link></Button>
       </div>
 
       {/* Toolbar — search + status chips; full-bleed white strip on mobile */}

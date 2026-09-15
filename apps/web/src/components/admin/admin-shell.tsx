@@ -28,6 +28,7 @@ import { isStaff } from '@/lib/admin';
 import { useDocumentRequestSummary } from '@/lib/document-requests';
 import { useInvoicePaymentSummary } from '@/lib/invoices';
 import { useMessageUnreadSummary } from '@/lib/messages';
+import { useServiceRequestSummary } from '@/lib/service-requests';
 import { useTaskSummary } from '@/lib/tasks';
 import { ROLE_LABELS } from '@/lib/format';
 
@@ -47,7 +48,7 @@ const NAV: NavEntry[] = [
   { href: '/admin/lawyers', label: 'Хуульчид', icon: <BriefcaseIcon />, adminOnly: true },
   { href: '/admin/posts', label: 'Нийтлэл', icon: <DocumentsIcon /> },
   { href: '/admin/invoices', label: 'Нэхэмжлэх', icon: <InvoicesIcon /> },
-  { href: '/admin/contact', label: 'Хүсэлтүүд', icon: <InboxIcon />, adminOnly: true },
+  { href: '/admin/requests', label: 'Хүсэлтүүд', icon: <InboxIcon />, adminOnly: true },
   { href: '/admin/settings', label: 'Тохиргоо', icon: <SettingsIcon />, adminOnly: true },
   { href: '/admin/profile', label: 'Профайл', icon: <ProfileIcon /> },
 ];
@@ -67,7 +68,8 @@ const TITLES: { match: (p: string) => boolean; title: string; back?: string }[] 
   { match: (p) => p.startsWith('/admin/posts'), title: 'Нийтлэл' },
   { match: (p) => /^\/admin\/invoices\/[^/]+$/.test(p), title: 'Нэхэмжлэх', back: '/admin/invoices' },
   { match: (p) => p.startsWith('/admin/invoices'), title: 'Нэхэмжлэх' },
-  { match: (p) => p.startsWith('/admin/contact'), title: 'Хүсэлтүүд' },
+  { match: (p) => /^\/admin\/requests\/[^/]+$/.test(p), title: 'Хүсэлт', back: '/admin/requests' },
+  { match: (p) => p.startsWith('/admin/requests') || p.startsWith('/admin/contact'), title: 'Хүсэлтүүд' },
   { match: (p) => p.startsWith('/admin/settings'), title: 'Тохиргоо' },
   { match: (p) => p.startsWith('/admin/profile'), title: 'Профайл' },
   { match: (p) => p.startsWith('/admin/notifications'), title: 'Мэдэгдэл' },
@@ -86,6 +88,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const messageSummary = useMessageUnreadSummary(allowed);
   const paymentSummary = useInvoicePaymentSummary(allowed);
   const taskSummary = useTaskSummary(allowed);
+  // New service requests wait for an ADMIN decision; lawyers never see the list.
+  const serviceRequestSummary = useServiceRequestSummary(allowed && user.role === 'ADMIN');
 
   useEffect(() => {
     // Middleware already redirects clients; this covers sessions that only had the refresh marker.
@@ -105,6 +109,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     ...(item.href === '/admin/cases' ? { count: pendingOnCases, countLabel: 'хянах баримт, уншаагүй мессеж' } : {}),
     ...(item.href === '/admin/tasks' ? { count: taskSummary.data?.active ?? 0, countLabel: 'идэвхтэй даалгавар' } : {}),
     ...(item.href === '/admin/invoices' ? { count: paymentSummary.data?.total ?? 0, countLabel: 'баталгаажуулах төлбөр' } : {}),
+    ...(item.href === '/admin/requests' ? { count: serviceRequestSummary.data?.new ?? 0, countLabel: 'шинэ хүсэлт' } : {}),
   }));
 
   return (

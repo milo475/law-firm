@@ -10,6 +10,7 @@ export const NOTIFICATION_TYPE_ICONS: Record<string, typeof NotifCaseIcon> = {
   CASE_EVENT: NotifCaseIcon,
   CASE_MEMBER: NotifCaseIcon,
   CONTACT_REQUEST: NotifRequestIcon,
+  SERVICE_REQUEST: NotifRequestIcon,
   MESSAGE: NotifMessageIcon,
   DOCUMENT: NotifDocumentIcon,
   DOCUMENT_REQUEST: NotifDocumentIcon,

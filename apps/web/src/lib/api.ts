@@ -352,6 +352,51 @@ export interface FirmSettings {
   updatedAt: string | null;
 }
 
+export type ServiceRequestType = 'LAWYER' | 'CONSULTATION';
+export type ServiceRequestStatus = 'NEW' | 'ACCEPTED' | 'REJECTED' | 'CONVERTED';
+
+/** GET /service-requests, /service-requests/mine, /service-requests/:id — `reviewedBy` is null for clients. */
+export interface ServiceRequestItem {
+  id: string;
+  type: ServiceRequestType;
+  caseType: string;
+  title: string;
+  description: string;
+  status: ServiceRequestStatus;
+  reviewedAt: string | null;
+  rejectionReason: string | null;
+  assignedCaseId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  requester: { id: string; firstName: string; lastName: string; email: string; phone: string | null; avatarUrl: string | null };
+  reviewedBy: PublicUser | null;
+  assignedCase: { id: string; caseNumber: string; title: string; status: CaseListItem['status'] } | null;
+}
+
+/** GET /service-requests/summary (ADMIN) */
+export interface ServiceRequestSummary {
+  new: number;
+  accepted: number;
+}
+
+/** GET /service-requests/:id/suggested-lawyers (ADMIN) */
+export interface SuggestedLawyer {
+  id: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
+  title: string | null;
+  specializations: string[];
+  openCases: number;
+  matches: boolean;
+}
+
+export interface SuggestedLawyers {
+  caseType: string;
+  matched: boolean;
+  items: SuggestedLawyer[];
+}
+
 /** GET /invoices/payment-summary */
 export interface InvoicePaymentSummary {
   total: number;

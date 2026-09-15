@@ -7,14 +7,14 @@ import { AdminPageTitle } from '@/components/admin/admin-page-title';
 import { StatTile } from '@/components/admin/stat-tile';
 import { PlusIcon } from '@/components/icons';
 import { useUser } from '@/components/portal/user-context';
-import { CASE_STATUS_BADGE, CONTACT_STATUS_BADGE, StatusBadge } from '@/components/ui/badge';
+import { CASE_STATUS_BADGE, SERVICE_REQUEST_STATUS_BADGE, StatusBadge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { EmptyState, ErrorState, Skeleton } from '@/components/ui/states';
-import { ApiError, api, type CaseListItem, type Paginated } from '@/lib/api';
-import type { ContactRequestItem } from '@/lib/admin';
-import { CASE_EVENT_LABELS, formatDate, formatMoney } from '@/lib/format';
+import { ApiError, api, type CaseListItem, type Paginated, type ServiceRequestItem } from '@/lib/api';
+import { CASE_EVENT_LABELS, SERVICE_REQUEST_TYPE_LABELS, formatDate, formatMoney } from '@/lib/format';
 import { formatRate, usePerformanceOverview } from '@/lib/performance';
+import { useServiceRequestSummary } from '@/lib/service-requests';
 import { useTaskSummary } from '@/lib/tasks';
 import { shortName } from '@/lib/utils';
 
@@ -24,10 +24,11 @@ export default function AdminDashboardPage() {
 
   const stats = useQuery({ queryKey: ['admin', 'stats'], queryFn: () => api.get<AdminStats>('/admin/stats') });
   const requests = useQuery({
-    queryKey: ['admin', 'contact', { status: 'NEW', limit: 5 }],
-    queryFn: () => api.get<Paginated<ContactRequestItem>>('/contact?status=NEW&limit=5'),
+    queryKey: ['service-requests', 'admin', 'dashboard'],
+    queryFn: () => api.get<Paginated<ServiceRequestItem>>('/service-requests?status=NEW&limit=5'),
     enabled: isAdmin,
   });
+  const requestSummary = useServiceRequestSummary(isAdmin);
   const recentCases = useQuery({
     queryKey: ['admin', 'cases', { limit: 5 }],
     queryFn: () => api.get<Paginated<CaseListItem>>('/cases?limit=5'),
@@ -69,9 +70,10 @@ export default function AdminDashboardPage() {
           />
           <StatTile
             label="Шинэ хүсэлт"
-            value={s?.admin ? String(s.admin.newContactRequests) : null}
-            href="/admin/contact"
-            tone={s?.admin && s.admin.newContactRequests > 0 ? 'accent' : undefined}
+            value={requestSummary.data ? String(requestSummary.data.new) : null}
+            hint={requestSummary.data ? `${requestSummary.data.accepted} өмгөөлөгч хуваарилахыг хүлээж буй` : undefined}
+            href="/admin/requests"
+            tone={requestSummary.data && requestSummary.data.new > 0 ? 'accent' : undefined}
           />
         </div>
       ) : (
@@ -163,7 +165,7 @@ export default function AdminDashboardPage() {
           <Card className="flex flex-col gap-4 p-6">
             <div className="flex items-center justify-between gap-3">
               <h3 className="text-h4">Шинэ хүсэлтүүд</h3>
-              <Button asChild variant="ghost" size="sm"><Link href="/admin/contact">Бүгд →</Link></Button>
+              <Button asChild variant="ghost" size="sm"><Link href="/admin/requests">Бүгд →</Link></Button>
             </div>
             {requests.isLoading ? (
               <Skeleton className="h-32" />
@@ -176,10 +178,12 @@ export default function AdminDashboardPage() {
                 {requests.data!.items.map((item) => (
                   <li key={item.id} className="flex items-start justify-between gap-3 py-3 first:pt-0 last:pb-0">
                     <div className="flex min-w-0 flex-col gap-0.5">
-                      <p className="text-body-sm-medium text-text-primary">{item.subject}</p>
-                      <p className="truncate text-caption text-text-muted">{item.name} · {item.phone} · {formatDate(item.createdAt, true)}</p>
+                      <Link href={`/admin/requests/${item.id}`} className="focus-ring rounded-sm text-body-sm-medium text-text-primary hover:text-text-brand hover:underline">{item.title}</Link>
+                      <p className="truncate text-caption text-text-muted">
+                        {shortName(item.requester.firstName, item.requester.lastName)} · {SERVICE_REQUEST_TYPE_LABELS[item.type]} · {formatDate(item.createdAt, true)}
+                      </p>
                     </div>
-                    <StatusBadge map={CONTACT_STATUS_BADGE} status={item.status} />
+                    <StatusBadge map={SERVICE_REQUEST_STATUS_BADGE} status={item.status} />
                   </li>
                 ))}
               </ul>

@@ -56,6 +56,13 @@ export const CONTACT_STATUS_BADGE: Record<string, { tone: BadgeTone; label: stri
   CLOSED: { tone: 'closed', label: 'Хаагдсан' },
 };
 
+export const SERVICE_REQUEST_STATUS_BADGE: Record<string, { tone: BadgeTone; label: string }> = {
+  NEW: { tone: 'new', label: 'Шинэ' },
+  ACCEPTED: { tone: 'pending', label: 'Хүлээж авсан' },
+  REJECTED: { tone: 'danger', label: 'Татгалзсан' },
+  CONVERTED: { tone: 'progress', label: 'Хэрэг нээгдсэн' },
+};
+
 export const POST_STATUS_BADGE: Record<string, { tone: BadgeTone; label: string }> = {
   DRAFT: { tone: 'closed', label: 'Ноорог' },
   PUBLISHED: { tone: 'progress', label: 'Нийтэлсэн' },

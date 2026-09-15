@@ -2,7 +2,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { BellIcon, CasesIcon, DocumentsIcon, HomeIcon, InvoicesIcon, LogoutIcon, MessagesIcon, ProfileIcon, TabCasesIcon, TabDocumentsIcon, TabHomeIcon, TabMessagesIcon, TabProfileIcon } from '@/components/icons';
+import { BellIcon, CasesIcon, DocumentsIcon, HomeIcon, InboxIcon, InvoicesIcon, LogoutIcon, MessagesIcon, ProfileIcon, TabCasesIcon, TabDocumentsIcon, TabHomeIcon, TabMessagesIcon, TabProfileIcon } from '@/components/icons';
 import { BottomTabBar } from '@/components/ui/bottom-tab-bar';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { PortalHeader } from '@/components/ui/portal-header';
@@ -18,6 +18,8 @@ const TITLES: { match: (p: string) => boolean; title: string; back?: string }[] 
   { match: (p) => p === '/portal', title: 'Нүүр' },
   { match: (p) => /^\/portal\/cases\/[^/]+$/.test(p), title: 'Хэргийн дэлгэрэнгүй', back: '/portal/cases' },
   { match: (p) => p.startsWith('/portal/cases'), title: 'Хэргүүд' },
+  { match: (p) => p === '/portal/requests/new', title: 'Шинэ хүсэлт', back: '/portal/requests' },
+  { match: (p) => p.startsWith('/portal/requests'), title: 'Миний хүсэлт' },
   { match: (p) => p.startsWith('/portal/documents'), title: 'Баримт' },
   { match: (p) => /^\/portal\/invoices\/[^/]+$/.test(p), title: 'Нэхэмжлэх', back: '/portal/invoices' },
   { match: (p) => p.startsWith('/portal/invoices'), title: 'Нэхэмжлэх' },
@@ -50,6 +52,7 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
         items={[
           { href: '/portal', label: 'Нүүр', icon: <HomeIcon />, active: active('/portal') },
           { href: '/portal/cases', label: 'Хэргүүд', icon: <CasesIcon />, active: active('/portal/cases'), count: openRequests, countLabel: 'хүлээгдэж буй баримтын хүсэлт' },
+          { href: '/portal/requests', label: 'Миний хүсэлт', icon: <InboxIcon />, active: active('/portal/requests') },
           { href: '/portal/documents', label: 'Баримт', icon: <DocumentsIcon />, active: active('/portal/documents') },
           { href: '/portal/invoices', label: 'Нэхэмжлэх', icon: <InvoicesIcon />, active: active('/portal/invoices') },
           { href: '/portal/messages', label: 'Мессеж', icon: <MessagesIcon />, active: active('/portal/messages'), count: unreadMessages, countLabel: 'уншаагүй мессеж' },

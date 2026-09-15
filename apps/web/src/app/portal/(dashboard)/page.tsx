@@ -10,10 +10,11 @@ import { CASE_STATUS_BADGE } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CaseCard } from '@/components/ui/card';
 import { CardSkeleton, EmptyState, ErrorState, Skeleton } from '@/components/ui/states';
-import { ApiError, api, type CaseEvent, type CaseListItem, type DocumentRequestSummary, type InvoiceItem, type MessageUnreadSummary, type NotificationItem, type Paginated } from '@/lib/api';
+import { ApiError, api, type CaseEvent, type CaseListItem, type DocumentRequestSummary, type InvoiceItem, type MessageUnreadSummary, type NotificationItem, type Paginated, type ServiceRequestItem } from '@/lib/api';
 import { useDocumentRequestSummary } from '@/lib/document-requests';
 import { useMessageUnreadSummary } from '@/lib/messages';
-import { CASE_EVENT_LABELS, formatDate, formatMoney } from '@/lib/format';
+import { isOpenServiceRequest, useMyServiceRequests } from '@/lib/service-requests';
+import { CASE_EVENT_LABELS, SERVICE_REQUEST_STATUS_LABELS, formatDate, formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
 const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
@@ -64,6 +65,8 @@ export default function DashboardPage() {
   const notifications = useQuery({ queryKey: ['notifications'], queryFn: () => api.get<{ items: NotificationItem[]; unreadCount: number }>('/notifications') });
   const requestSummary = useDocumentRequestSummary();
   const messageSummary = useMessageUnreadSummary();
+  const myRequests = useMyServiceRequests(1, 10);
+  const openServiceRequests = (myRequests.data?.items ?? []).filter(isOpenServiceRequest);
 
   // Today's date is rendered after mount so the server and client markup agree.
   const [today, setToday] = useState<{ long: string; short: string } | null>(null);
@@ -115,6 +118,7 @@ export default function DashboardPage() {
 
       {requestSummary.data && requestSummary.data.total > 0 && <DocumentRequestsCard summary={requestSummary.data} />}
       {messageSummary.data && messageSummary.data.total > 0 && <UnreadMessagesCard summary={messageSummary.data} />}
+      {openServiceRequests.length > 0 && <ServiceRequestsCard requests={openServiceRequests} />}
 
       {/* My cases */}
       <section className="flex flex-col gap-4 md:gap-5">
@@ -279,6 +283,23 @@ function UnreadMessagesCard({ summary }: { summary: MessageUnreadSummary }) {
       </div>
       <Button asChild size="md" className="w-full shrink-0 md:w-auto">
         <Link href={`/portal/cases/${first.caseId}?tab=messages`}>Мессеж унших</Link>
+      </Button>
+    </div>
+  );
+}
+
+/** "{n} хүсэлт шийдвэрлэгдэж байна" — requests still waiting for a decision or a lawyer. */
+function ServiceRequestsCard({ requests }: { requests: ServiceRequestItem[] }) {
+  return (
+    <div role="status" className="flex flex-col gap-3 rounded-lg border-l-[3px] border-status-pending-fg bg-status-pending-bg p-5 md:flex-row md:items-center md:justify-between md:gap-6 md:px-7 md:py-6">
+      <div className="flex min-w-0 flex-col gap-1.5">
+        <p className="text-h4 text-status-pending-fg">{requests.length} хүсэлт шийдвэрлэгдэж байна</p>
+        <p className="text-body-sm text-text-secondary md:text-body">
+          {requests.slice(0, 3).map((request) => `${request.title} (${SERVICE_REQUEST_STATUS_LABELS[request.status]})`).join(' · ')}
+        </p>
+      </div>
+      <Button asChild size="md" className="w-full shrink-0 md:w-auto">
+        <Link href="/portal/requests">Хүсэлтүүдээ харах</Link>
       </Button>
     </div>
   );

@@ -58,6 +58,18 @@ export const CASE_TYPE_LABELS: Record<string, string> = {
   OTHER: 'Бусад',
 };
 
+export const SERVICE_REQUEST_TYPE_LABELS: Record<string, string> = {
+  LAWYER: 'Өмгөөлөгч авах',
+  CONSULTATION: 'Зөвлөгөө авах',
+};
+
+export const SERVICE_REQUEST_STATUS_LABELS: Record<string, string> = {
+  NEW: 'Шинэ',
+  ACCEPTED: 'Хүлээж авсан',
+  REJECTED: 'Татгалзсан',
+  CONVERTED: 'Хэрэг нээгдсэн',
+};
+
 export const CASE_EVENT_LABELS: Record<string, string> = {
   NOTE: 'Тэмдэглэл',
   HEARING: 'Шүүх хурал',
