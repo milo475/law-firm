@@ -15,7 +15,9 @@ import { CardSkeleton, ErrorState, Skeleton } from '@/components/ui/states';
 import { toast } from '@/components/ui/toast';
 import { ApiError, api, type InvoiceItem } from '@/lib/api';
 import { formatDate, formatMoney } from '@/lib/format';
+import { firmIssuerLine } from '@/lib/firm';
 import { INVOICE_PAYMENT_SUMMARY_KEY } from '@/lib/invoices';
+import { useFirmSettings } from '@/lib/settings';
 import { shortName } from '@/lib/utils';
 
 /** Invoice detail for staff: facts, the client's payment report and the confirm / reject decision. */
@@ -25,6 +27,7 @@ export default function AdminInvoiceDetailPage() {
   const [rejectOpen, setRejectOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const invoice = useQuery({ queryKey: ['admin', 'invoice', id], queryFn: () => api.get<InvoiceItem>(`/invoices/${id}`), retry: false });
+  const firm = useFirmSettings();
 
   const refresh = async () => {
     await Promise.all([
@@ -95,6 +98,17 @@ export default function AdminInvoiceDetailPage() {
         <Card className="flex flex-col gap-4 p-6">
           <h3 className="text-h4">Нэхэмжлэх</h3>
           <dl className="flex flex-col gap-3">
+            {firm.data && (
+              <Row
+                label="Нэхэмжлэгч"
+                value={
+                  <span className="flex flex-col items-end gap-0.5">
+                    <span>{firm.data.name}</span>
+                    <span className="text-caption text-text-muted">{firmIssuerLine(firm.data)}</span>
+                  </span>
+                }
+              />
+            )}
             <Row label="Дүн" value={<span className="text-h4 text-text-brand">{formatMoney(inv.amount)}</span>} />
             <Row label="Үйлчилгээ" value={inv.description} />
             <Row label="Үүссэн" value={formatDate(inv.createdAt)} />

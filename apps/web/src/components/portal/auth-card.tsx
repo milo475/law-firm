@@ -2,6 +2,8 @@
 import Link from 'next/link';
 import { BackChevronIcon, BackIcon, CheckCircleIcon } from '@/components/icons';
 import { Logo } from '@/components/ui/logo';
+import { loadFirmSettings } from '@/lib/firm';
+import { formatPhone } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
 const FEATURES = [
@@ -10,7 +12,6 @@ const FEATURES = [
   'Нэхэмжлэх, төлбөрийн түүх',
   'Хуульчтай шууд харилцах суваг',
 ];
-const SUPPORT_PHONE = '+976 7000-1199';
 const SUPPORT_EMAIL = 'portal@tulguur.mn';
 
 export interface AuthCardProps {
@@ -29,7 +30,9 @@ export interface AuthCardProps {
  * Desktop (lg+): 560px navy brand panel on the left + centred 440px card on bg-page.
  * Below lg: brand block (or nav header) stacked on top, then the form on a white surface.
  */
-export function AuthCard({ children, className, mobileNav }: AuthCardProps) {
+export async function AuthCard({ children, className, mobileNav }: AuthCardProps) {
+  // Server component (login / register / forgot-password pages): the support phone is the firm's phone from the settings.
+  const supportPhone = formatPhone((await loadFirmSettings()).phone);
   return (
     <main className="flex flex-1 flex-col lg:flex-row">
       {/* Brand panel — Figma "Brand panel" 28:35 / mobile "Brand" 35:929 */}
@@ -59,7 +62,7 @@ export function AuthCard({ children, className, mobileNav }: AuthCardProps) {
           </ul>
         </div>
         <p className="hidden text-body-sm text-text-on-inverse-muted lg:block">
-          Асуудал гарвал: {SUPPORT_PHONE} · {SUPPORT_EMAIL}
+          Асуудал гарвал: {supportPhone} · {SUPPORT_EMAIL}
         </p>
       </aside>
 
@@ -83,7 +86,7 @@ export function AuthCard({ children, className, mobileNav }: AuthCardProps) {
         >
           {children}
         </div>
-        {!mobileNav && <p className="px-5 pb-8 text-caption text-text-muted md:hidden">Асуудал гарвал: {SUPPORT_PHONE}</p>}
+        {!mobileNav && <p className="px-5 pb-8 text-caption text-text-muted md:hidden">Асуудал гарвал: {supportPhone}</p>}
       </div>
     </main>
   );

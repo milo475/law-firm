@@ -341,6 +341,17 @@ export interface BankAccountSettings {
   updatedAt: string | null;
 }
 
+/** GET /settings/firm (public), PUT (ADMIN) — `registrationNumber` and `updatedAt` are null until an ADMIN saves the details. */
+export interface FirmSettings {
+  name: string;
+  registrationNumber: string | null;
+  phone: string;
+  email: string;
+  address: string;
+  workingHours: string;
+  updatedAt: string | null;
+}
+
 /** GET /invoices/payment-summary */
 export interface InvoicePaymentSummary {
   total: number;

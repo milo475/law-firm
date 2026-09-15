@@ -18,6 +18,17 @@ export function formatMoney(value: string | number): string {
   return `${amount.toLocaleString('en-US', { maximumFractionDigits: 2 }).replace(/,/g, ' ')}₮`;
 }
 
+/** "70001199" → "+976 7000-1199" (the firm's contact format); anything else is shown as stored. */
+export function formatPhone(value: string): string {
+  const digits = value.replace(/\D/g, '').replace(/^976(?=\d{8}$)/, '');
+  return digits.length === 8 ? `+976 ${digits.slice(0, 4)}-${digits.slice(4)}` : value;
+}
+
+/** tel: link for a Mongolian number, with the country code. */
+export function phoneHref(value: string): string {
+  return `tel:+976${value.replace(/\D/g, '').replace(/^976(?=\d{8}$)/, '')}`;
+}
+
 export function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;

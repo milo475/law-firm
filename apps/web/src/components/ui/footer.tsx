@@ -1,5 +1,7 @@
 // Figma: Design System / Footer (13:59, 1440) + Footer mobile (23:62, 390)
 import Link from 'next/link';
+import { loadFirmSettings } from '@/lib/firm';
+import { formatPhone, phoneHref } from '@/lib/format';
 import { Logo } from './logo';
 
 const SERVICES = [
@@ -17,17 +19,12 @@ const COMPANY = [
   { label: 'Түгээмэл асуулт', href: '/faq' },
   { label: 'Ажлын байр', href: 'mailto:careers@tulguur.mn' },
 ];
-export const CONTACT = {
-  addressLines: ['Улаанбаатар, Сүхбаатар дүүрэг,', '1-р хороо, Их тойруу 14'],
-  phone: '+976 7000-1199',
-  email: 'info@tulguur.mn',
-  hours: 'Даваа–Баасан 09:00–18:00',
-};
-
 const link = 'focus-ring rounded-sm text-body-sm text-text-on-inverse-muted hover:text-text-on-inverse';
 
-export function Footer() {
+/** Contacts and the legal name come from the firm settings an ADMIN edits on /admin/settings. */
+export async function Footer() {
   const year = new Date().getFullYear();
+  const firm = await loadFirmSettings();
   return (
     <footer className="bg-bg-inverse text-text-on-inverse">
       {/* Desktop */}
@@ -41,15 +38,15 @@ export function Footer() {
           <FooterColumn title="Компани" items={COMPANY} />
           <div className="flex flex-1 flex-col gap-3.5">
             <p className="text-body-medium">Холбоо барих</p>
-            {CONTACT.addressLines.map((line) => <p key={line} className="text-body-sm text-text-on-inverse-muted">{line}</p>)}
-            <a href={`tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`} className={link}>{CONTACT.phone}</a>
-            <a href={`mailto:${CONTACT.email}`} className={link}>{CONTACT.email}</a>
-            <p className="text-body-sm text-text-on-inverse-muted">{CONTACT.hours}</p>
+            <p className="text-body-sm text-text-on-inverse-muted">{firm.address}</p>
+            <a href={phoneHref(firm.phone)} className={link}>{formatPhone(firm.phone)}</a>
+            <a href={`mailto:${firm.email}`} className={link}>{firm.email}</a>
+            <p className="text-body-sm text-text-on-inverse-muted">{firm.workingHours}</p>
           </div>
         </div>
         <div className="h-px w-full bg-border-inverse" />
         <div className="flex items-center justify-between text-caption text-text-on-inverse-muted">
-          <p>© {year} Тулгуур Хуулийн Фирм ХХК. Бүх эрх хуулиар хамгаалагдсан.</p>
+          <p>© {year} {firm.name}. Бүх эрх хуулиар хамгаалагдсан.</p>
           <div className="flex gap-6">
             <Link href="/privacy" className="focus-ring rounded-sm hover:text-text-on-inverse">Нууцлалын бодлого</Link>
             <Link href="/terms" className="focus-ring rounded-sm hover:text-text-on-inverse">Үйлчилгээний нөхцөл</Link>
@@ -70,14 +67,14 @@ export function Footer() {
         <div className="flex flex-col gap-3">
           <p className="text-body-medium">Холбоо барих</p>
           <div className="flex flex-wrap gap-x-2.5 gap-y-2.5 text-body-sm text-text-on-inverse-muted">
-            <a href={`tel:${CONTACT.phone.replace(/[^+\d]/g, '')}`} className={link}>{CONTACT.phone}</a>
-            <a href={`mailto:${CONTACT.email}`} className={link}>{CONTACT.email}</a>
-            <span>Их тойруу 14, Улаанбаатар</span>
-            <span>{CONTACT.hours}</span>
+            <a href={phoneHref(firm.phone)} className={link}>{formatPhone(firm.phone)}</a>
+            <a href={`mailto:${firm.email}`} className={link}>{firm.email}</a>
+            <span>{firm.address}</span>
+            <span>{firm.workingHours}</span>
           </div>
         </div>
         <div className="h-px w-full bg-border-inverse" />
-        <p className="text-caption text-text-on-inverse-muted">© {year} Тулгуур Хуулийн Фирм ХХК</p>
+        <p className="text-caption text-text-on-inverse-muted">© {year} {firm.name}</p>
       </div>
     </footer>
   );

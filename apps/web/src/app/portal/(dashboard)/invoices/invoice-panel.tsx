@@ -19,7 +19,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/toast';
 import { ApiError, api, type InvoiceItem } from '@/lib/api';
 import { formatDate, formatMoney } from '@/lib/format';
+import { firmIssuerLine } from '@/lib/firm';
 import { INVOICE_PAYMENT_SUMMARY_KEY, formatAccountNumber, isAwaitingConfirmation, isPayable, useBankAccount } from '@/lib/invoices';
+import { useFirmSettings } from '@/lib/settings';
 import { cn, shortName } from '@/lib/utils';
 
 export { isPayable } from '@/lib/invoices';
@@ -61,6 +63,7 @@ export function InvoiceDetailPanel({
   const payable = isPayable(invoice);
   const awaiting = isAwaitingConfirmation(invoice);
   const bank = useBankAccount(payable);
+  const firm = useFirmSettings();
   return (
     <Card className={cn('flex flex-col gap-3.5 p-6', className)}>
       <Heading className="text-h4 text-text-primary">
@@ -73,6 +76,17 @@ export function InvoiceDetailPanel({
       <InvoiceStatusBadge status={invoice.status} className="self-start" />
       <div aria-hidden className="h-px w-full bg-border-default" />
       <dl className="flex flex-col gap-3.5">
+        {firm.data && (
+          <InvoiceDetailRow
+            label="Нэхэмжлэгч"
+            value={
+              <span className="flex flex-col items-end gap-0.5">
+                <span>{firm.data.name}</span>
+                <span className="text-caption text-text-muted">{firmIssuerLine(firm.data)}</span>
+              </span>
+            }
+          />
+        )}
         <InvoiceDetailRow
           label="Хэрэг"
           value={

@@ -6,7 +6,8 @@ import { ImagePlaceholder, LawyerCard, NewsCard, ServiceCard } from '@/component
 import { SERVICES } from '@/content/services';
 import { TESTIMONIALS } from '@/content/testimonials';
 import { apiFetch, type LawyerProfile, type Paginated, type PostListItem } from '@/lib/api';
-import { CATEGORY_LABELS, formatDate } from '@/lib/format';
+import { loadFirmSettings } from '@/lib/firm';
+import { CATEGORY_LABELS, formatDate, formatPhone, phoneHref } from '@/lib/format';
 import { cn, shortName } from '@/lib/utils';
 
 export const revalidate = 60;
@@ -38,9 +39,10 @@ const ADVANTAGES = [
 const SECTION = 'mx-auto w-full max-w-[1200px] px-5 py-14 md:px-6 md:py-24';
 
 export default async function HomePage() {
-  const [lawyers, posts] = await Promise.all([
+  const [lawyers, posts, firm] = await Promise.all([
     load<LawyerProfile[]>('/lawyers', []),
     load<Paginated<PostListItem>>('/posts?limit=3', { items: [], total: 0, page: 1, limit: 3, totalPages: 1 }),
+    loadFirmSettings(),
   ]);
 
   return (
@@ -216,7 +218,7 @@ export default async function HomePage() {
           </div>
           <div className="flex shrink-0 flex-col gap-3 md:flex-row">
             <Button asChild size="lg" className="w-full md:w-auto"><Link href="/contact">Зөвлөгөө авах</Link></Button>
-            <Button asChild variant="ghost" size="lg" className="hidden md:inline-flex"><a href="tel:+97670001199">+976 7000-1199</a></Button>
+            <Button asChild variant="ghost" size="lg" className="hidden md:inline-flex"><a href={phoneHref(firm.phone)}>{formatPhone(firm.phone)}</a></Button>
           </div>
         </div>
       </section>

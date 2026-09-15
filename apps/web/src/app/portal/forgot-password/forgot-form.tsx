@@ -4,16 +4,20 @@ import { useState, type FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/toast';
+import { formatPhone } from '@/lib/format';
+import { useFirmSettings } from '@/lib/settings';
 
 /** UI only — the password-reset API is not available yet. */
 export function ForgotPasswordForm() {
   const [identifier, setIdentifier] = useState('');
   const [sent, setSent] = useState(false);
+  const firm = useFirmSettings();
+  const phone = firm.data ? formatPhone(firm.data.phone) : null;
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSent(true);
-    toast.info('Тун удахгүй', 'Нууц үг сэргээх үйлчилгээ удахгүй нэвтэрнэ. Одоогоор +976 7000-1199 дугаарт хандана уу.');
+    toast.info('Тун удахгүй', `Нууц үг сэргээх үйлчилгээ удахгүй нэвтэрнэ.${phone ? ` Одоогоор ${phone} дугаарт хандана уу.` : ''}`);
   }
 
   return (
@@ -35,8 +39,8 @@ export function ForgotPasswordForm() {
         <p className="text-body-sm-medium text-status-new-fg">{sent ? 'Тун удахгүй' : 'Холбоос 30 минут хүчинтэй'}</p>
         <p className="text-text-secondary">
           {sent
-            ? 'Нууц үг сэргээх үйлчилгээ тун удахгүй нэвтэрнэ. Түр зуур +976 7000-1199 дугаарт холбогдоно уу.'
-            : 'Хэрэв имэйл ирээгүй бол спам хавтсаа шалгана уу. Асуудал үргэлжилбэл +976 7000-1199 дугаарт холбогдоно уу.'}
+            ? `Нууц үг сэргээх үйлчилгээ тун удахгүй нэвтэрнэ.${phone ? ` Түр зуур ${phone} дугаарт холбогдоно уу.` : ''}`
+            : `Хэрэв имэйл ирээгүй бол спам хавтсаа шалгана уу.${phone ? ` Асуудал үргэлжилбэл ${phone} дугаарт холбогдоно уу.` : ''}`}
         </p>
       </div>
     </form>
