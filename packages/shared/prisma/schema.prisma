@@ -134,7 +134,8 @@ model User {
   assignedTasks            Task[]            @relation("TaskAssignee")
   createdTasks             Task[]            @relation("TaskCreator")
   taskComments             TaskComment[]     @relation("TaskCommentAuthor")
-  notifications            Notification[]
+  notifications            Notification[]    @relation("NotificationRecipient")
+  actedNotifications       Notification[]    @relation("NotificationActor")
   auditLogs                AuditLog[]
 
   @@index([role])
@@ -341,7 +342,10 @@ model Invoice {
 model Notification {
   id        String   @id @default(uuid()) @db.Uuid
   userId    String   @db.Uuid
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation("NotificationRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  /// Who caused the notification (null for system or public events such as the contact form).
+  actorId   String?  @db.Uuid
+  actor     User?    @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
   type      String
   title     String
   body      String
@@ -350,6 +354,7 @@ model Notification {
   createdAt DateTime @default(now())
 
   @@index([userId, isRead])
+  @@index([userId, createdAt])
 }
 
 model ContactRequest {

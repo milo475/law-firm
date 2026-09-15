@@ -514,6 +514,40 @@ async function seedNotifications(users: Awaited<ReturnType<typeof seedUsers>>) {
       { userId: users.client2.id, type: 'INVOICE', title: 'Нэхэмжлэхийн хугацаа хэтэрлээ', body: 'INV нэхэмжлэх (600,000₮) төлөгдөөгүй байна.', link: '/portal/invoices', isRead: false },
     ],
   });
+  return seedStaffNotifications(users);
+}
+
+/** Staff notifications (with who caused them) so the admin bell and /admin/notifications have content on a fresh database. */
+async function seedStaffNotifications(users: Awaited<ReturnType<typeof seedUsers>>) {
+  const year = new Date().getFullYear();
+  const [cases, tasks, invoice] = await Promise.all([
+    prisma.case.findMany({ where: { caseNumber: { in: [1, 2].map((n) => formatCaseNumber(year, n)) } }, select: { id: true, caseNumber: true } }),
+    prisma.task.findMany({ where: { title: { in: ['Шинжээчийн дүгнэлт гаргуулах хүсэлт илгээх', 'Орлогын тодорхойлолтыг шалгах'] } }, select: { id: true, title: true } }),
+    prisma.invoice.findFirst({ where: { invoiceNumber: { endsWith: `${year}-0002` } }, select: { id: true, invoiceNumber: true } }),
+  ]);
+  const case1 = cases.find((item) => item.caseNumber === formatCaseNumber(year, 1));
+  const case2 = cases.find((item) => item.caseNumber === formatCaseNumber(year, 2));
+  const expertTask = tasks.find((task) => task.title === 'Шинжээчийн дүгнэлт гаргуулах хүсэлт илгээх');
+  const incomeTask = tasks.find((task) => task.title === 'Орлогын тодорхойлолтыг шалгах');
+
+  await prisma.notification.deleteMany({ where: { userId: { in: [users.admin.id, users.lawyer1.id, users.lawyer2.id] } } });
+  const data = [];
+  if (expertTask && case1) {
+    data.push({ userId: users.admin.id, actorId: users.lawyer1.id, type: 'TASK', title: `Танд даалгавар оноолоо: ${expertTask.title}`, body: case1.caseNumber, link: `/admin/tasks/${expertTask.id}`, isRead: false, createdAt: daysAgo(0, 9) });
+  }
+  if (invoice && case1) {
+    data.push({ userId: users.admin.id, actorId: users.client1.id, type: 'INVOICE', title: `Төлбөр хийгдсэн гэж тэмдэглэлээ, баталгаажуулна уу: ${invoice.invoiceNumber}`, body: `${case1.caseNumber} · 800 000₮`, link: `/admin/invoices/${invoice.id}`, isRead: true, createdAt: daysAgo(1, 16) });
+  }
+  if (case1) {
+    data.push({ userId: users.lawyer1.id, actorId: users.client1.id, type: 'MESSAGE', title: `Шинэ мессеж: ${case1.caseNumber}`, body: 'С. Ганбат: Хурлын өмнө уулзаж болох уу?', link: `/admin/cases/${case1.id}?tab=messages`, isRead: false, createdAt: daysAgo(0, 10) });
+    data.push({ userId: users.lawyer1.id, actorId: users.client1.id, type: 'DOCUMENT_REQUEST', title: 'Баримт ирлээ: Банкны хуулга', body: `${case1.caseNumber} · 1 файл`, link: `/admin/cases/${case1.id}?tab=requests`, isRead: true, createdAt: daysAgo(6, 12) });
+  }
+  if (incomeTask && case2) {
+    data.push({ userId: users.lawyer2.id, actorId: users.admin.id, type: 'TASK', title: `Даалгаварт коммент: ${incomeTask.title}`, body: 'Маргааш 12 цагаас өмнө шалгаж өгнө үү.', link: `/admin/tasks/${incomeTask.id}`, isRead: false, createdAt: daysAgo(2, 9) });
+    data.push({ userId: users.lawyer2.id, actorId: users.admin.id, type: 'TASK', title: `Танд даалгавар оноолоо: ${incomeTask.title}`, body: case2.caseNumber, link: `/admin/tasks/${incomeTask.id}`, isRead: true, createdAt: daysAgo(4, 11) });
+  }
+  await prisma.notification.createMany({ data });
+  return data.length;
 }
 
 async function seedContactRequests() {
@@ -539,7 +573,8 @@ async function main() {
   const tasks = await seedTasks(users);
   console.log(`  tasks: ${tasks} with comments`);
   console.log(`  messages: ${messages} on the first case`);
-  await seedNotifications(users);
+  const staffNotifications = await seedNotifications(users);
+  console.log(`  staff notifications: ${staffNotifications}`);
   await seedContactRequests();
   console.log('Done.');
   console.log('\nLogin credentials:');

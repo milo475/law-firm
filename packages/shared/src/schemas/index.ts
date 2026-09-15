@@ -8,5 +8,6 @@ export * from './contact.js';
 export * from './admin.js';
 export * from './document-requests.js';
 export * from './messages.js';
+export * from './notifications.js';
 export * from './case-members.js';
 export * from './tasks.js';
