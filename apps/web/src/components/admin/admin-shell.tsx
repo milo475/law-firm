@@ -18,7 +18,7 @@ import {
   TasksIcon,
   UsersIcon,
 } from '@/components/icons';
-import { NotificationBell } from '@/components/admin/notification-bell';
+import { NotificationBell } from '@/components/notifications/notification-bell';
 import { useUser } from '@/components/portal/user-context';
 import { BottomTabBar } from '@/components/ui/bottom-tab-bar';
 import { PortalHeader } from '@/components/ui/portal-header';
@@ -118,7 +118,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           title={current.title}
           user={user}
           backHref={current.back ?? null}
-          bellSlot={<NotificationBell />}
+          bellSlot={<NotificationBell area="admin" />}
           profileHref="/admin/profile"
           searchPlaceholder="Хэргийн дугаар, нэрээр хайх"
           onSearch={(q) => router.push(q.trim() ? `/admin/cases?search=${encodeURIComponent(q.trim())}` : '/admin/cases')}

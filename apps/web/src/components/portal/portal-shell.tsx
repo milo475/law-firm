@@ -2,12 +2,12 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
 import { BellIcon, CasesIcon, DocumentsIcon, HomeIcon, InvoicesIcon, LogoutIcon, MessagesIcon, ProfileIcon, TabCasesIcon, TabDocumentsIcon, TabHomeIcon, TabMessagesIcon, TabProfileIcon } from '@/components/icons';
 import { BottomTabBar } from '@/components/ui/bottom-tab-bar';
+import { NotificationBell } from '@/components/notifications/notification-bell';
 import { PortalHeader } from '@/components/ui/portal-header';
 import { Sidebar } from '@/components/ui/sidebar';
-import { api, type NotificationItem } from '@/lib/api';
+import { useUnreadNotificationCount } from '@/lib/notifications';
 import { useDocumentRequestSummary } from '@/lib/document-requests';
 import { useMessageUnreadSummary } from '@/lib/messages';
 import { ROLE_LABELS } from '@/lib/format';
@@ -30,12 +30,8 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useUser();
-  const notifications = useQuery({
-    queryKey: ['notifications'],
-    queryFn: () => api.get<{ items: NotificationItem[]; unreadCount: number }>('/notifications'),
-    staleTime: 60_000,
-  });
-  const unread = notifications.data?.unreadCount ?? 0;
+  const unreadNotifications = useUnreadNotificationCount();
+  const unread = unreadNotifications.data?.count ?? 0;
   const requestSummary = useDocumentRequestSummary();
   const openRequests = requestSummary.data?.total ?? 0;
   const messageSummary = useMessageUnreadSummary();
@@ -67,6 +63,7 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
           title={current.title}
           user={user}
           unreadCount={unread}
+          bellSlot={<NotificationBell area="portal" />}
           backHref={current.back ?? null}
           onSearch={(q) => router.push(q.trim() ? `/portal/cases?q=${encodeURIComponent(q.trim())}` : '/portal/cases')}
         />

@@ -14,8 +14,11 @@ import { cn, shortName } from '@/lib/utils';
 
 const LATEST_LIMIT = 12;
 
-/** Admin header bell: unread badge (polled), dropdown with the latest notifications and "mark all read". */
-export function NotificationBell() {
+/**
+ * Header bell for staff (/admin) and clients (/portal): unread badge (polled), dropdown with the latest notifications and
+ * "mark all read". Only links inside the viewer's own area are followed.
+ */
+export function NotificationBell({ area }: { area: 'admin' | 'portal' }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   // Radix labels the menu with its trigger ("Мэдэгдэл, 2 уншаагүй"); a fixed title reads better for screen readers.
@@ -32,7 +35,7 @@ export function NotificationBell() {
 
   function openItem(item: NotificationItem) {
     if (!item.isRead) markRead.mutate(item.id);
-    if (item.link?.startsWith('/admin')) router.push(item.link);
+    if (item.link?.startsWith(`/${area}`)) router.push(item.link);
   }
 
   return (
@@ -104,7 +107,7 @@ export function NotificationBell() {
             )}
           </div>
           <DropdownMenu.Item asChild>
-            <Link href="/admin/notifications" className="focus-ring block border-t border-border-default px-4 py-3 text-center text-body-sm-medium text-text-brand outline-none hover:bg-bg-surface-alt data-[highlighted]:bg-bg-surface-alt">
+            <Link href={`/${area}/notifications`} className="focus-ring block border-t border-border-default px-4 py-3 text-center text-body-sm-medium text-text-brand outline-none hover:bg-bg-surface-alt data-[highlighted]:bg-bg-surface-alt">
               Бүгдийг харах
             </Link>
           </DropdownMenu.Item>
