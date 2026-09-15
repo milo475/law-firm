@@ -82,6 +82,11 @@ enum DocumentRequestStatus {
   REJECTED
 }
 
+enum CaseMemberRole {
+  LEAD
+  MEMBER
+}
+
 // ─── Users & auth ────────────────────────────────────────────────────────────
 
 model User {
@@ -109,6 +114,8 @@ model User {
   reviewedDocumentRequests DocumentRequest[] @relation("DocumentRequestReviewer")
   sentMessages             Message[]
   confirmedInvoices        Invoice[]         @relation("InvoiceConfirmer")
+  caseMemberships          CaseMember[]      @relation("CaseMemberUser")
+  addedCaseMembers         CaseMember[]      @relation("CaseMemberAddedBy")
   notifications            Notification[]
   auditLogs                AuditLog[]
 
@@ -187,10 +194,27 @@ model Case {
   invoices         Invoice[]
   documentRequests DocumentRequest[]
   messages         Message[]
+  members          CaseMember[]
 
   @@index([clientId])
   @@index([lawyerId])
   @@index([status])
+}
+
+/// Staff on a case team. The case's lawyerId is always its single LEAD member.
+model CaseMember {
+  id        String         @id @default(uuid()) @db.Uuid
+  caseId    String         @db.Uuid
+  case      Case           @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  userId    String         @db.Uuid
+  user      User           @relation("CaseMemberUser", fields: [userId], references: [id], onDelete: Cascade)
+  role      CaseMemberRole @default(MEMBER)
+  addedById String         @db.Uuid
+  addedBy   User           @relation("CaseMemberAddedBy", fields: [addedById], references: [id])
+  createdAt DateTime       @default(now())
+
+  @@unique([caseId, userId])
+  @@index([userId])
 }
 
 model CaseEvent {

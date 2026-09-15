@@ -8,6 +8,7 @@ loadEnv({ path: [path.resolve(__dirname, '../../../.env'), path.resolve(__dirnam
 import { getPrismaClient } from '../src/db';
 import {
   CaseEventType,
+  CaseMemberRole,
   CaseStatus,
   CaseType,
   DocumentRequestStatus,
@@ -406,6 +407,22 @@ async function seedCases(users: Awaited<ReturnType<typeof seedUsers>>) {
       update: data,
       create: data,
     });
+
+    // The assigned lawyer is always the single LEAD member of the case team.
+    await prisma.caseMember.deleteMany({ where: { caseId: record.id, role: CaseMemberRole.LEAD, userId: { not: data.lawyerId } } });
+    await prisma.caseMember.upsert({
+      where: { caseId_userId: { caseId: record.id, userId: data.lawyerId } },
+      update: { role: CaseMemberRole.LEAD },
+      create: { caseId: record.id, userId: data.lawyerId, role: CaseMemberRole.LEAD, addedById: data.lawyerId },
+    });
+    if (data.caseNumber === formatCaseNumber(year, 1)) {
+      // Example team: the admin also works on the first case as a MEMBER.
+      await prisma.caseMember.upsert({
+        where: { caseId_userId: { caseId: record.id, userId: users.admin.id } },
+        update: { role: CaseMemberRole.MEMBER },
+        create: { caseId: record.id, userId: users.admin.id, role: CaseMemberRole.MEMBER, addedById: data.lawyerId },
+      });
+    }
 
     // Child rows have no natural key; rebuild them so the seed stays idempotent.
     await prisma.caseEvent.deleteMany({ where: { caseId: record.id } });

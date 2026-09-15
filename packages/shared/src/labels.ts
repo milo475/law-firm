@@ -3,6 +3,7 @@ import type {
   CaseStatus,
   CaseType,
   ContactStatus,
+  CaseMemberRole,
   DocumentRequestStatus,
   InvoiceStatus,
   PostCategory,
@@ -77,4 +78,9 @@ export const DOCUMENT_REQUEST_STATUS_LABELS: Record<DocumentRequestStatus, strin
   UNDER_REVIEW: 'Хянагдаж буй',
   APPROVED: 'Батлагдсан',
   REJECTED: 'Буцаагдсан',
+};
+
+export const CASE_MEMBER_ROLE_LABELS: Record<CaseMemberRole, string> = {
+  LEAD: 'Ахлах',
+  MEMBER: 'Гишүүн',
 };
