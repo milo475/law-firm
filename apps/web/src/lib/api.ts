@@ -3,6 +3,7 @@
  *  - base URL from env (NEXT_PUBLIC_API_URL in the browser, API_URL on the server)
  *  - always sends cookies (credentials: 'include')
  *  - on 401 it calls POST /auth/refresh once and retries the original request
+ *    (also for GET /auth/me: a failed refresh clears the session cookies, so the login redirect cannot loop)
  */
 
 export class ApiError extends Error {
@@ -44,6 +45,9 @@ interface ErrorBody {
   details?: unknown;
   path?: string;
 }
+
+/** Auth calls that must never trigger a refresh themselves. */
+const NO_REFRESH_PATHS = ['/auth/login', '/auth/register', '/auth/refresh', '/auth/logout'];
 
 // Only one refresh call in flight per browser tab.
 let refreshInFlight: Promise<boolean> | null = null;
@@ -97,7 +101,7 @@ export async function apiFetch<T = unknown>(path: string, options: ApiRequestOpt
 
   const response = await fetch(url, init);
 
-  if (response.status === 401 && !skipRefresh && !path.startsWith('/auth/')) {
+  if (response.status === 401 && !skipRefresh && !NO_REFRESH_PATHS.some((prefix) => path.startsWith(prefix))) {
     const refreshed = await tryRefresh(cookie);
     if (refreshed) {
       return apiFetch<T>(path, { ...options, skipRefresh: true });
