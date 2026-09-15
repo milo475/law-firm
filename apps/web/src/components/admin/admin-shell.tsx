@@ -9,6 +9,7 @@ import {
   HomeIcon,
   InboxIcon,
   InvoicesIcon,
+  PerformanceIcon,
   LogoutIcon,
   ProfileIcon,
   TabCasesIcon,
@@ -40,6 +41,7 @@ const NAV: NavEntry[] = [
   { href: '/admin', label: 'Хянах самбар', icon: <HomeIcon /> },
   { href: '/admin/cases', label: 'Хэргүүд', icon: <CasesIcon /> },
   { href: '/admin/tasks', label: 'Даалгавар', icon: <TasksIcon /> },
+  { href: '/admin/performance', label: 'Гүйцэтгэл', icon: <PerformanceIcon /> },
   { href: '/admin/clients', label: 'Харилцагчид', icon: <UsersIcon /> },
   { href: '/admin/lawyers', label: 'Хуульчид', icon: <BriefcaseIcon />, adminOnly: true },
   { href: '/admin/posts', label: 'Нийтлэл', icon: <DocumentsIcon /> },
@@ -66,6 +68,8 @@ const TITLES: { match: (p: string) => boolean; title: string; back?: string }[] 
   { match: (p) => p.startsWith('/admin/contact'), title: 'Хүсэлтүүд' },
   { match: (p) => p.startsWith('/admin/profile'), title: 'Профайл' },
   { match: (p) => p.startsWith('/admin/notifications'), title: 'Мэдэгдэл' },
+  { match: (p) => /^\/admin\/performance\/[^/]+$/.test(p), title: 'Гүйцэтгэл', back: '/admin/performance' },
+  { match: (p) => p.startsWith('/admin/performance'), title: 'Гүйцэтгэл' },
 ];
 
 /** Staff-only shell: reuses the portal Sidebar / PortalHeader / BottomTabBar with the admin menu. */

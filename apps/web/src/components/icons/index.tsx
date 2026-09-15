@@ -301,6 +301,12 @@ export const InboxIcon = (p: IconProps) => (
     <path {...stroke} d="M2 11L4.5 3.5H15.5L18 11V16.5H2V11ZM2 11H6.5L8 13.5H12L13.5 11H18" />
   </svg>
 );
+// Staff workload (admin sidebar) — bar chart on the 20×20 nav grid
+export const PerformanceIcon = (p: IconProps) => (
+  <svg viewBox="0 0 20 20" {...base(p, 20, 20)}>
+    <path {...stroke} d="M2.5 17.5H17.5M5 14.5V10M10 14.5V4.5M15 14.5V7.5" />
+  </svg>
+);
 // Staff tasks (admin sidebar) — checklist on the 20×20 nav grid
 export const TasksIcon = (p: IconProps) => (
   <svg viewBox="0 0 20 20" {...base(p, 20, 20)}>

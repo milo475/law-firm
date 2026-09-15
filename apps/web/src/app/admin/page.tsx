@@ -14,6 +14,7 @@ import { EmptyState, ErrorState, Skeleton } from '@/components/ui/states';
 import { ApiError, api, type CaseListItem, type Paginated } from '@/lib/api';
 import type { ContactRequestItem } from '@/lib/admin';
 import { CASE_EVENT_LABELS, formatDate, formatMoney } from '@/lib/format';
+import { formatRate, usePerformanceOverview } from '@/lib/performance';
 import { useTaskSummary } from '@/lib/tasks';
 import { shortName } from '@/lib/utils';
 
@@ -33,6 +34,7 @@ export default function AdminDashboardPage() {
   });
 
   const tasks = useTaskSummary();
+  const team = usePerformanceOverview('this-month', isAdmin);
 
   const s = stats.data;
 
@@ -97,7 +99,7 @@ export default function AdminDashboardPage() {
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2" aria-label="Миний даалгавар">
+      <div className={isAdmin ? 'grid gap-4 sm:grid-cols-2 xl:grid-cols-4' : 'grid gap-4 sm:grid-cols-2'} aria-label="Даалгавар">
         <StatTile
           label="Миний идэвхтэй даалгавар"
           value={tasks.isError ? '—' : tasks.data ? String(tasks.data.active) : null}
@@ -111,6 +113,22 @@ export default function AdminDashboardPage() {
           href="/admin/tasks?scope=mine&overdue=true"
           tone={tasks.data && tasks.data.overdue > 0 ? 'danger' : undefined}
         />
+        {isAdmin && (
+          <>
+            <StatTile
+              label="Багийн идэвхтэй даалгавар"
+              value={team.isError ? '—' : team.data ? String(team.data.activeTasks) : null}
+              hint={team.data ? `${team.data.overdueTasks} хугацаа хэтэрсэн · ${team.data.people} ажилтан` : undefined}
+              href="/admin/performance"
+            />
+            <StatTile
+              label="Энэ сард дууссан"
+              value={team.isError ? '—' : team.data ? String(team.data.completedTasks) : null}
+              hint={team.data ? `Хугацаандаа: ${formatRate(team.data.onTimeRate)}` : undefined}
+              href="/admin/performance"
+            />
+          </>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
