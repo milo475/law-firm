@@ -1,6 +1,7 @@
+// Figma: 02 Client Portal / Portal / 03 Dashboard / Desktop (29:98) + Mobile (35:1017) — shell: Portal sidebar (27:29) + Nav header (Type=Portal) + Bottom tab bar (23:41)
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { BellIcon, CasesIcon, DocumentsIcon, HomeIcon, InvoicesIcon, LogoutIcon, MessagesIcon, ProfileIcon, TabCasesIcon, TabDocumentsIcon, TabHomeIcon, TabMessagesIcon, TabProfileIcon } from '@/components/icons';
 import { BottomTabBar } from '@/components/ui/bottom-tab-bar';
@@ -10,11 +11,12 @@ import { api, type NotificationItem } from '@/lib/api';
 import { ROLE_LABELS } from '@/lib/format';
 import { useUser } from './user-context';
 
+// Header titles per route (Figma: "Нүүр", "Хэргүүд", …); `back` renders the mobile back arrow.
 const TITLES: { match: (p: string) => boolean; title: string; back?: string }[] = [
-  { match: (p) => p === '/portal', title: 'Хянах самбар' },
+  { match: (p) => p === '/portal', title: 'Нүүр' },
   { match: (p) => /^\/portal\/cases\/[^/]+$/.test(p), title: 'Хэргийн дэлгэрэнгүй', back: '/portal/cases' },
-  { match: (p) => p.startsWith('/portal/cases'), title: 'Миний хэргүүд' },
-  { match: (p) => p.startsWith('/portal/documents'), title: 'Баримт бичиг' },
+  { match: (p) => p.startsWith('/portal/cases'), title: 'Хэргүүд' },
+  { match: (p) => p.startsWith('/portal/documents'), title: 'Баримт' },
   { match: (p) => /^\/portal\/invoices\/[^/]+$/.test(p), title: 'Нэхэмжлэх', back: '/portal/invoices' },
   { match: (p) => p.startsWith('/portal/invoices'), title: 'Нэхэмжлэх' },
   { match: (p) => p.startsWith('/portal/messages'), title: 'Мессеж' },
@@ -24,6 +26,7 @@ const TITLES: { match: (p: string) => boolean; title: string; back?: string }[] 
 
 export function PortalShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, logout } = useUser();
   const notifications = useQuery({
     queryKey: ['notifications'],
@@ -36,6 +39,7 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-bg-page">
+      {/* Figma: Portal sidebar — 260px navy column, stretched to the viewport */}
       <Sidebar
         className="sticky top-0 hidden h-screen md:flex"
         user={{ firstName: user.firstName, lastName: user.lastName, roleLabel: ROLE_LABELS[user.role], avatarUrl: user.avatarUrl }}
@@ -52,8 +56,16 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
         ]}
       />
       <div className="flex min-w-0 flex-1 flex-col">
-        <PortalHeader title={current.title} user={user} unreadCount={unread} backHref={current.back ?? null} />
-        <main id="main" className="flex-1 px-4 pb-28 pt-6 md:px-8 md:pb-10 md:pt-8">{children}</main>
+        {/* Figma: Nav header Type=Portal — title · search "Хэрэг, баримт хайх" · bell · avatar + name (72px; mobile 64px) */}
+        <PortalHeader
+          title={current.title}
+          user={user}
+          unreadCount={unread}
+          backHref={current.back ?? null}
+          onSearch={(q) => router.push(q.trim() ? `/portal/cases?q=${encodeURIComponent(q.trim())}` : '/portal/cases')}
+        />
+        {/* Figma: Main sections use 32px padding on desktop, 20px on mobile; bottom space clears the 76px tab bar */}
+        <main id="main" className="flex-1 px-5 pb-28 pt-6 md:px-8 md:pb-12 md:pt-8">{children}</main>
       </div>
       <BottomTabBar
         tabs={[

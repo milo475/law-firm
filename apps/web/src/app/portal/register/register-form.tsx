@@ -34,15 +34,27 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
+      {/* Figma shows a single "Овог, нэр" field; the API needs lastName + firstName separately, so it is one row of two inputs. */}
       <div className="grid gap-5 sm:grid-cols-2">
-        <Input label="Овог" autoComplete="family-name" required error={errors.lastName?.message} {...register('lastName')} />
-        <Input label="Нэр" autoComplete="given-name" required error={errors.firstName?.message} {...register('firstName')} />
+        <Input label="Овог" placeholder="Ганбат" autoComplete="family-name" required error={errors.lastName?.message} {...register('lastName')} />
+        <Input label="Нэр" placeholder="Батбаяр" autoComplete="given-name" required error={errors.firstName?.message} {...register('firstName')} />
       </div>
-      <Input label="И-мэйл" type="email" autoComplete="email" required error={errors.email?.message} {...register('email')} />
-      <Input label="Утасны дугаар" placeholder="9911-2233" inputMode="tel" autoComplete="tel" helper="Заавал биш" error={errors.phone?.message} {...register('phone', { setValueAs: (v: string) => (v?.trim() ? v.trim() : undefined) })} />
-      <Input label="Нууц үг" type="password" autoComplete="new-password" required helper="Дор хаяж 8 тэмдэгт, үсэг ба тоо" error={errors.password?.message} {...register('password')} />
-      <Checkbox label="Үйлчилгээний нөхцөлтэй танилцсан" checked={agreed} onCheckedChange={(v) => setAgreed(v === true)} />
-      <Button type="submit" size="md" disabled={isSubmitting || !agreed}>{isSubmitting ? 'Бүртгэж байна…' : 'Бүртгүүлэх'}</Button>
+      <Input label="Утасны дугаар" placeholder="9911-2233" inputMode="tel" autoComplete="tel" helper="Гэрээнд бүртгүүлсэн дугаар" error={errors.phone?.message} {...register('phone', { setValueAs: (v: string) => (v?.trim() ? v.trim() : undefined) })} />
+      <Input label="Имэйл хаяг" type="email" placeholder="batbayar@example.mn" autoComplete="email" required error={errors.email?.message} {...register('email')} />
+      <Input label="Нууц үг" type="password" placeholder="••••••••" autoComplete="new-password" required helper="8-аас дээш тэмдэгт, тоо агуулсан байх" error={errors.password?.message} {...register('password')} />
+      <Checkbox
+        label={
+          <>
+            <span className="md:hidden">Үйлчилгээний нөхцөлийг зөвшөөрч байна</span>
+            <span className="hidden md:inline">Үйлчилгээний нөхцөл, нууцлалын бодлогыг зөвшөөрч байна</span>
+          </>
+        }
+        checked={agreed}
+        onCheckedChange={(v) => setAgreed(v === true)}
+      />
+      <Button type="submit" size="lg" className="w-full" disabled={isSubmitting || !agreed}>
+        {isSubmitting ? 'Бүртгэж байна…' : 'Бүртгэл үүсгэх'}
+      </Button>
     </form>
   );
 }

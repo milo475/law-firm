@@ -7,6 +7,6 @@ export async function login(page: Page, user = CLIENT1) {
   await page.goto('/portal/login');
   await page.locator('input[name="identifier"]').fill(user.identifier);
   await page.locator('input[name="password"]').fill(user.password);
-  await page.getByRole('button', { name: 'Нэвтрэх' }).click();
+  await page.getByRole('button', { name: 'Нэвтрэх', exact: true }).click();
   await expect(page).toHaveURL(/\/portal$/);
 }

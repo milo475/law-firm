@@ -1,5 +1,5 @@
+// Figma: 02 Client Portal / Portal / 01 Login / Desktop (28:34) + Mobile (35:928); 01b Login OTP / Desktop (28:94)
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { Suspense } from 'react';
 import { AuthCard } from '@/components/portal/auth-card';
 import { LoginForm } from './login-form';
@@ -8,11 +8,7 @@ export const metadata: Metadata = { title: 'Нэвтрэх' };
 
 export default function LoginPage() {
   return (
-    <AuthCard
-      title="Нэвтрэх"
-      description="И-мэйл эсвэл утасны дугаараараа нэвтэрнэ үү."
-      footer={<>Бүртгэлгүй юу? <Link href="/portal/register" className="focus-ring rounded-sm text-text-accent underline">Бүртгүүлэх</Link></>}
-    >
+    <AuthCard>
       <Suspense>
         <LoginForm />
       </Suspense>

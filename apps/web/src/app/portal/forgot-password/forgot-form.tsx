@@ -7,7 +7,7 @@ import { toast } from '@/components/ui/toast';
 
 /** UI only — the password-reset API is not available yet. */
 export function ForgotPasswordForm() {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [sent, setSent] = useState(false);
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -17,10 +17,28 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-5">
-      <Input label="И-мэйл" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.mn" />
-      {sent && <p className="rounded-md bg-bg-accent-soft px-4 py-3 text-body-sm text-text-accent" role="status">Нууц үг сэргээх үйлчилгээ тун удахгүй. Түр зуур манай оффистой холбогдоно уу.</p>}
-      <Button type="submit" size="md">Заавар илгээх</Button>
+    <form onSubmit={onSubmit} className="flex flex-col gap-5 md:gap-6">
+      <Input
+        label="Утас эсвэл имэйл"
+        placeholder="batbayar@example.mn"
+        autoComplete="username"
+        required
+        helper="Гэрээнд бүртгүүлсэн хаягаа оруулна уу"
+        value={identifier}
+        onChange={(e) => setIdentifier(e.target.value)}
+      />
+      <Button type="submit" size="lg" className="w-full">
+        Сэргээх холбоос илгээх
+      </Button>
+      {/* Figma "Info" 28:258 — status-new tint */}
+      <div className="flex flex-col gap-2 rounded-md bg-status-new-bg px-5 py-4 text-body-sm" role="status">
+        <p className="text-body-sm-medium text-status-new-fg">{sent ? 'Тун удахгүй' : 'Холбоос 30 минут хүчинтэй'}</p>
+        <p className="text-text-secondary">
+          {sent
+            ? 'Нууц үг сэргээх үйлчилгээ тун удахгүй нэвтэрнэ. Түр зуур +976 7000-1199 дугаарт холбогдоно уу.'
+            : 'Хэрэв имэйл ирээгүй бол спам хавтсаа шалгана уу. Асуудал үргэлжилбэл +976 7000-1199 дугаарт холбогдоно уу.'}
+        </p>
+      </div>
     </form>
   );
 }

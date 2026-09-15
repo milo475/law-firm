@@ -1,10 +1,12 @@
+// Figma: 02 Client Portal / Portal / 05 Case Detail / Desktop (31:361) + Mobile (36:1065)
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { useRef } from 'react';
-import { useUser } from '@/components/portal/user-context';
+import { useRef, useState } from 'react';
+import { DownloadIcon } from '@/components/icons';
+import { Avatar } from '@/components/ui/avatar';
 import { CASE_STATUS_BADGE, INVOICE_STATUS_BADGE, StatusBadge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -14,17 +16,47 @@ import { CardSkeleton, EmptyState, ErrorState, Skeleton } from '@/components/ui/
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/toast';
-import { ApiError, api, type CaseDetail, type CaseEvent, type DocumentItem, type InvoiceItem, type Paginated } from '@/lib/api';
-import { CASE_EVENT_LABELS, CASE_TYPE_LABELS, INVOICE_STATUS_LABELS, formatBytes, formatDate, formatMoney } from '@/lib/format';
-import { shortName } from '@/lib/utils';
+import { ApiError, api, type CaseDetail, type CaseEvent, type DocumentItem, type InvoiceItem, type Paginated, type PublicUser } from '@/lib/api';
+import { CASE_EVENT_LABELS, CASE_TYPE_LABELS, INVOICE_STATUS_LABELS, ROLE_LABELS, formatBytes, formatDate, formatMoney } from '@/lib/format';
+import { cn, initials, shortName } from '@/lib/utils';
 
 const ACCEPT = '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt';
 
+/** GET /cases/:id returns contact fields on the lawyer that `PublicUser` doesn't declare. */
+type Contact = PublicUser & { email?: string | null; phone?: string | null };
+
+/** Timeline "Rail" dot colour per event type (Figma dots use the status fg colours). */
+const EVENT_DOT: Record<string, string> = {
+  HEARING: 'bg-status-progress-fg',
+  MEETING: 'bg-status-progress-fg',
+  STATUS_CHANGE: 'bg-status-progress-fg',
+  DEADLINE: 'bg-status-pending-fg',
+  DOCUMENT: 'bg-status-new-fg',
+  NOTE: 'bg-status-closed-fg',
+};
+
+/** Card titles: Mobile/H3 (20/28) → Heading/H4 (22/30) on desktop. */
+const CARD_TITLE = 'font-serif text-[20px] font-semibold leading-7 md:text-h4';
+
+/** Mobile tab (36:1086): 52px, 12px padding, 14/22 medium → desktop Tab item (10:63). */
+const TAB_TRIGGER = 'h-[52px] px-3 text-body-sm-medium data-[state=active]:text-body-sm-medium md:h-12 md:px-5 md:text-body md:data-[state=active]:text-body-medium';
+
+const TABS = [
+  { value: 'overview', label: 'Тойм' },
+  { value: 'timeline', label: 'Явцын түүх', mobileLabel: 'Явц' },
+  { value: 'documents', label: 'Баримт' },
+  { value: 'invoices', label: 'Нэхэмжлэх' },
+  { value: 'messages', label: 'Мессеж' },
+];
+
+/** "2026.09.24 10:00" → "10:00" */
+const timeOf = (iso: string) => formatDate(iso, true).split(' ')[1] ?? '';
+
 export default function CaseDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { user } = useUser();
   const queryClient = useQueryClient();
   const fileInput = useRef<HTMLInputElement>(null);
+  const [tab, setTab] = useState('overview');
 
   const detail = useQuery({ queryKey: ['case', id], queryFn: () => api.get<CaseDetail>(`/cases/${id}`), retry: false });
   const events = useQuery({ queryKey: ['case-events', id], queryFn: () => api.get<CaseEvent[]>(`/cases/${id}/events`), enabled: detail.isSuccess });
@@ -61,104 +93,117 @@ export default function CaseDetailPage() {
     return <div className="flex flex-col gap-6"><Skeleton className="h-4 w-48" /><Skeleton className="h-10 w-2/3" /><CardSkeleton /></div>;
   }
   const c = detail.data;
+  const lawyer = c.lawyer as Contact;
+  const pickFile = () => fileInput.current?.click();
+
+  // Newest first for the timeline; the next event is the earliest one from now on.
+  const timeline = [...(events.data ?? [])].sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime());
+  const now = new Date();
+  const nextEvent = [...timeline].reverse().find((e) => new Date(e.eventDate) >= now);
+  const docs = documents.data ?? [];
+  const invoiceItems = invoices.data?.items ?? [];
+
+  const overview = <OverviewCard c={c} />;
+  const timelineCard = <TimelineCard events={timeline.slice(0, 5)} loading={events.isLoading} />;
+  const nextEventCard = <NextEventCard event={nextEvent} loading={events.isLoading} />;
+  const lawyerCard = <LawyerCard lawyer={lawyer} />;
+  const recentDocs = <RecentDocumentsCard documents={docs} loading={documents.isLoading} onShowAll={() => setTab('documents')} onDownload={(d) => void download(d)} />;
+  const finance = <FinanceCard invoices={invoiceItems} loading={invoices.isLoading} />;
 
   return (
-    <div className="flex flex-col gap-6">
-      <Breadcrumb items={[{ label: 'Портал', href: '/portal' }, { label: 'Хэргүүд', href: '/portal/cases' }, { label: c.caseNumber }]} />
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-col">
+      <input ref={fileInput} type="file" accept={ACCEPT} className="sr-only" aria-label="Файл сонгох" onChange={(e) => { const f = e.target.files?.[0]; if (f) upload.mutate(f); e.target.value = ''; }} />
+
+      {/* Case header — full-bleed white strip on mobile (36:1077), plain on desktop (31:376) */}
+      <div className="-mx-5 -mt-6 flex flex-col gap-3 bg-bg-surface p-5 md:mx-0 md:mt-0 md:gap-4 md:bg-transparent md:p-0">
+        <nav aria-label="Замын заалт" className="hidden md:block">
+          <ol className="flex items-center gap-2 text-caption text-text-muted">
+            <li><Link href="/portal/cases" className="focus-ring rounded-sm hover:text-text-brand">Хэргүүд</Link></li>
+            <li aria-hidden>›</li>
+            <li aria-current="page">{c.caseNumber}</li>
+          </ol>
+        </nav>
+        <div className="flex items-center justify-between gap-3 md:hidden">
           <span className="text-caption text-text-muted">{c.caseNumber}</span>
           <StatusBadge map={CASE_STATUS_BADGE} status={c.status} />
         </div>
-        <h2 className="text-h3 md:text-h2">{c.title}</h2>
-        <p className="text-body-sm text-text-secondary">
-          {CASE_TYPE_LABELS[c.type] ?? c.type} · нээгдсэн {formatDate(c.openedAt)}{c.closedAt ? ` · хаагдсан ${formatDate(c.closedAt)}` : ''} · хуульч {shortName(c.lawyer.firstName, c.lawyer.lastName)}
-        </p>
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
+          <div className="flex min-w-0 flex-col gap-3 md:max-w-[640px] md:gap-2.5">
+            <div className="flex items-center gap-3.5">
+              <h2 className="min-w-0 font-serif text-[26px] font-semibold leading-[34px] tracking-[-0.2px] md:text-h2">{c.title}</h2>
+              <StatusBadge map={CASE_STATUS_BADGE} status={c.status} className="hidden md:inline-flex" />
+            </div>
+            <p className="text-caption text-text-secondary md:text-body-sm">
+              <span className="hidden md:inline">{c.caseNumber} · </span>
+              {CASE_TYPE_LABELS[c.type] ?? c.type}
+              <span className="md:hidden"> · Нээгдсэн {formatDate(c.openedAt)} · Шинэчлэгдсэн {formatDate(c.updatedAt)}</span>
+              <span className="hidden md:inline"> · Нээгдсэн: {formatDate(c.openedAt)} · Сүүлд шинэчлэгдсэн: {formatDate(c.updatedAt)}</span>
+              {c.closedAt && ` · Хаагдсан: ${formatDate(c.closedAt)}`}
+            </p>
+          </div>
+          <div className="hidden shrink-0 gap-3 md:flex">
+            <Button variant="secondary" size="md" onClick={pickFile} disabled={upload.isPending}>{upload.isPending ? 'Хуулж байна…' : 'Баримт нэмэх'}</Button>
+            <Button asChild size="md"><Link href="/portal/messages">Хуульчтай холбогдох</Link></Button>
+          </div>
+        </div>
       </div>
 
-      <Tabs defaultValue="overview">
-        <TabsList>
-          <TabsTrigger value="overview">Тойм</TabsTrigger>
-          <TabsTrigger value="timeline">Явцын түүх</TabsTrigger>
-          <TabsTrigger value="documents">Баримт</TabsTrigger>
-          <TabsTrigger value="invoices">Нэхэмжлэх</TabsTrigger>
-          <TabsTrigger value="messages">Мессеж</TabsTrigger>
+      <Tabs value={tab} onValueChange={setTab}>
+        {/* Mobile: white 52px strip (36:1085); desktop: Tabs (10:64) under the header */}
+        <TabsList className="-mx-5 w-auto bg-bg-surface px-5 md:mx-0 md:mt-4 md:w-fit md:bg-transparent md:px-0">
+          {TABS.map((t) => (
+            <TabsTrigger key={t.value} value={t.value} className={TAB_TRIGGER}>
+              {t.mobileLabel ? <><span className="md:hidden">{t.mobileLabel}</span><span className="hidden md:inline">{t.label}</span></> : t.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        <TabsContent value="overview">
-          <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-            <Card className="flex flex-col gap-4 p-6">
-              <h3 className="text-h4">Хэргийн тайлбар</h3>
-              <p className="text-body text-text-secondary">{c.description ?? 'Тайлбар оруулаагүй байна.'}</p>
-              <dl className="grid gap-4 border-t border-border-subtle pt-4 sm:grid-cols-3">
-                <Fact label="Үйл явдал" value={String(c._count.events)} />
-                <Fact label="Баримт" value={String(c._count.documents)} />
-                <Fact label="Нэхэмжлэх" value={String(c._count.invoices)} />
-              </dl>
-            </Card>
-            <div className="flex flex-col gap-4">
-              <Card className="flex flex-col gap-3 p-6">
-                <p className="text-caption text-text-muted">Хариуцсан хуульч</p>
-                <p className="text-body-medium text-text-primary">{shortName(c.lawyer.firstName, c.lawyer.lastName)}</p>
-                <a href={`mailto:${(c.lawyer as { email?: string }).email ?? ''}`} className="focus-ring rounded-sm text-body-sm text-text-accent hover:underline">{(c.lawyer as { email?: string }).email}</a>
-              </Card>
-              <Card className="flex flex-col gap-3 p-6">
-                <p className="text-caption text-text-muted">Харилцагч</p>
-                <p className="text-body-medium text-text-primary">{shortName(c.client.firstName, c.client.lastName)}</p>
-                {user.role !== 'CLIENT' && <p className="text-body-sm text-text-secondary">{(c.client as { email?: string }).email}</p>}
-              </Card>
-            </div>
+        <TabsContent value="overview" className="pt-5 md:pt-6">
+          {/* Mobile + tablet: single column in the mobile frame's order (36:1096) */}
+          <div className="flex flex-col gap-4 xl:hidden">
+            {overview}
+            {nextEventCard}
+            {timelineCard}
+            {lawyerCard}
+            <div className="hidden flex-col gap-4 md:flex">{recentDocs}{finance}</div>
+          </div>
+          {/* Desktop: fluid left column + 344px right column (31:403) */}
+          <div className="hidden items-start gap-6 xl:flex">
+            <div className="flex min-w-0 flex-1 flex-col gap-6">{overview}{timelineCard}{recentDocs}</div>
+            <div className="flex w-[344px] shrink-0 flex-col gap-5">{lawyerCard}{nextEventCard}{finance}</div>
           </div>
         </TabsContent>
 
-        <TabsContent value="timeline">
-          {events.isLoading ? <Skeleton className="h-40" /> : (events.data?.length ?? 0) === 0 ? (
-            <EmptyState title="Бүртгэгдсэн үйл явдал байхгүй" />
-          ) : (
-            <ol className="relative flex flex-col gap-4 border-l-2 border-border-default pl-6">
-              {events.data!.map((e) => (
-                <li key={e.id} className="relative rounded-lg border border-border-default bg-bg-surface p-5">
-                  <span aria-hidden className="absolute -left-[31px] top-6 size-3 rounded-full border-2 border-bg-page bg-accent-default" />
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-overline text-text-accent">{CASE_EVENT_LABELS[e.type] ?? e.type}</p>
-                    <span className="text-caption text-text-muted">{formatDate(e.eventDate, true)}</span>
-                  </div>
-                  <p className="mt-2 text-body-medium text-text-primary">{e.title}</p>
-                  {e.description && <p className="mt-1 text-body-sm text-text-secondary">{e.description}</p>}
-                  <p className="mt-2 text-caption text-text-muted">{shortName(e.createdBy.firstName, e.createdBy.lastName)}</p>
-                </li>
-              ))}
-            </ol>
-          )}
+        <TabsContent value="timeline" className="pt-5 md:pt-6">
+          <TimelineCard events={timeline} loading={events.isLoading} showDescriptionOnMobile />
         </TabsContent>
 
-        <TabsContent value="documents">
+        <TabsContent value="documents" className="pt-5 md:pt-6">
           <div className="flex flex-col gap-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-body-sm text-text-secondary">PDF, Word, Excel, зураг, текст — 20MB хүртэл.</p>
-              <input ref={fileInput} type="file" accept={ACCEPT} className="sr-only" aria-label="Файл сонгох" onChange={(e) => { const f = e.target.files?.[0]; if (f) upload.mutate(f); e.target.value = ''; }} />
-              <Button size="sm" onClick={() => fileInput.current?.click()} disabled={upload.isPending}>{upload.isPending ? 'Хуулж байна…' : 'Баримт хавсаргах'}</Button>
+              <Button size="sm" onClick={pickFile} disabled={upload.isPending}>{upload.isPending ? 'Хуулж байна…' : 'Баримт нэмэх'}</Button>
             </div>
-            {documents.isLoading ? <Skeleton className="h-32" /> : (documents.data?.length ?? 0) === 0 ? (
-              <EmptyState title="Баримт хавсаргаагүй байна" action={<Button size="sm" variant="secondary" onClick={() => fileInput.current?.click()}>Эхний баримтаа хавсаргах</Button>} />
+            {documents.isLoading ? <Skeleton className="h-32" /> : docs.length === 0 ? (
+              <EmptyState title="Баримт хавсаргаагүй байна" action={<Button size="sm" variant="secondary" onClick={pickFile}>Эхний баримтаа хавсаргах</Button>} />
             ) : (
               <div className="grid gap-3 md:grid-cols-2">
-                {documents.data!.map((d) => (
-                  <FileChip key={d.id} name={d.name} mimeType={d.mimeType} meta={`${formatBytes(d.size)} · ${formatDate(d.createdAt)}`} action={<Button variant="ghost" size="sm" onClick={() => void download(d)}>Татах</Button>} />
+                {docs.map((d) => (
+                  <FileChip key={d.id} name={d.name} mimeType={d.mimeType} meta={`${formatBytes(d.size)} · ${formatDate(d.createdAt)}`} action={<DownloadAction doc={d} onDownload={(doc) => void download(doc)} />} />
                 ))}
               </div>
             )}
           </div>
         </TabsContent>
 
-        <TabsContent value="invoices">
-          {invoices.isLoading ? <Skeleton className="h-32" /> : (invoices.data?.items.length ?? 0) === 0 ? (
+        <TabsContent value="invoices" className="pt-5 md:pt-6">
+          {invoices.isLoading ? <Skeleton className="h-32" /> : invoiceItems.length === 0 ? (
             <EmptyState title="Нэхэмжлэх байхгүй" />
           ) : (
             <Table>
               <TableHead><TableRow><TableHeaderCell>Дугаар</TableHeaderCell><TableHeaderCell>Тайлбар</TableHeaderCell><TableHeaderCell className="text-right">Дүн</TableHeaderCell><TableHeaderCell>Төлөх хугацаа</TableHeaderCell><TableHeaderCell>Статус</TableHeaderCell></TableRow></TableHead>
               <TableBody>
-                {invoices.data!.items.map((inv) => (
+                {invoiceItems.map((inv) => (
                   <TableRow key={inv.id} interactive>
                     <TableCell className="text-body-sm-medium text-text-primary"><Link href={`/portal/invoices/${inv.id}`} className="focus-ring rounded-sm">{inv.invoiceNumber}</Link></TableCell>
                     <TableCell>{inv.description}</TableCell>
@@ -172,7 +217,7 @@ export default function CaseDetailPage() {
           )}
         </TabsContent>
 
-        <TabsContent value="messages">
+        <TabsContent value="messages" className="pt-5 md:pt-6">
           <EmptyState title="Тун удахгүй" description="Хуульчтайгаа портал дээрээс шууд харилцах мессежийн хэсэг удахгүй нээгдэнэ. Одоогоор и-мэйл, утсаар холбогдоно уу." />
         </TabsContent>
       </Tabs>
@@ -180,11 +225,195 @@ export default function CaseDetailPage() {
   );
 }
 
-function Fact({ label, value }: { label: string; value: string }) {
+/** Figma "Overview" (31:405 / 36:1097): title, description, facts (2-col grid desktop, label/value rows mobile). */
+function OverviewCard({ c }: { c: CaseDetail }) {
+  // The design's court / claim / opposing party / judge fields don't exist in the API — show real case facts instead.
+  const facts = [
+    { label: 'Хэргийн төрөл', value: CASE_TYPE_LABELS[c.type] ?? c.type },
+    { label: 'Нээгдсэн', value: formatDate(c.openedAt) },
+    { label: 'Хавсаргасан баримт', value: `${c._count.documents} файл` },
+    c.closedAt ? { label: 'Хаагдсан', value: formatDate(c.closedAt) } : { label: 'Нэхэмжлэх', value: `${c._count.invoices}` },
+  ];
   return (
-    <div className="flex flex-col gap-1">
-      <dt className="text-caption text-text-muted">{label}</dt>
-      <dd className="font-serif text-h4 text-text-brand">{value}</dd>
+    <Card className="flex flex-col gap-3 p-[18px] md:gap-3.5 md:p-6">
+      <h3 className={CARD_TITLE}>Хэргийн тойм</h3>
+      <p className="text-body-sm text-text-secondary md:text-body">{c.description ?? 'Тайлбар оруулаагүй байна.'}</p>
+      <dl className="flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-4">
+        {facts.map((f) => (
+          <div key={f.label} className="flex items-start justify-between gap-4 md:flex-col md:justify-start md:gap-1">
+            <dt className="text-caption text-text-muted">{f.label}</dt>
+            <dd className="text-right text-body-sm-medium text-text-primary md:text-left">{f.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </Card>
+  );
+}
+
+/** Figma "Timeline" (31:421 / 36:1118): 14px (12px mobile) status dot + 2px rail, date / title / description. */
+function TimelineCard({ events, loading, showDescriptionOnMobile }: { events: CaseEvent[]; loading: boolean; showDescriptionOnMobile?: boolean }) {
+  return (
+    <Card className="flex flex-col gap-4 p-[18px] md:gap-[18px] md:p-6">
+      <h3 className={CARD_TITLE}>Явцын түүх</h3>
+      {loading ? (
+        <div className="flex flex-col gap-3"><Skeleton className="h-12" /><Skeleton className="h-12" /><Skeleton className="h-12" /></div>
+      ) : events.length === 0 ? (
+        <p className="text-body-sm text-text-secondary">Бүртгэгдсэн үйл явдал байхгүй.</p>
+      ) : (
+        <ol className="flex flex-col gap-4 md:gap-[18px]">
+          {events.map((e, i) => {
+            const last = i === events.length - 1;
+            return (
+              <li key={e.id} className="flex gap-3.5 md:gap-4">
+                <span aria-hidden className="flex w-3.5 shrink-0 flex-col items-center md:w-5">
+                  <span className={cn('size-3 shrink-0 rounded-full md:size-3.5', EVENT_DOT[e.type] ?? 'bg-status-closed-fg')} />
+                  {!last && <span className="w-0.5 flex-1 bg-border-default" />}
+                </span>
+                <div className={cn('flex min-w-0 flex-1 flex-col gap-[3px] md:gap-1', !last && 'pb-2.5 md:pb-3')}>
+                  <p className="text-caption text-text-muted"><span className="sr-only">{CASE_EVENT_LABELS[e.type] ?? e.type} · </span>{formatDate(e.eventDate)}</p>
+                  <p className="text-body-sm-medium text-text-primary md:text-body-medium">{e.title}</p>
+                  {e.description && <p className={cn('text-body-sm text-text-secondary', !showDescriptionOnMobile && 'hidden md:block')}>{e.description}</p>}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      )}
+    </Card>
+  );
+}
+
+/** Figma "Next event" (31:501 / 36:1109): navy date tile + title + time · details; hearing reminder on desktop. */
+function NextEventCard({ event, loading }: { event?: CaseEvent; loading: boolean }) {
+  const d = event ? new Date(event.eventDate) : null;
+  return (
+    <Card className="flex flex-col gap-3 p-[18px] md:p-6">
+      <h3 className="text-body-medium text-text-primary">Дараагийн үйл явдал</h3>
+      {loading ? (
+        <Skeleton className="h-14" />
+      ) : !event || !d ? (
+        <p className="text-body-sm text-text-secondary">Товлогдсон үйл явдал байхгүй.</p>
+      ) : (
+        <>
+          <div className="flex items-center gap-3.5">
+            <div aria-hidden className="flex size-14 shrink-0 flex-col items-center justify-center rounded-md bg-bg-inverse md:size-[60px]">
+              <span className="font-serif text-[20px] font-semibold leading-7 text-accent-default md:text-h4">{String(d.getDate()).padStart(2, '0')}</span>
+              <span className="text-caption text-text-on-inverse-muted">{d.getMonth() + 1} сар</span>
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
+              <p className="text-body-sm-medium text-text-primary"><span className="sr-only">{formatDate(event.eventDate)}, </span>{event.title}</p>
+              <p className="text-caption text-text-secondary md:text-body-sm">{timeOf(event.eventDate)} · {event.description ?? CASE_EVENT_LABELS[event.type] ?? event.type}</p>
+            </div>
+          </div>
+          {event.type === 'HEARING' && (
+            <p className="hidden rounded-md bg-status-pending-bg px-3.5 py-3 text-body-sm text-status-pending-fg md:block">
+              Хуралдаанд 15 минутын өмнө ирж, иргэний үнэмлэхээ авчрахаа мартуузай.
+            </p>
+          )}
+        </>
+      )}
+    </Card>
+  );
+}
+
+/** Figma "Lawyer" (31:485 / 36:1147): avatar + name, phone / email rows (desktop), message + call buttons (mobile). */
+function LawyerCard({ lawyer }: { lawyer: Contact }) {
+  return (
+    <Card className="flex flex-col gap-3.5 p-[18px] md:gap-4 md:p-6">
+      <h3 className="text-body-medium text-text-primary">Хариуцсан хуульч</h3>
+      <div className="flex items-center gap-3 md:gap-3.5">
+        <Avatar initials={initials(lawyer.firstName, lawyer.lastName)} src={lawyer.avatarUrl} className="text-body-sm-medium md:size-14 md:text-body-medium" />
+        <div className="flex min-w-0 flex-col gap-[3px]">
+          <p className="text-body-sm-medium text-text-primary md:text-body-medium">{shortName(lawyer.firstName, lawyer.lastName)}</p>
+          <p className="text-caption text-text-secondary md:text-body-sm">{ROLE_LABELS[lawyer.role] ?? 'Хуульч'}</p>
+        </div>
+      </div>
+      {(lawyer.phone || lawyer.email) && (
+        <dl className="hidden flex-col gap-4 md:flex">
+          {lawyer.phone && <ContactRow label="Утас" value={lawyer.phone} href={`tel:${lawyer.phone}`} />}
+          {lawyer.email && <ContactRow label="Имэйл" value={lawyer.email} href={`mailto:${lawyer.email}`} />}
+        </dl>
+      )}
+      <Button asChild variant="secondary" size="md" className="hidden w-full md:inline-flex"><Link href="/portal/messages">Мессеж бичих</Link></Button>
+      <div className="flex gap-2.5 md:hidden">
+        <Button asChild variant="secondary" size="md" className="flex-1"><Link href="/portal/messages">Мессеж</Link></Button>
+        {lawyer.phone && <Button asChild size="md" className="flex-1"><a href={`tel:${lawyer.phone}`}>Залгах</a></Button>}
+      </div>
+    </Card>
+  );
+}
+
+function ContactRow({ label, value, href }: { label: string; value: string; href: string }) {
+  return (
+    <div className="flex items-center justify-between gap-4 text-body-sm">
+      <dt className="shrink-0 text-text-muted">{label}</dt>
+      <dd className="min-w-0">
+        {/* 44px hit area without changing the 22px row rhythm */}
+        <a href={href} className="focus-ring -my-[11px] inline-flex min-h-11 max-w-full items-center truncate rounded-sm text-body-sm-medium text-text-primary hover:text-text-brand">{value}</a>
+      </dd>
+    </div>
+  );
+}
+
+/** Figma "Documents" (31:462): latest 3 file chips + "Бүх баримт →" (switches to the Баримт tab). */
+function RecentDocumentsCard({ documents, loading, onShowAll, onDownload }: { documents: DocumentItem[]; loading: boolean; onShowAll: () => void; onDownload: (doc: DocumentItem) => void }) {
+  return (
+    <Card className="flex flex-col gap-3.5 p-6">
+      <div className="flex items-center justify-between gap-4">
+        <h3 className="text-h4">Сүүлийн баримт</h3>
+        <button type="button" onClick={onShowAll} className="focus-ring -my-[7px] inline-flex min-h-11 items-center rounded-sm text-body-sm-medium text-text-accent hover:underline">Бүх баримт →</button>
+      </div>
+      {loading ? (
+        <div className="flex flex-col gap-3"><Skeleton className="h-[62px]" /><Skeleton className="h-[62px]" /></div>
+      ) : documents.length === 0 ? (
+        <p className="text-body-sm text-text-secondary">Баримт хавсаргаагүй байна.</p>
+      ) : (
+        documents.slice(0, 3).map((d) => (
+          <FileChip key={d.id} name={d.name} mimeType={d.mimeType} meta={`${formatBytes(d.size)} · ${formatDate(d.createdAt)}`} action={<DownloadAction doc={d} onDownload={onDownload} />} />
+        ))
+      )}
+    </Card>
+  );
+}
+
+function DownloadAction({ doc, onDownload }: { doc: DocumentItem; onDownload: (doc: DocumentItem) => void }) {
+  return (
+    <Button variant="ghost" size="icon" onClick={() => onDownload(doc)} aria-label={`Татах: ${doc.name}`} title="Татах" className="-my-0.5 -mr-2 text-text-secondary hover:text-text-brand">
+      <DownloadIcon />
+    </Button>
+  );
+}
+
+/** Figma "Finance" (31:512): billed / paid / unpaid totals from this case's invoices + pay the earliest open one. */
+function FinanceCard({ invoices, loading }: { invoices: InvoiceItem[]; loading: boolean }) {
+  const billable = invoices.filter((i) => i.status !== 'DRAFT' && i.status !== 'CANCELLED');
+  const sum = (list: InvoiceItem[]) => list.reduce((total, i) => total + Number(i.amount), 0);
+  const open = billable.filter((i) => i.status === 'SENT' || i.status === 'OVERDUE').sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+  const unpaid = sum(open);
+  return (
+    <Card className="flex flex-col gap-3 p-6">
+      <h3 className="text-body-medium text-text-primary">Санхүү</h3>
+      {loading ? (
+        <Skeleton className="h-24" />
+      ) : (
+        <>
+          <dl className="flex flex-col gap-3">
+            <MoneyRow label="Нийт нэхэмжилсэн" value={formatMoney(sum(billable))} />
+            <MoneyRow label="Төлөгдсөн" value={formatMoney(sum(billable.filter((i) => i.status === 'PAID')))} className="text-status-progress-fg" />
+            <MoneyRow label="Төлөгдөөгүй" value={formatMoney(unpaid)} className={unpaid > 0 ? 'text-status-danger-fg' : undefined} />
+          </dl>
+          {open[0] && <Button asChild size="md" className="w-full"><Link href={`/portal/invoices/${open[0].id}`}>Нэхэмжлэх төлөх</Link></Button>}
+        </>
+      )}
+    </Card>
+  );
+}
+
+function MoneyRow({ label, value, className }: { label: string; value: string; className?: string }) {
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <dt className="text-body-sm text-text-muted">{label}</dt>
+      <dd className={cn('text-body-sm-medium text-text-primary', className)}>{value}</dd>
     </div>
   );
 }
