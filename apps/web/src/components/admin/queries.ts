@@ -36,6 +36,7 @@ export function useInvalidateCase(caseId: string) {
       queryClient.invalidateQueries({ queryKey: ['admin', 'cases'] }),
       queryClient.invalidateQueries({ queryKey: ['admin', 'invoices'] }),
       queryClient.invalidateQueries({ queryKey: ['admin', 'stats'] }),
+      queryClient.invalidateQueries({ queryKey: ['document-requests', 'summary'] }),
     ]);
   }, [caseId, queryClient]);
 }

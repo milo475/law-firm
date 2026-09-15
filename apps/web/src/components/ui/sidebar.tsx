@@ -12,10 +12,12 @@ export interface SidebarItemProps {
   icon: React.ReactNode;
   active?: boolean;
   count?: number;
+  /** Screen-reader noun for the count badge (default: "уншаагүй"). */
+  countLabel?: string;
   onClick?: () => void;
 }
 
-export function SidebarItem({ href, label, icon, active, count }: SidebarItemProps) {
+export function SidebarItem({ href, label, icon, active, count, countLabel = 'уншаагүй' }: SidebarItemProps) {
   return (
     <Link
       href={href}
@@ -29,7 +31,7 @@ export function SidebarItem({ href, label, icon, active, count }: SidebarItemPro
       <span className={cn('size-5 shrink-0', active ? 'text-accent-default' : 'text-text-on-inverse-muted group-hover:text-text-on-inverse')}>{icon}</span>
       <span className="flex-1 truncate">{label}</span>
       {typeof count === 'number' && count > 0 && (
-        <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-accent-default px-2 py-[3px] text-caption text-text-on-accent" aria-label={`${count} уншаагүй`}>
+        <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-accent-default px-2 py-[3px] text-caption text-text-on-accent" aria-label={`${count} ${countLabel}`}>
           {count}
         </span>
       )}

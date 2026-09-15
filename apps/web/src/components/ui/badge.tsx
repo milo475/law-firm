@@ -61,6 +61,14 @@ export const POST_STATUS_BADGE: Record<string, { tone: BadgeTone; label: string 
   ARCHIVED: { tone: 'pending', label: 'Архивласан' },
 };
 
+export const DOCUMENT_REQUEST_STATUS_BADGE: Record<string, { tone: BadgeTone; label: string }> = {
+  PENDING: { tone: 'pending', label: 'Хүлээгдэж буй' },
+  SUBMITTED: { tone: 'new', label: 'Илгээсэн' },
+  UNDER_REVIEW: { tone: 'new', label: 'Хянагдаж буй' },
+  APPROVED: { tone: 'progress', label: 'Батлагдсан' },
+  REJECTED: { tone: 'danger', label: 'Буцаагдсан' },
+};
+
 export function StatusBadge({ map, status, className }: { map: Record<string, { tone: BadgeTone; label: string }>; status: string; className?: string }) {
   const entry = map[status] ?? { tone: 'closed' as BadgeTone, label: status };
   return <Badge tone={entry.tone} className={className}>{entry.label}</Badge>;

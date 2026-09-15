@@ -231,8 +231,36 @@ export interface DocumentItem {
   mimeType: string;
   size: number;
   isVisibleToClient: boolean;
+  /** Set when the file answers a document request. */
+  requestId?: string | null;
   createdAt: string;
   uploadedBy: PublicUser;
+}
+
+export type DocumentRequestStatus = 'PENDING' | 'SUBMITTED' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED';
+
+export interface DocumentRequestItem {
+  id: string;
+  caseId: string;
+  title: string;
+  description: string | null;
+  isRequired: boolean;
+  dueDate: string | null;
+  status: DocumentRequestStatus;
+  rejectionReason: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  requestedBy: PublicUser;
+  reviewedBy: PublicUser | null;
+  documents: DocumentItem[];
+}
+
+/** GET /document-requests/summary — CLIENT: waiting for them; staff: waiting for review. */
+export interface DocumentRequestSummary {
+  total: number;
+  statuses: DocumentRequestStatus[];
+  cases: { caseId: string; caseNumber: string; title: string; count: number }[];
 }
 
 export interface InvoiceItem {

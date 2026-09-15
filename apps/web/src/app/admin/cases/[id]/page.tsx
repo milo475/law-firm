@@ -4,11 +4,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateCaseSchema } from '@law-firm/shared/schemas';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { ConfirmModal } from '@/components/admin/confirm-modal';
+import { DocumentRequestsTab } from '@/components/admin/document-requests-tab';
 import { EventModal } from '@/components/admin/event-modal';
 import { InvoiceActions } from '@/components/admin/invoice-actions';
 import { InvoiceModal } from '@/components/admin/invoice-modal';
@@ -28,8 +29,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } fro
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/toast';
-import { ApiError, api, type CaseDetail, type CaseEvent, type DocumentItem, type InvoiceItem, type Paginated, type PublicUser } from '@/lib/api';
+import { ApiError, api, type CaseDetail, type CaseEvent, type DocumentItem, type DocumentRequestItem, type InvoiceItem, type Paginated, type PublicUser } from '@/lib/api';
 import { CASE_STATUSES, CASE_TYPES, type CaseStatus } from '@/lib/admin';
+import { isAwaitingReview } from '@/lib/document-requests';
 import { CASE_EVENT_LABELS, CASE_STATUS_LABELS, CASE_TYPE_LABELS, formatBytes, formatDate, formatMoney } from '@/lib/format';
 import { shortName } from '@/lib/utils';
 
@@ -37,6 +39,7 @@ type StaffPerson = PublicUser & { email: string; phone: string | null };
 type StaffCaseDetail = CaseDetail & { client: StaffPerson; lawyer: StaffPerson };
 
 const ACCEPT = '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt';
+const TAB_VALUES = ['overview', 'timeline', 'documents', 'requests', 'invoices'];
 
 const OverviewSchema = z.object({
   title: CreateCaseSchema.shape.title,
@@ -53,6 +56,14 @@ export default function AdminCaseDetailPage() {
   const invalidate = useInvalidateCase(id);
 
   const detail = useQuery({ queryKey: ['admin', 'case', id], queryFn: () => api.get<StaffCaseDetail>(`/cases/${id}`), retry: false });
+  const requests = useQuery({
+    queryKey: ['admin', 'case', id, 'document-requests'],
+    queryFn: () => api.get<DocumentRequestItem[]>(`/cases/${id}/document-requests`),
+    enabled: detail.isSuccess,
+  });
+  // Notification links open a tab directly, e.g. ?tab=requests
+  const tabParam = useSearchParams().get('tab');
+  const initialTab = tabParam && TAB_VALUES.includes(tabParam) ? tabParam : 'overview';
   const [closeOpen, setCloseOpen] = useState(false);
 
   const updateStatus = useMutation({
@@ -93,6 +104,7 @@ export default function AdminCaseDetailPage() {
 
   const c = detail.data;
   const isClosed = c.status === 'CLOSED';
+  const awaitingReview = (requests.data ?? []).filter(isAwaitingReview).length;
 
   return (
     <div className="flex flex-col gap-6">
@@ -129,16 +141,25 @@ export default function AdminCaseDetailPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="overview">
+      <Tabs defaultValue={initialTab}>
         <TabsList>
           <TabsTrigger value="overview">Тойм</TabsTrigger>
           <TabsTrigger value="timeline">Явцын түүх</TabsTrigger>
           <TabsTrigger value="documents">Баримт</TabsTrigger>
+          <TabsTrigger value="requests">
+            Баримтын хүсэлт
+            {awaitingReview > 0 && (
+              <span className="ml-2 inline-flex min-w-6 items-center justify-center rounded-full bg-status-new-bg px-2 py-px text-caption text-status-new-fg" aria-label={`${awaitingReview} хянах`}>
+                {awaitingReview}
+              </span>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="invoices">Нэхэмжлэх</TabsTrigger>
         </TabsList>
         <TabsContent value="overview"><OverviewTab detail={c} isAdmin={isAdmin} onSaved={invalidate} /></TabsContent>
         <TabsContent value="timeline"><TimelineTab caseId={id} onChanged={invalidate} /></TabsContent>
         <TabsContent value="documents"><DocumentsTab caseId={id} userId={user.id} isAdmin={isAdmin} onChanged={invalidate} /></TabsContent>
+        <TabsContent value="requests"><DocumentRequestsTab caseId={id} isClosed={isClosed} requests={requests} onChanged={invalidate} /></TabsContent>
         <TabsContent value="invoices"><InvoicesTab caseId={id} onChanged={invalidate} /></TabsContent>
       </Tabs>
 
