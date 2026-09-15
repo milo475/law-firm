@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test';
-import { CLIENT1, login } from './fixtures';
+import { expect, request as playwrightRequest, test } from '@playwright/test';
+import { API_URL, CLIENT1, apiAs, login } from './fixtures';
 
 test.describe('Сесс', () => {
   test('access token дууссан ч refresh хүчинтэй бол портал чимээгүй сэргээгдэж нээгдэнэ', async ({ page, context }) => {
@@ -32,5 +32,41 @@ test.describe('Сесс', () => {
     await page.locator('input[name="password"]').fill(CLIENT1.password);
     await page.getByRole('button', { name: 'Нэвтрэх', exact: true }).click();
     await expect(page).toHaveURL(/\/portal$/);
+  });
+
+  test('хоёр таб нэг refresh токеныг зэрэг илгээхэд хоёулаа шинэ токен авч, хэрэглэгчийн бусад сесс хаагдахгүй', async () => {
+    const otherSession = await apiAs(CLIENT1);
+    const signIn = await playwrightRequest.newContext({ baseURL: API_URL });
+    expect((await signIn.post('/auth/login', { data: CLIENT1 })).ok()).toBeTruthy();
+    const refreshToken = (await signIn.storageState()).cookies.find((cookie) => cookie.name === 'refresh_token')?.value;
+    expect(refreshToken, 'login sets the refresh cookie').toBeTruthy();
+    await signIn.dispose();
+
+    const refreshWithSharedToken = async () => {
+      const tab = await playwrightRequest.newContext({ baseURL: API_URL, extraHTTPHeaders: { cookie: `refresh_token=${refreshToken}` } });
+      const status = (await tab.post('/auth/refresh')).status();
+      await tab.dispose();
+      return status;
+    };
+    // The first tab rotates the token; the second arrives moments later with the same, now rotated, one.
+    expect(await refreshWithSharedToken()).toBe(200);
+    expect(await refreshWithSharedToken()).toBe(200);
+    // Not treated as theft: another session of the same user still refreshes.
+    expect((await otherSession.post('/auth/refresh')).status()).toBe(200);
+    await otherSession.dispose();
+  });
+
+  test('хоёр табын access token зэрэг дуусахад хоёр таб хоёулаа порталд үлдэнэ', async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ baseURL });
+    const first = await context.newPage();
+    await login(first, CLIENT1);
+    const second = await context.newPage();
+    await first.goto('about:blank');
+    await context.clearCookies({ name: 'access_token' });
+
+    await Promise.all([first.goto('/portal'), second.goto('/portal')]);
+    await expect(first.getByRole('heading', { name: /Сайн байна уу/ })).toBeVisible();
+    await expect(second.getByRole('heading', { name: /Сайн байна уу/ })).toBeVisible();
+    await context.close();
   });
 });

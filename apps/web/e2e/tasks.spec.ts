@@ -56,8 +56,9 @@ test.describe('Даалгавар ба хэргийн баг', () => {
       const notifications = (await (await lawyer2Api.get('/notifications?limit=10')).json()) as { items: { title: string }[] };
       expect(notifications.items.map((item) => item.title)).toContain(`Танд даалгавар оноолоо: ${taskTitle}`);
 
-      // lawyer2 finds it under "Надад оноогдсон" and moves it TODO → IN_PROGRESS → REVIEW → DONE
-      await lawyer2Page.goto('/admin/tasks?scope=mine');
+      // lawyer2 finds it under "Надад оноогдсон" and moves it TODO → IN_PROGRESS → REVIEW → DONE.
+      // Filtered to «Хийх»: the list sorts by due date (undated last), and earlier runs leave lawyer2 many dated finished tasks.
+      await lawyer2Page.goto('/admin/tasks?scope=mine&status=TODO');
       await lawyer2Page.getByRole('link', { name: taskTitle }).filter({ visible: true }).click();
       await expect(lawyer2Page).toHaveURL(/\/admin\/tasks\/[0-9a-f-]{36}$/);
       await expect(lawyer2Page.getByRole('heading', { name: taskTitle })).toBeVisible();
