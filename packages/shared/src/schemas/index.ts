@@ -11,3 +11,4 @@ export * from './messages.js';
 export * from './notifications.js';
 export * from './case-members.js';
 export * from './tasks.js';
+export * from './performance.js';
