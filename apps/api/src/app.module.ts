@@ -18,6 +18,7 @@ import { DocumentRequestsModule } from './document-requests/document-requests.mo
 import { DocumentsModule } from './documents/documents.module';
 import { InvoicesModule } from './invoices/invoices.module';
 import { LawyersModule } from './lawyers/lawyers.module';
+import { MessagesModule } from './messages/messages.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PostsModule } from './posts/posts.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -48,6 +49,7 @@ import { UsersModule } from './users/users.module';
     CasesModule,
     DocumentsModule,
     DocumentRequestsModule,
+    MessagesModule,
     InvoicesModule,
     NotificationsModule,
     ContactModule,

@@ -40,6 +40,15 @@ export class NotificationsService {
     return { updated: result.count };
   }
 
+  /** True when the user already has an unread notification of this type pointing at the same link. */
+  async hasUnread(userId: string, type: string, link: string): Promise<boolean> {
+    const found = await this.prisma.notification.findFirst({
+      where: { userId, type, link, isRead: false },
+      select: { id: true },
+    });
+    return Boolean(found);
+  }
+
   /** Used by other modules (e.g. contact form → notify admins). */
   createMany(inputs: CreateNotificationInput[]) {
     if (inputs.length === 0) return Promise.resolve({ count: 0 });
