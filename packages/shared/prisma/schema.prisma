@@ -136,6 +136,7 @@ model User {
   taskComments             TaskComment[]     @relation("TaskCommentAuthor")
   notifications            Notification[]    @relation("NotificationRecipient")
   actedNotifications       Notification[]    @relation("NotificationActor")
+  taskAttachments          TaskAttachment[]  @relation("TaskAttachmentUploader")
   auditLogs                AuditLog[]
 
   @@index([role])
@@ -409,7 +410,8 @@ model Task {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
-  comments TaskComment[]
+  comments    TaskComment[]
+  attachments TaskAttachment[]
 
   @@index([assigneeId, status])
   @@index([caseId])
@@ -425,6 +427,22 @@ model TaskComment {
   author    User     @relation("TaskCommentAuthor", fields: [authorId], references: [id])
   body      String   @db.Text
   createdAt DateTime @default(now())
+
+  @@index([taskId, createdAt])
+}
+
+/// File attached to a staff task (stored in MinIO under tasks/<taskId>/). Removed with the task.
+model TaskAttachment {
+  id           String   @id @default(uuid()) @db.Uuid
+  taskId       String   @db.Uuid
+  task         Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  name         String
+  mimeType     String
+  size         Int
+  storageKey   String   @unique
+  uploadedById String   @db.Uuid
+  uploadedBy   User     @relation("TaskAttachmentUploader", fields: [uploadedById], references: [id])
+  createdAt    DateTime @default(now())
 
   @@index([taskId, createdAt])
 }
