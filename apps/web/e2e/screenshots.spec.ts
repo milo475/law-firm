@@ -3,7 +3,7 @@
  * Run: pnpm --filter @law-firm/web e2e:screenshots
  */
 import { test } from '@playwright/test';
-import { ADMIN, login } from './fixtures';
+import { ADMIN, API_URL, login } from './fixtures';
 
 const PUBLIC_PAGES: [string, string][] = [
   ['home', '/'],
@@ -71,6 +71,13 @@ test.describe('screenshots', () => {
     await caseLink.click();
     await page.waitForTimeout(1500);
     await page.screenshot({ path: `screenshots/portal-case-detail.${suffix}.png`, fullPage: true });
+    // document requests tab of the seeded case that has requests (LF-YYYY-0001); desktop lists cases as a table
+    const { items: clientCases } = (await (await page.request.get(`${API_URL}/cases?limit=50`)).json()) as { items: { id: string; caseNumber: string }[] };
+    const requestCase = clientCases.find((c) => c.caseNumber.endsWith('-0001'));
+    if (!requestCase) throw new Error('Seeded case LF-YYYY-0001 not found for the client');
+    await page.goto(`/portal/cases/${requestCase.id}?tab=requests`, { waitUntil: 'load' });
+    await page.waitForTimeout(1500);
+    await page.screenshot({ path: `screenshots/portal-case-requests.${suffix}.png`, fullPage: true });
     await page.goto('/portal/invoices', { waitUntil: 'load' });
     const invLink = page.locator('a[href^="/portal/invoices/"]:visible').first();
     await invLink.waitFor();
@@ -98,5 +105,11 @@ test.describe('screenshots', () => {
       await page.waitForTimeout(1500);
       await page.screenshot({ path: `screenshots/${name}.${suffix}.png`, fullPage: true });
     }
+    await page.goto('/admin/cases?search=0001', { waitUntil: 'load' });
+    const requestCase = page.locator('a[href^="/admin/cases/"]:not([href$="/new"]):visible').first();
+    await requestCase.waitFor();
+    await page.goto(`${await requestCase.getAttribute('href')}?tab=requests`, { waitUntil: 'load' });
+    await page.waitForTimeout(1500);
+    await page.screenshot({ path: `screenshots/admin-case-requests.${suffix}.png`, fullPage: true });
   });
 });

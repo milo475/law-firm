@@ -106,6 +106,7 @@ law-firm/
 │   │       ├── cases/           scope: CLIENT→өөрийн, LAWYER→хариуцсан, ADMIN→бүгд; staff CRUD, events, STATUS_CHANGE
 │   │       ├── documents/       multipart upload → MinIO, presigned download (scope + visibility), DELETE
 │   │       ├── invoices/        хэргийн scope-оор; үүсгэх (INV-YYYY-NNNN), төлөвийн шилжилт
+│   │       ├── document-requests/ баримтын хүсэлт: CRUD, submit (multipart), review, EventEmitter2 → мэдэгдэл
 │   │       ├── notifications/   list, read, read-all
 │   │       ├── contact/         public POST (5/цаг/IP), admin list + status
 │   │       ├── admin/           GET /admin/stats (хянах самбарын тоо, ойрын үйл явдал)
@@ -190,7 +191,7 @@ ADMIN болон LAWYER портал login-оор нэвтэрмэгц `/admin` 
 | `/admin` | ADMIN, LAWYER | Хянах самбар: тоон үзүүлэлт, ойрын үйл явдал |
 | `/admin/cases` | ADMIN, LAWYER | Хэргийн жагсаалт, төлөв/төрөл/хуульчийн шүүлт, хайлт (URL-д хадгалагдана) |
 | `/admin/cases/new` | ADMIN, LAWYER | Шинэ хэрэг, дугаар автоматаар олгогдоно |
-| `/admin/cases/[id]` | ADMIN, хариуцсан LAWYER | Тойм · Явцын түүх · Баримт (харилцагчид харагдах эсэх) · Нэхэмжлэх; төлөв солих, хаах |
+| `/admin/cases/[id]` | ADMIN, хариуцсан LAWYER | Тойм · Явцын түүх · Баримт (харилцагчид харагдах эсэх) · Баримтын хүсэлт · Нэхэмжлэх; төлөв солих, хаах |
 | `/admin/clients`, `/admin/clients/[id]` | ADMIN (LAWYER харна) | Харилцагч бүртгэх (түр нууц үг), засах, идэвхгүй болгох, хэргүүд |
 | `/admin/lawyers`, `/admin/lawyers/[id]` | ADMIN | Хуульчийн бүртгэл, нийтийн профайл |
 | `/admin/posts`, `/admin/posts/new`, `/admin/posts/[id]/edit` | ADMIN, LAWYER | Markdown editor + preview, cover зураг, slug автомат, Ноорог / Нийтлэх / Архивлах |
@@ -238,7 +239,66 @@ pnpm --filter @law-firm/web e2e
 
 ---
 
-## 5. Тест
+## 5. Баримтын хүсэлт (Document Request)
+
+Хуульч харилцагчаас тодорхой баримтыг нэрлэж хүснэ. Харилцагч файлаар хариулж, хуульч хянаад батлах эсвэл шалтгаантай буцаана.
+Нэг хүсэлтэд олон файл хавсарч болно. `Document.requestId` нь файлыг хүсэлттэй холбоно; `null` бол харилцагч өөрөө санаачилж хавсаргасан файл.
+
+Одоо байгаа DB-д нэмэлт migration-ийг `pnpm db:deploy`-оор хэрэгжүүлнэ. `pnpm db:seed` нь LF-YYYY-0001 хэрэгт батлагдсан,
+буцаагдсан, хүлээгдэж буй гурван жишээ хүсэлт нэмнэ.
+
+### Төлөвийн шилжилт
+
+| Одоогийн төлөв | Дараагийн төлөв | Хэн шилжүүлэх |
+| --- | --- | --- |
+| `PENDING` | `SUBMITTED` | хэргийн CLIENT файл илгээнэ |
+| `SUBMITTED` | `UNDER_REVIEW`, `APPROVED`, `REJECTED` | ADMIN, хариуцсан LAWYER |
+| `UNDER_REVIEW` | `APPROVED`, `REJECTED` | ADMIN, хариуцсан LAWYER |
+| `REJECTED` | `SUBMITTED` | хэргийн CLIENT дахин илгээнэ |
+| `APPROVED` | — | эцсийн төлөв |
+
+- `REJECTED` шийдвэрт `rejectionReason` заавал.
+- Хүсэлтийг зөвхөн `PENDING`, `REJECTED` үед засна. Файл хавсрагдаагүй бол л устгана.
+- Хаагдсан хэрэгт шинэ хүсэлт үүсгэхгүй.
+- Файл эхлээд MinIO-д хадгалагдана. DB бичилт амжилтгүй бол хадгалсан файлуудыг буцааж устгана.
+
+### Endpoint-ууд
+
+| Endpoint | Эрх | Тайлбар |
+| --- | --- | --- |
+| `GET /cases/:caseId/document-requests` | ADMIN, хариуцсан LAWYER, хэргийн CLIENT | Хүсэлтүүд, хавсаргасан файлтай нь; `?status=` шүүлт |
+| `POST /cases/:caseId/document-requests` | ADMIN, хариуцсан LAWYER | `{ items: [{ title, description?, isRequired?, dueDate? }] }`, 1–20 мөр |
+| `GET /document-requests/summary` | нэвтэрсэн бүх хэрэглэгч | Хэргээр тоолно: CLIENT → `PENDING` + `REJECTED`, ажилтан → `SUBMITTED` + `UNDER_REVIEW` |
+| `PATCH /document-requests/:id` | ADMIN, хариуцсан LAWYER | `title`, `description`, `dueDate`, `isRequired` |
+| `DELETE /document-requests/:id` | ADMIN, хариуцсан LAWYER | Файл хавсрагдаагүй үед |
+| `POST /document-requests/:id/submit` | хэргийн CLIENT | multipart `files` (нэг удаад ≤10, тус бүр ≤20MB) → `SUBMITTED` |
+| `POST /document-requests/:id/review` | ADMIN, хариуцсан LAWYER | `{ decision: "UNDER_REVIEW" / "APPROVED" / "REJECTED", rejectionReason? }` |
+
+Бүх бичих хүсэлт `AuditLog`-д `document-requests` entity-ээр бичигдэнэ.
+
+### Event → мэдэгдэл
+
+`@nestjs/event-emitter` (EventEmitter2) ашиглана. Service event цацаж, `DocumentRequestNotificationsListener` мэдэгдэл үүсгэнэ.
+Мэдэгдэл үүсгэхэд алдаа гарвал лог бичээд үндсэн үйлдлийг унагаахгүй.
+
+| Event | Хүлээн авагч | Мэдэгдлийн гарчиг |
+| --- | --- | --- |
+| `document-request.created` | CLIENT | «Танаас баримт хүсэлээ: {title}» (олон мөр бол нэг мэдэгдэлд жагсаана) |
+| `document-request.submitted` | хариуцсан LAWYER | «Баримт ирлээ: {title}» |
+| `document-request.reviewed` | CLIENT | «Баримт хүлээн авлаа: {title}» эсвэл «Дахин илгээнэ үү: {rejectionReason}» |
+
+Мэдэгдлийн холбоос `?tab=requests` параметрээр хэргийн «Баримтын хүсэлт» табыг шууд нээнэ. `UNDER_REVIEW` шийдвэр мэдэгдэл илгээхгүй.
+
+### UI
+
+- **Админ** `/admin/cases/[id]` → «Баримтын хүсэлт» таб: олон мөртэй «Баримт хүсэх» modal, төлөвийн шүүлт, хугацаа хэтэрсэн хүсэлт
+  улаан хүрээтэй, «Хянаж эхлэх» / «Батлах» / «Буцаах» (шалтгаан заавал). Sidebar-ын «Хэргүүд» дээр хянах баримтын тоо харагдана.
+- **Портал** `/portal/cases/[id]` → «Баримтын хүсэлт» таб checklist хэлбэрээр: файл сонгох эсвэл чирж оруулах, буцаагдсан шалтгаан
+  улаанаар, «Дахин илгээх». Тойм табд анхааруулга, dashboard-д «Танаас {n} баримт хүсэлттэй байна» карт, sidebar-ын «Хэргүүд» дээр тоо гарна.
+
+---
+
+## 6. Тест
 
 ```bash
 pnpm test            # эсвэл: pnpm --filter @law-firm/api test
@@ -249,21 +309,25 @@ cases scope (CLIENT өөр хүний хэрэг → 403, LAWYER scope, event vi
 RolesGuard, exception filter, audit entity mapping. Админ хэсэг: хэрэг үүсгэх/засах/хаах (LAWYER scope,
 STATUS_CHANGE), event-ийн мэдэгдэл, нэхэмжлэхийн шилжилт, баримт устгах эрх, хэрэглэгч ба хуульчийн профайл,
 admin stats, contact-ийн шилжилт, staff endpoint-уудын эрх (`x-test-role` header-тэй HTTP тест).
-Нийт 151 тест, DB шаардахгүй (Prisma mock).
+Баримтын хүсэлт: эрхийн scope (өөр хуульч, өөр харилцагч → 403), төлөвийн шилжилт, файл холбох, шалтгаангүй буцаалт → 400,
+файлтай хүсэлт устгах → 400, EventEmitter2 wiring-ээр мэдэгдэл үүсэх. Нийт 192 тест, DB шаардахгүй (Prisma mock).
 
 ```bash
 pnpm --filter @law-firm/web e2e     # Playwright, web :3001 + api :4000 ажиллаж байх ёстой
 ```
 
-Playwright (8 тест): нийтийн сайт (2), портал (2), админ (4):
+Playwright (11 тест): нийтийн сайт (2), портал (2), админ (4), баримтын хүсэлт (3):
 - LAWYER хэрэг үүсгэж шүүх хурал нэмэхэд харилцагч порталдаа болон мэдэгдлээс харна.
 - ADMIN нийтлэл нийтлэхэд нийтийн `/news` болон нийтлэлийн хуудсанд шууд гарна (тест дараа нь устгана).
 - LAWYER өөр хуульчийн хэрэг рүү `/admin/cases/[id]`-ээр орвол 403 хуудас, `PATCH /cases/:id` нь 403.
 - Нэвтрээгүй хэрэглэгч login руу, CLIENT `/admin`-аас `/portal` руу шилжинэ.
+- LAWYER баримт хүсэх → CLIENT порталд файл илгээх → LAWYER батлах → CLIENT талд «Хүлээн авсан».
+- LAWYER шалтгаантай буцаах → CLIENT шалтгааныг харж дахин илгээх → LAWYER талд дахин «Илгээсэн».
+- Өөр харилцагч хүсэлтэд файл илгээх, хүсэлтийг харах → 403; хэргийн хуудас нь 403.
 
 ---
 
-## 6. Production тэмдэглэл
+## 7. Production тэмдэглэл
 
 - `pnpm build` → `apps/api/dist`, `apps/web/.next`. API: `node dist/main`, web: `next start`.
 - API `trust proxy` = 1 (reverse proxy ард), cookie `secure` = true.
