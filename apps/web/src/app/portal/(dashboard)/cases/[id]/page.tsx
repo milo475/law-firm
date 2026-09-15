@@ -6,7 +6,9 @@ import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { DownloadIcon } from '@/components/icons';
+import { ChatThread } from '@/components/messages/chat-thread';
 import { DocumentRequestsPanel } from '@/components/portal/document-requests-panel';
+import { useUser } from '@/components/portal/user-context';
 import { Avatar } from '@/components/ui/avatar';
 import { CASE_STATUS_BADGE, INVOICE_STATUS_BADGE, StatusBadge } from '@/components/ui/badge';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -19,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/toast';
 import { ApiError, api, type CaseDetail, type CaseEvent, type DocumentItem, type DocumentRequestItem, type InvoiceItem, type Paginated, type PublicUser } from '@/lib/api';
 import { isRequestOverdue, needsClientAction } from '@/lib/document-requests';
+import { useCaseUnreadCount } from '@/lib/messages';
 import { CASE_EVENT_LABELS, CASE_TYPE_LABELS, INVOICE_STATUS_LABELS, ROLE_LABELS, formatBytes, formatDate, formatMoney } from '@/lib/format';
 import { cn, initials, shortName } from '@/lib/utils';
 
@@ -57,6 +60,7 @@ const timeOf = (iso: string) => formatDate(iso, true).split(' ')[1] ?? '';
 
 export default function CaseDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const { user } = useUser();
   const queryClient = useQueryClient();
   const fileInput = useRef<HTMLInputElement>(null);
   // Notification links open a tab directly, e.g. ?tab=requests
@@ -71,6 +75,7 @@ export default function CaseDetailPage() {
   const events = useQuery({ queryKey: ['case-events', id], queryFn: () => api.get<CaseEvent[]>(`/cases/${id}/events`), enabled: detail.isSuccess });
   const documents = useQuery({ queryKey: ['case-documents', id], queryFn: () => api.get<DocumentItem[]>(`/cases/${id}/documents`), enabled: detail.isSuccess });
   const invoices = useQuery({ queryKey: ['invoices', 'case', id], queryFn: () => api.get<Paginated<InvoiceItem>>(`/invoices?caseId=${id}&limit=50`), enabled: detail.isSuccess });
+  const unreadMessagesQuery = useCaseUnreadCount(id, detail.isSuccess);
   const requests = useQuery({ queryKey: ['case-document-requests', id], queryFn: () => api.get<DocumentRequestItem[]>(`/cases/${id}/document-requests`), enabled: detail.isSuccess });
 
   // Keep the active tab visible in the horizontally scrolling mobile tab strip.
@@ -118,11 +123,12 @@ export default function CaseDetailPage() {
   const docs = documents.data ?? [];
   const invoiceItems = invoices.data?.items ?? [];
   const openRequests = (requests.data ?? []).filter(needsClientAction);
+  const unreadMessages = unreadMessagesQuery.data?.count ?? 0;
 
   const overview = <OverviewCard c={c} />;
   const timelineCard = <TimelineCard events={timeline.slice(0, 5)} loading={events.isLoading} />;
   const nextEventCard = <NextEventCard event={nextEvent} loading={events.isLoading} />;
-  const lawyerCard = <LawyerCard lawyer={lawyer} />;
+  const lawyerCard = <LawyerCard lawyer={lawyer} onMessage={() => setTab('messages')} />;
   const recentDocs = <RecentDocumentsCard documents={docs} loading={documents.isLoading} onShowAll={() => setTab('documents')} onDownload={(d) => void download(d)} />;
   const finance = <FinanceCard invoices={invoiceItems} loading={invoices.isLoading} />;
 
@@ -159,7 +165,7 @@ export default function CaseDetailPage() {
           </div>
           <div className="hidden shrink-0 gap-3 md:flex">
             <Button variant="secondary" size="md" onClick={pickFile} disabled={upload.isPending}>{upload.isPending ? 'Хуулж байна…' : 'Баримт нэмэх'}</Button>
-            <Button asChild size="md"><Link href="/portal/messages">Хуульчтай холбогдох</Link></Button>
+            <Button size="md" onClick={() => setTab('messages')}>Хуульчтай холбогдох</Button>
           </div>
         </div>
       </div>
@@ -170,6 +176,11 @@ export default function CaseDetailPage() {
           {TABS.map((t) => (
             <TabsTrigger key={t.value} value={t.value} className={TAB_TRIGGER}>
               {t.mobileLabel ? <><span className="md:hidden">{t.mobileLabel}</span><span className="hidden md:inline">{t.label}</span></> : t.label}
+              {t.value === 'messages' && unreadMessages > 0 && (
+                <span className="ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-accent-default px-1.5 text-caption text-text-on-accent" aria-label={`${unreadMessages} уншаагүй`}>
+                  {unreadMessages}
+                </span>
+              )}
               {t.value === 'requests' && openRequests.length > 0 && (
                 <span className="ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-status-danger-bg px-1.5 text-caption text-status-danger-fg" aria-label={`${openRequests.length} хүлээгдэж буй`}>
                   {openRequests.length}
@@ -254,7 +265,18 @@ export default function CaseDetailPage() {
         </TabsContent>
 
         <TabsContent value="messages" className="pt-5 md:pt-6">
-          <EmptyState title="Тун удахгүй" description="Хуульчтайгаа портал дээрээс шууд харилцах мессежийн хэсэг удахгүй нээгдэнэ. Одоогоор и-мэйл, утсаар холбогдоно уу." />
+          <ChatThread
+            caseId={id}
+            viewer={user}
+            active={tab === 'messages'}
+            counterpart={{
+              name: shortName(lawyer.firstName, lawyer.lastName),
+              roleLabel: 'Хариуцсан хуульч',
+              initials: initials(lawyer.firstName, lawyer.lastName),
+              avatarUrl: lawyer.avatarUrl,
+            }}
+            emptyDescription="Хариуцсан хуульчдаа асуултаа бичээрэй. Хариу ирэхэд мэдэгдэл очно."
+          />
         </TabsContent>
       </Tabs>
     </div>
@@ -372,7 +394,7 @@ function NextEventCard({ event, loading }: { event?: CaseEvent; loading: boolean
 }
 
 /** Figma "Lawyer" (31:485 / 36:1147): avatar + name, phone / email rows (desktop), message + call buttons (mobile). */
-function LawyerCard({ lawyer }: { lawyer: Contact }) {
+function LawyerCard({ lawyer, onMessage }: { lawyer: Contact; onMessage: () => void }) {
   return (
     <Card className="flex flex-col gap-3.5 p-[18px] md:gap-4 md:p-6">
       <h3 className="text-body-medium text-text-primary">Хариуцсан хуульч</h3>
@@ -389,9 +411,9 @@ function LawyerCard({ lawyer }: { lawyer: Contact }) {
           {lawyer.email && <ContactRow label="Имэйл" value={lawyer.email} href={`mailto:${lawyer.email}`} />}
         </dl>
       )}
-      <Button asChild variant="secondary" size="md" className="hidden w-full md:inline-flex"><Link href="/portal/messages">Мессеж бичих</Link></Button>
+      <Button variant="secondary" size="md" className="hidden w-full md:inline-flex" onClick={onMessage}>Мессеж бичих</Button>
       <div className="flex gap-2.5 md:hidden">
-        <Button asChild variant="secondary" size="md" className="flex-1"><Link href="/portal/messages">Мессеж</Link></Button>
+        <Button variant="secondary" size="md" className="flex-1" onClick={onMessage}>Мессеж</Button>
         {lawyer.phone && <Button asChild size="md" className="flex-1"><a href={`tel:${lawyer.phone}`}>Залгах</a></Button>}
       </div>
     </Card>

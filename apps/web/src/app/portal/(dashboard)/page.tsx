@@ -10,8 +10,9 @@ import { CASE_STATUS_BADGE } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CaseCard } from '@/components/ui/card';
 import { CardSkeleton, EmptyState, ErrorState, Skeleton } from '@/components/ui/states';
-import { ApiError, api, type CaseEvent, type CaseListItem, type DocumentRequestSummary, type InvoiceItem, type NotificationItem, type Paginated } from '@/lib/api';
+import { ApiError, api, type CaseEvent, type CaseListItem, type DocumentRequestSummary, type InvoiceItem, type MessageUnreadSummary, type NotificationItem, type Paginated } from '@/lib/api';
 import { useDocumentRequestSummary } from '@/lib/document-requests';
+import { useMessageUnreadSummary } from '@/lib/messages';
 import { CASE_EVENT_LABELS, formatDate, formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
@@ -62,6 +63,7 @@ export default function DashboardPage() {
   const invoices = useQuery({ queryKey: ['invoices', 'all'], queryFn: () => api.get<Paginated<InvoiceItem>>('/invoices?limit=50') });
   const notifications = useQuery({ queryKey: ['notifications'], queryFn: () => api.get<{ items: NotificationItem[]; unreadCount: number }>('/notifications') });
   const requestSummary = useDocumentRequestSummary();
+  const messageSummary = useMessageUnreadSummary();
 
   // Today's date is rendered after mount so the server and client markup agree.
   const [today, setToday] = useState<{ long: string; short: string } | null>(null);
@@ -111,6 +113,7 @@ export default function DashboardPage() {
       </div>
 
       {requestSummary.data && requestSummary.data.total > 0 && <DocumentRequestsCard summary={requestSummary.data} />}
+      {messageSummary.data && messageSummary.data.total > 0 && <UnreadMessagesCard summary={messageSummary.data} />}
 
       {/* My cases */}
       <section className="flex flex-col gap-4 md:gap-5">
@@ -235,6 +238,31 @@ function DocumentRequestsCard({ summary }: { summary: DocumentRequestSummary }) 
       </div>
       <Button asChild size="md" className="w-full shrink-0 md:w-auto">
         <Link href={`/portal/cases/${first.caseId}?tab=requests`}>Баримт илгээх</Link>
+      </Button>
+    </div>
+  );
+}
+
+/** "Уншаагүй {n} мессеж байна" — opens the chat of the case with the most unread messages. */
+function UnreadMessagesCard({ summary }: { summary: MessageUnreadSummary }) {
+  const [first] = summary.cases;
+  if (!first) return null;
+  return (
+    <div role="status" className="flex flex-col gap-3 rounded-lg border-l-[3px] border-status-progress-fg bg-status-progress-bg p-5 md:flex-row md:items-center md:justify-between md:gap-6 md:px-7 md:py-6">
+      <div className="flex min-w-0 flex-col gap-1.5">
+        <p className="text-h4 text-status-progress-fg">Уншаагүй {summary.total} мессеж байна</p>
+        <p className="text-body-sm text-text-secondary md:text-body">
+          {summary.cases.map((item, index) => (
+            <span key={item.caseId}>
+              {index > 0 && ' · '}
+              <Link href={`/portal/cases/${item.caseId}?tab=messages`} className="focus-ring rounded-sm text-text-primary hover:underline">{item.caseNumber}</Link>
+              {`: ${item.count} мессеж`}
+            </span>
+          ))}
+        </p>
+      </div>
+      <Button asChild size="md" className="w-full shrink-0 md:w-auto">
+        <Link href={`/portal/cases/${first.caseId}?tab=messages`}>Мессеж унших</Link>
       </Button>
     </div>
   );

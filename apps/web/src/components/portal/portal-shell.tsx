@@ -9,6 +9,7 @@ import { PortalHeader } from '@/components/ui/portal-header';
 import { Sidebar } from '@/components/ui/sidebar';
 import { api, type NotificationItem } from '@/lib/api';
 import { useDocumentRequestSummary } from '@/lib/document-requests';
+import { useMessageUnreadSummary } from '@/lib/messages';
 import { ROLE_LABELS } from '@/lib/format';
 import { useUser } from './user-context';
 
@@ -37,6 +38,8 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
   const unread = notifications.data?.unreadCount ?? 0;
   const requestSummary = useDocumentRequestSummary();
   const openRequests = requestSummary.data?.total ?? 0;
+  const messageSummary = useMessageUnreadSummary();
+  const unreadMessages = messageSummary.data?.total ?? 0;
   const current = TITLES.find((t) => t.match(pathname)) ?? TITLES[0];
   const active = (href: string) => (href === '/portal' ? pathname === href : pathname.startsWith(href));
 
@@ -53,7 +56,7 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
           { href: '/portal/cases', label: 'Хэргүүд', icon: <CasesIcon />, active: active('/portal/cases'), count: openRequests, countLabel: 'хүлээгдэж буй баримтын хүсэлт' },
           { href: '/portal/documents', label: 'Баримт', icon: <DocumentsIcon />, active: active('/portal/documents') },
           { href: '/portal/invoices', label: 'Нэхэмжлэх', icon: <InvoicesIcon />, active: active('/portal/invoices') },
-          { href: '/portal/messages', label: 'Мессеж', icon: <MessagesIcon />, active: active('/portal/messages') },
+          { href: '/portal/messages', label: 'Мессеж', icon: <MessagesIcon />, active: active('/portal/messages'), count: unreadMessages, countLabel: 'уншаагүй мессеж' },
           { href: '/portal/notifications', label: 'Мэдэгдэл', icon: <BellIcon />, active: active('/portal/notifications'), count: unread },
           { href: '/portal/profile', label: 'Профайл', icon: <ProfileIcon />, active: active('/portal/profile') },
         ]}
