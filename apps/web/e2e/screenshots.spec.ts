@@ -88,6 +88,11 @@ test.describe('screenshots', () => {
     await invLink.click();
     await page.waitForTimeout(1500);
     await page.screenshot({ path: `screenshots/portal-invoice-detail.${suffix}.png`, fullPage: true });
+    await page.goto('/portal', { waitUntil: 'load' });
+    await page.getByRole('button', { name: /^Мэдэгдэл/ }).click();
+    await page.getByRole('menu', { name: 'Сүүлийн мэдэгдлүүд' }).waitFor();
+    await page.waitForTimeout(1200);
+    await page.screenshot({ path: `screenshots/portal-notification-bell.${suffix}.png` });
   });
 
   test('admin pages', async ({ page }, testInfo) => {

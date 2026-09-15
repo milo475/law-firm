@@ -93,22 +93,23 @@ test.describe('Админ самбар', () => {
   test('LAWYER өөр хуульчийн хэрэг рүү URL-ээр орвол 403, засах API ч хаалттай', async ({ page }) => {
     const api = await playwrightRequest.newContext({ baseURL: API_URL });
     expect((await api.post('/auth/login', { data: LAWYER2 })).ok()).toBeTruthy();
-    const { items } = (await (await api.get('/cases')).json()) as { items: { id: string; caseNumber: string }[] };
+    const { items } = (await (await api.get('/cases?limit=100')).json()) as { items: { id: string; caseNumber: string; lawyer: { firstName: string } }[] };
     await api.dispose();
-    expect(items.length).toBeGreaterThan(0);
-    const foreignCase = items[0];
+    // A seeded case lawyer2 leads alone: other specs briefly add lawyer2 to lawyer1's cases, so "the newest case" is not reliable.
+    const foreignCase = items.find((item) => item.lawyer.firstName === 'Оюунбилэг');
+    expect(foreignCase, 'a case led by lawyer2').toBeTruthy();
 
     await login(page, LAWYER1);
     // Admin-only menu items are hidden for lawyers.
     await expect(page.getByRole('link', { name: 'Хуульчид', exact: true })).toHaveCount(0);
 
-    await page.goto(`/admin/cases/${foreignCase.id}`);
+    await page.goto(`/admin/cases/${foreignCase!.id}`);
     const alert = page.getByRole('alert').filter({ hasText: '403' });
     await expect(alert).toContainText('Энэ хэргийг удирдах эрх танд байхгүй');
     await expect(page.getByRole('button', { name: 'Хэргүүд рүү буцах' }).or(page.getByRole('link', { name: 'Хэргүүд рүү буцах' }))).toBeVisible();
-    await expect(page.getByText(foreignCase.caseNumber)).toHaveCount(0);
+    await expect(page.getByText(foreignCase!.caseNumber)).toHaveCount(0);
 
-    const patch = await page.request.patch(`${API_URL}/cases/${foreignCase.id}`, { data: { title: 'Зөвшөөрөлгүй өөрчлөлт' } });
+    const patch = await page.request.patch(`${API_URL}/cases/${foreignCase!.id}`, { data: { title: 'Зөвшөөрөлгүй өөрчлөлт' } });
     expect(patch.status()).toBe(403);
   });
 
