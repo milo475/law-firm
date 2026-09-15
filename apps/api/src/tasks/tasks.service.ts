@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException, Optional } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   ACTIVE_TASK_STATUSES,
@@ -19,6 +19,7 @@ import type { RequestUser } from '../common/types/request-user';
 import { paginate, skipTake } from '../common/utils/pagination';
 import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
 import { PrismaService } from '../prisma/prisma.service';
+import { StorageService } from '../storage/storage.service';
 import {
   TASK_EVENTS,
   type TaskAssignedEvent,
@@ -70,10 +71,14 @@ function toRef(task: { id: string; title: string; assigneeId: string; createdByI
  */
 @Injectable()
 export class TasksService {
+  private readonly logger = new Logger(TasksService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly cases: CasesService,
     private readonly events: EventEmitter2,
+    /** Removes attachment objects from MinIO when a task is deleted (optional so unit tests can skip it). */
+    @Optional() private readonly storage?: StorageService,
   ) {}
 
   visibleWhere(user: RequestUser): Prisma.TaskWhereInput {
@@ -206,7 +211,15 @@ export class TasksService {
     if (!this.permissionsFor(task, user).canDelete) {
       throw new ForbiddenException('Даалгаврыг зөвхөн үүсгэсэн хүн эсвэл админ устгана');
     }
+    const attachments = this.storage ? await this.prisma.taskAttachment.findMany({ where: { taskId: id }, select: { storageKey: true } }) : [];
     await this.prisma.task.delete({ where: { id } });
+    for (const { storageKey } of attachments) {
+      try {
+        await this.storage?.delete(storageKey);
+      } catch (error) {
+        this.logger.warn(`Could not remove attachment object ${storageKey}: ${(error as Error).message}`);
+      }
+    }
   }
 
   async addComment(id: string, input: CreateTaskCommentInput, user: RequestUser) {
@@ -243,7 +256,15 @@ export class TasksService {
     return task;
   }
 
-  private assertCanView(task: { assigneeId: string; createdById: string; case: CaseScopeRecord | null }, user: RequestUser): void {
+  /** 404 when the task does not exist, 403 when the viewer may not open it (used by task attachments). */
+  async assertVisibleById(id: string, user: RequestUser): Promise<TaskAccess> {
+    const task = await this.loadAccess(id);
+    this.assertCanView(task, user);
+    return task;
+  }
+
+  /** ADMIN, or a LAWYER who is the assignee, the creator or on the task's case team. */
+  assertCanView(task: { assigneeId: string; createdById: string; case: CaseScopeRecord | null }, user: RequestUser): void {
     if (user.role === Role.ADMIN) return;
     if (
       user.role === Role.LAWYER &&
