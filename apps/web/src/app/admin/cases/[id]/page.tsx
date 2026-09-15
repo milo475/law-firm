@@ -8,6 +8,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { CaseTasksTab } from '@/components/admin/case-tasks-tab';
 import { CaseTeamTab } from '@/components/admin/case-team-tab';
 import { ConfirmModal } from '@/components/admin/confirm-modal';
 import { ChatThread } from '@/components/messages/chat-thread';
@@ -42,7 +43,7 @@ type StaffPerson = PublicUser & { email: string; phone: string | null };
 type StaffCaseDetail = CaseDetail & { client: StaffPerson; lawyer: StaffPerson; members: CaseMemberItem[] };
 
 const ACCEPT = '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt';
-const TAB_VALUES = ['overview', 'timeline', 'documents', 'requests', 'messages', 'invoices', 'team'];
+const TAB_VALUES = ['overview', 'timeline', 'documents', 'requests', 'messages', 'invoices', 'team', 'tasks'];
 
 const OverviewSchema = z.object({
   title: CreateCaseSchema.shape.title,
@@ -179,6 +180,7 @@ export default function AdminCaseDetailPage() {
           </TabsTrigger>
           <TabsTrigger value="invoices">Нэхэмжлэх</TabsTrigger>
           <TabsTrigger value="team">Баг</TabsTrigger>
+          <TabsTrigger value="tasks">Даалгавар</TabsTrigger>
         </TabsList>
         <TabsContent value="overview"><OverviewTab detail={c} isAdmin={isAdmin} canEdit={canLead} onSaved={invalidate} /></TabsContent>
         <TabsContent value="timeline"><TimelineTab caseId={id} onChanged={invalidate} /></TabsContent>
@@ -200,6 +202,7 @@ export default function AdminCaseDetailPage() {
         </TabsContent>
         <TabsContent value="invoices"><InvoicesTab caseId={id} onChanged={invalidate} /></TabsContent>
         <TabsContent value="team"><CaseTeamTab caseId={id} viewerId={user.id} canManage={canLead} onChanged={invalidate} /></TabsContent>
+        <TabsContent value="tasks"><CaseTasksTab caseRef={{ id: c.id, caseNumber: c.caseNumber, title: c.title }} /></TabsContent>
       </Tabs>
 
       <ConfirmModal

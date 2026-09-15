@@ -14,6 +14,7 @@ import { EmptyState, ErrorState, Skeleton } from '@/components/ui/states';
 import { ApiError, api, type CaseListItem, type Paginated } from '@/lib/api';
 import type { ContactRequestItem } from '@/lib/admin';
 import { CASE_EVENT_LABELS, formatDate, formatMoney } from '@/lib/format';
+import { useTaskSummary } from '@/lib/tasks';
 import { shortName } from '@/lib/utils';
 
 export default function AdminDashboardPage() {
@@ -30,6 +31,8 @@ export default function AdminDashboardPage() {
     queryKey: ['admin', 'cases', { limit: 5 }],
     queryFn: () => api.get<Paginated<CaseListItem>>('/cases?limit=5'),
   });
+
+  const tasks = useTaskSummary();
 
   const s = stats.data;
 
@@ -93,6 +96,22 @@ export default function AdminDashboardPage() {
           ))}
         </div>
       )}
+
+      <div className="grid gap-4 sm:grid-cols-2" aria-label="Миний даалгавар">
+        <StatTile
+          label="Миний идэвхтэй даалгавар"
+          value={tasks.isError ? '—' : tasks.data ? String(tasks.data.active) : null}
+          hint={tasks.data ? `${tasks.data.byStatus.TODO} хийх · ${tasks.data.byStatus.IN_PROGRESS} хийгдэж буй · ${tasks.data.byStatus.REVIEW} хянах` : undefined}
+          href="/admin/tasks?scope=mine"
+        />
+        <StatTile
+          label="Хугацаа хэтэрсэн даалгавар"
+          value={tasks.isError ? '—' : tasks.data ? String(tasks.data.overdue) : null}
+          hint="Надад оноогдсон, эцсийн хугацаа өнгөрсөн"
+          href="/admin/tasks?scope=mine&overdue=true"
+          tone={tasks.data && tasks.data.overdue > 0 ? 'danger' : undefined}
+        />
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="flex flex-col gap-4 p-6">

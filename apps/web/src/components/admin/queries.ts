@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { api, type CaseMemberItem, type Paginated } from '@/lib/api';
 import type { AdminUser } from '@/lib/admin';
+import { ROLE_LABELS } from '@/lib/format';
 import { shortName } from '@/lib/utils';
 
 /** Active clients as Select options (a LAWYER may list clients too). */
@@ -24,6 +25,22 @@ export function useLawyerOptions(enabled = true) {
     queryFn: () => api.get<Paginated<AdminUser>>('/users?role=LAWYER&isActive=true&limit=100'),
     enabled,
     select: (data) => data.items.map((u) => ({ value: u.id, label: shortName(u.firstName, u.lastName) })),
+  });
+}
+
+/** Active lawyers and admins as Select options (ADMIN only — assigning tasks to any staff member). */
+export function useStaffOptions(enabled = true) {
+  return useQuery({
+    queryKey: ['admin', 'users', { role: 'STAFF', isActive: true }],
+    queryFn: async () => {
+      const [lawyers, admins] = await Promise.all([
+        api.get<Paginated<AdminUser>>('/users?role=LAWYER&isActive=true&limit=100'),
+        api.get<Paginated<AdminUser>>('/users?role=ADMIN&isActive=true&limit=100'),
+      ]);
+      return [...lawyers.items, ...admins.items];
+    },
+    enabled,
+    select: (users) => users.map((u) => ({ value: u.id, label: `${shortName(u.firstName, u.lastName)} · ${ROLE_LABELS[u.role]}` })),
   });
 }
 

@@ -14,6 +14,7 @@ import {
   TabCasesIcon,
   TabHomeIcon,
   TabProfileIcon,
+  TasksIcon,
   UsersIcon,
 } from '@/components/icons';
 import { useUser } from '@/components/portal/user-context';
@@ -24,6 +25,7 @@ import { isStaff } from '@/lib/admin';
 import { useDocumentRequestSummary } from '@/lib/document-requests';
 import { useInvoicePaymentSummary } from '@/lib/invoices';
 import { useMessageUnreadSummary } from '@/lib/messages';
+import { useTaskSummary } from '@/lib/tasks';
 import { ROLE_LABELS } from '@/lib/format';
 
 interface NavEntry {
@@ -36,6 +38,7 @@ interface NavEntry {
 const NAV: NavEntry[] = [
   { href: '/admin', label: 'Хянах самбар', icon: <HomeIcon /> },
   { href: '/admin/cases', label: 'Хэргүүд', icon: <CasesIcon /> },
+  { href: '/admin/tasks', label: 'Даалгавар', icon: <TasksIcon /> },
   { href: '/admin/clients', label: 'Харилцагчид', icon: <UsersIcon /> },
   { href: '/admin/lawyers', label: 'Хуульчид', icon: <BriefcaseIcon />, adminOnly: true },
   { href: '/admin/posts', label: 'Нийтлэл', icon: <DocumentsIcon /> },
@@ -49,6 +52,8 @@ const TITLES: { match: (p: string) => boolean; title: string; back?: string }[] 
   { match: (p) => p === '/admin/cases/new', title: 'Шинэ хэрэг', back: '/admin/cases' },
   { match: (p) => /^\/admin\/cases\/[^/]+$/.test(p), title: 'Хэргийн удирдлага', back: '/admin/cases' },
   { match: (p) => p.startsWith('/admin/cases'), title: 'Хэргүүд' },
+  { match: (p) => /^\/admin\/tasks\/[^/]+$/.test(p), title: 'Даалгавар', back: '/admin/tasks' },
+  { match: (p) => p.startsWith('/admin/tasks'), title: 'Даалгавар' },
   { match: (p) => /^\/admin\/clients\/[^/]+$/.test(p), title: 'Харилцагч', back: '/admin/clients' },
   { match: (p) => p.startsWith('/admin/clients'), title: 'Харилцагчид' },
   { match: (p) => /^\/admin\/lawyers\/[^/]+$/.test(p), title: 'Хуульчийн профайл', back: '/admin/lawyers' },
@@ -71,6 +76,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const requestSummary = useDocumentRequestSummary(allowed);
   const messageSummary = useMessageUnreadSummary(allowed);
   const paymentSummary = useInvoicePaymentSummary(allowed);
+  const taskSummary = useTaskSummary(allowed);
 
   useEffect(() => {
     // Middleware already redirects clients; this covers sessions that only had the refresh marker.
@@ -88,6 +94,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     ...item,
     active: active(item.href),
     ...(item.href === '/admin/cases' ? { count: pendingOnCases, countLabel: 'хянах баримт, уншаагүй мессеж' } : {}),
+    ...(item.href === '/admin/tasks' ? { count: taskSummary.data?.active ?? 0, countLabel: 'идэвхтэй даалгавар' } : {}),
     ...(item.href === '/admin/invoices' ? { count: paymentSummary.data?.total ?? 0, countLabel: 'баталгаажуулах төлбөр' } : {}),
   }));
 

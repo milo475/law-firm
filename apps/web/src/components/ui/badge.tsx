@@ -67,6 +67,21 @@ export const CASE_MEMBER_ROLE_BADGE: Record<string, { tone: BadgeTone; label: st
   MEMBER: { tone: 'closed', label: 'Гишүүн' },
 };
 
+export const TASK_STATUS_BADGE: Record<string, { tone: BadgeTone; label: string }> = {
+  TODO: { tone: 'closed', label: 'Хийх' },
+  IN_PROGRESS: { tone: 'new', label: 'Хийгдэж буй' },
+  REVIEW: { tone: 'pending', label: 'Хянах' },
+  DONE: { tone: 'progress', label: 'Дууссан' },
+  CANCELLED: { tone: 'closed', label: 'Цуцалсан' },
+};
+
+export const TASK_PRIORITY_BADGE: Record<string, { tone: BadgeTone; label: string }> = {
+  LOW: { tone: 'closed', label: 'Бага' },
+  MEDIUM: { tone: 'new', label: 'Дунд' },
+  HIGH: { tone: 'pending', label: 'Өндөр' },
+  URGENT: { tone: 'danger', label: 'Яаралтай' },
+};
+
 export const DOCUMENT_REQUEST_STATUS_BADGE: Record<string, { tone: BadgeTone; label: string }> = {
   PENDING: { tone: 'pending', label: 'Хүлээгдэж буй' },
   SUBMITTED: { tone: 'new', label: 'Илгээсэн' },
