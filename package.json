@@ -22,6 +22,7 @@
     "db:deploy": "pnpm --filter @law-firm/shared db:deploy",
     "db:seed": "pnpm --filter @law-firm/shared db:seed",
     "db:clean": "pnpm --filter @law-firm/shared db:clean",
+    "db:admin": "pnpm --filter @law-firm/shared db:admin",
     "db:studio": "pnpm --filter @law-firm/shared db:studio",
     "clean": "turbo run clean && rm -rf node_modules"
   },

@@ -79,6 +79,7 @@ Seed нь **идемпотент**: дахин ажиллуулахад өөри
 | `pnpm db:migrate` | `prisma migrate dev` (dev) — prod-д `pnpm db:deploy` |
 | `pnpm db:seed` | `prisma db seed` — жишээ өгөгдөл (идемпотент) |
 | `pnpm db:clean` | Тестийн үлдэгдэл өгөгдлийг устгана (зөвхөн `*_test` DB) |
+| `pnpm db:admin` | ADMIN хэрэглэгч үүсгэх / нууц үгийг нь сэргээх (deploy хийсний дараа эхний админ) |
 | `pnpm db:studio` | Prisma Studio |
 
 ---
@@ -167,6 +168,7 @@ law-firm/
     ├── prisma/schema.prisma     бүх модель, enum, index
     ├── prisma/seed.ts           argon2 hash-тай seed (идемпотент)
     ├── prisma/clean-test-data.ts  `pnpm db:clean` — тестийн үлдэгдлийг цэвэрлэнэ (зөвхөн *_test DB)
+    ├── prisma/create-admin.ts   `pnpm db:admin` — ADMIN үүсгэх/нууц үг сэргээх (argon2id)
     ├── prisma.config.ts         Prisma 7 config (DATABASE_URL, seed command)
     └── src/                     db.ts (client factory + singleton), schemas/ (zod), labels.ts, utils/
 ```
@@ -897,6 +899,24 @@ Env (нарийн жагсаалт `.env.example`-ийн төгсгөлд):
 `prisma migrate deploy` болон seed нь production-д ажиллах ёстой тул `prisma`, `tsx`, `dotenv`,
 `argon2` нь `packages/shared`-ийн **dependencies** дотор байна (devDependencies-гүй суулгалтад ч ирнэ).
 `prisma.config.ts` болон `seed.ts` нь `.env` файл байхгүй үед `process.env`-ээс уншина.
+
+### Эхний админ (`pnpm db:admin`)
+
+`pnpm start:api` нь зөвхөн `migrate deploy` хийдэг (seed ажиллуулдаггүй) тул шинэ deploy дээр
+хэрэглэгч байхгүй. Эхний ADMIN-ыг CLI-ээр үүсгэнэ:
+
+```bash
+# Railway → Postgres service → Connect → DATABASE_PUBLIC_URL-ийг ашиглана
+DATABASE_URL="postgresql://postgres:…@…proxy.rlwy.net:PORT/railway" \
+  ADMIN_EMAIL=admin@lawfirm.mn ADMIN_PASSWORD='…' pnpm db:admin
+```
+
+- И-мэйл, нууц үг нь аппликейшны яг ижил zod дүрмээр шалгагдана (нууц үг ≥8 тэмдэгт, дор хаяж нэг
+  үсэг, нэг тоо). Нууц үг argon2id-ээр hash хийгдэнэ, хэзээ ч хэвлэгддэггүй.
+- Тухайн и-мэйлтэй хэрэглэгч аль хэдийн байвал өгөгдөл нь хэвээр үлдэж, идэвхтэй ADMIN болно —
+  өөрөөр хэлбэл нууц үг сэргээхэд ч энэ командыг ашиглана.
+- Аргументаар ч болно: `pnpm db:admin -- --email … --password … [--first … --last … --phone …]`.
+- Нэвтрэх хаяг нь `/portal/login` (ажилтан `/admin` руу шилждэг); нэвтрэх нэр нь и-мэйл эсвэл утас.
 
 **Rate limit:** `TRUST_PROXY_HOPS` буруу бол throttler бүх хэрэглэгчийг нэг IP гэж үзнэ. Шалгах:
 `NODE_ENV=production` үед лог дээрх `req.ip` (эсвэл түр `/health`-д нэмж) бодит клиентийн IP байх

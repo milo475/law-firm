@@ -40,6 +40,7 @@
     "db:reset": "prisma migrate reset --force",
     "db:seed": "prisma db seed",
     "db:clean": "tsx prisma/clean-test-data.ts",
+    "db:admin": "tsx prisma/create-admin.ts",
     "db:studio": "prisma studio",
     "test": "jest"
   },
