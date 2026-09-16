@@ -52,9 +52,13 @@ MinIO унтраалттай үед баримт/хавсралт хуулах �
 | CLIENT | client1@example.mn | 88110001 | `Client123!` |
 | CLIENT | client2@example.mn | 88110002 | `Client123!` |
 
-Seed нь 6 нийтэлсэн + 1 ноорог нийтлэл, 3 хэрэг (event, document, invoice-той), мэдэгдэл,
-холбоо барих хүсэлт үүсгэнэ. Seed-ийн document бичлэгүүд MinIO дээр бодит файлгүй тул
-татахад 404 өгнө; портал дээрээс шинээр хавсаргасан файлууд бодитоор хадгалагдана.
+Seed нь 6 нийтэлсэн + 1 ноорог нийтлэл, 3 хэрэг (event, document, invoice, баримтын хүсэлт,
+мессежтэй), 6 даалгавар, 4 үйлчилгээний хүсэлт, мэдэгдэл үүсгэнэ. Seed-ийн document бичлэгүүд
+MinIO дээр бодит файлгүй тул татахад 404 өгнө; портал дээрээс шинээр хавсаргасан файлууд бодитоор
+хадгалагдана.
+
+Seed нь **идемпотент**: дахин ажиллуулахад өөрийн эзэмшдэг жишээ мөрүүдийг дарж бичнэ, давхардуулахгүй.
+Ажиллахдаа аль DB-д бичиж байгаагаа хэвлэдэг, `NODE_ENV=production` үед `--force`-гүйгээр татгалзана.
 
 ### Root script-үүд
 
@@ -63,12 +67,13 @@ Seed нь 6 нийтэлсэн + 1 ноорог нийтлэл, 3 хэрэг (ev
 | `pnpm dev` | shared build → web :3001 + api :4000 dev горимд (turbo) |
 | `pnpm build` | бүх package build |
 | `pnpm lint` / `pnpm typecheck` | ESLint / tsc |
-| `pnpm test` | Jest (apps/api) |
+| `pnpm test` | Jest (apps/api + packages/shared) |
 | `pnpm --filter @law-firm/web e2e` | Playwright e2e (web :3001 + api :4000 ажиллаж байх ёстой) |
 | `pnpm --filter @law-firm/web e2e:screenshots` | Бүх хуудасны (админ орно) desktop/mobile screenshot → `apps/web/screenshots/` |
 | `pnpm db:generate` | Prisma client generate |
 | `pnpm db:migrate` | `prisma migrate dev` (dev) — prod-д `pnpm db:deploy` |
-| `pnpm db:seed` | `prisma db seed` |
+| `pnpm db:seed` | `prisma db seed` — жишээ өгөгдөл (идемпотент) |
+| `pnpm db:clean` | Тестийн үлдэгдэл өгөгдлийг устгана (зөвхөн `*_test` DB) |
 | `pnpm db:studio` | Prisma Studio |
 
 ---
@@ -132,7 +137,7 @@ law-firm/
 │   │       ├── common/          decorators (@Public, @Roles, @CurrentUser), guards, filter, utils
 │   │       └── config/env.ts    zod env schema
 │   └── web/                     Next.js 15 (Figma "00 Design System"-ээс хэрэгжүүлсэн UI)
-│       ├── e2e/                 Playwright тестүүд + screenshot скрипт
+│       ├── e2e/                 Playwright тестүүд + screenshot скрипт; global-setup.ts (DB цэвэрлэгээ)
 │       └── src/
 │           ├── app/globals.css  Figma variable → CSS var + Tailwind v4 @theme, text-h1…text-caption, shadow токен
 │           ├── app/(site)/      /, about, services[/slug], lawyers[/id], news[/slug], faq, contact, privacy, terms, 404
@@ -153,7 +158,8 @@ law-firm/
 │           └── middleware.ts    /portal/*, /admin/* хамгаалалт; CLIENT → /portal, ADMIN/LAWYER → /admin
 └── packages/shared/
     ├── prisma/schema.prisma     бүх модель, enum, index
-    ├── prisma/seed.ts           argon2 hash-тай seed
+    ├── prisma/seed.ts           argon2 hash-тай seed (идемпотент)
+    ├── prisma/clean-test-data.ts  `pnpm db:clean` — тестийн үлдэгдлийг цэвэрлэнэ (зөвхөн *_test DB)
     ├── prisma.config.ts         Prisma 7 config (DATABASE_URL, seed command)
     └── src/                     db.ts (client factory + singleton), schemas/ (zod), labels.ts, utils/
 ```
@@ -267,6 +273,46 @@ THROTTLE_LIMIT=1000 node apps/api/dist/main &                       # api :4000 
 pnpm --filter @law-firm/web start &                                 # web :3001
 pnpm --filter @law-firm/web e2e
 ```
+
+### Тест өгөгдлийг цэвэрлэх (`pnpm db:clean`)
+
+E2E тест бүр шинэ хэрэг, нэхэмжлэх, даалгавар үүсгэдэг тул тестийн DB хуримтлагдаж,
+жагсаалтын хуудаслалт тогтворгүй болдог. Тестийн мөрийг жишээ (seed) мөрөөс **нэрээр** нь ялгана:
+
+| Дүрэм | Жишээ |
+| --- | --- |
+| Тестийн үүсгэсэн бүх мөрийн гарчиг/бие `E2E ` угтвартай | `E2E багийн хэрэг 7f3a` |
+| Тестийн бүртгүүлсэн хэрэглэгчийн и-мэйл `e2e.` угтвартай | `e2e.perf.7f3a@lawfirm.mn` |
+
+Гараар туршихад ч энэ угтварыг ашиглавал цэвэрлэгээнд автоматаар хамрагдана. Дүрмийг
+`packages/shared/src/utils/test-data.ts` тодорхойлж, unit тестээр баталгаажуулсан.
+
+```bash
+export DATABASE_URL="postgresql://lawfirm:lawfirm@localhost:5432/lawfirm_test?schema=public"
+pnpm db:clean --dry-run          # юу устахыг харуулна, юу ч устгахгүй
+pnpm db:clean                    # цэвэрлэнэ
+pnpm db:clean && pnpm db:seed    # DB-г яг жишээ өгөгдлийн төлөвт буцаана
+```
+
+`pnpm db:clean` нь дараахыг устгана: угтвартай мөрүүд болон `e2e.` хэрэглэгчид (тэдгээрт
+холбогдох хэрэг, нэхэмжлэх, мессеж, баримт, даалгавар нь хамт), устсан мөр рүү заасан
+мэдэгдэл ба audit бичлэг, хугацаа нь дууссан/цуцлагдсан refresh token. Seed-ийн жишээ мөрүүд,
+`Setting` тохиргоо хөндөгдөхгүй.
+
+| Flag | Үйлдэл |
+| --- | --- |
+| `--dry-run` | Зөвхөн тоог хэвлэнэ (устгахаас өмнөх байдлаар — бодит ажиллагаанд илүү мөр устана) |
+| `--prefix <текст>` | Нэмэлт угтварыг тестийн өгөгдөл гэж үзнэ (хуучин үлдэгдэлд, давтаж болно) |
+| `--audit` | Audit log-ийг бүхэлд нь хоослоно (нэвтрэлтийн бичлэгийн чимээ) |
+| `--sessions` | Бүх refresh token-ыг устгана (бүх сесс гарна) |
+| `--force <DB нэр>` | `*_test` биш DB-г зөвшөөрнө — нэрийг нь яг давтаж бичнэ |
+
+**Хамгаалалт:** script нь `test`, `*_test` нэртэй DB-г л зөвшөөрнө. Dev DB (`lawfirm`) дээр
+ажиллуулахыг оролдвол алдаа өгч зогсоно, өгөгдөлд гар хүрэхгүй.
+
+Playwright-ийн `globalSetup` (`apps/web/e2e/global-setup.ts`) нь suite эхлэхийн өмнө үүнийг
+`--audit --sessions`-тэй автоматаар дуудна — `DATABASE_URL` тестийн DB-г заасан үед л. Тиймээс
+өмнөх ажиллагааны үлдэгдэл дээр шинэ ажиллагаа овоолохоо больсон.
 
 ---
 
@@ -753,11 +799,15 @@ grace дотор зэрэг ирсэн хүсэлт бүх сесс хаахгү
 (CLIENT/LAWYER → 403) ба validation → 400, дөрвөн event-ийн мэдэгдэл. Хуучин contact: зөвхөн унших жагсаалт, PATCH → 404.
 Нийт 448 тест, DB шаардахгүй (Prisma mock). Баг нэмэхээс өмнөх 249 тест хэвээр ногоон.
 
+`packages/shared` дээр 10 тест: тестийн өгөгдлийн угтвар (`E2E `, `e2e.`), холболтын мөрөөс DB-ийн нэр
+унших, `pnpm db:clean`-ий хамгаалалт (dev DB → алдаа, `--force` нь DB-ийн нэртэй яг таарах ёстой).
+Нийт `pnpm test` → **458 тест**.
+
 ```bash
 pnpm --filter @law-firm/web e2e     # Playwright, web :3001 + api :4000 ажиллаж байх ёстой
 ```
 
-Playwright (41 тест): нийтийн сайт (2), портал (2), админ (4), баримтын хүсэлт (3), мессеж (3), төлбөр (3), даалгавар (3), мэдэгдэл (2), гүйцэтгэл (3), хонх/Kanban/хавсралт (3), сесс (4), тохиргоо/ноорог нэхэмжлэх (5), үйлчилгээний хүсэлт (4):
+Playwright (42 тест): нийтийн сайт (2), портал (2), админ (4), баримтын хүсэлт (3), мессеж (3), төлбөр (3), даалгавар (3), мэдэгдэл (2), гүйцэтгэл (3), хонх/Kanban/хавсралт (3), сесс (4), тохиргоо/ноорог нэхэмжлэх (5), үйлчилгээний хүсэлт (4):
 - LAWYER хэрэг үүсгэж шүүх хурал нэмэхэд харилцагч порталдаа болон мэдэгдлээс харна.
 - ADMIN нийтлэл нийтлэхэд нийтийн `/news` болон нийтлэлийн хуудсанд шууд гарна (тест дараа нь устгана).
 - LAWYER өөр хуульчийн хэрэг рүү `/admin/cases/[id]`-ээр орвол 403 хуудас, `PATCH /cases/:id` нь 403.
