@@ -12,7 +12,7 @@ export interface DocumentRequestCaseRef {
   lawyerId: string;
 }
 
-export interface DocumentRequestRef {
+interface DocumentRequestRef {
   id: string;
   title: string;
 }

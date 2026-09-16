@@ -9,7 +9,7 @@ import {
   type DocumentRequestSubmittedEvent,
 } from './document-request.events';
 
-export const DOCUMENT_REQUEST_NOTIFICATION_TYPE = 'DOCUMENT_REQUEST';
+const DOCUMENT_REQUEST_NOTIFICATION_TYPE = 'DOCUMENT_REQUEST';
 
 const clientLink = (caseId: string) => `/portal/cases/${caseId}?tab=requests`;
 const staffLink = (caseId: string) => `/admin/cases/${caseId}?tab=requests`;

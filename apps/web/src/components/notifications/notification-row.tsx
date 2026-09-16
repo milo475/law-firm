@@ -6,7 +6,7 @@ import type { NotificationItem } from '@/lib/api';
 import { cn, shortName } from '@/lib/utils';
 
 // Figma notification "Icon" per type
-export const NOTIFICATION_TYPE_ICONS: Record<string, typeof NotifCaseIcon> = {
+const NOTIFICATION_TYPE_ICONS: Record<string, typeof NotifCaseIcon> = {
   CASE_EVENT: NotifCaseIcon,
   CASE_MEMBER: NotifCaseIcon,
   CONTACT_REQUEST: NotifRequestIcon,

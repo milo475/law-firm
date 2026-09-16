@@ -3,7 +3,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { NotificationsService } from '../notifications/notifications.service';
 import { MESSAGE_EVENTS, type MessageSentEvent } from './message.events';
 
-export const MESSAGE_NOTIFICATION_TYPE = 'MESSAGE';
+const MESSAGE_NOTIFICATION_TYPE = 'MESSAGE';
 
 /**
  * One unread notification per conversation: while the recipient has not read the previous

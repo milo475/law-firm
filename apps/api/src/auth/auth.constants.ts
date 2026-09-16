@@ -11,7 +11,7 @@ export const REFRESH_COOKIE = 'refresh_token';
  */
 export const SESSION_HINT_COOKIE = 'lf_session';
 /** Refresh cookie is only ever sent to /auth/* endpoints. */
-export const REFRESH_COOKIE_PATH = '/auth';
+const REFRESH_COOKIE_PATH = '/auth';
 
 function baseCookieOptions(config: ConfigService<Env, true>): CookieOptions {
   const isProd = config.get('NODE_ENV', { infer: true }) === 'production';

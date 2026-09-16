@@ -54,7 +54,7 @@ const CASE_DETAIL_INCLUDE = {
 } satisfies Prisma.CaseInclude;
 
 /** Minimal case shape used by access checks in other modules. */
-export interface CaseAccessRecord {
+interface CaseAccessRecord {
   id: string;
   caseNumber: string;
   title: string;

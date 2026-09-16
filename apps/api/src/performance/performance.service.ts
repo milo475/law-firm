@@ -63,7 +63,7 @@ export function periodRange(period: PerformancePeriod, now = new Date()): Range 
 }
 
 /** On-time rate = completed by the due date ÷ completed tasks that had a due date, rounded; null when there were none. */
-export function toMetrics(counts: Counts): PerformanceMetrics {
+function toMetrics(counts: Counts): PerformanceMetrics {
   return {
     activeTasks: counts.active,
     completedTasks: counts.completed,

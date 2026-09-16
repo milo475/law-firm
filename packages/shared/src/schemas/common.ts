@@ -42,7 +42,6 @@ export const DateInputSchema = z.codec(
 );
 
 export const IdParamSchema = z.object({ id: UuidSchema });
-export type IdParam = z.infer<typeof IdParamSchema>;
 
 /** Generic paginated API response shape. */
 export interface Paginated<T> {

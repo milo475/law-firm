@@ -24,7 +24,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { TasksService } from './tasks.service';
 
-export const TASK_ATTACHMENT_SELECT = {
+const TASK_ATTACHMENT_SELECT = {
   id: true,
   taskId: true,
   name: true,

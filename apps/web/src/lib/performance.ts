@@ -9,7 +9,7 @@ export const PERIOD_OPTIONS: { value: PerformancePeriod; label: string }[] = [
   { value: 'last-30-days', label: 'Сүүлийн 30 хоног' },
   { value: 'all-time', label: 'Бүх цаг' },
 ];
-export const DEFAULT_PERIOD: PerformancePeriod = 'this-month';
+const DEFAULT_PERIOD: PerformancePeriod = 'this-month';
 
 export function parsePeriod(value: string | null): PerformancePeriod {
   return PERIOD_OPTIONS.some((option) => option.value === value) ? (value as PerformancePeriod) : DEFAULT_PERIOD;

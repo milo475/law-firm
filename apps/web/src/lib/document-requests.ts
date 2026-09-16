@@ -5,12 +5,12 @@ import { useQuery } from '@tanstack/react-query';
 import { api, type DocumentRequestItem, type DocumentRequestStatus, type DocumentRequestSummary } from './api';
 
 export const REQUEST_FILE_ACCEPT = '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt';
-export const MAX_REQUEST_FILE_BYTES = 20 * 1024 * 1024;
+const MAX_REQUEST_FILE_BYTES = 20 * 1024 * 1024;
 export const MAX_REQUEST_FILES = MAX_DOCUMENT_REQUEST_FILES;
 const ALLOWED_EXTENSIONS = new Set(['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'txt']);
 
 /** The client still has to send something. */
-export const CLIENT_ACTION_STATUSES: readonly DocumentRequestStatus[] = ['PENDING', 'REJECTED'];
+const CLIENT_ACTION_STATUSES: readonly DocumentRequestStatus[] = ['PENDING', 'REJECTED'];
 /** The lawyer still has to look at the submission. */
 export const AWAITING_REVIEW_STATUSES: readonly DocumentRequestStatus[] = ['SUBMITTED', 'UNDER_REVIEW'];
 

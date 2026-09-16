@@ -133,7 +133,7 @@ export function TaskTable({ tasks, viewer, showCase = true }: { tasks: TaskItem[
   );
 }
 
-export function TaskCard({ task, viewer, showCase = true, showStatus = true, dragHandle }: { task: TaskItem; viewer: Viewer; showCase?: boolean; showStatus?: boolean; dragHandle?: React.ReactNode }) {
+function TaskCard({ task, viewer, showCase = true, showStatus = true, dragHandle }: { task: TaskItem; viewer: Viewer; showCase?: boolean; showStatus?: boolean; dragHandle?: React.ReactNode }) {
   const overdue = isTaskOverdue(task);
   return (
     <article aria-label={task.title} className={cn('flex flex-col gap-3 rounded-lg border border-border-default bg-bg-surface p-4', overdue && 'border-l-[3px] border-l-status-danger-fg')}>
@@ -163,7 +163,7 @@ export function TaskCard({ task, viewer, showCase = true, showStatus = true, dra
 }
 
 /** Moves a task on the board: the card changes column at once and snaps back if the API refuses. */
-export function useTaskMoveMutation() {
+function useTaskMoveMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ task, status }: { task: TaskItem; status: TaskStatus }) => api.patch<TaskItem>(`/tasks/${task.id}`, { status }),

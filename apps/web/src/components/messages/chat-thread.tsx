@@ -23,12 +23,12 @@ const PAGE_SIZE = 30;
 /** Poll while the chat tab is open; no WebSocket in the first version. */
 const POLL_MS = 10_000;
 
-export interface ChatViewer {
+interface ChatViewer {
   id: string;
   role: PublicUser['role'];
 }
 
-export interface ChatCounterpart {
+interface ChatCounterpart {
   name: string;
   roleLabel: string;
   initials: string;

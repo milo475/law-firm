@@ -6,7 +6,7 @@ import { formatPhone } from './format';
 export const FIRM_SETTINGS_TAG = 'firm-settings';
 
 /** Used while the API cannot be reached, so the public site and sign-in pages still show contacts. */
-export const FALLBACK_FIRM_SETTINGS: FirmSettings = { ...EXAMPLE_FIRM_SETTINGS, updatedAt: null };
+const FALLBACK_FIRM_SETTINGS: FirmSettings = { ...EXAMPLE_FIRM_SETTINGS, updatedAt: null };
 
 /** Server components: the firm details, cached for a minute or until an ADMIN saves new ones. */
 export async function loadFirmSettings(): Promise<FirmSettings> {

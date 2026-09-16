@@ -209,24 +209,11 @@ export const MapPinIcon = (p: IconProps) => (
 );
 
 // ── Messages composer (Figma: Portal / 08 Messages — "Attach" 48×48 desktop / 44×44 mobile, "Send" 44×44) ──
-// Glyph only; the page draws the tile (surface-alt / bg-page square, brand-primary circle) as the button background.
-export const AttachIcon = (p: IconProps) => (
-  <svg viewBox="0 0 48 48" {...base(p, 48, 48)}><path {...stroke} d="M25.5 18.975L19 25.475C17.6 26.875 17.6 29.075 19 30.475C20.4 31.875 22.6 31.875 24 30.475L29.5 24.975C31.5 22.975 31.5 19.975 29.5 17.975C27.5 15.975 24.5 15.975 22.5 17.975L17 23.475" /></svg>
-);
-export const AttachSmIcon = (p: IconProps) => (
-  <svg viewBox="0 0 44 44" {...base(p, 44, 44)}><path {...stroke} d="M23.5 16.975L17 23.475C15.6 24.875 15.6 27.075 17 28.475C18.4 29.875 20.6 29.875 22 28.475L27.5 22.975C29.5 20.975 29.5 17.975 27.5 15.975C25.5 13.975 22.5 13.975 20.5 15.975L15 21.475" /></svg>
-);
 export const SendIcon = (p: IconProps) => (
   <svg viewBox="0 0 44 44" {...base(p, 44, 44)}><path {...stroke} strokeWidth={2} d="M15 22H29M23 27L29 22L23 17" /></svg>
 );
 
 // ── Payment success (Figma: Portal / 07b Payment Success / Desktop — "Check" 96×96, status-progress disc + tick) ──
-export const SuccessCheckIcon = (p: IconProps) => (
-  <svg viewBox="0 0 96 96" {...base(p, 96, 96)}>
-    <path d="M0 48C0 21.4903 21.4903 0 48 0V0C74.5097 0 96 21.4903 96 48V48C96 74.5097 74.5097 96 48 96V96C21.4903 96 0 74.5097 0 48V48Z" fill="var(--status-progress-bg)" />
-    <path {...stroke} strokeWidth={3} stroke="var(--status-progress-fg)" d="M35 48.5L44 57.5L61 38.5" />
-  </svg>
-);
 
 // ── Notification list tiles (Figma: Portal / 09 Notifications — "Icon" 40×40 desktop 33:690, 36×36 mobile 37:1223) ──
 // Same glyph size on both; `compact` shrinks only the rounded tile (radius 8) and shifts the glyph by -2.
@@ -269,14 +256,10 @@ const stateGlyph = (tone: 'new' | 'pending' | 'closed' | 'danger', d: string) =>
 };
 /** "Танд одоогоор хэрэг байхгүй байна" — folder on info disc */
 export const EmptyCasesGlyph = stateGlyph('new', 'M48 50H64V68H48V50ZM48 50V44H58L61 50');
-/** "Баримт байхгүй байна" — page on warning disc */
-export const EmptyDocumentGlyph = stateGlyph('pending', 'M68 46L60 38H44V74H68V46ZM60 38V46H68');
 /** "Хайлтад тохирох үр дүн олдсонгүй" — magnifier on neutral disc */
 export const EmptySearchGlyph = stateGlyph('closed', 'M59 59L70 70M62 52C62 57.5 57.5 62 52 62C46.5 62 42 57.5 42 52C42 46.5 46.5 42 52 42C57.5 42 62 46.5 62 52Z');
 /** "Алдаа гарлаа" — warning triangle on danger disc */
 export const ErrorStateGlyph = stateGlyph('danger', 'M56 53V61M56 65V66M56 41L74 71H38L56 41Z');
-/** "Сүлжээний холбоо тасарлаа" — wifi on neutral disc */
-export const OfflineGlyph = stateGlyph('closed', 'M40 49.375C48 42.375 64 42.375 72 49.375M45 55.375C51 50.375 61 50.375 67 55.375M50 61.375C54 58.375 58 58.375 62 61.375M56 67.375V67.875');
 
 // ── Documents (Figma: Portal / 06 Documents — Dropzone "Icon" 48×48 desktop / 44×44 mobile; File row "Action" 44×44) ──
 // Upload: surface disc + 2px glyph (stroke follows currentColor). Render at 44px for the mobile frame.

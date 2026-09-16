@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Modal, ModalContent } from '@/components/ui/modal';
 import { Textarea } from '@/components/ui/textarea';
 
-export interface ConfirmModalProps {
+interface ConfirmModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;

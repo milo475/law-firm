@@ -7,7 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 const ACTIVE_TASK_STATUSES: TaskStatus[] = [TaskStatus.TODO, TaskStatus.IN_PROGRESS, TaskStatus.REVIEW];
 const WAITING_ON_CLIENT: DocumentRequestStatus[] = [DocumentRequestStatus.PENDING, DocumentRequestStatus.REJECTED];
 
-export interface ReminderSummary {
+interface ReminderSummary {
   tasksOverdue: number;
   tasksDueSoon: number;
   invoicesMarkedOverdue: number;

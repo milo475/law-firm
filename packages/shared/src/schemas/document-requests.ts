@@ -33,7 +33,6 @@ export const DocumentRequestItemSchema = z.object({
   isRequired: z.boolean().default(true),
   dueDate: DateInputSchema.optional(),
 });
-export type DocumentRequestItemInput = z.infer<typeof DocumentRequestItemSchema>;
 
 /** POST /cases/:caseId/document-requests — one or many requests at once. */
 export const CreateDocumentRequestSchema = z.object({
@@ -58,7 +57,6 @@ export const RejectDocumentRequestSchema = z.object({
   decision: z.literal('REJECTED'),
   rejectionReason: RejectionReasonSchema,
 });
-export type RejectDocumentRequestInput = z.infer<typeof RejectDocumentRequestSchema>;
 
 export const REVIEW_DECISIONS = ['UNDER_REVIEW', 'APPROVED', 'REJECTED'] as const satisfies readonly DocumentRequestStatus[];
 

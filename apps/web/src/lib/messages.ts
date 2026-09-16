@@ -7,7 +7,7 @@ export const MESSAGE_UNREAD_SUMMARY_KEY = ['messages', 'unread-summary'] as cons
 export const MESSAGE_CONVERSATIONS_KEY = ['messages', 'conversations'] as const;
 export const caseMessagesKey = (caseId: string) => ['case-messages', caseId] as const;
 /** Nested under caseMessagesKey, so invalidating the thread refreshes the count too. */
-export const caseUnreadKey = (caseId: string) => ['case-messages', caseId, 'unread'] as const;
+const caseUnreadKey = (caseId: string) => ['case-messages', caseId, 'unread'] as const;
 
 /** Mirrors the API: a CLIENT reads what the staff wrote, the assigned LAWYER reads the client's messages, ADMIN only views. */
 export function isUnreadFor(message: Pick<MessageItem, 'readAt' | 'sender'>, viewer: { id: string; role: string }): boolean {

@@ -44,7 +44,7 @@ export function useStaffOptions(enabled = true) {
   });
 }
 
-export const caseMembersKey = (caseId: string) => ['admin', 'case', caseId, 'members'] as const;
+const caseMembersKey = (caseId: string) => ['admin', 'case', caseId, 'members'] as const;
 
 /** The case team (LEAD first); nested under the case key, so useInvalidateCase refreshes it. */
 export function useCaseMembers(caseId: string, enabled = true) {

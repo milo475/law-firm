@@ -28,7 +28,7 @@ import {
   type TaskStatusChangedEvent,
 } from './task.events';
 
-export const TASK_SELECT = {
+const TASK_SELECT = {
   id: true,
   title: true,
   description: true,

@@ -6,7 +6,6 @@ export const CaseTypeSchema = z.enum(CaseType, { message: 'Хэргийн төр
 export const CaseStatusSchema = z.enum(CaseStatus, { message: 'Хэргийн төлөв буруу байна' });
 export const InvoiceStatusSchema = z.enum(InvoiceStatus, { message: 'Нэхэмжлэхийн төлөв буруу байна' });
 
-export const CaseEventTypeSchema = z.enum(CaseEventType, { message: 'Үйл явдлын төрөл буруу байна' });
 
 export const CaseQuerySchema = PaginationSchema.extend({
   status: CaseStatusSchema.optional(),

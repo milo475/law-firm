@@ -1,7 +1,6 @@
 export const CASE_NUMBER_PREFIX = 'LF';
 export const CASE_NUMBER_REGEX = /^LF-\d{4}-\d{4}$/;
 export const INVOICE_NUMBER_PREFIX = 'INV';
-export const INVOICE_NUMBER_REGEX = /^INV-\d{4}-\d{4}$/;
 
 /** Formats `PREFIX-YYYY-NNNN`, e.g. `LF-2026-0001`. */
 export function formatSequenceNumber(prefix: string, year: number, sequence: number): string {
@@ -30,13 +29,4 @@ export function formatCaseNumber(year: number, sequence: number): string {
   return formatSequenceNumber(CASE_NUMBER_PREFIX, year, sequence);
 }
 
-/** Formats an invoice number like `INV-2026-0001`. */
-export function formatInvoiceNumber(year: number, sequence: number): string {
-  return formatSequenceNumber(INVOICE_NUMBER_PREFIX, year, sequence);
-}
 
-/** Parses `LF-2026-0001` into its parts; returns null when the format is invalid. */
-export function parseCaseNumber(value: string): { year: number; sequence: number } | null {
-  if (!CASE_NUMBER_REGEX.test(value)) return null;
-  return parseSequenceNumber(value, CASE_NUMBER_PREFIX);
-}

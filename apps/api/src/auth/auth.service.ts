@@ -21,7 +21,7 @@ import { toSafeUser } from '../common/utils/safe-user';
 import type { Env } from '../config/env';
 import { PrismaService } from '../prisma/prisma.service';
 
-export interface AuthTokens {
+interface AuthTokens {
   accessToken: string;
   refreshToken: string;
   refreshExpiresAt: Date;

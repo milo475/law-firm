@@ -14,7 +14,7 @@ const FEATURES = [
 ];
 const SUPPORT_EMAIL = 'portal@tulguur.mn';
 
-export interface AuthCardProps {
+interface AuthCardProps {
   children: React.ReactNode;
   /** Extra classes for the card body (e.g. a tighter `gap-5` on Register). */
   className?: string;

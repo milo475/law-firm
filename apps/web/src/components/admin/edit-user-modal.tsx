@@ -20,7 +20,7 @@ const EditUserFormSchema = z.object({
 });
 type EditUserFormValues = z.infer<typeof EditUserFormSchema>;
 
-export interface EditableUser {
+interface EditableUser {
   id: string;
   firstName: string;
   lastName: string;

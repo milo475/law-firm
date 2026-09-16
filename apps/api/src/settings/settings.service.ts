@@ -14,7 +14,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { BANK_ACCOUNT_SETTING_KEY, DEFAULT_BANK_ACCOUNT } from './bank-account';
 
 /** Setting row key for the firm details (name, registration number, contacts). */
-export const FIRM_SETTING_KEY = 'firm';
+const FIRM_SETTING_KEY = 'firm';
 
 type Parser<T> = { safeParse: (value: unknown) => { success: true; data: T } | { success: false } };
 

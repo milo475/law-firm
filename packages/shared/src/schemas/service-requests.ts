@@ -82,9 +82,6 @@ export const SERVICE_REQUEST_STATUS_TRANSITIONS: Record<ServiceRequestStatus, re
   CONVERTED: [],
 };
 
-export function canTransitionServiceRequest(from: ServiceRequestStatus, to: ServiceRequestStatus): boolean {
-  return SERVICE_REQUEST_STATUS_TRANSITIONS[from].includes(to);
-}
 
 /** GET /service-requests (ADMIN) */
 export const ServiceRequestQuerySchema = PaginationSchema.extend({

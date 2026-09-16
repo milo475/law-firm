@@ -37,7 +37,7 @@ export function InvoiceStatusBadge({ status, className }: { status: string; clas
 }
 
 /** Figma "Row" (32:648): muted label left, medium value right. */
-export function InvoiceDetailRow({ label, value }: { label: string; value: React.ReactNode }) {
+function InvoiceDetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-start justify-between gap-4">
       <dt className="shrink-0 text-body-sm text-text-muted">{label}</dt>

@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Client as MinioClient } from 'minio';
 import type { Env } from '../config/env';
 
-export interface UploadInput {
+interface UploadInput {
   key: string;
   body: Buffer;
   mimeType: string;

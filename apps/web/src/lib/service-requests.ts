@@ -5,7 +5,7 @@ import { api, type Paginated, type ServiceRequestItem, type ServiceRequestSummar
 
 /** Every service request query starts with this key, so one invalidation refreshes lists, details and badges. */
 export const SERVICE_REQUESTS_KEY = ['service-requests'] as const;
-export const SERVICE_REQUEST_SUMMARY_KEY = ['service-requests', 'summary'] as const;
+const SERVICE_REQUEST_SUMMARY_KEY = ['service-requests', 'summary'] as const;
 export const serviceRequestKey = (id: string) => ['service-requests', 'detail', id] as const;
 
 /** NEW and ACCEPTED counts for the admin sidebar and dashboard (ADMIN only). */

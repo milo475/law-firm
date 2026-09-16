@@ -15,8 +15,8 @@ export interface NotificationPage {
 }
 
 /** Every notification query lives under this prefix (the portal list uses the bare key). */
-export const NOTIFICATIONS_KEY = ['notifications'] as const;
-export const NOTIFICATION_UNREAD_KEY = ['notifications', 'unread-count'] as const;
+const NOTIFICATIONS_KEY = ['notifications'] as const;
+const NOTIFICATION_UNREAD_KEY = ['notifications', 'unread-count'] as const;
 export const notificationListKey = (scope: string) => ['notifications', 'list', scope] as const;
 
 /** Bell badge: polled every 30 seconds and on window focus (no websockets). */

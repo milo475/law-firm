@@ -50,7 +50,6 @@ export const UpdateLawyerProfileSchema = z
   })
   .partial();
 export type UpdateLawyerProfileInput = z.infer<typeof UpdateLawyerProfileSchema>;
-export type LawyerProfileInput = z.infer<typeof LawyerProfileInputSchema>;
 
 /** Admin-only user creation. */
 export const CreateUserSchema = z.object({
@@ -63,7 +62,6 @@ export const CreateUserSchema = z.object({
   isActive: z.boolean().default(true),
   lawyerProfile: LawyerProfileInputSchema.optional(),
 });
-export type CreateUserInput = z.infer<typeof CreateUserSchema>;
 
 /** Roles an admin can create from the admin panel (admins are provisioned separately). */
 export const StaffCreatableRoleSchema = z.enum(['LAWYER', 'CLIENT'], { message: 'Зөвхөн хуульч эсвэл харилцагч үүсгэх боломжтой' });

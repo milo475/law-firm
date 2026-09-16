@@ -6,8 +6,6 @@ import { CloseIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
 
 export const Modal = DialogPrimitive.Root;
-export const ModalTrigger = DialogPrimitive.Trigger;
-export const ModalClose = DialogPrimitive.Close;
 
 export interface ModalContentProps extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
   title: string;

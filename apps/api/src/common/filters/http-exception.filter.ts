@@ -39,7 +39,7 @@ const ENGLISH_DEFAULTS = new Set([
   'Too Many Requests',
 ]);
 
-export interface ErrorResponseBody {
+interface ErrorResponseBody {
   statusCode: number;
   message: string;
   error: string;

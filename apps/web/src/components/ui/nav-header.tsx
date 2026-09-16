@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { Button } from './button';
 import { Logo } from './logo';
 
-export const PUBLIC_NAV = [
+const PUBLIC_NAV = [
   { href: '/about', label: 'Бидний тухай' },
   { href: '/services', label: 'Үйлчилгээ' },
   { href: '/lawyers', label: 'Хуульчид' },
