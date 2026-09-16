@@ -15,6 +15,8 @@ const PUBLIC_PAGES: [string, string][] = [
   ['news-detail', '/news/geree-baiguulahad-anhaarah-zuils'],
   ['faq', '/faq'],
   ['contact', '/contact'],
+  ['privacy', '/privacy'],
+  ['terms', '/terms'],
   ['not-found', '/this-page-does-not-exist'],
   ['portal-login', '/portal/login'],
   ['portal-register', '/portal/register'],

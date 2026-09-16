@@ -33,6 +33,15 @@ pnpm dev                        # web :3001 + api :4000 хамт асна (3000-
 - API: <http://localhost:4000>, Swagger: <http://localhost:4000/docs> (зөвхөн dev)
 - MinIO console: <http://localhost:9001> (minioadmin / minioadmin)
 
+Docker ашиглахгүй бол Postgres, MinIO-г локалаар нь асаана (`.env`-ийн түлхүүрүүдээр):
+
+```bash
+MINIO_ROOT_USER=minioadmin MINIO_ROOT_PASSWORD=minioadmin \
+  minio server ~/minio-data --address :9000 --console-address :9001 &
+```
+
+MinIO унтраалттай үед баримт/хавсралт хуулах хүсэлт 500 буцаана (бусад хэсэг хэвийн ажиллана).
+
 ### Seed нэвтрэх мэдээлэл
 
 | Эрх | И-мэйл | Утас | Нууц үг |
@@ -126,7 +135,7 @@ law-firm/
 │       ├── e2e/                 Playwright тестүүд + screenshot скрипт
 │       └── src/
 │           ├── app/globals.css  Figma variable → CSS var + Tailwind v4 @theme, text-h1…text-caption, shadow токен
-│           ├── app/(site)/      /, about, services[/slug], lawyers[/id], news[/slug], faq, contact, 404
+│           ├── app/(site)/      /, about, services[/slug], lawyers[/id], news[/slug], faq, contact, privacy, terms, 404
 │           ├── app/portal/      login (нууц үг + OTP UI), register, forgot-password,
 │           │                    (dashboard): cases[/id] (tabs), documents (drag-drop + preview),
 │           │                    invoices[/id], messages (inbox), requests[/new], notifications, profile

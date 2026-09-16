@@ -45,4 +45,16 @@ test.describe('Нийтийн сайт', () => {
     await expect.poll(visibleArticles).toBe(1);
     await expect(articleTitles.first()).toContainText('Хөдөлмөрийн');
   });
+
+  test('хөлний хууль зүйн хуудсууд ажиллана', async ({ page }) => {
+    await page.goto('/');
+    const footer = page.getByRole('contentinfo');
+    for (const [label, path] of [['Нууцлалын бодлого', '/privacy'], ['Үйлчилгээний нөхцөл', '/terms']] as const) {
+      await footer.getByRole('link', { name: label }).click();
+      await expect(page).toHaveURL(new RegExp(`${path}$`));
+      await expect(page.getByRole('heading', { name: label })).toBeVisible();
+      await expect(page.getByText('Сүүлд шинэчилсэн:')).toBeVisible();
+      await page.goBack();
+    }
+  });
 });
