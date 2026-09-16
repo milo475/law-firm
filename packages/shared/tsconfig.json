@@ -14,7 +14,7 @@
     "sourceMap": true,
     "outDir": "dist",
     "rootDir": "src",
-    "types": ["node"]
+    "types": ["node", "jest"]
   },
   "include": ["src/**/*.ts", "prisma/**/*.ts", "prisma.config.ts"]
 }

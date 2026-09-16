@@ -20,6 +20,7 @@ import {
   TaskStatus,
 } from '../src/generated/prisma/enums';
 import { formatCaseNumber } from '../src/utils/case-number';
+import { databaseNameFromUrl } from '../src/utils/test-data';
 
 const prisma = getPrismaClient();
 
@@ -552,8 +553,6 @@ async function seedStaffNotifications(users: Awaited<ReturnType<typeof seedUsers
 
 /** Demo service requests in each outcome; the converted one is the request the first seeded case was opened from. */
 async function seedServiceRequests(users: Awaited<ReturnType<typeof seedUsers>>) {
-  const existing = await prisma.serviceRequest.count();
-  if (existing > 0) return existing;
   const year = new Date().getFullYear();
   const firstCase = await prisma.case.findUnique({ where: { caseNumber: formatCaseNumber(year, 1) }, select: { id: true } });
   const requests = [
@@ -606,12 +605,22 @@ async function seedServiceRequests(users: Awaited<ReturnType<typeof seedUsers>>)
         ]
       : []),
   ];
+  // Replace only the demo rows; requests a test run created keep their own titles.
+  await prisma.serviceRequest.deleteMany({ where: { title: { in: requests.map((request) => request.title) } } });
   await prisma.serviceRequest.createMany({ data: requests });
   return requests.length;
 }
 
+/** The seed rewrites the demo rows, so it must never hit a production database by accident. */
+function assertSeedable() {
+  if (process.env.NODE_ENV === 'production' && !process.argv.includes('--force')) {
+    throw new Error('Refusing to seed with NODE_ENV=production. Pass --force if you really mean it.');
+  }
+}
+
 async function main() {
-  console.log('Seeding database…');
+  assertSeedable();
+  console.log(`Seeding "${databaseNameFromUrl(process.env.DATABASE_URL) ?? 'database'}"…`);
   const users = await seedUsers();
   console.log('  users: 1 admin, 2 lawyers, 2 clients');
   const posts = await seedPosts(users);
@@ -619,9 +628,9 @@ async function main() {
   const cases = await seedCases(users);
   console.log(`  cases: ${cases} (with events, documents, invoices, document requests)`);
   const messages = await seedMessages(users);
+  console.log(`  messages: ${messages} on the first case`);
   const tasks = await seedTasks(users);
   console.log(`  tasks: ${tasks} with comments`);
-  console.log(`  messages: ${messages} on the first case`);
   const staffNotifications = await seedNotifications(users);
   console.log(`  staff notifications: ${staffNotifications}`);
   const serviceRequests = await seedServiceRequests(users);
