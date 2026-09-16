@@ -4,6 +4,8 @@ const WEB_URL = process.env.E2E_WEB_URL ?? 'http://localhost:3001';
 
 export default defineConfig({
   testDir: './e2e',
+  // Removes the leftovers of earlier runs from the test database (a no-op elsewhere).
+  globalSetup: require.resolve('./e2e/global-setup'),
   timeout: 60_000,
   expect: { timeout: 10_000 },
   fullyParallel: false,
