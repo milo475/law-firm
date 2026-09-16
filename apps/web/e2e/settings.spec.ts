@@ -19,7 +19,7 @@ test.describe('Тохиргоо: төлбөр хүлээн авах данс', (
     const lawyerApi = await apiAs(LAWYER1);
     const original = (await (await adminApi.get('/settings/bank-account')).json()) as BankAccount;
     // Only the account holder changes: payments.spec checks the bank name and number in parallel.
-    const newName = `Тулгуур ХХН e2e ${Date.now().toString(36)}`;
+    const newName = `Law Firm ХХН e2e ${Date.now().toString(36)}`;
     try {
       const invoice = await createDraftInvoice(lawyerApi, 'E2E дансны тохиргоо', 120000, 'Дансны тохиргооны шалгалт');
       expect((await lawyerApi.patch(`/invoices/${invoice.id}`, { data: { status: 'SENT' } })).ok()).toBeTruthy();

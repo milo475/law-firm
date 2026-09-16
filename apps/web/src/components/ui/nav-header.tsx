@@ -29,9 +29,9 @@ export function NavHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border-default bg-bg-surface">
       {/* Desktop — 1440 frame: 88px, 120px side padding (max 1200 content) */}
-      <div className="mx-auto hidden h-[88px] max-w-[1200px] items-center justify-between px-6 lg:flex">
+      <div className="mx-auto hidden h-[88px] max-w-[1200px] items-center justify-between gap-6 px-6 lg:flex">
         <Logo />
-        <nav aria-label="Үндсэн цэс" className="flex items-center gap-7">
+        <nav aria-label="Үндсэн цэс" className="flex items-center gap-5 xl:gap-7">
           {PUBLIC_NAV.map((item) => (
             <Link
               key={item.href}

@@ -75,11 +75,11 @@ export interface FirmSettingsResponse extends Omit<FirmSettings, 'registrationNu
 
 /** What the public site showed before the details became editable; served until an ADMIN saves real ones. */
 export const EXAMPLE_FIRM_SETTINGS: FirmSettingsResponse = {
-  name: 'Тулгуур Хуулийн Фирм ХХК',
+  name: '«Law Firm» ХХК',
   registrationNumber: null,
   phone: '70001199',
-  email: 'info@tulguur.mn',
-  address: 'Улаанбаатар хот, Сүхбаатар дүүрэг, 1-р хороо, Их тойруу 14, Тулгуур төв, 4 давхар',
+  email: 'info@lawfirm.mn',
+  address: 'Улаанбаатар хот, Сүхбаатар дүүрэг, 1-р хороо, Их тойруу 14, 4 давхар',
   workingHours: 'Даваа–Баасан 09:00–18:00',
   updatedAt: null,
 };

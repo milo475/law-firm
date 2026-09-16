@@ -56,7 +56,7 @@ export default async function HomePage() {
               <span className="hidden md:inline">Эрх зүйн зөвлөх үйлчилгээ · 2009 оноос</span>
             </p>
             <h1 className="font-serif text-[32px] font-bold leading-10 tracking-[-0.5px] text-text-brand md:text-h1">
-              Таны эрхийг хамгаалах бат бөх тулгуур
+              Таны эрхийг хамгаалах бат бөх түшиг
             </h1>
             <p className="text-body text-text-secondary md:max-w-[520px] md:text-body-lg">
               <span className="md:hidden">24 хуульчийн баг зургаан чиглэлээр мэргэжлийн туслалцаа үзүүлнэ. Эхний зөвлөгөө үнэгүй.</span>

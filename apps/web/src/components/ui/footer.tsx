@@ -17,7 +17,7 @@ const COMPANY = [
   { label: 'Хуульчид', href: '/lawyers' },
   { label: 'Мэдээ ба нийтлэл', href: '/news' },
   { label: 'Түгээмэл асуулт', href: '/faq' },
-  { label: 'Ажлын байр', href: 'mailto:careers@tulguur.mn' },
+  { label: 'Ажлын байр', href: 'mailto:careers@lawfirm.mn' },
 ];
 const link = 'focus-ring rounded-sm text-body-sm text-text-on-inverse-muted hover:text-text-on-inverse';
 

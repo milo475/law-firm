@@ -20,8 +20,8 @@ const sourceSerif = Source_Serif_4({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Тулгуур Хуулийн Фирм',
-    template: '%s | Тулгуур Хуулийн Фирм',
+    default: 'Law Firm',
+    template: '%s | Law Firm',
   },
   description: '2009 оноос хойш иргэд, аж ахуйн нэгжид найдвартай эрх зүйн туслалцаа үзүүлж байна.',
 };

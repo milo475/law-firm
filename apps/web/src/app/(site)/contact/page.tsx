@@ -7,7 +7,7 @@ import type { FirmSettings } from '@/lib/api';
 import { loadFirmSettings } from '@/lib/firm';
 import { formatPhone, phoneHref } from '@/lib/format';
 
-export const metadata: Metadata = { title: 'Холбоо барих', description: 'Тулгуур Хуулийн Фирмтэй холбогдох: хаяг, утас, и-мэйл, өмгөөлөгч авах, зөвлөгөө авах хүсэлт.' };
+export const metadata: Metadata = { title: 'Холбоо барих', description: 'Law Firm-тэй холбогдох: хаяг, утас, и-мэйл, өмгөөлөгч авах, зөвлөгөө авах хүсэлт.' };
 
 const tel = (phone: string) => `tel:${phone.replace(/[^+\d]/g, '')}`;
 
@@ -38,7 +38,7 @@ const office = (firm: FirmSettings): { label: string; Icon: typeof ContactPinIco
     Icon: ContactMailIcon,
     lines: [
       { text: firm.email, href: `mailto:${firm.email}` },
-      { text: 'portal@tulguur.mn', href: 'mailto:portal@tulguur.mn', desktopOnly: true },
+      { text: 'portal@lawfirm.mn', href: 'mailto:portal@lawfirm.mn', desktopOnly: true },
     ],
   },
   {

@@ -8,12 +8,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { SettingsController } from './settings.controller';
 import { SettingsService } from './settings.service';
 
-const VALID = { bankName: 'Голомт банк', accountNumber: '1105 1234 56', accountName: 'Тулгуур Хуулийн Фирм ХХН' };
+const VALID = { bankName: 'Голомт банк', accountNumber: '1105 1234 56', accountName: '«Law Firm» ХХН' };
 const FIRM = {
-  name: 'Тулгуур Хуулийн Фирм ХХК',
+  name: '«Law Firm» ХХК',
   registrationNumber: '519 0028',
   phone: '+976 7000-1199',
-  email: 'Info@Tulguur.MN',
+  email: 'Info@LawFirm.MN',
   address: 'Улаанбаатар, Сүхбаатар дүүрэг, Их тойруу 14',
   workingHours: 'Даваа–Баасан 09:00–18:00',
 };
@@ -41,15 +41,15 @@ describe('SettingsController', () => {
       prisma.setting.findUnique.mockResolvedValue(null);
       const res = await request(app.getHttpServer()).get('/settings/bank-account').set(TEST_ROLE_HEADER, role);
       expect(res.status).toBe(200);
-      expect(res.body).toEqual({ bankName: 'Хаан банк', accountNumber: '5023118822', accountName: 'Тулгуур Хуулийн Фирм ХХН', updatedAt: null });
+      expect(res.body).toEqual({ bankName: 'Хаан банк', accountNumber: '5023118822', accountName: '«Law Firm» ХХН', updatedAt: null });
     });
 
     it('PUT: ADMIN saves the account; spaces in the number are removed', async () => {
       const res = await request(app.getHttpServer()).put('/settings/bank-account').set(TEST_ROLE_HEADER, 'ADMIN').send(VALID);
       expect(res.status).toBe(200);
-      expect(res.body).toEqual({ bankName: 'Голомт банк', accountNumber: '1105123456', accountName: 'Тулгуур Хуулийн Фирм ХХН', updatedAt: '2026-09-15T12:00:00.000Z' });
+      expect(res.body).toEqual({ bankName: 'Голомт банк', accountNumber: '1105123456', accountName: '«Law Firm» ХХН', updatedAt: '2026-09-15T12:00:00.000Z' });
       expect(prisma.setting.upsert).toHaveBeenCalledWith(
-        expect.objectContaining({ update: { value: { bankName: 'Голомт банк', accountNumber: '1105123456', accountName: 'Тулгуур Хуулийн Фирм ХХН' }, updatedById: 'admin-id' } }),
+        expect.objectContaining({ update: { value: { bankName: 'Голомт банк', accountNumber: '1105123456', accountName: '«Law Firm» ХХН' }, updatedById: 'admin-id' } }),
       );
     });
 
@@ -89,13 +89,13 @@ describe('SettingsController', () => {
       prisma.setting.findUnique.mockResolvedValue(null);
       const res = await request(app.getHttpServer()).get('/settings/firm');
       expect(res.status).toBe(200);
-      expect(res.body).toMatchObject({ name: 'Тулгуур Хуулийн Фирм ХХК', registrationNumber: null, phone: '70001199', updatedAt: null });
+      expect(res.body).toMatchObject({ name: '«Law Firm» ХХК', registrationNumber: null, phone: '70001199', updatedAt: null });
     });
 
     it('PUT: ADMIN saves; the phone and registration number are normalised, the e-mail lower-cased', async () => {
       const res = await request(app.getHttpServer()).put('/settings/firm').set(TEST_ROLE_HEADER, 'ADMIN').send(FIRM);
       expect(res.status).toBe(200);
-      const saved = { ...FIRM, registrationNumber: '5190028', phone: '70001199', email: 'info@tulguur.mn' };
+      const saved = { ...FIRM, registrationNumber: '5190028', phone: '70001199', email: 'info@lawfirm.mn' };
       expect(res.body).toEqual({ ...saved, updatedAt: '2026-09-15T12:00:00.000Z' });
       expect(prisma.setting.upsert).toHaveBeenCalledWith(expect.objectContaining({ where: { key: 'firm' }, update: { value: saved, updatedById: 'admin-id' } }));
     });

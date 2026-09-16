@@ -7,5 +7,5 @@ export const BANK_ACCOUNT_SETTING_KEY = 'bank-account';
 export const DEFAULT_BANK_ACCOUNT: BankAccountSettings = {
   bankName: 'Хаан банк',
   accountNumber: '5023118822',
-  accountName: 'Тулгуур Хуулийн Фирм ХХН',
+  accountName: '«Law Firm» ХХН',
 };

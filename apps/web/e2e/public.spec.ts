@@ -3,8 +3,8 @@ import { expect, test } from '@playwright/test';
 test.describe('Нийтийн сайт', () => {
   test('нүүр хуудас ачаалагдана', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveTitle(/Тулгуур/);
-    await expect(page.getByRole('heading', { level: 1, name: 'Таны эрхийг хамгаалах бат бөх тулгуур' })).toBeVisible();
+    await expect(page).toHaveTitle(/Law Firm/);
+    await expect(page.getByRole('heading', { level: 1, name: 'Таны эрхийг хамгаалах бат бөх түшиг' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Бид ямар асуудлыг шийдвэрлэдэг вэ?' })).toBeVisible();
     // 6 service cards, each linking to its detail page
     await expect(page.locator('main a[href^="/services/"]:visible')).toHaveCount(6);
@@ -12,7 +12,7 @@ test.describe('Нийтийн сайт', () => {
     await expect(page.getByRole('heading', { name: 'Таны хэргийг хариуцах мэргэжилтнүүд' })).toBeVisible();
     await expect(page.locator('main a[href^="/lawyers/"]:visible').first()).toBeVisible();
     await expect(page.locator('main a[href^="/news/"]:visible').first()).toBeVisible();
-    await expect(page.locator('footer').getByText('Тулгуур Хуулийн Фирм ХХК').first()).toBeVisible();
+    await expect(page.locator('footer').getByText('«Law Firm» ХХК').first()).toBeVisible();
   });
 
   test('мэдээ хайлт ба ангиллын шүүлт ажиллана', async ({ page }) => {

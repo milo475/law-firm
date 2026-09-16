@@ -12,7 +12,7 @@ const FEATURES = [
   'Нэхэмжлэх, төлбөрийн түүх',
   'Хуульчтай шууд харилцах суваг',
 ];
-const SUPPORT_EMAIL = 'portal@tulguur.mn';
+const SUPPORT_EMAIL = 'portal@lawfirm.mn';
 
 interface AuthCardProps {
   children: React.ReactNode;

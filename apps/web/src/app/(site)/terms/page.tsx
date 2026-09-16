@@ -7,7 +7,7 @@ import { formatPhone, phoneHref } from '@/lib/format';
 
 export const metadata: Metadata = {
   title: 'Үйлчилгээний нөхцөл',
-  description: 'Тулгуур Хуулийн Фирмийн эрх зүйн үйлчилгээ, харилцагчийн порталыг ашиглах нөхцөл.',
+  description: 'Law Firm-ийн эрх зүйн үйлчилгээ, харилцагчийн порталыг ашиглах нөхцөл.',
 };
 
 const UPDATED = '2026 оны 9 дүгээр сарын 16';
