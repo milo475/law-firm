@@ -59,14 +59,14 @@ describe('Case team access (member-based scope across modules)', () => {
   });
 
   it('a MEMBER downloads a document of the team case; an outsider cannot', async () => {
-    const storage = { presignedGetUrl: jest.fn().mockResolvedValue('https://minio/signed'), upload: jest.fn(), delete: jest.fn() };
+    const storage = { presignedGetUrl: jest.fn().mockResolvedValue('https://r2/signed'), upload: jest.fn(), delete: jest.fn() };
     const documents = new DocumentsService(prisma as unknown as PrismaService, cases, storage as unknown as StorageService);
     prisma.document.findUnique.mockResolvedValue({
       id: 'doc-1', name: 'geree.pdf', mimeType: 'application/pdf', size: 10, storageKey: 'k', isVisibleToClient: true,
       case: { clientId: CLIENT_USER.id, lawyerId: LAWYER_USER.id, members },
     });
 
-    await expect(documents.downloadUrl('doc-1', MEMBER_LAWYER)).resolves.toMatchObject({ url: 'https://minio/signed' });
+    await expect(documents.downloadUrl('doc-1', MEMBER_LAWYER)).resolves.toMatchObject({ url: 'https://r2/signed' });
     await expect(documents.downloadUrl('doc-1', OTHER_LAWYER)).rejects.toBeInstanceOf(ForbiddenException);
   });
 

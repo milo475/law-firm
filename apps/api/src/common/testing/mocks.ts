@@ -16,13 +16,13 @@ export const TEST_ENV: Env = {
   REFRESH_REUSE_GRACE_SECONDS: 30,
   CORS_ORIGIN: 'http://localhost:3000',
   COOKIE_DOMAIN: undefined,
-  MINIO_ENDPOINT: 'localhost',
-  MINIO_PORT: 9000,
-  MINIO_USE_SSL: false,
-  MINIO_ACCESS_KEY: 'minioadmin',
-  MINIO_SECRET_KEY: 'minioadmin',
-  MINIO_BUCKET: 'test-bucket',
-  MINIO_PUBLIC_URL: undefined,
+  R2_ENDPOINT: 'http://localhost:9000',
+  R2_ACCESS_KEY_ID: 'minioadmin',
+  R2_SECRET_ACCESS_KEY: 'minioadmin',
+  R2_BUCKET: 'test-bucket',
+  R2_PUBLIC_URL: 'http://localhost:9000/test-bucket',
+  COOKIE_PATH_PREFIX: '',
+  TRUST_PROXY_HOPS: 1,
 };
 
 export function createConfigMock(overrides: Partial<Env> = {}): ConfigService<Env, true> {

@@ -32,17 +32,32 @@ const EnvSchema = z.object({
     .optional()
     .transform((value) => (value && value.trim().length > 0 ? value.trim() : undefined)),
 
-  MINIO_ENDPOINT: z.string().default('localhost'),
-  MINIO_PORT: z.coerce.number().int().default(9000),
-  MINIO_USE_SSL: booleanFromString.default(false),
-  MINIO_ACCESS_KEY: z.string().min(1),
-  MINIO_SECRET_KEY: z.string().min(1),
-  MINIO_BUCKET: z.string().min(1).default('law-firm-documents'),
-  /** Browser-facing base URL for public objects (post covers). Defaults to http(s)://MINIO_ENDPOINT:MINIO_PORT. */
-  MINIO_PUBLIC_URL: z
+  /** S3 endpoint: https://<account>.r2.cloudflarestorage.com on R2, http://localhost:9000 with local MinIO. */
+  R2_ENDPOINT: z.string().url('R2_ENDPOINT must be a URL').default('http://localhost:9000'),
+  R2_ACCESS_KEY_ID: z.string().min(1),
+  R2_SECRET_ACCESS_KEY: z.string().min(1),
+  R2_BUCKET: z.string().min(1).default('law-firm-documents'),
+  /**
+   * Browser-facing base URL of the bucket root for public objects (post covers):
+   * the R2 public bucket URL / custom domain, or http://localhost:9000/<bucket> with MinIO.
+   */
+  R2_PUBLIC_URL: z
     .string()
-    .optional()
-    .transform((value) => (value && value.trim().length > 0 ? value.trim().replace(/\/+$/, '') : undefined)),
+    .min(1, 'R2_PUBLIC_URL is required')
+    .transform((value) => value.trim().replace(/\/+$/, '')),
+
+  /**
+   * Path prefix the browser sees in front of the API. Empty when the API is called directly;
+   * `/api` when the web app proxies it same-origin (Railway), so the refresh cookie is scoped
+   * to `/api/auth` instead of `/auth`.
+   */
+  COOKIE_PATH_PREFIX: z
+    .string()
+    .default('')
+    .transform((value) => value.trim().replace(/\/+$/, ''))
+    .refine((value) => value === '' || value.startsWith('/'), 'COOKIE_PATH_PREFIX must start with /'),
+  /** Proxy hops in front of the API (Railway edge → web rewrite → api = 2). Only applied when NODE_ENV=production. */
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(1),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

@@ -22,8 +22,10 @@ async function bootstrap() {
     .map((origin) => origin.trim())
     .filter(Boolean);
 
-  // Behind a reverse proxy in production so req.ip / secure cookies work.
-  app.set('trust proxy', nodeEnv === 'production' ? 1 : false);
+  // Behind a reverse proxy in production so req.ip / secure cookies work. Count the hops the
+  // request really takes (Railway edge → web same-origin proxy → api = 2); too many hops would
+  // let a client spoof X-Forwarded-For, too few makes the rate limiter see one shared IP.
+  app.set('trust proxy', nodeEnv === 'production' ? config.get('TRUST_PROXY_HOPS', { infer: true }) : false);
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
   app.use(cookieParser());
   app.enableCors({
@@ -48,8 +50,9 @@ async function bootstrap() {
     });
   }
 
-  await app.listen(port);
-  logger.log(`API listening on http://localhost:${port} (${nodeEnv})`);
+  // '::' also accepts IPv4, and is required by Railway's IPv6-only private network.
+  await app.listen(port, '::');
+  logger.log(`API listening on port ${port} (${nodeEnv})`);
   if (nodeEnv !== 'production') logger.log(`Swagger UI: http://localhost:${port}/docs`);
 }
 

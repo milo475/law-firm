@@ -10,6 +10,10 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
+    "build:api": "turbo run build --filter=@law-firm/api...",
+    "build:web": "turbo run build --filter=@law-firm/web...",
+    "start:api": "pnpm --filter @law-firm/shared db:deploy && pnpm --filter @law-firm/api start",
+    "start:web": "pnpm --filter @law-firm/web start",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",

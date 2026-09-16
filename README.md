@@ -6,9 +6,9 @@ UI-ийн бүх текст монгол хэлээр, код болон comment
 | Хэсэг | Технологи | Порт |
 | --- | --- | --- |
 | `apps/web` | Next.js 15 (App Router, TypeScript, Tailwind v4, Source Serif 4 + Inter) | 3001 |
-| `apps/api` | NestJS 11 (Passport JWT, argon2, nestjs-zod, Swagger, Throttler, MinIO) | 4000 |
+| `apps/api` | NestJS 11 (Passport JWT, argon2, nestjs-zod, Swagger, Throttler, AWS S3 SDK → R2) | 4000 |
 | `packages/shared` | Prisma 7 schema + client, zod schema, enum label, shared type | — |
-| `docker-compose.yml` | PostgreSQL 16, MinIO (S3-compatible) + bucket үүсгэгч | 5432 / 9000 / 9001 |
+| `docker-compose.yml` | PostgreSQL 16, MinIO (prod дээрх Cloudflare R2-ын локал орлуулагч) + bucket үүсгэгч | 5432 / 9000 / 9001 |
 
 Tooling: **pnpm workspaces + Turborepo**.
 
@@ -41,6 +41,11 @@ MINIO_ROOT_USER=minioadmin MINIO_ROOT_PASSWORD=minioadmin \
 ```
 
 MinIO унтраалттай үед баримт/хавсралт хуулах хүсэлт 500 буцаана (бусад хэсэг хэвийн ажиллана).
+
+Файл хадгалалт S3 API дээр ажиллана: production-д **Cloudflare R2**, локалд ижил клиент MinIO руу
+заана (`R2_ENDPOINT=http://localhost:9000`). Bucket байхгүй бол зөвхөн локалд (production биш үед)
+API өөрөө үүсгээд `public/` prefix-ийг нээнэ; R2 дээр bucket болон нийтийн хандалтыг Cloudflare
+dashboard дээр тохируулна.
 
 ### Seed нэвтрэх мэдээлэл
 
@@ -99,12 +104,14 @@ web → `next.config.ts`).
 | `REMINDERS_CRON` | Сануулгын cron (серверийн цаг, сек мин цаг өдөр сар гараг) | `0 0 8 * * *` |
 | `THROTTLE_LIMIT` | API-ийн глобал хязгаар: нэг IP-ээс минутад илгээх хүсэлт (default 120). E2E-г нэг машинаас ажиллуулахад өсгөнө | `120` |
 | `REFRESH_REUSE_GRACE_SECONDS` | Rotate хийгдсэн refresh токеныг өөр таб дахин илгээхэд бүх сессийг хаахгүй байх хугацаа (сек, `0` = унтраах) | `30` |
-| `MINIO_ENDPOINT/PORT/USE_SSL` | MinIO холболт | `localhost` / `9000` / `false` |
-| `MINIO_ACCESS_KEY/SECRET_KEY` | MinIO нэвтрэлт | `minioadmin` |
-| `MINIO_BUCKET` | Баримт хадгалах bucket (байхгүй бол API үүсгэнэ) | `law-firm-documents` |
-| `MINIO_PUBLIC_URL` | Нийтлэлийн cover зургийн (bucket-ийн `public/` prefix, public-read) browser-т харагдах base URL. Хоосон бол `http://MINIO_ENDPOINT:MINIO_PORT` | `https://files.lawfirm.mn` |
-| `NEXT_PUBLIC_API_URL` | Browser талын API URL | `http://localhost:4000` |
-| `API_URL` | SSR/middleware талын API URL | `http://localhost:4000` |
+| `COOKIE_PATH_PREFIX` | Браузерт API ямар зам дор харагдаж байгаа нь. Хоосон = шууд дуудаж байна (refresh cookie `/auth`); `/api` = вэб дамжуулж байна (`/api/auth`) | `` / `/api` |
+| `TRUST_PROXY_HOPS` | API-ийн өмнөх proxy-ийн тоо (зөвхөн `NODE_ENV=production` үед). Railway: edge → web → api = 2 | `1` |
+| `R2_ENDPOINT` | S3 endpoint. R2: `https://<account-id>.r2.cloudflarestorage.com`, локал MinIO: `http://localhost:9000` | `http://localhost:9000` |
+| `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | R2 API token (Object Read & Write) эсвэл MinIO-гийн түлхүүр | `minioadmin` |
+| `R2_BUCKET` | Баримт хадгалах bucket (R2 дээр dashboard-оос үүсгэнэ; локалд API өөрөө үүсгэнэ) | `law-firm-documents` |
+| `R2_PUBLIC_URL` | Нийтлэлийн cover зургийн (bucket-ийн `public/` prefix) browser-т харагдах base URL — **bucket-ийн root**. R2: `https://pub-xxxx.r2.dev`, MinIO: `http://localhost:9000/<bucket>` | `https://cdn.lawfirm.mn` |
+| `NEXT_PUBLIC_API_URL` | Browser талын API URL. `/api` бол вэбийн ижил origin дээрх proxy | `http://localhost:4000` / `/api` |
+| `API_URL` | SSR/middleware талын, мөн `/api` proxy-ийн очих API URL (үргэлж бүтэн хаяг) | `http://localhost:4000` |
 
 API асахдаа env-ээ zod-оор шалгаж, дутуу/буруу бол жагсаалт хэвлээд зогсоно.
 
@@ -122,7 +129,7 @@ law-firm/
 │   │       ├── posts/           public list + slug (viewCount++), admin/lawyer CRUD, /posts/manage
 │   │       ├── lawyers/         public хуульчдын профайл + /lawyers/:userId/profile удирдлага
 │   │       ├── cases/           scope: CLIENT→өөрийн, LAWYER→хариуцсан, ADMIN→бүгд; staff CRUD, events, STATUS_CHANGE
-│   │       ├── documents/       multipart upload → MinIO, presigned download (scope + visibility), DELETE
+│   │       ├── documents/       multipart upload → R2/MinIO, presigned download (scope + visibility), DELETE
 │   │       ├── invoices/        хэргийн scope-оор; үүсгэх (INV-YYYY-NNNN), төлөвийн шилжилт; дансны төлбөр тэмдэглэх, баталгаажуулах
 │   │       ├── settings/        GET/PUT /settings/bank-account, /settings/firm — данс ба фирмийн мэдээлэл (Setting хүснэгт, ADMIN засна)
 │   │       ├── document-requests/ баримтын хүсэлт: CRUD, submit (multipart), review, EventEmitter2 → мэдэгдэл
@@ -131,7 +138,7 @@ law-firm/
 │   │       ├── service-requests/ CLIENT хүсэлт гаргах/өөрийн; ADMIN жагсаалт, хүлээж авах, татгалзах, хуваарилах → Case; EventEmitter2
 │   │       ├── contact/         хуучин «Холбоо барих» маягтын мессежүүд — ADMIN зөвхөн унших
 │   │       ├── admin/           GET /admin/stats (хянах самбарын тоо, ойрын үйл явдал)
-│   │       ├── storage/         MinIO wrapper (upload, uploadPublic, presignedGetUrl, delete) — global
+│   │       ├── storage/         S3 wrapper (R2/MinIO): upload, uploadPublic, presignedGetUrl, delete — global
 │   │       ├── audit/           global interceptor: POST/PATCH/PUT/DELETE → AuditLog — global
 │   │       ├── prisma/          PrismaService (shared client + adapter) — global
 │   │       ├── common/          decorators (@Public, @Roles, @CurrentUser), guards, filter, utils
@@ -246,7 +253,7 @@ ADMIN болон LAWYER портал login-оор нэвтэрмэгц `/admin` 
 | `POST /cases/:id/events` | ADMIN, багийн LAWYER | Харилцагчид харагдах HEARING / MEETING / DEADLINE нь харилцагчид мэдэгдэл илгээнэ |
 | `PATCH /events/:id`, `DELETE /events/:id` | ADMIN, багийн LAWYER | `STATUS_CHANGE` event-ийн төрлийг солихгүй |
 | `POST /cases/:id/documents` | Хэргийн scope | multipart + `isVisibleToClient` |
-| `DELETE /documents/:id` | ADMIN, upload хийсэн LAWYER | MinIO-оос мөн устгана |
+| `DELETE /documents/:id` | ADMIN, upload хийсэн LAWYER | Обьект хадгалалтаас мөн устгана |
 | `POST /invoices` | ADMIN, багийн LAWYER | `INV-YYYY-NNNN`, `DRAFT` төлөвтэй |
 | `PATCH /invoices/:id` | ADMIN, багийн LAWYER | DRAFT → SENT/CANCELLED, SENT → PAID/OVERDUE/CANCELLED, OVERDUE → PAID/CANCELLED. SENT үед мэдэгдэл, PAID үед `paidAt`. Дүн, тайлбарыг зөвхөн DRAFT үед засна |
 | `GET /users`, `GET /users/:id` | ADMIN, LAWYER | LAWYER зөвхөн CLIENT хэрэглэгчдийг харна |
@@ -254,7 +261,7 @@ ADMIN болон LAWYER портал login-оор нэвтэрмэгц `/admin` 
 | `GET/POST/PATCH /lawyers/:userId/profile` | ADMIN, LAWYER (өөрийн) | Нийтийн профайл |
 | `GET /admin/stats` | ADMIN, LAWYER | Хэрэглэгчийн scope-оор тооцно |
 | `GET /posts/manage`, `GET /posts/manage/:id` | ADMIN, LAWYER (өөрийн) | Ноорог, архив орно |
-| `POST /posts/cover` | ADMIN, LAWYER | JPG/PNG/WEBP, ≤5MB → MinIO `public/` → `{ url }` |
+| `POST /posts/cover` | ADMIN, LAWYER | JPG/PNG/WEBP, ≤5MB → bucket-ийн `public/` → `{ url }` |
 | `GET /contact` | ADMIN | Хуучин «Холбоо барих» маягтын мессежүүд, зөвхөн унших |
 
 Web талын `POST /api/revalidate` route нь нэвтэрсэн ADMIN/LAWYER-ийн хүсэлтээр `/`, `/news`, `/news/[slug]`-ийг
@@ -337,7 +344,7 @@ Playwright-ийн `globalSetup` (`apps/web/e2e/global-setup.ts`) нь suite эх
 - `REJECTED` шийдвэрт `rejectionReason` заавал.
 - Хүсэлтийг зөвхөн `PENDING`, `REJECTED` үед засна. Файл хавсрагдаагүй бол л устгана.
 - Хаагдсан хэрэгт шинэ хүсэлт үүсгэхгүй.
-- Файл эхлээд MinIO-д хадгалагдана. DB бичилт амжилтгүй бол хадгалсан файлуудыг буцааж устгана.
+- Файл эхлээд обьект хадгалалтад (R2/MinIO) орно. DB бичилт амжилтгүй бол хадгалсан файлуудыг буцааж устгана.
 
 ### Endpoint-ууд
 
@@ -682,10 +689,10 @@ ADMIN эсвэл хэргийг хариуцсан хуульч дансны х�
 
 | Endpoint | Эрх | Тайлбар |
 | --- | --- | --- |
-| `POST /tasks/:id/attachments` | даалгаврыг харах эрхтэй (ADMIN, гүйцэтгэгч, үүсгэгч, хэргийн баг) | multipart `file` (+ `name`), PDF/Word/Excel/зураг/текст, 20MB. MinIO `tasks/<taskId>/` |
+| `POST /tasks/:id/attachments` | даалгаврыг харах эрхтэй (ADMIN, гүйцэтгэгч, үүсгэгч, хэргийн баг) | multipart `file` (+ `name`), PDF/Word/Excel/зураг/текст, 20MB. `tasks/<taskId>/` |
 | `GET /tasks/:id/attachments` | мөн адил | шинэ нь эхэндээ |
 | `GET /task-attachments/:id/download` | мөн адил | 5 минутын presigned URL |
-| `DELETE /task-attachments/:id` | хавсаргасан хүн эсвэл ADMIN | MinIO объект бас устна |
+| `DELETE /task-attachments/:id` | хавсаргасан хүн эсвэл ADMIN | Хадгалалтын объект бас устна |
 
 CLIENT бүгдэд 403. DB бичилт амжилтгүй бол хадгалсан объектыг буцааж устгана; даалгавар устгахад хавсралтын объектууд цэвэрлэгдэнэ.
 UI: `/admin/tasks/[id]` → «Хавсралт» карт (порталын drag-drop бүсийн загвар, `FileChip`, татах, устгах).
@@ -797,11 +804,15 @@ grace дотор зэрэг ирсэн хүсэлт бүх сесс хаахгү
 хамгаалалт (400/404), нэг өмгөөлөгч ба багаар хуваарилахад Case + CaseMember, `NEW`/давхар/зэрэгцээ хуваарилалт → 400, идэвхгүй
 өмгөөлөгч → 400, хэргийн дугаар давхцахад дахин оролдох, хуваарилсны дараах хэргийн scope, мэргэшлээр санал болгох, эрх
 (CLIENT/LAWYER → 403) ба validation → 400, дөрвөн event-ийн мэдэгдэл. Хуучин contact: зөвхөн унших жагсаалт, PATCH → 404.
-Нийт 448 тест, DB шаардахгүй (Prisma mock). Баг нэмэхээс өмнөх 249 тест хэвээр ногоон.
+Нийт 460 тест, DB шаардахгүй (Prisma mock). Баг нэмэхээс өмнөх 249 тест хэвээр ногоон.
+
+Хадгалалт (S3 клиентийг mock хийнэ): R2 тохиргоо (`region: 'auto'`, path-style), upload-ийн content type/length,
+`public/` prefix ба bucket-гүй нийтийн URL, татах URL-ийн `Content-Disposition` болон хугацаа, устгах,
+bucket байгаа эсэхийг шалгах, локалд bucket үүсгэх, production-д хэзээ ч үүсгэхгүй бөгөөд алдаанд унахгүй.
 
 `packages/shared` дээр 10 тест: тестийн өгөгдлийн угтвар (`E2E `, `e2e.`), холболтын мөрөөс DB-ийн нэр
 унших, `pnpm db:clean`-ий хамгаалалт (dev DB → алдаа, `--force` нь DB-ийн нэртэй яг таарах ёстой).
-Нийт `pnpm test` → **458 тест**.
+Нийт `pnpm test` → **470 тест**.
 
 ```bash
 pnpm --filter @law-firm/web e2e     # Playwright, web :3001 + api :4000 ажиллаж байх ёстой
@@ -851,6 +862,42 @@ Playwright (42 тест): нийтийн сайт (2), портал (2), адм�
 ## 15. Production тэмдэглэл
 
 - `pnpm build` → `apps/api/dist`, `apps/web/.next`. API: `node dist/main`, web: `next start`.
-- API `trust proxy` = 1 (reverse proxy ард), cookie `secure` = true.
-- Web ба API өөр subdomain дээр байвал `COOKIE_DOMAIN=.lawfirm.mn` тохируулна.
+- API `trust proxy` = `TRUST_PROXY_HOPS` (зөвхөн production), cookie `secure` = true.
+- Web ба API нэг үндсэн домэйны subdomain дээр байвал `COOKIE_DOMAIN=.lawfirm.mn` тохируулж болно.
 - Migration: `pnpm db:deploy`.
+
+### Railway (web + api хоёр service)
+
+`*.up.railway.app` нь **public suffix** тул `web-xxx.up.railway.app` ба `api-xxx.up.railway.app` нь
+өөр өөр сайт болно — `SameSite=Lax` cookie тэдний хооронд явахгүй, вэбийн `middleware.ts` ч API-ийн
+cookie-г харахгүй. Тиймээс браузер API-г **зөвхөн вэбийн өөрийнх нь `/api/*`-аар** дуудна:
+
+```
+browser → https://web-xxx.up.railway.app/api/...   (next.config.ts rewrites)
+              └→ http://api.railway.internal:4000/...   (Railway private network)
+```
+
+- `next.config.ts`-ийн `rewrites()` нь массив буцаадаг тул вэбийн өөрийн route-ууд түрүүлж ажиллана
+  — `/api/revalidate` Next дээрээ үлдэж, бусад `/api/*` л API руу дамжина.
+- Refresh cookie-ийн зам `COOKIE_PATH_PREFIX`-ээс хамаарна: шууд дуудахад `/auth`, proxy-гоор `/api/auth`.
+- API нь `::` дээр сонсдог (Railway-ийн private network IPv6).
+
+| Service | Build command | Start command |
+| --- | --- | --- |
+| api | `pnpm build:api` | `pnpm start:api` (`prisma migrate deploy` + `node dist/main`) |
+| web | `pnpm build:web` | `pnpm start:web` (`next start --port $PORT`) |
+
+Env (нарийн жагсаалт `.env.example`-ийн төгсгөлд):
+
+- **api:** `NODE_ENV=production`, `DATABASE_URL`, `PORT`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`,
+  `CORS_ORIGIN=https://<web>.up.railway.app`, `COOKIE_PATH_PREFIX=/api`, `TRUST_PROXY_HOPS=2`,
+  `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_URL`.
+- **web:** `NODE_ENV=production`, `NEXT_PUBLIC_API_URL=/api`, `API_URL=http://api.railway.internal:4000`.
+
+`prisma migrate deploy` болон seed нь production-д ажиллах ёстой тул `prisma`, `tsx`, `dotenv`,
+`argon2` нь `packages/shared`-ийн **dependencies** дотор байна (devDependencies-гүй суулгалтад ч ирнэ).
+`prisma.config.ts` болон `seed.ts` нь `.env` файл байхгүй үед `process.env`-ээс уншина.
+
+**Rate limit:** `TRUST_PROXY_HOPS` буруу бол throttler бүх хэрэглэгчийг нэг IP гэж үзнэ. Шалгах:
+`NODE_ENV=production` үед лог дээрх `req.ip` (эсвэл түр `/health`-д нэмж) бодит клиентийн IP байх
+ёстой — Railway edge + вэбийн proxy = 2 hop.

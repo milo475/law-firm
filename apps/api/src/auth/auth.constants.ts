@@ -10,8 +10,13 @@ export const REFRESH_COOKIE = 'refresh_token';
  * short-lived access cookie expired, and lets the client-side refresh flow run.
  */
 export const SESSION_HINT_COOKIE = 'lf_session';
-/** Refresh cookie is only ever sent to /auth/* endpoints. */
-const REFRESH_COOKIE_PATH = '/auth';
+/**
+ * Refresh cookie is only ever sent to the API's /auth/* endpoints. Behind the web app's
+ * same-origin proxy the browser sees them under COOKIE_PATH_PREFIX (e.g. /api/auth).
+ */
+function refreshCookiePath(config: ConfigService<Env, true>): string {
+  return `${config.get('COOKIE_PATH_PREFIX', { infer: true })}/auth`;
+}
 
 function baseCookieOptions(config: ConfigService<Env, true>): CookieOptions {
   const isProd = config.get('NODE_ENV', { infer: true }) === 'production';
@@ -35,7 +40,7 @@ export function refreshCookieOptions(config: ConfigService<Env, true>, expiresAt
   const days = config.get('JWT_REFRESH_TTL_DAYS', { infer: true });
   return {
     ...baseCookieOptions(config),
-    path: REFRESH_COOKIE_PATH,
+    path: refreshCookiePath(config),
     maxAge: expiresAt ? Math.max(0, expiresAt.getTime() - Date.now()) : days * 86_400_000,
   };
 }

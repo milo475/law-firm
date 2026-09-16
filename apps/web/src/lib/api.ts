@@ -1,6 +1,7 @@
 /**
  * Isomorphic fetch wrapper for the NestJS API.
- *  - base URL from env (NEXT_PUBLIC_API_URL in the browser, API_URL on the server)
+ *  - base URL from env (NEXT_PUBLIC_API_URL in the browser — `/api` proxies same-origin —
+ *    and API_URL on the server)
  *  - always sends cookies (credentials: 'include')
  *  - on 401 it calls POST /auth/refresh once and retries the original request
  *    (also for GET /auth/me: a failed refresh clears the session cookies, so the login redirect cannot loop)
@@ -32,10 +33,13 @@ export interface ApiRequestOptions extends Omit<RequestInit, 'body'> {
 const isServer = typeof window === 'undefined';
 
 export function getApiBaseUrl(): string {
-  const url = isServer
-    ? process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL
-    : process.env.NEXT_PUBLIC_API_URL;
-  return (url ?? 'http://localhost:4000').replace(/\/+$/, '');
+  if (isServer) {
+    // NEXT_PUBLIC_API_URL may be the relative proxy path (`/api`), which server-side fetch
+    // cannot resolve — the server always needs an absolute URL it can reach directly.
+    const url = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL;
+    return (url && !url.startsWith('/') ? url : 'http://localhost:4000').replace(/\/+$/, '');
+  }
+  return (process.env.NEXT_PUBLIC_API_URL ?? '/api').replace(/\/+$/, '');
 }
 
 interface ErrorBody {

@@ -42,18 +42,21 @@ test.describe('Сесс', () => {
     expect(refreshToken, 'login sets the refresh cookie').toBeTruthy();
     await signIn.dispose();
 
-    const refreshWithSharedToken = async () => {
-      const tab = await playwrightRequest.newContext({ baseURL: API_URL, extraHTTPHeaders: { cookie: `refresh_token=${refreshToken}` } });
+    // The cookie is sent by hand: this context calls the API directly, while the cookie's path
+    // follows COOKIE_PATH_PREFIX (/auth, or /api/auth behind the web app's same-origin proxy).
+    const refreshWith = async (token: string | undefined) => {
+      const tab = await playwrightRequest.newContext({ baseURL: API_URL, extraHTTPHeaders: { cookie: `refresh_token=${token}` } });
       const status = (await tab.post('/auth/refresh')).status();
       await tab.dispose();
       return status;
     };
     // The first tab rotates the token; the second arrives moments later with the same, now rotated, one.
-    expect(await refreshWithSharedToken()).toBe(200);
-    expect(await refreshWithSharedToken()).toBe(200);
+    expect(await refreshWith(refreshToken)).toBe(200);
+    expect(await refreshWith(refreshToken)).toBe(200);
     // Not treated as theft: another session of the same user still refreshes.
-    expect((await otherSession.post('/auth/refresh')).status()).toBe(200);
+    const otherToken = (await otherSession.storageState()).cookies.find((cookie) => cookie.name === 'refresh_token')?.value;
     await otherSession.dispose();
+    expect(await refreshWith(otherToken)).toBe(200);
   });
 
   test('хоёр табын access token зэрэг дуусахад хоёр таб хоёулаа порталд үлдэнэ', async ({ browser, baseURL }) => {
