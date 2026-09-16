@@ -12,11 +12,12 @@ import { cn, shortName } from '@/lib/utils';
 
 export const revalidate = 60;
 
-async function load<T>(path: string, fallback: T): Promise<T> {
+/** null when the API call failed, so an empty list and an unreachable API read differently. */
+async function load<T>(path: string): Promise<T | null> {
   try {
     return await apiFetch<T>(path, { next: { revalidate: 60 } });
   } catch {
-    return fallback;
+    return null;
   }
 }
 
@@ -40,8 +41,8 @@ const SECTION = 'mx-auto w-full max-w-[1200px] px-5 py-14 md:px-6 md:py-24';
 
 export default async function HomePage() {
   const [lawyers, posts, firm] = await Promise.all([
-    load<LawyerProfile[]>('/lawyers', []),
-    load<Paginated<PostListItem>>('/posts?limit=3', { items: [], total: 0, page: 1, limit: 3, totalPages: 1 }),
+    load<LawyerProfile[]>('/lawyers'),
+    load<Paginated<PostListItem>>('/posts?limit=3'),
     loadFirmSettings(),
   ]);
 
@@ -123,8 +124,10 @@ export default async function HomePage() {
             <SectionHead overline="Хуульчдын баг" title="Таны хэргийг хариуцах мэргэжилтнүүд" />
             <Button asChild variant="secondary" size="md" className="hidden md:inline-flex"><Link href="/lawyers">Бүх хуульчид</Link></Button>
           </div>
-          {lawyers.length === 0 ? (
+          {!lawyers ? (
             <p className="text-body text-text-muted">Хуульчдын мэдээлэл түр ачаалагдсангүй.</p>
+          ) : lawyers.length === 0 ? (
+            <p className="text-body text-text-muted">Хуульчдын мэдээлэл удахгүй нэмэгдэнэ.</p>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
               {lawyers.slice(0, 4).map((l, i) => (
@@ -160,8 +163,10 @@ export default async function HomePage() {
             />
             <Button asChild variant="secondary" size="md" className="hidden md:inline-flex"><Link href="/news">Бүх нийтлэл</Link></Button>
           </div>
-          {posts.items.length === 0 ? (
+          {!posts ? (
             <p className="text-body text-text-muted">Нийтлэл түр ачаалагдсангүй.</p>
+          ) : posts.items.length === 0 ? (
+            <p className="text-body text-text-muted">Нийтлэл удахгүй нийтлэгдэнэ.</p>
           ) : (
             <div className="grid gap-4 md:grid-cols-3 md:gap-8">
               {posts.items.map((p, i) => (

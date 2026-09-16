@@ -23,14 +23,14 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return { title: service.title, description: service.short };
 }
 
-/** Lawyers whose specialisations mention this service; falls back to the first profiles. */
-async function lawyersFor(service: ServiceDefinition): Promise<LawyerProfile[]> {
+/** Lawyers whose specialisations mention this service; falls back to the first profiles. null when the API failed. */
+async function lawyersFor(service: ServiceDefinition): Promise<LawyerProfile[] | null> {
   try {
     const all = await apiFetch<LawyerProfile[]>('/lawyers', { next: { revalidate: 60 } });
     const matched = all.filter((l) => l.specializations.some((s) => s.toLowerCase().includes(service.title.toLowerCase())));
     return (matched.length ? matched : all).slice(0, 3);
   } catch {
-    return [];
+    return null;
   }
 }
 
@@ -112,8 +112,10 @@ export default async function ServiceDetailPage({ params }: Params) {
             {/* Lawyers card (20:590 / 25:1475) */}
             <div className="flex flex-col gap-3.5 rounded-lg border border-border-default bg-bg-page p-5 md:gap-4 md:p-6">
               <h2 className="text-body-medium text-text-primary">Энэ чиглэлийн хуульчид</h2>
-              {lawyers.length === 0 ? (
+              {!lawyers ? (
                 <p className="text-body-sm text-text-muted">Хуульчдын мэдээлэл түр ачаалагдсангүй.</p>
+              ) : lawyers.length === 0 ? (
+                <p className="text-body-sm text-text-muted">Хуульчдын мэдээлэл удахгүй нэмэгдэнэ.</p>
               ) : (
                 <ul className="flex flex-col gap-3.5 md:gap-4">
                   {lawyers.map((l) => (
