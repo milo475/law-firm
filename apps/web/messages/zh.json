@@ -1,931 +1,931 @@
 {
   "site": {
-    "name": "",
-    "description": "",
-    "skipToContent": "",
-    "languageLabel": "",
-    "postsInMongolian": "",
-    "dismissSuggestion": ""
+    "name": "Strategy Law Firm",
+    "description": "提供专业法律服务的机构，为个人和企业提供辩护代理与法律咨询。",
+    "skipToContent": "跳至主要内容",
+    "languageLabel": "选择语言",
+    "postsInMongolian": "以下文章为蒙古文。",
+    "dismissSuggestion": "关闭"
   },
   "nav": {
-    "menu": "",
-    "mobileMenu": "",
-    "openMenu": "",
-    "closeMenu": "",
-    "menuTitle": "",
-    "menuDescription": "",
-    "about": "",
-    "services": "",
-    "lawyers": "",
-    "news": "",
-    "faq": "",
-    "contact": "",
-    "portal": "",
-    "cta": ""
+    "menu": "主菜单",
+    "mobileMenu": "手机菜单",
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单",
+    "menuTitle": "菜单",
+    "menuDescription": "网站主菜单",
+    "about": "关于我们",
+    "services": "服务",
+    "lawyers": "律师团队",
+    "news": "资讯",
+    "faq": "常见问题",
+    "contact": "联系我们",
+    "portal": "客户门户",
+    "cta": "咨询申请"
   },
   "footer": {
-    "description": "",
-    "descriptionShort": "",
-    "services": "",
-    "company": "",
-    "contact": "",
-    "news": "",
-    "careers": "",
-    "rights": "",
-    "privacy": "",
-    "terms": "",
+    "description": "提供专业法律服务的机构，为个人和企业提供辩护代理与法律咨询。",
+    "descriptionShort": "提供专业法律服务的机构。",
+    "services": "服务",
+    "company": "公司",
+    "contact": "联系我们",
+    "news": "资讯与文章",
+    "careers": "招聘",
+    "rights": "版权所有。",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
     "serviceShort": {
-      "civil": "",
-      "criminal": "",
-      "family": "",
-      "business": "",
-      "labor": "",
-      "real-estate": ""
+      "civil": "民事",
+      "criminal": "刑事",
+      "family": "家事",
+      "business": "商事",
+      "labor": "劳动",
+      "real-estate": "不动产"
+    }
+  },
+  "common": {
+    "home": "首页",
+    "readMore": "查看详情",
+    "all": "全部",
+    "back": "返回",
+    "breadcrumb": "路径导航",
+    "getAdvice": "咨询申请",
+    "yearsOfExperience": "{years} 年执业经验",
+    "lawyersUnavailable": "律师信息暂时无法加载。",
+    "lawyersComingSoon": "律师信息即将上线。",
+    "postsUnavailable": "文章暂时无法加载。",
+    "postsComingSoon": "文章即将发布。",
+    "views": "{count} 次浏览"
+  },
+  "servicesPage": {
+    "metaTitle": "服务",
+    "metaDescription": "我们在六大业务领域提供法律咨询、文书起草及出庭代理服务。",
+    "title": "业务领域",
+    "description": "我们在六大业务领域提供法律咨询、文书起草及出庭代理服务。",
+    "crumb": "服务",
+    "crumbAll": "全部领域",
+    "listHeading": "业务领域",
+    "processOverline": "合作流程",
+    "processTitle": "四个步骤",
+    "step": "第 {number} 步：",
+    "notFound": "未找到该服务",
+    "whatWeDo": "我们做什么",
+    "scope": "服务范围",
+    "faqHeading": "常见问题",
+    "lawyersHeading": "该领域的律师",
+    "pricingHeading": "收费说明",
+    "pricingNote": "收费标准依据工作范围与期限，在委托合同中约定。"
+  },
+  "faqPage": {
+    "metaTitle": "常见问题",
+    "metaDescription": "按业务领域整理的客户最常提出的问题及解答。",
+    "title": "法律信息与常见问题",
+    "description": "按业务领域整理的客户最常提出的问题及解答。",
+    "crumb": "常见问题",
+    "categoryNav": "问题分类",
+    "helpTitle": "没有找到答案？",
+    "helpText": "请给我们留言——收到请求后我们会与您联系。",
+    "helpCta": "提交问题"
+  },
+  "postCategory": {
+    "NEWS": "资讯",
+    "ADVICE": "法律建议",
+    "LEGAL_UPDATE": "法规更新"
+  },
+  "home": {
+    "hero": {
+      "overline": "法律顾问与辩护代理服务",
+      "overlineShort": "法律顾问服务",
+      "title": "维护您权利的坚实依靠",
+      "lead": "我们在民事、刑事、家事、商事、劳动及不动产领域提供辩护代理与法律咨询。您可通过客户门户随时查看案件进展。",
+      "leadShort": "在民事、刑事、家事及商事领域提供专业法律协助。",
+      "primaryCta": "提交咨询申请",
+      "secondaryCta": "查看服务"
+    },
+    "services": {
+      "overline": "业务领域",
+      "title": "我们处理哪些问题？",
+      "description": "我们在六大业务领域全面覆盖个人与企业的法律需求。"
+    },
+    "advantagesSection": {
+      "overline": "我们的工作原则",
+      "title": "我们的工作以何为本",
+      "description": "从接受委托到案件了结由同一团队负责，每一步均以书面记录。"
+    },
+    "advantages": [
+      {
+        "value": "6",
+        "label": "业务领域",
+        "note": "民事、刑事、家事、商事、劳动、不动产"
+      },
+      {
+        "value": "门户",
+        "label": "在线查看案件进展",
+        "note": "文件、账单与消息集中管理"
+      },
+      {
+        "value": "合同",
+        "label": "条款透明",
+        "note": "工作范围、期限与费用均以书面约定"
+      },
+      {
+        "value": "保密",
+        "label": "信息保护",
+        "note": "严格管理访问权限"
+      }
+    ],
+    "team": {
+      "overline": "律师团队",
+      "title": "负责您案件的专业人员",
+      "all": "全部律师"
+    },
+    "news": {
+      "overline": "资讯与文章",
+      "title": "法律环境的最新动态",
+      "titleShort": "最新法律动态",
+      "all": "全部文章"
+    },
+    "cta": {
+      "title": "不确定该如何解决您的问题？",
+      "text": "请简要说明您的情况并提交申请。律师审阅后会与您联系，说明法律途径与下一步安排。",
+      "textShort": "提交申请后，律师将与您联系。"
+    }
+  },
+  "about": {
+    "metaTitle": "关于我们",
+    "metaDescription": "Strategy Law Firm 是提供专业法律服务的机构，为个人和企业提供辩护代理与法律咨询。",
+    "title": "关于我们",
+    "description": "Strategy Law Firm 是提供专业法律服务的机构。",
+    "crumb": "关于我们",
+    "story": {
+      "overline": "关于我们",
+      "title": "让法律问题变得清晰，并始终陪伴在您身边",
+      "p1": "Strategy Law Firm 为个人与企业提供专业法律协助，业务包括辩护代理、法律咨询、文书起草，以及在行政机关和法院的代理工作。",
+      "p2": "接受委托时，我们首先评估实际可行性，并明确告知我们能够做到的事情。工作进展通过客户门户记录，文件、期限与下一步安排始终集中可见。"
+    },
+    "values": {
+      "overline": "使命与价值观",
+      "title": "让法律协助对每个人都清晰易懂、触手可及"
+    },
+    "process": {
+      "overline": "合作流程",
+      "title": "案件如何推进"
+    },
+    "valueItems": [
+      {
+        "title": "诚信",
+        "text": "我们如实告知客户案件的实际可能性，绝不承诺无法兑现的结果。"
+      },
+      {
+        "title": "透明",
+        "text": "收费结构、案件进展与时间安排从一开始即以书面明确。"
+      },
+      {
+        "title": "保密",
+        "text": "依法严格保护客户信息，内部系统的访问权限受到严格管理。"
+      },
+      {
+        "title": "通俗表达",
+        "text": "我们不使用晦涩的法律术语，而以便于您作出决定的方式说明法律状况。"
+      }
+    ],
+    "processSteps": [
+      {
+        "step": "01",
+        "title": "接收申请",
+        "text": "您通过门户或联系页面提交申请，我们确认问题类型。"
+      },
+      {
+        "step": "02",
+        "title": "初步评估",
+        "text": "我们查阅材料，说明法律途径与风险。"
+      },
+      {
+        "step": "03",
+        "title": "合同与方案",
+        "text": "以书面方式约定工作内容、期限与费用条件。"
+      },
+      {
+        "step": "04",
+        "title": "办理案件",
+        "text": "在行政机关与法院代理，并在客户门户持续更新进展。"
+      }
+    ]
+  },
+  "contact": {
+    "metaTitle": "联系我们",
+    "metaDescription": "联系 Strategy Law Firm：地址、电话、电子邮箱，辩护代理与法律咨询申请。",
+    "title": "联系我们",
+    "description": "请通过客户门户提交辩护代理或法律咨询申请，收到后我们会与您联系。",
+    "crumb": "联系我们",
+    "requests": {
+      "title": "提交申请",
+      "description": "辩护代理与法律咨询申请通过客户门户提交。登录后，您可在同一处查看申请状态、指派的律师以及已立案的案件。",
+      "cta": "提交申请",
+      "LAWYER": {
+        "title": "委托律师",
+        "description": "我们指派律师承办您的案件，并在法院及行政机关代理。"
+      },
+      "CONSULTATION": {
+        "title": "法律咨询",
+        "description": "由律师帮助您厘清问题，并就下一步提供建议。"
+      },
+      "signUpPrefix": "如果尚未注册，请先",
+      "signUpLink": "注册",
+      "signUpSuffix": "后继续。紧急事项请拨打 {phone}。"
+    },
+    "office": {
+      "title": "办公室信息",
+      "address": "地址",
+      "phone": "电话",
+      "email": "电子邮箱",
+      "hours": "办公时间",
+      "social": "社交媒体"
+    },
+    "map": {
+      "label": "办公室位置地图",
+      "caption": "地图位置"
+    }
+  },
+  "lawyers": {
+    "metaTitle": "律师团队",
+    "metaDescription": "从各业务领域的专业律师中选择适合您的一位。",
+    "title": "律师团队",
+    "description": "从各业务领域的专业律师中选择适合您的一位。",
+    "descriptionCounted": "从各业务领域的 {count} 位专业律师中选择适合您的一位。",
+    "crumb": "律师团队",
+    "filterLabel": "按业务领域筛选",
+    "failedTitle": "律师信息加载失败",
+    "failedDescription": "无法连接到接口，请稍后重试。",
+    "noneTitle": "暂无律师信息",
+    "noneForFilter": "未找到“{spec}”领域的律师",
+    "noneDescription": "请选择其他领域或点击“全部”。"
+  },
+  "lawyerDetail": {
+    "notFound": "未找到该律师",
+    "contactTitle": "联系方式",
+    "phone": "电话",
+    "email": "电子邮箱",
+    "bookCta": "预约时间",
+    "specializations": "业务领域",
+    "education": "教育背景与资质",
+    "bio": "个人简介"
+  },
+  "news": {
+    "metaTitle": "资讯与文章",
+    "metaDescription": "这里发布法规更新、实务建议与本所动态。",
+    "title": "资讯与文章",
+    "description": "这里发布法规更新、实务建议与本所动态。",
+    "crumb": "资讯与文章",
+    "crumbAll": "全部文章",
+    "categoryLabel": "分类",
+    "featured": "精选",
+    "search": "搜索文章",
+    "searchSubmit": "搜索",
+    "searchResult": "“{query}”的搜索结果：{count} 篇文章",
+    "clearSearch": "清除",
+    "failedTitle": "资讯加载失败",
+    "failedDescription": "请确认接口是否正常运行后重试。",
+    "noneTitle": "未找到文章",
+    "noneDescription": "请选择其他分类或修改搜索条件。",
+    "mongolianNote": "以下文章为蒙古文。",
+    "related": "相关文章",
+    "share": "分享：",
+    "copyLink": "复制链接",
+    "shareAction": "分享",
+    "shareEmail": "通过邮件发送",
+    "readingTime": "阅读约 {minutes} 分钟"
+  },
+  "states": {
+    "retry": "重试",
+    "getHelp": "获取帮助",
+    "loading": "加载中",
+    "errorTitle": "出现错误",
+    "errorMessage": "加载内容时出现错误，请重试。",
+    "pagination": "分页",
+    "pageTitle": "页面加载失败",
+    "pageMessage": "临时错误，请重试。"
+  },
+  "notFound": {
+    "title": "未找到页面",
+    "homeCta": "返回首页",
+    "contactCta": "联系我们",
+    "quickLinks": "快捷链接",
+    "links": {
+      "services": {
+        "title": "服务",
+        "caption": "六大业务领域"
+      },
+      "lawyers": {
+        "title": "律师团队",
+        "caption": "了解我们的团队"
+      },
+      "news": {
+        "title": "资讯",
+        "caption": "最新文章"
+      },
+      "portal": {
+        "title": "客户门户",
+        "caption": "查看案件进展"
+      }
     }
   },
   "services": {
     "catalog": {
       "civil": {
-        "title": "",
-        "teaser": "",
-        "short": "",
+        "title": "民事法律",
+        "teaser": "合同纠纷、继承、所有权及损害赔偿请求。",
+        "short": "合同纠纷、继承、所有权、损害赔偿。",
         "highlights": [
-          "",
-          "",
-          ""
+          "起草与审查合同",
+          "继承纠纷",
+          "损害赔偿请求"
         ],
-        "intro": "",
+        "intro": "我们协助在诉前及诉讼阶段，依法妥善解决合同、财产及继承相关纠纷。",
         "body": [
-          "",
-          ""
+          "民事纠纷通常取决于合同条款与证据。因此我们从首次会面起，就明确列出您需要准备的材料清单。",
+          "主张损害赔偿、解除合同均有法定期限，建议纠纷一旦发生即尽早咨询。"
         ],
         "items": [
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
+          "起草、审查合同并参与谈判",
+          "向违约方提起请求",
+          "准备损害赔偿请求",
+          "继承与遗嘱纠纷",
+          "排除所有权侵害",
+          "各级法院代理"
         ],
         "note": {
-          "title": "",
-          "text": ""
+          "title": "特别提示",
+          "text": "民事请求的一般诉讼时效为 10 年，合同纠纷为 3 年。期限届满后，请求获得支持的可能性受到限制。"
         },
         "faq": {
           "when": {
-            "question": "",
-            "answer": ""
+            "question": "发生纠纷后应在多长时间内咨询？",
+            "answer": "合同纠纷的诉讼时效为 3 年。但为便于收集证据并保留和解机会，建议纠纷发生后立即咨询。"
           },
           "docs": {
-            "question": "",
-            "answer": ""
+            "question": "需要准备哪些材料？",
+            "answer": "合同、付款凭证、往来函件与消息记录、证人信息以及证明损失的材料。首次会面时我们会提供具体清单。"
           },
           "fee": {
-            "question": "",
-            "answer": ""
+            "question": "费用如何计算？",
+            "answer": "费用依据工作范围与期限，在委托合同中约定。首次会面时确定工作范围，并以书面方式约定收费条件。"
           },
           "duration": {
-            "question": "",
-            "answer": ""
+            "question": "案件通常多久审结？",
+            "answer": "一审法院通常在 2–6 个月内作出裁判，上诉与再审阶段各需 1–3 个月。"
           }
         },
         "pricing": [
           {
-            "label": "",
-            "value": ""
+            "label": "首次会面",
+            "value": "提交申请后安排"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "文书与法律意见",
+            "value": "按工作范围"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "出庭代理",
+            "value": "按合同约定"
           }
         ]
       },
       "criminal": {
-        "title": "",
-        "teaser": "",
-        "short": "",
+        "title": "刑事法律",
+        "teaser": "保护犯罪嫌疑人、被告人及被害人权利，提供完整的刑事辩护服务。",
+        "short": "全面保护犯罪嫌疑人、被告人及被害人权利。",
         "highlights": [
-          "",
-          "",
-          ""
+          "侦查阶段辩护",
+          "出庭辩护",
+          "维护被害人权利"
         ],
-        "intro": "",
+        "intro": "从侦查第一天到各级法院审理，我们为犯罪嫌疑人与被告人辩护，并维护被害人的合法权益。",
         "body": [
-          "",
-          ""
+          "刑事案件中时间至关重要。在作出陈述或提交材料之前先咨询律师，是保护自身权利最关键的一步。",
+          "我们全面查阅案卷，细致审查程序违法情形与证据的合法性，并据此确定辩护方案。"
         ],
         "items": [
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
+          "侦查阶段辩护",
+          "申请变更羁押强制措施",
+          "在庭审中为被告人辩护",
+          "被害人代理与损害赔偿请求",
+          "准备上诉与再审申诉",
+          "经济犯罪"
         ],
         "note": {
-          "title": "",
-          "text": ""
+          "title": "特别提示",
+          "text": "若被拘留或被传唤，请立即声明要求委托律师。在没有律师在场的情况下作出的首次陈述，可能对案件结果产生不利影响。"
         },
         "faq": {
           "when": {
-            "question": "",
-            "answer": ""
+            "question": "收到传唤后应何时联系律师？",
+            "answer": "建议在作出陈述之前联系我们。可通过客户门户提交申请，或拨打“联系我们”页面所列电话。"
           },
           "docs": {
-            "question": "",
-            "answer": ""
+            "question": "需要准备哪些材料？",
+            "answer": "传唤通知、各类告知书与决定书、扣押物品清单及往来文件。案卷材料由我们在辩护人权利范围内查阅。"
           },
           "fee": {
-            "question": "",
-            "answer": ""
+            "question": "费用如何计算？",
+            "answer": "费用依据工作范围与期限，在委托合同中约定。首次会面时确定工作范围，并以书面方式约定收费条件。"
           },
           "duration": {
-            "question": "",
-            "answer": ""
+            "question": "案件通常多久审结？",
+            "answer": "视案件类型，侦查阶段为 1–12 个月，法院审理阶段为 1–4 个月。"
           }
         },
         "pricing": [
           {
-            "label": "",
-            "value": ""
+            "label": "首次会面",
+            "value": "提交申请后安排"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "陈述时陪同在场",
+            "value": "按合同约定"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "刑事辩护",
+            "value": "按合同约定"
           }
         ]
       },
       "family": {
-        "title": "",
-        "teaser": "",
-        "short": "",
+        "title": "家事法律",
+        "teaser": "离婚、子女抚养费、监护以及共同财产分割。",
+        "short": "离婚、抚养费、监护、财产分割。",
         "highlights": [
-          "",
-          "",
-          ""
+          "办理离婚",
+          "确定子女抚养费",
+          "调解"
         ],
-        "intro": "",
+        "intro": "我们以子女利益优先为原则，在保密的前提下协助处理离婚、监护、抚养费及财产分割事宜。",
         "body": [
-          "",
-          ""
+          "家事纠纷不仅是法律问题，也带来心理压力。我们首先通过调解促成双方达成一致，必要时代理出庭。",
+          "涉及子女的事项，法院以子女利益优先，因此监护与抚养费方案须切合实际并有证据支持。"
         ],
         "items": [
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
+          "离婚请求与和解协议",
+          "确定子女监护与抚养费",
+          "共同财产分割",
+          "收养与指定监护人",
+          "起草婚前协议",
+          "调解与出庭代理"
         ],
         "note": {
-          "title": "",
-          "text": ""
+          "title": "特别提示",
+          "text": "子女抚养费自提出请求之日起计算，拖延即意味着损失。即便双方达成一致，也建议经公证或法院确认。"
         },
         "faq": {
           "when": {
-            "question": "",
-            "answer": ""
+            "question": "离婚通常需要多长时间？",
+            "answer": "双方达成一致且无未成年子女的，登记办理约 1 个月。经法院判决离婚的为 2–4 个月；若确定和好期，还需增加最多 3 个月。"
           },
           "docs": {
-            "question": "",
-            "answer": ""
+            "question": "需要准备哪些材料？",
+            "answer": "结婚证、子女出生证明、收入证明、财产登记材料及居住地证明。"
           },
           "fee": {
-            "question": "",
-            "answer": ""
+            "question": "费用如何计算？",
+            "answer": "费用依据工作范围与期限，在委托合同中约定。首次会面时确定工作范围，并以书面方式约定收费条件。"
           },
           "privacy": {
-            "question": "",
-            "answer": ""
+            "question": "如何保障保密？",
+            "answer": "我们严格遵守律师与委托人之间的保密义务。必要时申请不公开开庭审理。"
           }
         },
         "pricing": [
           {
-            "label": "",
-            "value": ""
+            "label": "首次会面",
+            "value": "提交申请后安排"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "文书与法律意见",
+            "value": "按工作范围"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "出庭代理",
+            "value": "按合同约定"
           }
         ]
       },
       "business": {
-        "title": "",
-        "teaser": "",
-        "short": "",
+        "title": "商事法律",
+        "teaser": "公司设立、股东协议、并购重组、合同风险评估。",
+        "short": "公司设立、合同风险、并购重组。",
         "highlights": [
-          "",
-          "",
-          ""
+          "企业注册与章程",
+          "股东协议",
+          "尽职调查"
         ],
-        "intro": "",
+        "intro": "从公司设立到并购重组，我们在各个阶段提供法律咨询，并提前识别风险。",
         "body": [
-          "",
-          ""
+          "多数商事纠纷源于合同与章程条款不明确。因此我们在起草文件时，力求条款可执行且不留隐患。",
+          "在投资或并购之前开展法律尽职调查，可提前发现隐性债务、潜在纠纷与许可缺失。"
         ],
         "items": [
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
+          "公司设立、改组及章程起草",
+          "股东协议与合作协议",
+          "投资与并购（M&A）",
+          "法律尽职调查",
+          "知识产权与商标保护",
+          "商事纠纷的仲裁与诉讼代理"
         ],
         "note": {
-          "title": "",
-          "text": ""
+          "title": "特别提示",
+          "text": "公司章程及股东名册的变更须在 15 日内办理国家登记，逾期将被处以罚款。"
         },
         "faq": {
           "monthly": {
-            "question": "",
-            "answer": ""
+            "question": "可以聘请常年法律顾问吗？",
+            "answer": "可以。通过月度顾问合同，您可持续获得合同审查、法律咨询及内部制度起草服务。"
           },
           "docs": {
-            "question": "",
-            "answer": ""
+            "question": "需要准备哪些材料？",
+            "answer": "国家登记证书、公司章程、股东名册、主要合同、财务报表及各类特别许可。"
           },
           "fee": {
-            "question": "",
-            "answer": ""
+            "question": "费用如何计算？",
+            "answer": "费用依据工作范围与期限，在委托合同中约定。首次会面时确定工作范围，并以书面方式约定收费条件。"
           },
           "duration": {
-            "question": "",
-            "answer": ""
+            "question": "尽职调查需要多长时间？",
+            "answer": "视公司规模，一般为 2–6 周。初步结论在一周内向您汇报。"
           }
         },
         "pricing": [
           {
-            "label": "",
-            "value": ""
+            "label": "首次会面",
+            "value": "提交申请后安排"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "起草合同与法律意见",
+            "value": "按工作范围"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "常年法律顾问",
+            "value": "按月度合同"
           }
         ]
       },
       "labor": {
-        "title": "",
-        "teaser": "",
-        "short": "",
+        "title": "劳动法律",
+        "teaser": "劳动合同、解雇纠纷及劳动安全违规。",
+        "short": "劳动合同、解雇纠纷、安全违规。",
         "highlights": [
-          "",
-          "",
-          ""
+          "内部劳动制度",
+          "解雇纠纷",
+          "集体合同"
         ],
-        "intro": "",
+        "intro": "我们协助依法、尽快解决劳动者与用人单位之间的纠纷。",
         "body": [
-          "",
-          ""
+          "劳动纠纷通常取决于证据。因此我们从首次会面起，就明确列出您需要准备的材料清单。",
+          "被解雇后，依《劳动法》提出申诉的期限较短，建议尽早咨询。"
         ],
         "items": [
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
+          "起草与审查劳动合同及内部制度",
+          "就无正当理由解雇提出申诉与请求",
+          "计算补偿金与工资差额",
+          "就劳动安全违规提出请求",
+          "集体合同及与工会的沟通",
+          "劳动争议调解委员会及法院代理"
         ],
         "note": {
-          "title": "",
-          "text": ""
+          "title": "特别提示",
+          "text": "自收到解雇决定之日起 1 个月内，可向劳动争议调解委员会提出申诉。逾期后恢复工作的可能性有限。"
         },
         "faq": {
           "when": {
-            "question": "",
-            "answer": ""
+            "question": "被解雇后应在多长时间内提出申诉？",
+            "answer": "自收到决定之日起 1 个月内向劳动争议调解委员会提出。对委员会决定不服的，可在 14 日内向法院起诉。"
           },
           "docs": {
-            "question": "",
-            "answer": ""
+            "question": "需要准备哪些材料？",
+            "answer": "劳动合同、解雇令、工资证明、内部制度、与用人单位的往来文件与消息记录及证人信息。"
           },
           "fee": {
-            "question": "",
-            "answer": ""
+            "question": "费用如何计算？",
+            "answer": "费用依据工作范围与期限，在委托合同中约定。首次会面时确定工作范围，并以书面方式约定收费条件。"
           },
           "duration": {
-            "question": "",
-            "answer": ""
+            "question": "案件通常多久解决？",
+            "answer": "劳动争议调解委员会在 30 日内作出决定，法院阶段为 2–4 个月。"
           }
         },
         "pricing": [
           {
-            "label": "",
-            "value": ""
+            "label": "首次会面",
+            "value": "提交申请后安排"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "文书与法律意见",
+            "value": "按工作范围"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "出庭代理",
+            "value": "按合同约定"
           }
         ]
       },
       "real-estate": {
-        "title": "",
-        "teaser": "",
-        "short": "",
+        "title": "不动产",
+        "teaser": "买卖合同、抵押、租赁及土地权利登记。",
+        "short": "买卖、抵押、租赁、土地权利。",
         "highlights": [
-          "",
-          "",
-          ""
+          "审查买卖合同",
+          "抵押合同",
+          "土地所有与占有权"
         ],
-        "intro": "",
+        "intro": "我们确保不动产的买卖、租赁与抵押交易安全无风险，并协助办理国家登记与土地权利事宜。",
         "body": [
-          "",
-          ""
+          "对多数人而言，不动产交易是一生中最大的投资。签约前核查权属证书、抵押及各类限制，可避免绝大部分纠纷。",
+          "我们按照保护当事人利益的原则起草合同，并从公证到国家登记的各个环节全程陪同。"
         ],
         "items": [
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
+          "起草与审查买卖合同",
+          "核查权属证书、抵押与限制登记",
+          "抵押与质押合同",
+          "租赁合同与租赁纠纷",
+          "土地的所有、占有与使用权",
+          "建设工程与共有纠纷的诉讼代理"
         ],
         "note": {
-          "title": "",
-          "text": ""
+          "title": "特别提示",
+          "text": "不动产所有权自国家登记之日起转移。即使已签订合同并支付价款，未办理登记的，权利仍不受保障。"
         },
         "faq": {
           "check": {
-            "question": "",
-            "answer": ""
+            "question": "购买前应核查哪些内容？",
+            "answer": "权属证书、所有权人信息、抵押与查封登记、共有人同意以及土地权利期限。该项核查我们在 3 个工作日内完成。"
           },
           "docs": {
-            "question": "",
-            "answer": ""
+            "question": "需要准备哪些材料？",
+            "answer": "权属证书、土地证书、地籍图、家庭成员同意书、付款凭证以及租赁或抵押合同。"
           },
           "fee": {
-            "question": "",
-            "answer": ""
+            "question": "费用如何计算？",
+            "answer": "费用依据工作范围与期限，在委托合同中约定。首次会面时确定工作范围，并以书面方式约定收费条件。"
           },
           "duration": {
-            "question": "",
-            "answer": ""
+            "question": "国家登记需要多长时间？",
+            "answer": "材料齐全的，所有权转移登记在 3–7 个工作日内完成；土地权利变更需 14–30 日。"
           }
         },
         "pricing": [
           {
-            "label": "",
-            "value": ""
+            "label": "首次会面",
+            "value": "提交申请后安排"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "不动产核查",
+            "value": "按工作范围"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "出庭代理",
+            "value": "按合同约定"
           }
         ]
       }
     },
     "process": [
       {
-        "title": "",
-        "text": ""
+        "title": "首次会面",
+        "text": "厘清问题实质与法律途径。"
       },
       {
-        "title": "",
-        "text": ""
+        "title": "法律评估",
+        "text": "以书面方式说明可行方案、风险与期限。"
       },
       {
-        "title": "",
-        "text": ""
+        "title": "签订合同",
+        "text": "明确约定工作范围与收费结构。"
       },
       {
-        "title": "",
-        "text": ""
+        "title": "办理案件",
+        "text": "可随时通过客户门户查看进展。"
       }
     ],
     "commitments": {
-      "firstConsultation": "",
-      "writtenOpinion": "",
-      "assetCheck": "",
-      "urgentResponse": ""
+      "firstConsultation": "首次咨询",
+      "writtenOpinion": "书面法律意见",
+      "assetCheck": "不动产核查",
+      "urgentResponse": "紧急协助"
     }
   },
   "faq": {
     "categories": {
       "general": {
-        "label": "",
-        "shortLabel": ""
+        "label": "一般问题",
+        "shortLabel": "一般"
       },
       "payment": {
-        "label": "",
-        "shortLabel": ""
+        "label": "费用与合同",
+        "shortLabel": "费用"
       },
       "labor": {
-        "label": "",
-        "shortLabel": ""
+        "label": "劳动法律",
+        "shortLabel": "劳动"
       },
       "family": {
-        "label": "",
-        "shortLabel": ""
+        "label": "家事法律",
+        "shortLabel": "家事"
       },
       "criminal": {
-        "label": "",
-        "shortLabel": ""
+        "label": "刑事案件",
+        "shortLabel": "刑事"
       },
       "portal": {
-        "label": "",
-        "shortLabel": ""
+        "label": "客户门户",
+        "shortLabel": "门户"
       }
     },
     "items": {
       "first-consult": {
-        "question": "",
-        "answer": ""
+        "question": "首次会面如何进行？",
+        "answer": "提交申请后，我们确认问题类型并安排会面。会面时说明问题实质、法律途径与下一步安排。工作范围明确后，以书面方式约定收费条件。"
       },
       "bring-documents": {
-        "question": "",
-        "answer": ""
+        "question": "会面时需要带哪些材料？",
+        "answer": "请携带与问题相关的全部文件——合同、通知、往来函件、法院传票等。无需原件，复印件或手机拍照件均可。"
       },
       "track-case": {
-        "question": "",
-        "answer": ""
+        "question": "如何查看案件进展？",
+        "answer": "登录客户门户后，可实时查看案件进展、开庭时间、文件、账单与通知。门户的登录信息在签订合同时提供。"
       },
       "fees": {
-        "question": "",
-        "answer": ""
+        "question": "费用如何计算？",
+        "answer": "依据案件类型、工作范围与所需时间，按小时计费或按固定价格计费，并在合同中载明。首次会面后我们以书面形式提供报价。"
       },
       "advance": {
-        "question": "",
-        "answer": ""
+        "question": "是否需要支付预付款？",
+        "answer": "多数案件在签订合同时支付总费用的一定比例作为预付款，余款按合同约定的各阶段开具账单。"
       },
       "invoices": {
-        "question": "",
-        "answer": ""
+        "question": "在哪里查看账单？",
+        "answer": "账单显示在客户门户的“账单”栏目，通过银行转账支付。在线支付功能即将上线。"
       },
       "dismissal-deadline": {
-        "question": "",
-        "answer": ""
+        "question": "被解雇后应在多长时间内提起诉讼？",
+        "answer": "自收到解雇决定之日起 30 日内可向法院起诉。为避免错过期限，请在决定作出后立即与我们联系。"
       },
       "compensation": {
-        "question": "",
-        "answer": ""
+        "question": "补偿金如何计算？",
+        "answer": "综合计算失业期间的平均工资、未休年假以及法律规定的其他补偿。律师将根据您的工资凭证出具计算结果。"
       },
       "divorce-duration": {
-        "question": "",
-        "answer": ""
+        "question": "离婚案件通常持续多久？",
+        "answer": "双方达成一致的为 1–2 个月；就子女监护或财产存在争议的为 3–6 个月。具体期限取决于法院案件量与材料是否齐备。"
       },
       "child-support": {
-        "question": "",
-        "answer": ""
+        "question": "子女抚养费如何确定？",
+        "answer": "由法院根据子女人数与双方收入，按法律规定的比例确定。双方协商一致的，也可通过协议约定数额。"
       },
       "urgent": {
-        "question": "",
-        "answer": ""
+        "question": "紧急情况下如何联系？",
+        "answer": "请拨打“联系我们”页面所列电话，或通过门户提交申请。刑事案件建议在作出陈述前先与律师联系。"
       },
       "interrogation": {
-        "question": "",
-        "answer": ""
+        "question": "讯问时必须在没有律师的情况下进行吗？",
+        "answer": "不必。您在讯问的任何阶段都有权委托律师，并可在律师到场前拒绝作出陈述。"
       },
       "portal-login": {
-        "question": "",
-        "answer": ""
+        "question": "如何登录门户？",
+        "answer": "签订合同时，登录信息会发送至您的电子邮箱。若忘记密码，可通过登录页面的“找回密码”链接重置。"
       },
       "documents": {
-        "question": "",
-        "answer": ""
+        "question": "如何提交材料？",
+        "answer": "可在门户的案件页面上传材料，支持 PDF、Word、Excel 及图片（JPG、PNG），单个文件最大 20MB。"
       },
       "confidentiality": {
-        "question": "",
-        "answer": ""
+        "question": "如何保障保密？",
+        "answer": "我们严格遵守律师与委托人之间的保密义务，所有信息加密存储。未经您同意，不会向第三方提供。"
       }
     }
-  },
-  "common": {
-    "home": "",
-    "readMore": "",
-    "all": "",
-    "back": "",
-    "breadcrumb": "",
-    "getAdvice": "",
-    "yearsOfExperience": "",
-    "lawyersUnavailable": "",
-    "lawyersComingSoon": "",
-    "postsUnavailable": "",
-    "postsComingSoon": "",
-    "views": ""
-  },
-  "servicesPage": {
-    "metaTitle": "",
-    "metaDescription": "",
-    "title": "",
-    "description": "",
-    "crumb": "",
-    "crumbAll": "",
-    "listHeading": "",
-    "processOverline": "",
-    "processTitle": "",
-    "step": "",
-    "notFound": "",
-    "whatWeDo": "",
-    "scope": "",
-    "faqHeading": "",
-    "lawyersHeading": "",
-    "pricingHeading": "",
-    "pricingNote": ""
-  },
-  "faqPage": {
-    "metaTitle": "",
-    "metaDescription": "",
-    "title": "",
-    "description": "",
-    "crumb": "",
-    "categoryNav": "",
-    "helpTitle": "",
-    "helpText": "",
-    "helpCta": ""
-  },
-  "postCategory": {
-    "NEWS": "",
-    "ADVICE": "",
-    "LEGAL_UPDATE": ""
-  },
-  "home": {
-    "hero": {
-      "overline": "",
-      "overlineShort": "",
-      "title": "",
-      "lead": "",
-      "leadShort": "",
-      "primaryCta": "",
-      "secondaryCta": ""
-    },
-    "services": {
-      "overline": "",
-      "title": "",
-      "description": ""
-    },
-    "advantagesSection": {
-      "overline": "",
-      "title": "",
-      "description": ""
-    },
-    "advantages": [
-      {
-        "value": "",
-        "label": "",
-        "note": ""
-      },
-      {
-        "value": "",
-        "label": "",
-        "note": ""
-      },
-      {
-        "value": "",
-        "label": "",
-        "note": ""
-      },
-      {
-        "value": "",
-        "label": "",
-        "note": ""
-      }
-    ],
-    "team": {
-      "overline": "",
-      "title": "",
-      "all": ""
-    },
-    "news": {
-      "overline": "",
-      "title": "",
-      "titleShort": "",
-      "all": ""
-    },
-    "cta": {
-      "title": "",
-      "text": "",
-      "textShort": ""
-    }
-  },
-  "about": {
-    "metaTitle": "",
-    "metaDescription": "",
-    "title": "",
-    "description": "",
-    "crumb": "",
-    "story": {
-      "overline": "",
-      "title": "",
-      "p1": "",
-      "p2": ""
-    },
-    "values": {
-      "overline": "",
-      "title": ""
-    },
-    "process": {
-      "overline": "",
-      "title": ""
-    },
-    "valueItems": [
-      {
-        "title": "",
-        "text": ""
-      },
-      {
-        "title": "",
-        "text": ""
-      },
-      {
-        "title": "",
-        "text": ""
-      },
-      {
-        "title": "",
-        "text": ""
-      }
-    ],
-    "processSteps": [
-      {
-        "step": "",
-        "title": "",
-        "text": ""
-      },
-      {
-        "step": "",
-        "title": "",
-        "text": ""
-      },
-      {
-        "step": "",
-        "title": "",
-        "text": ""
-      },
-      {
-        "step": "",
-        "title": "",
-        "text": ""
-      }
-    ]
-  },
-  "contact": {
-    "metaTitle": "",
-    "metaDescription": "",
-    "title": "",
-    "description": "",
-    "crumb": "",
-    "requests": {
-      "title": "",
-      "description": "",
-      "cta": "",
-      "LAWYER": {
-        "title": "",
-        "description": ""
-      },
-      "CONSULTATION": {
-        "title": "",
-        "description": ""
-      },
-      "signUpPrefix": "",
-      "signUpLink": "",
-      "signUpSuffix": ""
-    },
-    "office": {
-      "title": "",
-      "address": "",
-      "phone": "",
-      "email": "",
-      "hours": "",
-      "social": ""
-    },
-    "map": {
-      "label": "",
-      "caption": ""
-    }
-  },
-  "lawyers": {
-    "metaTitle": "",
-    "metaDescription": "",
-    "title": "",
-    "description": "",
-    "descriptionCounted": "",
-    "crumb": "",
-    "filterLabel": "",
-    "failedTitle": "",
-    "failedDescription": "",
-    "noneTitle": "",
-    "noneForFilter": "",
-    "noneDescription": ""
-  },
-  "lawyerDetail": {
-    "notFound": "",
-    "contactTitle": "",
-    "phone": "",
-    "email": "",
-    "bookCta": "",
-    "specializations": "",
-    "education": "",
-    "bio": ""
-  },
-  "news": {
-    "metaTitle": "",
-    "metaDescription": "",
-    "title": "",
-    "description": "",
-    "crumb": "",
-    "crumbAll": "",
-    "categoryLabel": "",
-    "featured": "",
-    "search": "",
-    "searchSubmit": "",
-    "searchResult": "",
-    "clearSearch": "",
-    "failedTitle": "",
-    "failedDescription": "",
-    "noneTitle": "",
-    "noneDescription": "",
-    "mongolianNote": "",
-    "related": "",
-    "share": "",
-    "copyLink": "",
-    "shareAction": "",
-    "shareEmail": "",
-    "readingTime": ""
-  },
-  "states": {
-    "retry": "",
-    "getHelp": "",
-    "loading": "",
-    "errorTitle": "",
-    "errorMessage": "",
-    "pagination": "",
-    "pageTitle": "",
-    "pageMessage": ""
   },
   "privacy": {
-    "metaTitle": "",
-    "metaDescription": "",
-    "title": "",
-    "description": "",
-    "crumb": "",
-    "updated": "",
-    "updatedDate": "",
+    "metaTitle": "隐私政策",
+    "metaDescription": "Strategy Law Firm 如何收集、使用和保护客户的个人信息。",
+    "title": "隐私政策",
+    "description": "我们仅为提供法律协助而使用您的个人信息，并依法予以保护。",
+    "crumb": "隐私政策",
+    "updated": "最近更新：{date}",
+    "updatedDate": "2026 年 9 月 16 日",
     "sections": [
       {
-        "title": "",
+        "title": "1. 我们收集哪些信息",
         "items": [
-          "",
-          "",
-          ""
+          "您提供的信息：姓名、电话、电子邮箱、案件情况说明及所提交的文件。",
+          "履行委托过程中产生的信息：案件进展、会面记录、庭审笔记、账单与付款记录。",
+          "门户的技术信息：登录时间、设备基本信息及操作审计日志。我们不使用广告追踪 cookie。"
         ]
       },
       {
-        "title": "",
+        "title": "2. 用于何种目的",
         "items": [
-          "",
-          "",
-          "",
-          ""
+          "提供法律协助、办理案件，并在法院及其他机关代理。",
+          "在客户门户展示案件进展、文件与账单，并发送通知。",
+          "履行法律或法院裁判所要求的义务，包括反洗钱审查。",
+          "我们不将您的信息用于广告，也不向第三方出售。"
         ]
       },
       {
-        "title": "",
+        "title": "3. 可能向谁披露",
         "items": [
-          "",
-          "",
-          ""
+          "承办案件的律师、团队成员及协助其工作的人员。",
+          "经您书面同意或法律要求时，向法院、检察机关及有权国家机关披露。",
+          "维持系统运行所必需的服务提供方（服务器、电子邮件）。其仅在受托范围内处理数据，并受保密协议约束。"
         ]
       },
       {
-        "title": "",
+        "title": "4. 存储与保护",
         "items": [
-          "",
-          "",
-          ""
+          "文件通过加密通道传输，访问权限按职责限定。每次登录门户均更新会话。",
+          "案件材料在委托结束后按法律规定的期限（一般为 10 年）归档保存，期满后销毁。",
+          "如发生安全事件，我们将立即通知受影响的客户及有权机关。"
         ]
       },
       {
-        "title": "",
+        "title": "5. 您的权利",
         "items": [
-          "",
-          "",
-          "",
-          ""
+          "查阅本人信息并获取副本。",
+          "更正或更新错误、不完整的信息（可在门户“个人资料”栏目直接办理）。",
+          "在法律允许的范围内要求删除或限制处理。",
+          "更改通知设置，拒绝接收营销信息。"
         ]
       }
     ],
-    "contactTitle": "",
-    "contactPrefix": "",
-    "contactOr": "",
-    "contactSuffix": "",
-    "termsPrefix": "",
-    "termsLink": "",
-    "termsSuffix": ""
+    "contactTitle": "6. 联系方式",
+    "contactPrefix": "与信息相关的请求或投诉，请发送至",
+    "contactOr": "或致电",
+    "contactSuffix": "。地址：{address}。",
+    "termsPrefix": "服务条款请见",
+    "termsLink": "此处",
+    "termsSuffix": "。"
   },
   "terms": {
-    "metaTitle": "",
-    "metaDescription": "",
-    "title": "",
-    "description": "",
-    "crumb": "",
-    "updated": "",
-    "updatedDate": "",
-    "registration": "",
+    "metaTitle": "服务条款",
+    "metaDescription": "使用 Strategy Law Firm 法律服务及客户门户的条款。",
+    "title": "服务条款",
+    "description": "适用于本网站、客户门户及法律服务的条款。",
+    "crumb": "服务条款",
+    "updated": "最近更新：{date}",
+    "updatedDate": "2026 年 9 月 16 日",
+    "registration": "注册号 {number}",
     "sections": [
       {
-        "title": "",
+        "title": "1. 服务范围",
         "items": [
-          "",
-          "",
-          ""
+          "各案件法律协助的具体条件，由该案件的委托合同约定。本条款适用于本网站与客户门户。",
+          "通过门户提交申请并不等于已签订委托合同。我们将审核申请，决定接受或说明理由予以拒绝。",
+          "只有在指派律师并立案后，工作方才开始。"
         ]
       },
       {
-        "title": "",
+        "title": "2. 门户的使用",
         "items": [
-          "",
-          "",
-          ""
+          "您有义务对登录信息保密，不得转交他人。发现异常登录请立即通知我们。",
+          "上传至门户的材料的真实性由客户负责。",
+          "禁止将系统用于违法目的或试图访问他人信息。违反的，我们将关闭其访问权限。"
         ]
       },
       {
-        "title": "",
+        "title": "3. 费用",
         "items": [
-          "",
-          "",
-          ""
+          "服务费按合同约定的方式计算（按小时、按工作包或按结果）。",
+          "账单通过门户发送，并在规定期限内汇入本所账户。您在门户标记付款后，我们将核对并确认到账。",
+          "逾期账单将转为“逾期”状态，必要时可暂停工作。"
         ]
       },
       {
-        "title": "",
+        "title": "4. 保密与利益冲突",
         "items": [
-          "",
-          ""
+          "客户信息依照律师保密义务予以保护。",
+          "每一项新申请均进行利益冲突审查。存在冲突的，我们将拒绝受理。"
         ]
       },
       {
-        "title": "",
+        "title": "5. 责任限制",
         "items": [
-          "",
-          "",
-          ""
+          "我们秉持专业技能与审慎态度执业，但不对法院或有权机关裁决的结果作出预先保证。",
+          "因客户提供的信息错误、不完整或延误所导致的后果，本所不承担责任。",
+          "在法律允许的范围内，本所不对因网站或门户技术中断造成的间接损失承担责任。"
         ]
       },
       {
-        "title": "",
+        "title": "6. 合同解除与争议",
         "items": [
-          "",
-          "",
-          ""
+          "任何一方均可书面通知解除合同。解除前已完成工作的费用将予以核算并开具账单。",
+          "争议首先通过协商解决，协商不成的，依照蒙古国法律由法院解决。",
+          "本条款如有变更，将在网站公布并注明更新日期。"
         ]
       }
     ],
-    "contactTitle": "",
-    "contactPrefix": "",
-    "contactOr": "",
-    "contactSuffix": "",
-    "privacyPrefix": "",
-    "privacyLink": "",
-    "privacySuffix": ""
-  },
-  "notFound": {
-    "title": "",
-    "homeCta": "",
-    "contactCta": "",
-    "quickLinks": "",
-    "links": {
-      "services": {
-        "title": "",
-        "caption": ""
-      },
-      "lawyers": {
-        "title": "",
-        "caption": ""
-      },
-      "news": {
-        "title": "",
-        "caption": ""
-      },
-      "portal": {
-        "title": "",
-        "caption": ""
-      }
-    }
+    "contactTitle": "7. 联系方式",
+    "contactPrefix": "有关本条款的问题，请发送至",
+    "contactOr": "或致电",
+    "contactSuffix": "。",
+    "privacyPrefix": "个人信息的处理方式，请阅读我们的",
+    "privacyLink": "隐私政策",
+    "privacySuffix": "。"
   }
 }

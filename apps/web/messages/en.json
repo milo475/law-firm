@@ -1,931 +1,931 @@
 {
   "site": {
-    "name": "",
-    "description": "",
-    "skipToContent": "",
-    "languageLabel": "",
-    "postsInMongolian": "",
-    "dismissSuggestion": ""
+    "name": "Strategy Law Firm",
+    "description": "A professional legal services firm. We provide representation and legal advice to individuals and businesses.",
+    "skipToContent": "Skip to main content",
+    "languageLabel": "Choose language",
+    "postsInMongolian": "These articles are published in Mongolian.",
+    "dismissSuggestion": "Dismiss"
   },
   "nav": {
-    "menu": "",
-    "mobileMenu": "",
-    "openMenu": "",
-    "closeMenu": "",
-    "menuTitle": "",
-    "menuDescription": "",
-    "about": "",
-    "services": "",
-    "lawyers": "",
-    "news": "",
-    "faq": "",
-    "contact": "",
-    "portal": "",
-    "cta": ""
+    "menu": "Main menu",
+    "mobileMenu": "Mobile menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "menuTitle": "Menu",
+    "menuDescription": "Main site menu",
+    "about": "About us",
+    "services": "Services",
+    "lawyers": "Lawyers",
+    "news": "News",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "portal": "Client portal",
+    "cta": "Request advice"
   },
   "footer": {
-    "description": "",
-    "descriptionShort": "",
-    "services": "",
-    "company": "",
-    "contact": "",
-    "news": "",
-    "careers": "",
-    "rights": "",
-    "privacy": "",
-    "terms": "",
+    "description": "A professional legal services firm. We provide representation and legal advice to individuals and businesses.",
+    "descriptionShort": "A professional legal services firm.",
+    "services": "Services",
+    "company": "Company",
+    "contact": "Contact",
+    "news": "News and articles",
+    "careers": "Careers",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy policy",
+    "terms": "Terms of service",
     "serviceShort": {
-      "civil": "",
-      "criminal": "",
-      "family": "",
-      "business": "",
-      "labor": "",
-      "real-estate": ""
+      "civil": "Civil",
+      "criminal": "Criminal",
+      "family": "Family",
+      "business": "Business",
+      "labor": "Employment",
+      "real-estate": "Real estate"
+    }
+  },
+  "common": {
+    "home": "Home",
+    "readMore": "Read more",
+    "all": "All",
+    "back": "Back",
+    "breadcrumb": "Breadcrumb",
+    "getAdvice": "Request advice",
+    "yearsOfExperience": "{years} years of experience",
+    "lawyersUnavailable": "Lawyer profiles could not be loaded.",
+    "lawyersComingSoon": "Lawyer profiles will be added soon.",
+    "postsUnavailable": "Articles could not be loaded.",
+    "postsComingSoon": "Articles will be published soon.",
+    "views": "{count} views"
+  },
+  "servicesPage": {
+    "metaTitle": "Services",
+    "metaDescription": "We advise, prepare documents and represent clients in court across six principal practice areas.",
+    "title": "Practice areas",
+    "description": "We advise, prepare documents and represent clients in court across six principal practice areas.",
+    "crumb": "Services",
+    "crumbAll": "All practice areas",
+    "listHeading": "Practice areas",
+    "processOverline": "How we work together",
+    "processTitle": "In four steps",
+    "step": "Step {number}:",
+    "notFound": "Service not found",
+    "whatWeDo": "What we do",
+    "scope": "Scope of the service",
+    "faqHeading": "Frequently asked questions",
+    "lawyersHeading": "Lawyers in this practice area",
+    "pricingHeading": "Fees",
+    "pricingNote": "Fees are agreed in the engagement contract and depend on the scope and duration of the work."
+  },
+  "faqPage": {
+    "metaTitle": "FAQ",
+    "metaDescription": "Answers to the questions clients ask most often, grouped by practice area.",
+    "title": "Legal information and frequently asked questions",
+    "description": "Answers to the questions clients ask most often, grouped by practice area.",
+    "crumb": "FAQ",
+    "categoryNav": "Question categories",
+    "helpTitle": "Didn't find your answer?",
+    "helpText": "Write to us — we will get in touch once we receive your request.",
+    "helpCta": "Send a question"
+  },
+  "postCategory": {
+    "NEWS": "News",
+    "ADVICE": "Advice",
+    "LEGAL_UPDATE": "Legislative update"
+  },
+  "home": {
+    "hero": {
+      "overline": "Legal advice and representation",
+      "overlineShort": "Legal advisory services",
+      "title": "A firm foundation for protecting your rights",
+      "lead": "We provide representation and advice in civil, criminal, family, business, employment and real estate law. You can follow the progress of your case in the client portal.",
+      "leadShort": "Professional assistance in civil, criminal, family and business law.",
+      "primaryCta": "Send a request for advice",
+      "secondaryCta": "View services"
+    },
+    "services": {
+      "overline": "Practice areas",
+      "title": "What matters do we handle?",
+      "description": "We cover the legal needs of individuals and businesses across six principal practice areas."
+    },
+    "advantagesSection": {
+      "overline": "How we work",
+      "title": "What our work is built on",
+      "description": "One team handles your matter from intake to resolution, and every step is documented in writing."
+    },
+    "advantages": [
+      {
+        "value": "6",
+        "label": "Practice areas",
+        "note": "Civil, criminal, family, business, employment, real estate"
+      },
+      {
+        "value": "Portal",
+        "label": "Case progress online",
+        "note": "Documents, invoices and messages in one place"
+      },
+      {
+        "value": "Contract",
+        "label": "Transparent terms",
+        "note": "Scope, timeline and fees agreed in writing"
+      },
+      {
+        "value": "Confidentiality",
+        "label": "Data protection",
+        "note": "Access rights are strictly controlled"
+      }
+    ],
+    "team": {
+      "overline": "Our lawyers",
+      "title": "The professionals who will handle your matter",
+      "all": "All lawyers"
+    },
+    "news": {
+      "overline": "News and articles",
+      "title": "Recent developments in the legal landscape",
+      "titleShort": "Recent legal developments",
+      "all": "All articles"
+    },
+    "cta": {
+      "title": "Not sure how to resolve your issue?",
+      "text": "Describe your situation briefly and send us a request. A lawyer will review it, get in touch and explain the legal options and next steps.",
+      "textShort": "Send a request and a lawyer will contact you."
+    }
+  },
+  "about": {
+    "metaTitle": "About us",
+    "metaDescription": "Strategy Law Firm is a professional legal services firm providing representation and legal advice to individuals and businesses.",
+    "title": "About us",
+    "description": "Strategy Law Firm is a professional legal services firm.",
+    "crumb": "About us",
+    "story": {
+      "overline": "ABOUT US",
+      "title": "We make legal matters clear and stand beside you",
+      "p1": "Strategy Law Firm provides professional legal assistance to individuals and businesses. Our work covers legal representation, legal advice, drafting of documents, and representation before public bodies and the courts.",
+      "p2": "When we take on a matter we first assess what is realistically achievable and say plainly what we can do. The work is tracked in the client portal, so documents, deadlines and next steps are always in one place."
+    },
+    "values": {
+      "overline": "MISSION AND VALUES",
+      "title": "Making legal assistance clear and accessible to everyone"
+    },
+    "process": {
+      "overline": "HOW WE WORK TOGETHER",
+      "title": "How a matter moves forward"
+    },
+    "valueItems": [
+      {
+        "title": "Integrity",
+        "text": "We tell clients honestly what their case can realistically achieve. We never promise what we cannot deliver."
+      },
+      {
+        "title": "Transparency",
+        "text": "The fee structure, the progress of the matter and the timeline are set out in writing from the start."
+      },
+      {
+        "title": "Confidentiality",
+        "text": "Client information is protected as the law requires. Access to our internal system is strictly controlled."
+      },
+      {
+        "title": "Plain language",
+        "text": "We explain the legal situation in terms you can act on, not in legal jargon."
+      }
+    ],
+    "processSteps": [
+      {
+        "step": "01",
+        "title": "Receiving the request",
+        "text": "You send a request through the portal or the contact page. We clarify the type of matter."
+      },
+      {
+        "step": "02",
+        "title": "Initial assessment",
+        "text": "We review the documents and explain the legal options and the risks."
+      },
+      {
+        "step": "03",
+        "title": "Contract and plan",
+        "text": "The scope of work, the timeline and the fee terms are agreed in writing."
+      },
+      {
+        "step": "04",
+        "title": "Handling the matter",
+        "text": "We represent you before public bodies and the courts and post updates in the client portal."
+      }
+    ]
+  },
+  "contact": {
+    "metaTitle": "Contact",
+    "metaDescription": "Get in touch with Strategy Law Firm: address, phone, e-mail, requests for representation and advice.",
+    "title": "Contact",
+    "description": "Send your request for representation or advice through the portal. We will get in touch once we receive it.",
+    "crumb": "Contact",
+    "requests": {
+      "title": "Send a request",
+      "description": "Requests for representation and advice are submitted through the client portal. Once you sign in, you can see the status of your request, the lawyer assigned to you and your open matters in one place.",
+      "cta": "Submit a request",
+      "LAWYER": {
+        "title": "Request representation",
+        "description": "We assign a lawyer to take on your matter and represent you before the courts and public bodies."
+      },
+      "CONSULTATION": {
+        "title": "Request advice",
+        "description": "You are connected with a lawyer who clarifies your situation and advises on the next step."
+      },
+      "signUpPrefix": "If you do not have an account,",
+      "signUpLink": "sign up",
+      "signUpSuffix": "to continue. For urgent matters, call {phone}."
+    },
+    "office": {
+      "title": "Office details",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "E-mail",
+      "hours": "Office hours",
+      "social": "Social media"
+    },
+    "map": {
+      "label": "Map of the office location",
+      "caption": "Map location"
+    }
+  },
+  "lawyers": {
+    "metaTitle": "Lawyers",
+    "metaDescription": "Choose the lawyer who fits your matter from our specialists in each practice area.",
+    "title": "Our lawyers",
+    "description": "Choose the lawyer who fits your matter from our specialists in each practice area.",
+    "descriptionCounted": "Choose the lawyer who fits your matter from our {count} specialists across the practice areas.",
+    "crumb": "Lawyers",
+    "filterLabel": "Filter by practice area",
+    "failedTitle": "Lawyer profiles could not be loaded",
+    "failedDescription": "We could not reach the API. Please wait a moment and try again.",
+    "noneTitle": "No lawyer profiles yet",
+    "noneForFilter": "No lawyers found in \"{spec}\"",
+    "noneDescription": "Choose another practice area or select \"All\"."
+  },
+  "lawyerDetail": {
+    "notFound": "Lawyer not found",
+    "contactTitle": "Contact",
+    "phone": "Phone",
+    "email": "E-mail",
+    "bookCta": "Book an appointment",
+    "specializations": "Practice areas",
+    "education": "Education and credentials",
+    "bio": "Biography"
+  },
+  "news": {
+    "metaTitle": "News and articles",
+    "metaDescription": "Legislative updates, practical advice and firm news are published here.",
+    "title": "News and articles",
+    "description": "Legislative updates, practical advice and firm news are published here.",
+    "crumb": "News and articles",
+    "crumbAll": "All articles",
+    "categoryLabel": "Category",
+    "featured": "Featured",
+    "search": "Search articles",
+    "searchSubmit": "Search",
+    "searchResult": "Results for «{query}»: {count} articles",
+    "clearSearch": "Clear",
+    "failedTitle": "The news could not be loaded",
+    "failedDescription": "Check that the API is running and try again.",
+    "noneTitle": "No articles found",
+    "noneDescription": "Choose another category or change your search.",
+    "mongolianNote": "These articles are published in Mongolian.",
+    "related": "Related articles",
+    "share": "Share:",
+    "copyLink": "Copy link",
+    "shareAction": "Share",
+    "shareEmail": "Send by e-mail",
+    "readingTime": "{minutes} min read"
+  },
+  "states": {
+    "retry": "Try again",
+    "getHelp": "Get help",
+    "loading": "Loading",
+    "errorTitle": "Something went wrong",
+    "errorMessage": "An error occurred while loading the content. Please try again.",
+    "pagination": "Pagination",
+    "pageTitle": "The page could not be loaded",
+    "pageMessage": "A temporary error. Please try again."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "homeCta": "Go to the home page",
+    "contactCta": "Contact",
+    "quickLinks": "Quick links",
+    "links": {
+      "services": {
+        "title": "Services",
+        "caption": "All six practice areas"
+      },
+      "lawyers": {
+        "title": "Lawyers",
+        "caption": "Meet our team"
+      },
+      "news": {
+        "title": "News",
+        "caption": "Latest articles"
+      },
+      "portal": {
+        "title": "Client portal",
+        "caption": "Follow your matter"
+      }
     }
   },
   "services": {
     "catalog": {
       "civil": {
-        "title": "",
-        "teaser": "",
-        "short": "",
+        "title": "Civil law",
+        "teaser": "Contract disputes, inheritance, property rights and compensation claims.",
+        "short": "Contract disputes, inheritance, property rights, compensation.",
         "highlights": [
-          "",
-          "",
-          ""
+          "Drafting and reviewing contracts",
+          "Inheritance disputes",
+          "Compensation claims"
         ],
-        "intro": "",
+        "intro": "We help resolve disputes over contracts, property and inheritance on solid legal grounds, both before and during court proceedings.",
         "body": [
-          "",
-          ""
+          "Civil disputes usually turn on the terms of the contract and on the evidence. That is why, from the first meeting, we give you a clear list of the documents you need to gather.",
+          "The time limits for claiming damages or terminating a contract are set by law, so we recommend seeking advice as soon as a dispute arises."
         ],
         "items": [
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
+          "Drafting, reviewing and negotiating contracts",
+          "Bringing claims against a party in breach of contract",
+          "Preparing claims for compensation of damages",
+          "Inheritance and will disputes",
+          "Remedying infringements of ownership rights",
+          "Representation before courts at every instance"
         ],
         "note": {
-          "title": "",
-          "text": ""
+          "title": "Please note",
+          "text": "The general limitation period for civil claims is 10 years, and 3 years for contract disputes. Once the period has expired, the possibility of enforcing the claim is limited."
         },
         "faq": {
           "when": {
-            "question": "",
-            "answer": ""
+            "question": "How soon should I seek advice after a dispute arises?",
+            "answer": "The limitation period for contract disputes is 3 years. Even so, we recommend coming to us as soon as the dispute arises, so that evidence can be gathered and settlement remains an option."
           },
           "docs": {
-            "question": "",
-            "answer": ""
+            "question": "Which documents do I need to prepare?",
+            "answer": "The contract, payment records, correspondence and messages, witness details and evidence of the loss. We give you a specific list at the first meeting."
           },
           "fee": {
-            "question": "",
-            "answer": ""
+            "question": "How are fees calculated?",
+            "answer": "Fees depend on the scope and duration of the work and are agreed in the engagement contract. At the first meeting we define the scope of work and set out the fee terms in writing."
           },
           "duration": {
-            "question": "",
-            "answer": ""
+            "question": "How long does a case take?",
+            "answer": "A court of first instance usually decides within 2–6 months. Appeal and cassation proceedings add 1–3 months each."
           }
         },
         "pricing": [
           {
-            "label": "",
-            "value": ""
+            "label": "First meeting",
+            "value": "On request"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "Documents and legal opinions",
+            "value": "By scope of work"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "Court representation",
+            "value": "By contract"
           }
         ]
       },
       "criminal": {
-        "title": "",
-        "teaser": "",
-        "short": "",
+        "title": "Criminal law",
+        "teaser": "Protection of the rights of suspects, the accused and victims; full criminal defence.",
+        "short": "Full protection of the rights of suspects, the accused and victims.",
         "highlights": [
-          "",
-          "",
-          ""
+          "Defence during the investigation",
+          "Representation at trial",
+          "Protecting victims' rights"
         ],
-        "intro": "",
+        "intro": "From the first day of the investigation through every court instance, we defend suspects and the accused and protect the interests of victims.",
         "body": [
-          "",
-          ""
+          "In criminal matters, timing is decisive. Consulting a lawyer before you give a statement or hand over material is the single most important step in protecting your rights.",
+          "We review the case file in full, examine procedural violations and the admissibility of the evidence in detail, and build the defence position on that basis."
         ],
         "items": [
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
+          "Defence during the investigation",
+          "Applications to vary pre-trial detention",
+          "Defending the accused at trial",
+          "Representing victims and claiming compensation",
+          "Preparing appeals and cassation complaints",
+          "Economic crime"
         ],
         "note": {
-          "title": "",
-          "text": ""
+          "title": "Please note",
+          "text": "If you are arrested or summoned, state immediately that you wish to have a lawyer. A first statement given without a lawyer present may harm the outcome of the case."
         },
         "faq": {
           "when": {
-            "question": "",
-            "answer": ""
+            "question": "I have been summoned — when should I contact you?",
+            "answer": "We recommend contacting us before you give a statement. Send a request through the portal or call the number shown on the Contact page."
           },
           "docs": {
-            "question": "",
-            "answer": ""
+            "question": "Which documents do I need to prepare?",
+            "answer": "The summons, notices, decisions, the list of seized items and any correspondence. We review the case file within the rights granted to defence counsel."
           },
           "fee": {
-            "question": "",
-            "answer": ""
+            "question": "How are fees calculated?",
+            "answer": "Fees depend on the scope and duration of the work and are agreed in the engagement contract. At the first meeting we define the scope of work and set out the fee terms in writing."
           },
           "duration": {
-            "question": "",
-            "answer": ""
+            "question": "How long does a case take?",
+            "answer": "Depending on the type of case, the investigation takes 1–12 months and the court stage 1–4 months."
           }
         },
         "pricing": [
           {
-            "label": "",
-            "value": ""
+            "label": "First meeting",
+            "value": "On request"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "Attendance while a statement is taken",
+            "value": "By contract"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "Criminal defence",
+            "value": "By contract"
           }
         ]
       },
       "family": {
-        "title": "",
-        "teaser": "",
-        "short": "",
+        "title": "Family law",
+        "teaser": "Divorce, child maintenance, custody and division of jointly owned property.",
+        "short": "Divorce, maintenance, custody, division of property.",
         "highlights": [
-          "",
-          "",
-          ""
+          "Divorce proceedings",
+          "Setting child maintenance",
+          "Mediation"
         ],
-        "intro": "",
+        "intro": "We help resolve divorce, custody, maintenance and division of property confidentially, putting the interests of the child first.",
         "body": [
-          "",
-          ""
+          "Family disputes are difficult emotionally as well as legally. We first seek agreement between the parties through mediation and, where necessary, represent you in court.",
+          "In matters involving children the court puts the child's interests first, so custody and maintenance proposals must be realistic and supported by evidence."
         ],
         "items": [
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
+          "Divorce claims and settlement agreements",
+          "Establishing custody and child maintenance",
+          "Division of jointly owned property",
+          "Adoption and appointment of a guardian",
+          "Drafting prenuptial agreements",
+          "Mediation and court representation"
         ],
         "note": {
-          "title": "",
-          "text": ""
+          "title": "Please note",
+          "text": "Child maintenance is calculated from the day the claim is filed, so every delay costs maintenance. Even where the parties agree, we recommend having the agreement certified by a notary or confirmed by the court."
         },
         "faq": {
           "when": {
-            "question": "",
-            "answer": ""
+            "question": "How long does a divorce take?",
+            "answer": "Where the parties agree and there are no minor children, registration takes up to 1 month. A divorce through the courts takes 2–4 months, and up to 3 months more if a reconciliation period is set."
           },
           "docs": {
-            "question": "",
-            "answer": ""
+            "question": "Which documents do I need to prepare?",
+            "answer": "The marriage certificate, the children's birth certificates, proof of income, a record of the property and confirmation of residence."
           },
           "fee": {
-            "question": "",
-            "answer": ""
+            "question": "How are fees calculated?",
+            "answer": "Fees depend on the scope and duration of the work and are agreed in the engagement contract. At the first meeting we define the scope of work and set out the fee terms in writing."
           },
           "privacy": {
-            "question": "",
-            "answer": ""
+            "question": "How is confidentiality maintained?",
+            "answer": "We observe lawyer–client confidentiality strictly. Where necessary, we apply for the hearing to be held in closed session."
           }
         },
         "pricing": [
           {
-            "label": "",
-            "value": ""
+            "label": "First meeting",
+            "value": "On request"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "Documents and legal opinions",
+            "value": "By scope of work"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "Court representation",
+            "value": "By contract"
           }
         ]
       },
       "business": {
-        "title": "",
-        "teaser": "",
-        "short": "",
+        "title": "Business law",
+        "teaser": "Company formation, shareholders' agreements, mergers and acquisitions, contract risk reviews.",
+        "short": "Company formation, contract risk, mergers and acquisitions.",
         "highlights": [
-          "",
-          "",
-          ""
+          "Company registration and charters",
+          "Shareholders' agreements",
+          "Due diligence"
         ],
-        "intro": "",
+        "intro": "We advise at every stage, from incorporating a company to mergers and acquisitions, and identify the legal risks in advance.",
         "body": [
-          "",
-          ""
+          "Most business disputes arise from unclear provisions in contracts and company charters. We therefore draft documents from the outset so that they are workable and free of avoidable risk.",
+          "Legal due diligence carried out before an investment or an acquisition brings hidden debts, disputes and missing permits to light in advance."
         ],
         "items": [
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
+          "Incorporating and restructuring companies, drafting charters",
+          "Shareholders' agreements and cooperation agreements",
+          "Investments, mergers and acquisitions (M&A)",
+          "Legal due diligence",
+          "Protection of intellectual property and trademarks",
+          "Representation in arbitration and in court in commercial disputes"
         ],
         "note": {
-          "title": "",
-          "text": ""
+          "title": "Please note",
+          "text": "Changes to a company's charter or to its register of shareholders must be filed with the state registry within 15 days. Late filing carries a fine."
         },
         "faq": {
           "monthly": {
-            "question": "",
-            "answer": ""
+            "question": "Can we retain you for ongoing legal support?",
+            "answer": "Yes. Under a monthly retainer you receive regular contract review, advice and help in drafting internal policies."
           },
           "docs": {
-            "question": "",
-            "answer": ""
+            "question": "Which documents do I need to prepare?",
+            "answer": "The certificate of state registration, the charter, the register of shareholders, the principal contracts, financial statements and any special permits."
           },
           "fee": {
-            "question": "",
-            "answer": ""
+            "question": "How are fees calculated?",
+            "answer": "Fees depend on the scope and duration of the work and are agreed in the engagement contract. At the first meeting we define the scope of work and set out the fee terms in writing."
           },
           "duration": {
-            "question": "",
-            "answer": ""
+            "question": "How long does due diligence take?",
+            "answer": "Two to six weeks, depending on the size of the company. We present preliminary findings within a week."
           }
         },
         "pricing": [
           {
-            "label": "",
-            "value": ""
+            "label": "First meeting",
+            "value": "On request"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "Drafting contracts and opinions",
+            "value": "By scope of work"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "Ongoing support",
+            "value": "Monthly retainer"
           }
         ]
       },
       "labor": {
-        "title": "",
-        "teaser": "",
-        "short": "",
+        "title": "Employment law",
+        "teaser": "Employment contracts, dismissal disputes and occupational safety violations.",
+        "short": "Contracts, dismissal disputes, safety violations.",
         "highlights": [
-          "",
-          "",
-          ""
+          "Internal labour rules",
+          "Dismissal disputes",
+          "Collective agreements"
         ],
-        "intro": "",
+        "intro": "We help resolve disputes between employees and employers on solid legal grounds and as quickly as possible.",
         "body": [
-          "",
-          ""
+          "Employment disputes usually turn on the evidence. That is why, from the first meeting, we give you a clear list of the documents you need to gather.",
+          "After a dismissal the time limit for filing a complaint under the Labour Law is short, so we recommend seeking advice as early as possible."
         ],
         "items": [
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
+          "Drafting and reviewing employment contracts and internal rules",
+          "Preparing complaints and claims over unjustified dismissal",
+          "Calculating compensation and unpaid wages",
+          "Claims over occupational safety violations",
+          "Collective agreements and dealings with trade unions",
+          "Representation before the labour dispute commission and the courts"
         ],
         "note": {
-          "title": "",
-          "text": ""
+          "title": "Please note",
+          "text": "You may file a complaint with the labour dispute settlement commission within 1 month of receiving the dismissal decision. Once that period expires, reinstatement becomes difficult."
         },
         "faq": {
           "when": {
-            "question": "",
-            "answer": ""
+            "question": "I have been dismissed — how soon should I act?",
+            "answer": "File a complaint with the labour dispute settlement commission within 1 month of receiving the decision. If you disagree with the commission's decision, you may go to court within 14 days."
           },
           "docs": {
-            "question": "",
-            "answer": ""
+            "question": "Which documents do I need to prepare?",
+            "answer": "The employment contract, the dismissal order, proof of salary, internal rules, correspondence and messages with the employer, and witness details."
           },
           "fee": {
-            "question": "",
-            "answer": ""
+            "question": "How are fees calculated?",
+            "answer": "Fees depend on the scope and duration of the work and are agreed in the engagement contract. At the first meeting we define the scope of work and set out the fee terms in writing."
           },
           "duration": {
-            "question": "",
-            "answer": ""
+            "question": "How long does a case take?",
+            "answer": "The labour dispute settlement commission decides within 30 days. Court proceedings take 2–4 months."
           }
         },
         "pricing": [
           {
-            "label": "",
-            "value": ""
+            "label": "First meeting",
+            "value": "On request"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "Documents and legal opinions",
+            "value": "By scope of work"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "Court representation",
+            "value": "By contract"
           }
         ]
       },
       "real-estate": {
-        "title": "",
-        "teaser": "",
-        "short": "",
+        "title": "Real estate",
+        "teaser": "Sale and purchase agreements, mortgages, leases and registration of land rights.",
+        "short": "Sale and purchase, mortgages, leases, land rights.",
         "highlights": [
-          "",
-          "",
-          ""
+          "Reviewing sale agreements",
+          "Mortgage agreements",
+          "Land ownership and possession rights"
         ],
-        "intro": "",
+        "intro": "We make sure that property sales, purchases, leases and mortgages are carried out without risk, and handle state registration and land rights.",
         "body": [
-          "",
-          ""
+          "For most people a property transaction is the largest investment of their life. Checking the title certificate, any mortgage and any restrictions before signing prevents the great majority of disputes.",
+          "We draft the agreement so that it protects your interests, and stay with you at every stage, from the notary to the state registry."
         ],
         "items": [
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
+          "Drafting and reviewing sale and purchase agreements",
+          "Checking title certificates, mortgages and restrictions",
+          "Mortgage and pledge agreements",
+          "Lease agreements and lease disputes",
+          "Rights to own, possess and use land",
+          "Court representation in construction and co-ownership disputes"
         ],
         "note": {
-          "title": "",
-          "text": ""
+          "title": "Please note",
+          "text": "Ownership of real estate passes only upon entry in the state register. Even if the contract is signed and the price paid, the right is not secured until it is registered."
         },
         "faq": {
           "check": {
-            "question": "",
-            "answer": ""
+            "question": "What should I check before buying?",
+            "answer": "The title certificate, the owner's details, the register of mortgages and attachments, the consent of any co-owner, and the term of the land right. We complete this check within 3 working days."
           },
           "docs": {
-            "question": "",
-            "answer": ""
+            "question": "Which documents do I need to prepare?",
+            "answer": "The title certificate, the land certificate, the cadastral plan, the consent of family members, payment records and any lease or mortgage agreement."
           },
           "fee": {
-            "question": "",
-            "answer": ""
+            "question": "How are fees calculated?",
+            "answer": "Fees depend on the scope and duration of the work and are agreed in the engagement contract. At the first meeting we define the scope of work and set out the fee terms in writing."
           },
           "duration": {
-            "question": "",
-            "answer": ""
+            "question": "How long does state registration take?",
+            "answer": "With complete documents, a transfer of ownership is registered within 3–7 working days. Changes to land rights take 14–30 days."
           }
         },
         "pricing": [
           {
-            "label": "",
-            "value": ""
+            "label": "First meeting",
+            "value": "On request"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "Property check",
+            "value": "By scope of work"
           },
           {
-            "label": "",
-            "value": ""
+            "label": "Court representation",
+            "value": "By contract"
           }
         ]
       }
     },
     "process": [
       {
-        "title": "",
-        "text": ""
+        "title": "First meeting",
+        "text": "We clarify the nature of the issue and the legal options."
       },
       {
-        "title": "",
-        "text": ""
+        "title": "Legal assessment",
+        "text": "We present the possible routes, the risks and the timeline in writing."
       },
       {
-        "title": "",
-        "text": ""
+        "title": "Engagement contract",
+        "text": "The scope of work and the fee structure are set out clearly."
       },
       {
-        "title": "",
-        "text": ""
+        "title": "Handling the matter",
+        "text": "You can follow the progress at any time in the portal."
       }
     ],
     "commitments": {
-      "firstConsultation": "",
-      "writtenOpinion": "",
-      "assetCheck": "",
-      "urgentResponse": ""
+      "firstConsultation": "First consultation",
+      "writtenOpinion": "Written opinion",
+      "assetCheck": "Property check",
+      "urgentResponse": "Urgent assistance"
     }
   },
   "faq": {
     "categories": {
       "general": {
-        "label": "",
-        "shortLabel": ""
+        "label": "General questions",
+        "shortLabel": "General"
       },
       "payment": {
-        "label": "",
-        "shortLabel": ""
+        "label": "Fees and contracts",
+        "shortLabel": "Fees"
       },
       "labor": {
-        "label": "",
-        "shortLabel": ""
+        "label": "Employment law",
+        "shortLabel": "Employment"
       },
       "family": {
-        "label": "",
-        "shortLabel": ""
+        "label": "Family law",
+        "shortLabel": "Family"
       },
       "criminal": {
-        "label": "",
-        "shortLabel": ""
+        "label": "Criminal matters",
+        "shortLabel": "Criminal"
       },
       "portal": {
-        "label": "",
-        "shortLabel": ""
+        "label": "Client portal",
+        "shortLabel": "Portal"
       }
     },
     "items": {
       "first-consult": {
-        "question": "",
-        "answer": ""
+        "question": "How does the first meeting work?",
+        "answer": "After you send a request we clarify the type of matter and arrange a meeting. At the meeting we explain the substance of the issue, the legal options and the next steps. Once the scope of work is clear, the fee terms are agreed in writing."
       },
       "bring-documents": {
-        "question": "",
-        "answer": ""
+        "question": "What should I bring to the meeting?",
+        "answer": "Bring every document related to the matter — contracts, notices, correspondence, court summonses. Originals are not required; copies or photos taken on your phone are fine."
       },
       "track-case": {
-        "question": "",
-        "answer": ""
+        "question": "How can I follow the progress of my case?",
+        "answer": "Once you sign in to the client portal you can see the progress of the case, hearing dates, documents, invoices and notifications in real time. Your sign-in details are issued when the engagement contract is concluded."
       },
       "fees": {
-        "question": "",
-        "answer": ""
+        "question": "How are fees calculated?",
+        "answer": "Depending on the type of matter, its scope and the time required, fees are charged at an hourly rate or as a fixed price and set out in the contract. We provide a written quote after the first meeting."
       },
       "advance": {
-        "question": "",
-        "answer": ""
+        "question": "Is an advance payment required?",
+        "answer": "In most matters a share of the total fee is paid in advance when the contract is signed. The balance is invoiced at the stages set out in the contract."
       },
       "invoices": {
-        "question": "",
-        "answer": ""
+        "question": "Where can I see my invoices?",
+        "answer": "Invoices appear in the \"Invoices\" section of the client portal and are paid by bank transfer. Online payment will be added soon."
       },
       "dismissal-deadline": {
-        "question": "",
-        "answer": ""
+        "question": "I have been dismissed — how soon should I act?",
+        "answer": "You may apply to the court within 30 days of receiving the dismissal decision. Contact us as soon as the decision is issued so that the deadline is not missed."
       },
       "compensation": {
-        "question": "",
-        "answer": ""
+        "question": "How is compensation calculated?",
+        "answer": "It combines the average salary for the period out of work, unused annual leave and the other payments provided by law. The lawyer prepares the calculation from your salary records."
       },
       "divorce-duration": {
-        "question": "",
-        "answer": ""
+        "question": "How long do divorce proceedings take?",
+        "answer": "Where both parties agree, 1–2 months; where custody or property is disputed, 3–6 months. The timeline depends on the court's caseload and on how complete the documents are."
       },
       "child-support": {
-        "question": "",
-        "answer": ""
+        "question": "How is child maintenance determined?",
+        "answer": "The court sets it at the rate provided by law, based on the number of children and the parties' incomes. If the parties agree, the amount may be fixed by agreement."
       },
       "urgent": {
-        "question": "",
-        "answer": ""
+        "question": "How do I reach you in an urgent situation?",
+        "answer": "Call the number shown on the Contact page or send a request through the portal. In criminal matters we recommend speaking to a lawyer before you give a statement."
       },
       "interrogation": {
-        "question": "",
-        "answer": ""
+        "question": "Do I have to be questioned without a lawyer?",
+        "answer": "No. You are entitled to a lawyer at every stage of questioning, and you may decline to give a statement until your lawyer arrives."
       },
       "portal-login": {
-        "question": "",
-        "answer": ""
+        "question": "How do I sign in to the portal?",
+        "answer": "Sign-in details are sent to your e-mail address when the contract is concluded. If you forget your password, reset it through the \"Reset password\" link on the sign-in page."
       },
       "documents": {
-        "question": "",
-        "answer": ""
+        "question": "How do I submit my documents?",
+        "answer": "You can attach documents from the case page in the portal. PDF, Word, Excel and image files (JPG, PNG) of up to 20 MB are supported."
       },
       "confidentiality": {
-        "question": "",
-        "answer": ""
+        "question": "How is confidentiality maintained?",
+        "answer": "We observe lawyer–client confidentiality strictly and store all information encrypted. Nothing is passed to a third party without your consent."
       }
     }
-  },
-  "common": {
-    "home": "",
-    "readMore": "",
-    "all": "",
-    "back": "",
-    "breadcrumb": "",
-    "getAdvice": "",
-    "yearsOfExperience": "",
-    "lawyersUnavailable": "",
-    "lawyersComingSoon": "",
-    "postsUnavailable": "",
-    "postsComingSoon": "",
-    "views": ""
-  },
-  "servicesPage": {
-    "metaTitle": "",
-    "metaDescription": "",
-    "title": "",
-    "description": "",
-    "crumb": "",
-    "crumbAll": "",
-    "listHeading": "",
-    "processOverline": "",
-    "processTitle": "",
-    "step": "",
-    "notFound": "",
-    "whatWeDo": "",
-    "scope": "",
-    "faqHeading": "",
-    "lawyersHeading": "",
-    "pricingHeading": "",
-    "pricingNote": ""
-  },
-  "faqPage": {
-    "metaTitle": "",
-    "metaDescription": "",
-    "title": "",
-    "description": "",
-    "crumb": "",
-    "categoryNav": "",
-    "helpTitle": "",
-    "helpText": "",
-    "helpCta": ""
-  },
-  "postCategory": {
-    "NEWS": "",
-    "ADVICE": "",
-    "LEGAL_UPDATE": ""
-  },
-  "home": {
-    "hero": {
-      "overline": "",
-      "overlineShort": "",
-      "title": "",
-      "lead": "",
-      "leadShort": "",
-      "primaryCta": "",
-      "secondaryCta": ""
-    },
-    "services": {
-      "overline": "",
-      "title": "",
-      "description": ""
-    },
-    "advantagesSection": {
-      "overline": "",
-      "title": "",
-      "description": ""
-    },
-    "advantages": [
-      {
-        "value": "",
-        "label": "",
-        "note": ""
-      },
-      {
-        "value": "",
-        "label": "",
-        "note": ""
-      },
-      {
-        "value": "",
-        "label": "",
-        "note": ""
-      },
-      {
-        "value": "",
-        "label": "",
-        "note": ""
-      }
-    ],
-    "team": {
-      "overline": "",
-      "title": "",
-      "all": ""
-    },
-    "news": {
-      "overline": "",
-      "title": "",
-      "titleShort": "",
-      "all": ""
-    },
-    "cta": {
-      "title": "",
-      "text": "",
-      "textShort": ""
-    }
-  },
-  "about": {
-    "metaTitle": "",
-    "metaDescription": "",
-    "title": "",
-    "description": "",
-    "crumb": "",
-    "story": {
-      "overline": "",
-      "title": "",
-      "p1": "",
-      "p2": ""
-    },
-    "values": {
-      "overline": "",
-      "title": ""
-    },
-    "process": {
-      "overline": "",
-      "title": ""
-    },
-    "valueItems": [
-      {
-        "title": "",
-        "text": ""
-      },
-      {
-        "title": "",
-        "text": ""
-      },
-      {
-        "title": "",
-        "text": ""
-      },
-      {
-        "title": "",
-        "text": ""
-      }
-    ],
-    "processSteps": [
-      {
-        "step": "",
-        "title": "",
-        "text": ""
-      },
-      {
-        "step": "",
-        "title": "",
-        "text": ""
-      },
-      {
-        "step": "",
-        "title": "",
-        "text": ""
-      },
-      {
-        "step": "",
-        "title": "",
-        "text": ""
-      }
-    ]
-  },
-  "contact": {
-    "metaTitle": "",
-    "metaDescription": "",
-    "title": "",
-    "description": "",
-    "crumb": "",
-    "requests": {
-      "title": "",
-      "description": "",
-      "cta": "",
-      "LAWYER": {
-        "title": "",
-        "description": ""
-      },
-      "CONSULTATION": {
-        "title": "",
-        "description": ""
-      },
-      "signUpPrefix": "",
-      "signUpLink": "",
-      "signUpSuffix": ""
-    },
-    "office": {
-      "title": "",
-      "address": "",
-      "phone": "",
-      "email": "",
-      "hours": "",
-      "social": ""
-    },
-    "map": {
-      "label": "",
-      "caption": ""
-    }
-  },
-  "lawyers": {
-    "metaTitle": "",
-    "metaDescription": "",
-    "title": "",
-    "description": "",
-    "descriptionCounted": "",
-    "crumb": "",
-    "filterLabel": "",
-    "failedTitle": "",
-    "failedDescription": "",
-    "noneTitle": "",
-    "noneForFilter": "",
-    "noneDescription": ""
-  },
-  "lawyerDetail": {
-    "notFound": "",
-    "contactTitle": "",
-    "phone": "",
-    "email": "",
-    "bookCta": "",
-    "specializations": "",
-    "education": "",
-    "bio": ""
-  },
-  "news": {
-    "metaTitle": "",
-    "metaDescription": "",
-    "title": "",
-    "description": "",
-    "crumb": "",
-    "crumbAll": "",
-    "categoryLabel": "",
-    "featured": "",
-    "search": "",
-    "searchSubmit": "",
-    "searchResult": "",
-    "clearSearch": "",
-    "failedTitle": "",
-    "failedDescription": "",
-    "noneTitle": "",
-    "noneDescription": "",
-    "mongolianNote": "",
-    "related": "",
-    "share": "",
-    "copyLink": "",
-    "shareAction": "",
-    "shareEmail": "",
-    "readingTime": ""
-  },
-  "states": {
-    "retry": "",
-    "getHelp": "",
-    "loading": "",
-    "errorTitle": "",
-    "errorMessage": "",
-    "pagination": "",
-    "pageTitle": "",
-    "pageMessage": ""
   },
   "privacy": {
-    "metaTitle": "",
-    "metaDescription": "",
-    "title": "",
-    "description": "",
-    "crumb": "",
-    "updated": "",
-    "updatedDate": "",
+    "metaTitle": "Privacy policy",
+    "metaDescription": "How Strategy Law Firm collects, uses and protects clients' personal data.",
+    "title": "Privacy policy",
+    "description": "We use your personal data only to provide legal assistance, and protect it as the law requires.",
+    "crumb": "Privacy policy",
+    "updated": "Last updated: {date}",
+    "updatedDate": "16 September 2026",
     "sections": [
       {
-        "title": "",
+        "title": "1. What data we collect",
         "items": [
-          "",
-          "",
-          ""
+          "Data you provide: name, phone number, e-mail, a description of your matter and the documents you send.",
+          "Data arising from the engagement: the progress of the matter, meetings, notes of hearings, invoices and payment records.",
+          "Technical data from the portal: sign-in times, basic device information and an audit log of actions. We do not use advertising or tracking cookies."
         ]
       },
       {
-        "title": "",
+        "title": "2. How we use it",
         "items": [
-          "",
-          "",
-          "",
-          ""
+          "To provide legal assistance, conduct the matter and represent you before courts and other bodies.",
+          "To display the progress of the matter, documents and invoices in the client portal and to send notifications.",
+          "To meet obligations imposed by law or by a court decision, including anti-money-laundering checks.",
+          "We do not use your data for advertising and do not sell it to third parties."
         ]
       },
       {
-        "title": "",
+        "title": "3. Who it may be disclosed to",
         "items": [
-          "",
-          "",
-          ""
+          "The lawyer responsible for the matter, the team members and the support staff assisting them.",
+          "Courts, prosecutors and competent public authorities, with your written consent or where the law requires it.",
+          "Service providers essential to running the system (servers, e-mail). They process data only within the task assigned to them and are bound by confidentiality agreements."
         ]
       },
       {
-        "title": "",
+        "title": "4. Storage and protection",
         "items": [
-          "",
-          "",
-          ""
+          "Documents are transmitted over encrypted channels and access is limited according to role. The session is renewed at every sign-in to the portal.",
+          "Case materials are archived for the period required by law after the engagement ends (generally 10 years) and are then destroyed.",
+          "If a security breach occurs, we notify the affected clients and the competent authority without delay."
         ]
       },
       {
-        "title": "",
+        "title": "5. Your rights",
         "items": [
-          "",
-          "",
-          "",
-          ""
+          "To access your data and obtain a copy of it.",
+          "To have incorrect or incomplete data corrected or updated (directly in the \"Profile\" section of the portal).",
+          "To have data erased or processing restricted, so far as the law allows.",
+          "To change your notification settings and to opt out of marketing messages."
         ]
       }
     ],
-    "contactTitle": "",
-    "contactPrefix": "",
-    "contactOr": "",
-    "contactSuffix": "",
-    "termsPrefix": "",
-    "termsLink": "",
-    "termsSuffix": ""
+    "contactTitle": "6. Contact",
+    "contactPrefix": "Send requests and complaints about your data to",
+    "contactOr": "or call",
+    "contactSuffix": ". Address: {address}.",
+    "termsPrefix": "Our terms of service are available",
+    "termsLink": "here",
+    "termsSuffix": "."
   },
   "terms": {
-    "metaTitle": "",
-    "metaDescription": "",
-    "title": "",
-    "description": "",
-    "crumb": "",
-    "updated": "",
-    "updatedDate": "",
-    "registration": "",
+    "metaTitle": "Terms of service",
+    "metaDescription": "Terms for using Strategy Law Firm's legal services and client portal.",
+    "title": "Terms of service",
+    "description": "The terms that apply to the website, the client portal and our legal services.",
+    "crumb": "Terms of service",
+    "updated": "Last updated: {date}",
+    "updatedDate": "16 September 2026",
+    "registration": "Reg. no. {number}",
     "sections": [
       {
-        "title": "",
+        "title": "1. Scope of services",
         "items": [
-          "",
-          "",
-          ""
+          "The terms of legal assistance in each matter are set out in the engagement contract for that matter. These terms apply to the website and the client portal.",
+          "Sending a request through the portal does not create an engagement. We review each request and either accept it or decline it, stating our reasons.",
+          "Work begins only once a lawyer has been assigned and the matter has been opened."
         ]
       },
       {
-        "title": "",
+        "title": "2. Using the portal",
         "items": [
-          "",
-          "",
-          ""
+          "You must keep your sign-in details confidential and not share them. Tell us immediately if you notice suspicious activity.",
+          "The client is responsible for the accuracy of the documents uploaded to the portal.",
+          "Using the system for unlawful purposes or attempting to access other people's data is prohibited. Access will be blocked if these terms are breached."
         ]
       },
       {
-        "title": "",
+        "title": "3. Fees",
         "items": [
-          "",
-          "",
-          ""
+          "Fees are calculated in the form set out in the contract (hourly, by package of work, or by result).",
+          "Invoices are issued through the portal and paid into the firm's account within the stated period. Once you mark a payment in the portal, we reconcile and confirm the transfer.",
+          "An overdue invoice moves to the \"Overdue\" status, and work may be suspended where necessary."
         ]
       },
       {
-        "title": "",
+        "title": "4. Confidentiality and conflicts of interest",
         "items": [
-          "",
-          ""
+          "Client information is protected under the rules of lawyer–client privilege.",
+          "Every new request is checked for conflicts of interest. Where a conflict exists, we decline the engagement."
         ]
       },
       {
-        "title": "",
+        "title": "5. Limitation of liability",
         "items": [
-          "",
-          "",
-          ""
+          "We act with professional skill and care. We cannot, however, guarantee the outcome of a decision by a court or a public authority.",
+          "The firm is not liable for consequences arising from incorrect or incomplete information provided by the client or from delays on the client's part.",
+          "So far as the law allows, we are not liable for indirect loss arising from technical interruptions to the website or the portal."
         ]
       },
       {
-        "title": "",
+        "title": "6. Termination and disputes",
         "items": [
-          "",
-          "",
-          ""
+          "Either party may terminate the contract by written notice. Fees for the work done up to termination are calculated and invoiced.",
+          "Disputes are resolved primarily by negotiation and otherwise by the courts in accordance with the laws of Mongolia.",
+          "If these terms change, the new version is published on the website with the date of the update."
         ]
       }
     ],
-    "contactTitle": "",
-    "contactPrefix": "",
-    "contactOr": "",
-    "contactSuffix": "",
-    "privacyPrefix": "",
-    "privacyLink": "",
-    "privacySuffix": ""
-  },
-  "notFound": {
-    "title": "",
-    "homeCta": "",
-    "contactCta": "",
-    "quickLinks": "",
-    "links": {
-      "services": {
-        "title": "",
-        "caption": ""
-      },
-      "lawyers": {
-        "title": "",
-        "caption": ""
-      },
-      "news": {
-        "title": "",
-        "caption": ""
-      },
-      "portal": {
-        "title": "",
-        "caption": ""
-      }
-    }
+    "contactTitle": "7. Contact",
+    "contactPrefix": "Send questions about these terms to",
+    "contactOr": "or call",
+    "contactSuffix": ".",
+    "privacyPrefix": "How we process personal data is described in our",
+    "privacyLink": "privacy policy",
+    "privacySuffix": "."
   }
 }
