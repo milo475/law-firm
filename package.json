@@ -17,6 +17,8 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
+    "deadcode": "knip --no-progress",
+    "audit": "pnpm audit --audit-level=high",
     "db:generate": "pnpm --filter @law-firm/shared db:generate",
     "db:migrate": "pnpm --filter @law-firm/shared db:migrate",
     "db:deploy": "pnpm --filter @law-firm/shared db:deploy",
@@ -32,7 +34,16 @@
     "clean": "turbo run clean && rm -rf node_modules"
   },
   "devDependencies": {
+    "knip": "^6.37.0",
     "turbo": "^2.10.12",
     "typescript": "^5.9.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "multer": "^2.4.0",
+      "postcss": "^8.5.28",
+      "mysql2": "^3.23.1",
+      "deepmerge-ts": "^8.0.0"
+    }
   }
 }

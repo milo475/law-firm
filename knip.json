@@ -1,0 +1,27 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "workspaces": {
+    "apps/api": {
+      "entry": ["src/main.ts", "src/**/*.module.ts", "src/**/*.spec.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "apps/web": {
+      "entry": [
+        "src/app/**/{page,layout,loading,error,not-found,route,sitemap,icon,opengraph-image}.{ts,tsx}",
+        "e2e/**/*.ts",
+        "scripts/*.mjs"
+      ],
+      "project": ["src/**/*.{ts,tsx}", "scripts/**/*.mjs"],
+      "ignoreDependencies": ["eslint-config-next", "tailwindcss"]
+    },
+    "packages/shared": {
+      "entry": ["src/index.ts", "prisma/*.ts", "src/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "prisma/*.ts"],
+      "ignore": ["src/generated/**"],
+      "ignoreDependencies": ["@prisma/client"]
+    }
+  },
+  "rules": {
+    "duplicates": "off"
+  }
+}
