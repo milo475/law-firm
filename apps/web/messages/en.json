@@ -43,293 +43,6 @@
       "real-estate": "Real estate"
     }
   },
-  "common": {
-    "home": "Home",
-    "readMore": "Read more",
-    "all": "All",
-    "back": "Back",
-    "breadcrumb": "Breadcrumb",
-    "getAdvice": "Request advice",
-    "yearsOfExperience": "{years} years of experience",
-    "lawyersUnavailable": "Lawyer profiles could not be loaded.",
-    "lawyersComingSoon": "Lawyer profiles will be added soon.",
-    "postsUnavailable": "Articles could not be loaded.",
-    "postsComingSoon": "Articles will be published soon.",
-    "views": "{count} views"
-  },
-  "servicesPage": {
-    "metaTitle": "Services",
-    "metaDescription": "We advise, prepare documents and represent clients in court across six principal practice areas.",
-    "title": "Practice areas",
-    "description": "We advise, prepare documents and represent clients in court across six principal practice areas.",
-    "crumb": "Services",
-    "crumbAll": "All practice areas",
-    "listHeading": "Practice areas",
-    "processOverline": "How we work together",
-    "processTitle": "In four steps",
-    "step": "Step {number}:",
-    "notFound": "Service not found",
-    "whatWeDo": "What we do",
-    "scope": "Scope of the service",
-    "faqHeading": "Frequently asked questions",
-    "lawyersHeading": "Lawyers in this practice area",
-    "pricingHeading": "Fees",
-    "pricingNote": "Fees are agreed in the engagement contract and depend on the scope and duration of the work."
-  },
-  "faqPage": {
-    "metaTitle": "FAQ",
-    "metaDescription": "Answers to the questions clients ask most often, grouped by practice area.",
-    "title": "Legal information and frequently asked questions",
-    "description": "Answers to the questions clients ask most often, grouped by practice area.",
-    "crumb": "FAQ",
-    "categoryNav": "Question categories",
-    "helpTitle": "Didn't find your answer?",
-    "helpText": "Write to us — we will get in touch once we receive your request.",
-    "helpCta": "Send a question"
-  },
-  "postCategory": {
-    "NEWS": "News",
-    "ADVICE": "Advice",
-    "LEGAL_UPDATE": "Legislative update"
-  },
-  "home": {
-    "hero": {
-      "overline": "Legal advice and representation",
-      "overlineShort": "Legal advisory services",
-      "title": "A firm foundation for protecting your rights",
-      "lead": "We provide representation and advice in civil, criminal, family, business, employment and real estate law. You can follow the progress of your case in the client portal.",
-      "leadShort": "Professional assistance in civil, criminal, family and business law.",
-      "primaryCta": "Send a request for advice",
-      "secondaryCta": "View services"
-    },
-    "services": {
-      "overline": "Practice areas",
-      "title": "What matters do we handle?",
-      "description": "We cover the legal needs of individuals and businesses across six principal practice areas."
-    },
-    "advantagesSection": {
-      "overline": "How we work",
-      "title": "What our work is built on",
-      "description": "One team handles your matter from intake to resolution, and every step is documented in writing."
-    },
-    "advantages": [
-      {
-        "value": "6",
-        "label": "Practice areas",
-        "note": "Civil, criminal, family, business, employment, real estate"
-      },
-      {
-        "value": "Portal",
-        "label": "Case progress online",
-        "note": "Documents, invoices and messages in one place"
-      },
-      {
-        "value": "Contract",
-        "label": "Transparent terms",
-        "note": "Scope, timeline and fees agreed in writing"
-      },
-      {
-        "value": "Confidentiality",
-        "label": "Data protection",
-        "note": "Access rights are strictly controlled"
-      }
-    ],
-    "team": {
-      "overline": "Our lawyers",
-      "title": "The professionals who will handle your matter",
-      "all": "All lawyers"
-    },
-    "news": {
-      "overline": "News and articles",
-      "title": "Recent developments in the legal landscape",
-      "titleShort": "Recent legal developments",
-      "all": "All articles"
-    },
-    "cta": {
-      "title": "Not sure how to resolve your issue?",
-      "text": "Describe your situation briefly and send us a request. A lawyer will review it, get in touch and explain the legal options and next steps.",
-      "textShort": "Send a request and a lawyer will contact you."
-    }
-  },
-  "about": {
-    "metaTitle": "About us",
-    "metaDescription": "Strategy Law Firm is a professional legal services firm providing representation and legal advice to individuals and businesses.",
-    "title": "About us",
-    "description": "Strategy Law Firm is a professional legal services firm.",
-    "crumb": "About us",
-    "story": {
-      "overline": "ABOUT US",
-      "title": "We make legal matters clear and stand beside you",
-      "p1": "Strategy Law Firm provides professional legal assistance to individuals and businesses. Our work covers legal representation, legal advice, drafting of documents, and representation before public bodies and the courts.",
-      "p2": "When we take on a matter we first assess what is realistically achievable and say plainly what we can do. The work is tracked in the client portal, so documents, deadlines and next steps are always in one place."
-    },
-    "values": {
-      "overline": "MISSION AND VALUES",
-      "title": "Making legal assistance clear and accessible to everyone"
-    },
-    "process": {
-      "overline": "HOW WE WORK TOGETHER",
-      "title": "How a matter moves forward"
-    },
-    "valueItems": [
-      {
-        "title": "Integrity",
-        "text": "We tell clients honestly what their case can realistically achieve. We never promise what we cannot deliver."
-      },
-      {
-        "title": "Transparency",
-        "text": "The fee structure, the progress of the matter and the timeline are set out in writing from the start."
-      },
-      {
-        "title": "Confidentiality",
-        "text": "Client information is protected as the law requires. Access to our internal system is strictly controlled."
-      },
-      {
-        "title": "Plain language",
-        "text": "We explain the legal situation in terms you can act on, not in legal jargon."
-      }
-    ],
-    "processSteps": [
-      {
-        "step": "01",
-        "title": "Receiving the request",
-        "text": "You send a request through the portal or the contact page. We clarify the type of matter."
-      },
-      {
-        "step": "02",
-        "title": "Initial assessment",
-        "text": "We review the documents and explain the legal options and the risks."
-      },
-      {
-        "step": "03",
-        "title": "Contract and plan",
-        "text": "The scope of work, the timeline and the fee terms are agreed in writing."
-      },
-      {
-        "step": "04",
-        "title": "Handling the matter",
-        "text": "We represent you before public bodies and the courts and post updates in the client portal."
-      }
-    ]
-  },
-  "contact": {
-    "metaTitle": "Contact",
-    "metaDescription": "Get in touch with Strategy Law Firm: address, phone, e-mail, requests for representation and advice.",
-    "title": "Contact",
-    "description": "Send your request for representation or advice through the portal. We will get in touch once we receive it.",
-    "crumb": "Contact",
-    "requests": {
-      "title": "Send a request",
-      "description": "Requests for representation and advice are submitted through the client portal. Once you sign in, you can see the status of your request, the lawyer assigned to you and your open matters in one place.",
-      "cta": "Submit a request",
-      "LAWYER": {
-        "title": "Request representation",
-        "description": "We assign a lawyer to take on your matter and represent you before the courts and public bodies."
-      },
-      "CONSULTATION": {
-        "title": "Request advice",
-        "description": "You are connected with a lawyer who clarifies your situation and advises on the next step."
-      },
-      "signUpPrefix": "If you do not have an account,",
-      "signUpLink": "sign up",
-      "signUpSuffix": "to continue. For urgent matters, call {phone}."
-    },
-    "office": {
-      "title": "Office details",
-      "address": "Address",
-      "phone": "Phone",
-      "email": "E-mail",
-      "hours": "Office hours",
-      "social": "Social media"
-    },
-    "map": {
-      "label": "Map of the office location",
-      "caption": "Map location"
-    }
-  },
-  "lawyers": {
-    "metaTitle": "Lawyers",
-    "metaDescription": "Choose the lawyer who fits your matter from our specialists in each practice area.",
-    "title": "Our lawyers",
-    "description": "Choose the lawyer who fits your matter from our specialists in each practice area.",
-    "descriptionCounted": "Choose the lawyer who fits your matter from our {count} specialists across the practice areas.",
-    "crumb": "Lawyers",
-    "filterLabel": "Filter by practice area",
-    "failedTitle": "Lawyer profiles could not be loaded",
-    "failedDescription": "We could not reach the API. Please wait a moment and try again.",
-    "noneTitle": "No lawyer profiles yet",
-    "noneForFilter": "No lawyers found in \"{spec}\"",
-    "noneDescription": "Choose another practice area or select \"All\"."
-  },
-  "lawyerDetail": {
-    "notFound": "Lawyer not found",
-    "contactTitle": "Contact",
-    "phone": "Phone",
-    "email": "E-mail",
-    "bookCta": "Book an appointment",
-    "specializations": "Practice areas",
-    "education": "Education and credentials",
-    "bio": "Biography"
-  },
-  "news": {
-    "metaTitle": "News and articles",
-    "metaDescription": "Legislative updates, practical advice and firm news are published here.",
-    "title": "News and articles",
-    "description": "Legislative updates, practical advice and firm news are published here.",
-    "crumb": "News and articles",
-    "crumbAll": "All articles",
-    "categoryLabel": "Category",
-    "featured": "Featured",
-    "search": "Search articles",
-    "searchSubmit": "Search",
-    "searchResult": "Results for «{query}»: {count} articles",
-    "clearSearch": "Clear",
-    "failedTitle": "The news could not be loaded",
-    "failedDescription": "Check that the API is running and try again.",
-    "noneTitle": "No articles found",
-    "noneDescription": "Choose another category or change your search.",
-    "mongolianNote": "These articles are published in Mongolian.",
-    "related": "Related articles",
-    "share": "Share:",
-    "copyLink": "Copy link",
-    "shareAction": "Share",
-    "shareEmail": "Send by e-mail",
-    "readingTime": "{minutes} min read"
-  },
-  "states": {
-    "retry": "Try again",
-    "getHelp": "Get help",
-    "loading": "Loading",
-    "errorTitle": "Something went wrong",
-    "errorMessage": "An error occurred while loading the content. Please try again.",
-    "pagination": "Pagination",
-    "pageTitle": "The page could not be loaded",
-    "pageMessage": "A temporary error. Please try again."
-  },
-  "notFound": {
-    "title": "Page not found",
-    "homeCta": "Go to the home page",
-    "contactCta": "Contact",
-    "quickLinks": "Quick links",
-    "links": {
-      "services": {
-        "title": "Services",
-        "caption": "All six practice areas"
-      },
-      "lawyers": {
-        "title": "Lawyers",
-        "caption": "Meet our team"
-      },
-      "news": {
-        "title": "News",
-        "caption": "Latest articles"
-      },
-      "portal": {
-        "title": "Client portal",
-        "caption": "Follow your matter"
-      }
-    }
-  },
   "services": {
     "catalog": {
       "civil": {
@@ -802,6 +515,264 @@
       }
     }
   },
+  "common": {
+    "home": "Home",
+    "readMore": "Read more",
+    "all": "All",
+    "back": "Back",
+    "breadcrumb": "Breadcrumb",
+    "getAdvice": "Request advice",
+    "yearsOfExperience": "{years} years of experience",
+    "lawyersUnavailable": "Lawyer profiles could not be loaded.",
+    "lawyersComingSoon": "Lawyer profiles will be added soon.",
+    "postsUnavailable": "Articles could not be loaded.",
+    "postsComingSoon": "Articles will be published soon.",
+    "views": "{count} views"
+  },
+  "servicesPage": {
+    "metaTitle": "Services",
+    "metaDescription": "We advise, prepare documents and represent clients in court across six principal practice areas.",
+    "title": "Practice areas",
+    "description": "We advise, prepare documents and represent clients in court across six principal practice areas.",
+    "crumb": "Services",
+    "crumbAll": "All practice areas",
+    "listHeading": "Practice areas",
+    "processOverline": "How we work together",
+    "processTitle": "In four steps",
+    "step": "Step {number}:",
+    "notFound": "Service not found",
+    "whatWeDo": "What we do",
+    "scope": "Scope of the service",
+    "faqHeading": "Frequently asked questions",
+    "lawyersHeading": "Lawyers in this practice area",
+    "pricingHeading": "Fees",
+    "pricingNote": "Fees are agreed in the engagement contract and depend on the scope and duration of the work."
+  },
+  "faqPage": {
+    "metaTitle": "FAQ",
+    "metaDescription": "Answers to the questions clients ask most often, grouped by practice area.",
+    "title": "Legal information and frequently asked questions",
+    "description": "Answers to the questions clients ask most often, grouped by practice area.",
+    "crumb": "FAQ",
+    "categoryNav": "Question categories",
+    "helpTitle": "Didn't find your answer?",
+    "helpText": "Write to us — we will get in touch once we receive your request.",
+    "helpCta": "Send a question"
+  },
+  "home": {
+    "hero": {
+      "overline": "Legal advice and representation",
+      "overlineShort": "Legal advisory services",
+      "title": "A firm foundation for protecting your rights",
+      "lead": "We provide representation and advice in civil, criminal, family, business, employment and real estate law. You can follow the progress of your case in the client portal.",
+      "leadShort": "Professional assistance in civil, criminal, family and business law.",
+      "primaryCta": "Send a request for advice",
+      "secondaryCta": "View services"
+    },
+    "services": {
+      "overline": "Practice areas",
+      "title": "What matters do we handle?",
+      "description": "We cover the legal needs of individuals and businesses across six principal practice areas."
+    },
+    "advantagesSection": {
+      "overline": "How we work",
+      "title": "What our work is built on",
+      "description": "One team handles your matter from intake to resolution, and every step is documented in writing."
+    },
+    "advantages": [
+      {
+        "value": "6",
+        "label": "Practice areas",
+        "note": "Civil, criminal, family, business, employment, real estate"
+      },
+      {
+        "value": "Portal",
+        "label": "Case progress online",
+        "note": "Documents, invoices and messages in one place"
+      },
+      {
+        "value": "Contract",
+        "label": "Transparent terms",
+        "note": "Scope, timeline and fees agreed in writing"
+      },
+      {
+        "value": "Confidentiality",
+        "label": "Data protection",
+        "note": "Access rights are strictly controlled"
+      }
+    ],
+    "team": {
+      "overline": "Our lawyers",
+      "title": "The professionals who will handle your matter",
+      "all": "All lawyers"
+    },
+    "news": {
+      "overline": "News and articles",
+      "title": "Recent developments in the legal landscape",
+      "titleShort": "Recent legal developments",
+      "all": "All articles"
+    },
+    "cta": {
+      "title": "Not sure how to resolve your issue?",
+      "text": "Describe your situation briefly and send us a request. A lawyer will review it, get in touch and explain the legal options and next steps.",
+      "textShort": "Send a request and a lawyer will contact you."
+    }
+  },
+  "about": {
+    "metaTitle": "About us",
+    "metaDescription": "Strategy Law Firm is a professional legal services firm providing representation and legal advice to individuals and businesses.",
+    "title": "About us",
+    "description": "Strategy Law Firm is a professional legal services firm.",
+    "crumb": "About us",
+    "story": {
+      "overline": "ABOUT US",
+      "title": "We make legal matters clear and stand beside you",
+      "p1": "Strategy Law Firm provides professional legal assistance to individuals and businesses. Our work covers legal representation, legal advice, drafting of documents, and representation before public bodies and the courts.",
+      "p2": "When we take on a matter we first assess what is realistically achievable and say plainly what we can do. The work is tracked in the client portal, so documents, deadlines and next steps are always in one place."
+    },
+    "values": {
+      "overline": "MISSION AND VALUES",
+      "title": "Making legal assistance clear and accessible to everyone"
+    },
+    "process": {
+      "overline": "HOW WE WORK TOGETHER",
+      "title": "How a matter moves forward"
+    },
+    "valueItems": [
+      {
+        "title": "Integrity",
+        "text": "We tell clients honestly what their case can realistically achieve. We never promise what we cannot deliver."
+      },
+      {
+        "title": "Transparency",
+        "text": "The fee structure, the progress of the matter and the timeline are set out in writing from the start."
+      },
+      {
+        "title": "Confidentiality",
+        "text": "Client information is protected as the law requires. Access to our internal system is strictly controlled."
+      },
+      {
+        "title": "Plain language",
+        "text": "We explain the legal situation in terms you can act on, not in legal jargon."
+      }
+    ],
+    "processSteps": [
+      {
+        "step": "01",
+        "title": "Receiving the request",
+        "text": "You send a request through the portal or the contact page. We clarify the type of matter."
+      },
+      {
+        "step": "02",
+        "title": "Initial assessment",
+        "text": "We review the documents and explain the legal options and the risks."
+      },
+      {
+        "step": "03",
+        "title": "Contract and plan",
+        "text": "The scope of work, the timeline and the fee terms are agreed in writing."
+      },
+      {
+        "step": "04",
+        "title": "Handling the matter",
+        "text": "We represent you before public bodies and the courts and post updates in the client portal."
+      }
+    ]
+  },
+  "contact": {
+    "metaTitle": "Contact",
+    "metaDescription": "Get in touch with Strategy Law Firm: address, phone, e-mail, requests for representation and advice.",
+    "title": "Contact",
+    "description": "Send your request for representation or advice through the portal. We will get in touch once we receive it.",
+    "crumb": "Contact",
+    "requests": {
+      "title": "Send a request",
+      "description": "Requests for representation and advice are submitted through the client portal. Once you sign in, you can see the status of your request, the lawyer assigned to you and your open matters in one place.",
+      "cta": "Submit a request",
+      "LAWYER": {
+        "title": "Request representation",
+        "description": "We assign a lawyer to take on your matter and represent you before the courts and public bodies."
+      },
+      "CONSULTATION": {
+        "title": "Request advice",
+        "description": "You are connected with a lawyer who clarifies your situation and advises on the next step."
+      },
+      "signUpPrefix": "If you do not have an account,",
+      "signUpLink": "sign up",
+      "signUpSuffix": "to continue. For urgent matters, call {phone}."
+    },
+    "office": {
+      "title": "Office details",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "E-mail",
+      "hours": "Office hours",
+      "social": "Social media"
+    },
+    "map": {
+      "label": "Map of the office location",
+      "caption": "Map location"
+    }
+  },
+  "lawyers": {
+    "metaTitle": "Lawyers",
+    "metaDescription": "Choose the lawyer who fits your matter from our specialists in each practice area.",
+    "title": "Our lawyers",
+    "description": "Choose the lawyer who fits your matter from our specialists in each practice area.",
+    "descriptionCounted": "Choose the lawyer who fits your matter from our {count} specialists across the practice areas.",
+    "crumb": "Lawyers",
+    "filterLabel": "Filter by practice area",
+    "failedTitle": "Lawyer profiles could not be loaded",
+    "failedDescription": "We could not reach the API. Please wait a moment and try again.",
+    "noneTitle": "No lawyer profiles yet",
+    "noneForFilter": "No lawyers found in \"{spec}\"",
+    "noneDescription": "Choose another practice area or select \"All\"."
+  },
+  "lawyerDetail": {
+    "notFound": "Lawyer not found",
+    "contactTitle": "Contact",
+    "phone": "Phone",
+    "email": "E-mail",
+    "bookCta": "Book an appointment",
+    "specializations": "Practice areas",
+    "education": "Education and credentials",
+    "bio": "Biography"
+  },
+  "news": {
+    "metaTitle": "News and articles",
+    "metaDescription": "Legislative updates, practical advice and firm news are published here.",
+    "title": "News and articles",
+    "description": "Legislative updates, practical advice and firm news are published here.",
+    "crumb": "News and articles",
+    "crumbAll": "All articles",
+    "categoryLabel": "Category",
+    "featured": "Featured",
+    "search": "Search articles",
+    "searchSubmit": "Search",
+    "searchResult": "Results for «{query}»: {count} articles",
+    "clearSearch": "Clear",
+    "failedTitle": "The news could not be loaded",
+    "failedDescription": "Check that the API is running and try again.",
+    "noneTitle": "No articles found",
+    "noneDescription": "Choose another category or change your search.",
+    "mongolianNote": "These articles are published in Mongolian.",
+    "related": "Related articles",
+    "share": "Share:",
+    "copyLink": "Copy link",
+    "shareAction": "Share",
+    "shareEmail": "Send by e-mail",
+    "readingTime": "{minutes} min read"
+  },
+  "states": {
+    "retry": "Try again",
+    "getHelp": "Get help",
+    "loading": "Loading",
+    "errorTitle": "Something went wrong",
+    "errorMessage": "An error occurred while loading the content. Please try again.",
+    "pagination": "Pagination",
+    "pageTitle": "The page could not be loaded",
+    "pageMessage": "A temporary error. Please try again."
+  },
   "privacy": {
     "metaTitle": "Privacy policy",
     "metaDescription": "How Strategy Law Firm collects, uses and protects clients' personal data.",
@@ -927,5 +898,725 @@
     "privacyPrefix": "How we process personal data is described in our",
     "privacyLink": "privacy policy",
     "privacySuffix": "."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "homeCta": "Go to the home page",
+    "contactCta": "Contact",
+    "quickLinks": "Quick links",
+    "links": {
+      "services": {
+        "title": "Services",
+        "caption": "All six practice areas"
+      },
+      "lawyers": {
+        "title": "Lawyers",
+        "caption": "Meet our team"
+      },
+      "news": {
+        "title": "News",
+        "caption": "Latest articles"
+      },
+      "portal": {
+        "title": "Client portal",
+        "caption": "Follow your matter"
+      }
+    }
+  },
+  "enums": {
+    "postCategory": {
+      "NEWS": "News",
+      "ADVICE": "Advice",
+      "LEGAL_UPDATE": "Legislative update"
+    },
+    "caseStatus": {
+      "NEW": "New",
+      "IN_PROGRESS": "In progress",
+      "WAITING": "On hold",
+      "CLOSED": "Closed"
+    },
+    "caseType": {
+      "CIVIL": "Civil matter",
+      "CRIMINAL": "Criminal matter",
+      "FAMILY": "Family matter",
+      "BUSINESS": "Commercial dispute",
+      "LABOR": "Employment dispute",
+      "REAL_ESTATE": "Real estate",
+      "OTHER": "Other"
+    },
+    "serviceRequestType": {
+      "LAWYER": "Request representation",
+      "CONSULTATION": "Request advice"
+    },
+    "serviceRequestStatus": {
+      "NEW": "New",
+      "ACCEPTED": "Accepted",
+      "REJECTED": "Declined",
+      "CONVERTED": "Case opened"
+    },
+    "caseEvent": {
+      "NOTE": "Note",
+      "HEARING": "Hearing",
+      "MEETING": "Meeting",
+      "DEADLINE": "Deadline",
+      "STATUS_CHANGE": "Status changed",
+      "DOCUMENT": "Document"
+    },
+    "invoiceStatus": {
+      "DRAFT": "Draft",
+      "SENT": "Sent",
+      "AWAITING_CONFIRMATION": "Awaiting confirmation",
+      "PAID": "Paid",
+      "OVERDUE": "Overdue",
+      "CANCELLED": "Cancelled"
+    },
+    "role": {
+      "ADMIN": "Administrator",
+      "LAWYER": "Lawyer",
+      "CLIENT": "Client"
+    }
+  },
+  "portal": {
+    "login": {
+      "title": "Sign in",
+      "description": "Please enter your phone number or email address.",
+      "identifier": "Phone or email",
+      "password": "Password",
+      "remember": "Remember me",
+      "forgot": "Forgotten your password?",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "or": "or",
+      "otpCta": "Sign in with a one-time code",
+      "noAccount": "Don't have an account?",
+      "registerCta": "Register",
+      "back": "Back",
+      "otpTitle": "Verification code",
+      "otpDescription": "Enter the {length}-digit code sent to {identifier}.",
+      "otpFallbackIdentifier": "Registered phone number",
+      "otpSoonNote": "Signing in with a one-time code will be available shortly.",
+      "otpSoon": "Coming soon",
+      "otpResend": "Resend the code",
+      "otpDigit": "Digit {index}",
+      "genericError": "An error occurred while signing in",
+      "failedToast": "Unable to sign in"
+    },
+    "register": {
+      "title": "Register",
+      "mobileTitle": "Create an account",
+      "description": "Clients with a signed engagement agreement may use the portal.",
+      "haveAccount": "Already have an account?",
+      "loginCta": "Sign in",
+      "lastName": "Surname",
+      "firstName": "First name",
+      "phone": "Phone number",
+      "phoneHelper": "The number registered on your agreement",
+      "email": "Email address",
+      "password": "Password",
+      "passwordHelper": "At least 8 characters, including a number",
+      "agree": "I accept the terms of service and the privacy policy",
+      "agreeShort": "I accept the terms of service",
+      "submit": "Create an account",
+      "submitting": "Registering…",
+      "successToast": "Registration successful",
+      "successToastBody": "Welcome to the portal.",
+      "genericError": "An error occurred while registering",
+      "failedToast": "Unable to register"
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "back": "Back to sign in",
+      "description": "Enter your registered phone number or email address and we will send you reset instructions.",
+      "identifier": "Phone or email",
+      "identifierHelper": "Please enter the details registered on your agreement",
+      "submit": "Send a reset link",
+      "soon": "Coming soon",
+      "soonToast": "The password reset service will be available shortly.",
+      "soonToastWithPhone": "The password reset service will be available shortly. For now, please call {phone}.",
+      "linkValidity": "The link is valid for 30 minutes",
+      "sent": "The password reset service will be available shortly.",
+      "sentWithPhone": "The password reset service will be available shortly. In the meantime, please contact {phone}.",
+      "checkSpam": "If the email has not arrived, please check your spam folder.",
+      "checkSpamWithPhone": "If the email has not arrived, please check your spam folder. If the problem persists, please contact {phone}."
+    },
+    "authPanel": {
+      "panelTitle": "Client portal",
+      "panelLead": "Track the progress of your case, your documents and your invoices in one place. Message your lawyer directly.",
+      "panelLeadShort": "Track your case progress, documents and invoices in one place.",
+      "support": "If you have any difficulty: {phone} · {email}",
+      "supportShort": "If you have any difficulty: {phone}",
+      "back": "Back",
+      "features": {
+        "progress": "Real-time updates on case progress",
+        "documents": "Store and download your documents securely",
+        "invoices": "Invoices and payment history",
+        "chat": "A direct channel to your lawyer"
+      }
+    },
+    "searchPlaceholder": "Search cases and documents",
+    "dashboard": {
+      "loadError": "An error occurred while loading the data",
+      "greeting": "Hello, {name}",
+      "casesLoading": "Loading case information",
+      "activeCasesCount": "You have {count} active cases",
+      "myCases": "My cases",
+      "noCasesTitle": "No cases registered",
+      "noCasesDescription": "Cases registered in your name will appear here.",
+      "upcoming": "Upcoming hearings and meetings",
+      "upcomingShort": "Upcoming",
+      "noUpcoming": "No hearings or meetings scheduled.",
+      "recentNotifications": "Recent notifications",
+      "noNotifications": "No notifications.",
+      "unpaid": "You have an unpaid invoice",
+      "unpaidShort": "Unpaid invoice",
+      "dueDate": "Payment due date",
+      "dueDateShort": "Due date",
+      "invoiceTotal": "{count} invoices in total",
+      "details": "Details",
+      "payCta": "Make a payment",
+      "confirmingTitle": "Confirming payment",
+      "confirmingText": "we are verifying the payment you recorded.",
+      "seeAll": "See all →",
+      "seeAllShort": "All →",
+      "documentRequests": "You have {count} document requests",
+      "sendDocuments": "Send documents",
+      "unreadMessages": "You have {count} unread messages",
+      "readMessages": "Read messages",
+      "openRequests": "{count} requests are being processed",
+      "viewRequests": "View your requests",
+      "stats": {
+        "activeCases": "Active cases",
+        "unreadNotifications": "Unread notifications",
+        "unpaidInvoices": "Unpaid invoices",
+        "upcomingEvents": "Upcoming meetings"
+      },
+      "nextEvent": {
+        "HEARING": "Next hearing",
+        "MEETING": "Next meeting",
+        "DEADLINE": "Deadline",
+        "DOCUMENT": "Document pending"
+      },
+      "updatedAt": "Updated: {date}",
+      "unreadLabel": "unread",
+      "documentsCount": "{count} documents",
+      "messagesCount": "{count} messages"
+    },
+    "error": {
+      "title": "An error occurred",
+      "message": "An error occurred while loading the information. Please wait a moment and try again.",
+      "support": "If the problem recurs, please call {phone}.",
+      "offlineTitle": "Network connection lost",
+      "offlineMessage": "Please check your internet connection. Try again once the connection is restored."
+    },
+    "cases": {
+      "title": "Case list",
+      "loading": "Loading…",
+      "summary": "{total} cases in total · {active} active, {waiting} pending, {closed} closed",
+      "newRequest": "Submit a new request",
+      "searchLabel": "Search by case number or name",
+      "filterByStatus": "Filter by status",
+      "all": "All",
+      "loadError": "Something went wrong",
+      "noneTitle": "No cases found",
+      "noneDescription": "No cases are registered in your name.",
+      "noneFiltered": "No cases match this filter.",
+      "totalCount": "{count} cases in total",
+      "columns": {
+        "number": "Number",
+        "title": "Case name",
+        "type": "Type",
+        "lawyer": "Assigned lawyer",
+        "status": "Status",
+        "updated": "Updated"
+      },
+      "range": "Showing {from}–{to} of {total} cases"
+    },
+    "documents": {
+      "uploadedToast": "Attached successfully",
+      "uploadFailed": "The file could not be uploaded",
+      "tryAgain": "Please try again.",
+      "pickCaseTitle": "Please select a case",
+      "pickCaseBody": "First select the case the document should be attached to.",
+      "tooLarge": "The file is too large",
+      "downloadFailed": "The download failed",
+      "previewFailed": "The preview failed",
+      "view": "View",
+      "download": "Download",
+      "title": "Documents",
+      "loading": "Loading…",
+      "uploading": "Uploading…",
+      "addFile": "Add file",
+      "uploadSection": "Attach a file",
+      "caseLabel": "Case",
+      "casePlaceholder": "Select the case to attach the document to",
+      "pickFile": "Select a file",
+      "dropzoneLabel": "Drag your file here, or click to select it from your computer",
+      "dropzoneTitle": "Drag your file here",
+      "dropzoneHint": "or click to select it from your computer · PDF, DOCX, JPG, PNG · up to 20MB",
+      "allFiles": "All files",
+      "filterByCase": "Filter by case",
+      "loadError": "Something went wrong",
+      "emptyTitle": "No documents yet",
+      "emptyDescription": "Attach your first document in the section above.",
+      "columns": {
+        "name": "File name",
+        "kind": "Type",
+        "uploadedBy": "Uploaded by",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "close": "Close",
+      "downloadCta": "Download",
+      "all": "All",
+      "kinds": {
+        "IMG": "Image",
+        "TXT": "Text",
+        "FILE": "File",
+        "PDF": "PDF document",
+        "DOCX": "Word document",
+        "XLSX": "Excel spreadsheet"
+      },
+      "belongsTo": "This document belongs to case {caseNumber}",
+      "you": "You",
+      "uploaderYou": "{name} (you)",
+      "uploaderLawyer": "{name} (lawyer)",
+      "dropzoneHintShort": "PDF, DOCX, JPG · up to 20MB",
+      "filesSummary": "{count} files · {size}",
+      "documentsCount": "{count} documents"
+    },
+    "invoices": {
+      "title": "Invoices and payments",
+      "description": "Review the invoices raised on each case and your payment history here.",
+      "summaryLabel": "Payment summary",
+      "allInvoices": "All invoices",
+      "filterByStatus": "Filter by status",
+      "loadError": "An error occurred",
+      "noneTitle": "No invoices",
+      "noneDescription": "Invoices raised on your case will appear here.",
+      "noneFiltered": "No invoices match this status.",
+      "selectedLabel": "Selected invoice",
+      "pay": "Make a payment",
+      "all": "All",
+      "billed": "Total billed",
+      "paid": "Paid",
+      "outstanding": "Outstanding balance",
+      "outstandingShort": "Balance",
+      "viewDetail": "— view details",
+      "paidOn": "Paid: {date}",
+      "markedOn": "Payment marked: {date} · confirmation pending",
+      "dueOn": "Due date: {date}",
+      "status": {
+        "DRAFT": "Draft",
+        "SENT": "Unpaid",
+        "AWAITING_CONFIRMATION": "Awaiting confirmation",
+        "PAID": "Paid",
+        "OVERDUE": "Overdue",
+        "CANCELLED": "Cancelled"
+      },
+      "detail": {
+        "issuer": "Issuer",
+        "case": "Case",
+        "total": "Total amount",
+        "rejectedTitle": "Payment not confirmed",
+        "rejectedHint": "Please check your bank transfer and mark the payment again via “Make a payment”.",
+        "reviewTitle": "Your payment is under review",
+        "pay": "Make a payment",
+        "confirming": "Confirming",
+        "service": "Service",
+        "created": "Created",
+        "due": "Due date",
+        "paid": "Paid",
+        "confirmedBy": "Confirmed by",
+        "markedAt": "Marked on {date}.",
+        "reviewBody": "You will be notified once it is confirmed.",
+        "yourNote": "Your note: {note}",
+        "account": "Account: {bank} · {number}",
+        "reference": "Payment reference: {number}"
+      },
+      "payment": {
+        "title": "Payment instructions",
+        "description": "Please make a bank transfer to the account below, then select “Payment made”. We will check the transaction and confirm it.",
+        "cancel": "Cancel",
+        "bankError": "Account details could not be loaded",
+        "transferInfo": "Bank transfer details",
+        "bank": "Bank",
+        "accountNumber": "Account number",
+        "recipient": "Recipient",
+        "amount": "Amount due",
+        "reference": "Payment reference",
+        "noteLabel": "Transaction details",
+        "noteHelper": "Optional: bank, date, amount, payment reference",
+        "copy": "Copy",
+        "submit": "Payment made",
+        "submitting": "Submitting…",
+        "copyAccountNumber": "Copy account number",
+        "copyAmount": "Copy amount due",
+        "copyReference": "Copy payment reference",
+        "referenceHint": "Please be sure to quote invoice number {number} in the payment reference. This allows us to match and confirm your payment quickly.",
+        "previousRejected": "Your previous entry was not confirmed: {reason}",
+        "notePlaceholder": "Example: Khan Bank, {date}, {amount}, reference {number}",
+        "markedTitle": "Payment marked",
+        "markedBody": "{number} — you will be notified once it has been checked and confirmed.",
+        "markFailed": "The payment could not be marked",
+        "tryAgain": "Please try again.",
+        "copied": "Copied",
+        "copyFailed": "Could not copy",
+        "copyFailedBody": "Please copy the value manually."
+      },
+      "backToList": "Back to invoices",
+      "forbidden": "403 — Access denied",
+      "notFound": "Invoice not found"
+    },
+    "nav": {
+      "home": "Home",
+      "cases": "Cases",
+      "requests": "My requests",
+      "documents": "Documents",
+      "invoices": "Invoices",
+      "messages": "Messages",
+      "notifications": "Notifications",
+      "profile": "Profile"
+    },
+    "titles": {
+      "home": "Home",
+      "caseDetail": "Case details",
+      "cases": "Cases",
+      "newRequest": "New request",
+      "requests": "My requests",
+      "documents": "Documents",
+      "invoice": "Invoice",
+      "invoices": "Invoices",
+      "messages": "Messages",
+      "notifications": "Notifications",
+      "profile": "Profile"
+    },
+    "pendingDocumentRequests": "pending document requests",
+    "unreadMessages": "unread messages",
+    "messages": {
+      "title": "Messages",
+      "loadError": "An error occurred while loading messages",
+      "emptyTitle": "No conversations",
+      "emptyDescription": "Once a case is registered in your name, you can correspond with your assigned lawyer here.",
+      "conversations": "Conversations",
+      "loading": "Loading…",
+      "unreadSummary": "You have {count} unread messages",
+      "noUnread": "No unread messages",
+      "you": "You",
+      "preview": "{sender}: {body}",
+      "noMessagesYet": "No messages yet. Start the conversation",
+      "unreadCount": "{count} unread"
+    },
+    "breadcrumbRoot": "Portal",
+    "requests": {
+      "title": "My requests",
+      "description": "Requests to request representation or request advice. Once a request is accepted and a lawyer is assigned, a case is opened.",
+      "newRequest": "New request",
+      "loadError": "Could not load requests",
+      "emptyTitle": "No requests sent",
+      "emptyDescription": "When you send a request for representation or advice, its progress will appear here.",
+      "send": "Send request",
+      "outcome": {
+        "review": "Your request is under review. You will be notified as soon as a decision is made.",
+        "rejectedTitle": "Request declined",
+        "goToCase": "Go to case",
+        "accepted": "Your request has been accepted. A lawyer will be assigned shortly.",
+        "acceptedOn": "Your request was accepted ({date}). A lawyer will be assigned shortly.",
+        "rejectedReason": "Reason: {reason}",
+        "converted": "A lawyer has been assigned and a case has been opened.",
+        "convertedWithCase": "A lawyer has been assigned and case {caseNumber} has been opened."
+      },
+      "new": {
+        "title": "New request",
+        "description": "Describe what happened and send your request. An administrator will review it and assign a suitable lawyer.",
+        "typeLabel": "Request type",
+        "caseTypeLabel": "Area of law",
+        "caseTypePlaceholder": "Please select an area",
+        "titleLabel": "Title",
+        "titlePlaceholder": "Example: Lease agreement terminated early",
+        "descriptionLabel": "What happened?",
+        "descriptionPlaceholder": "Briefly describe when and what happened, and what you have done so far (contracts, notices, court proceedings, or approaches to any authority).",
+        "descriptionHelper": "At least 30 characters",
+        "cancel": "Cancel",
+        "submitting": "Sending…",
+        "submit": "Send request",
+        "typeHint": {
+          "LAWYER": "A lawyer will be assigned to take on your case and represent you in court and before other authorities.",
+          "CONSULTATION": "You will be put in touch with a lawyer who will clarify your matter and advise on the next steps."
+        },
+        "createdTitle": "Request sent",
+        "createdBody": "“{title}” — we will review it and send you a notification.",
+        "failed": "Could not send request",
+        "tryAgain": "Please try again."
+      }
+    },
+    "notifications": {
+      "emptyTitle": "No notifications",
+      "emptyDescription": "Notifications about case progress, invoices and documents will appear here.",
+      "noneFilteredTitle": "No notifications match this filter",
+      "noneFilteredDescription": "Please select a different filter or clear your filters.",
+      "clearFilter": "Clear filters",
+      "filterLabel": "Filter notifications",
+      "markAllRead": "Mark all as read",
+      "loadingLabel": "Loading",
+      "title": "Notifications",
+      "loading": "Loading…",
+      "unreadSummary": "You have {count} unread notifications",
+      "noUnread": "No unread notifications",
+      "unreadShort": "{count} unread",
+      "error": "Something went wrong",
+      "allReadToast": "All marked as read",
+      "allReadBody": "{count} notifications",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "monthDay": "{month} {day}",
+      "monthDayYear": "{month} {day}, {year}",
+      "unreadLabel": "unread",
+      "markRead": "Mark as read",
+      "filters": {
+        "all": "All",
+        "unread": "Unread",
+        "case": "Case",
+        "invoice": "Invoice",
+        "message": "Message"
+      }
+    },
+    "loadingLabel": "Loading",
+    "caseDetail": {
+      "tabs": {
+        "overview": "Overview",
+        "timeline": "Progress history",
+        "timelineShort": "Progress",
+        "documents": "Documents",
+        "requests": "Document requests",
+        "requestsShort": "Requests",
+        "invoices": "Invoices",
+        "messages": "Messages"
+      },
+      "cases": "Cases",
+      "forbiddenCrumb": "No access",
+      "notFoundCrumb": "Not found",
+      "forbiddenTitle": "403 — You do not have permission to view this case",
+      "notFoundTitle": "404 — Case not found",
+      "loadError": "Something went wrong",
+      "backToCases": "Back to cases",
+      "pickFile": "Choose file",
+      "breadcrumbLabel": "Breadcrumb",
+      "metaMobile": "Opened {opened} · Updated {updated}",
+      "metaDesktop": "Opened: {opened} · Last updated: {updated}",
+      "metaClosed": "Closed: {date}",
+      "uploading": "Uploading…",
+      "addDocument": "Add document",
+      "contactLawyer": "Contact your lawyer",
+      "unreadBadge": "{count} unread",
+      "pendingBadge": "{count} pending",
+      "uploadedTitle": "Uploaded successfully",
+      "uploadedBody": "{name} has been added to the case.",
+      "uploadFailed": "Could not upload the file",
+      "downloadFailed": "Could not download",
+      "tryAgain": "Please try again.",
+      "documentsHint": "PDF, Word, Excel, images, text — up to 20MB.",
+      "noDocumentsTitle": "No documents attached",
+      "firstDocument": "Attach your first document",
+      "noRequestsTitle": "No document requests",
+      "noRequestsDescription": "If your lawyer requests documents from you, they will be listed here and you will be notified.",
+      "noInvoices": "No invoices",
+      "invoiceColumns": {
+        "number": "Number",
+        "description": "Description",
+        "amount": "Amount",
+        "due": "Due date",
+        "status": "Status"
+      },
+      "assignedLawyer": "Lawyer in charge",
+      "chatEmpty": "Send your question to your lawyer in charge. You will be notified when a reply arrives.",
+      "download": "Download",
+      "downloadNamed": "Download: {name}",
+      "requestsAlert": {
+        "title": "{count} documents have been requested from you",
+        "overdue": "The deadline for some documents has passed.",
+        "body": "Please attach and send the documents your lawyer has requested.",
+        "cta": "Send documents"
+      },
+      "overview": {
+        "title": "Case overview",
+        "noDescription": "No description provided.",
+        "caseType": "Case type",
+        "opened": "Opened",
+        "documents": "Attached documents",
+        "documentsCount": "{count} files",
+        "closed": "Closed",
+        "invoices": "Invoices"
+      },
+      "timeline": {
+        "title": "Progress history",
+        "empty": "No case events recorded."
+      },
+      "nextEvent": {
+        "title": "Next case event",
+        "empty": "No case events scheduled.",
+        "month": "{month}",
+        "hearingNote": "Please arrive 15 minutes before the hearing and remember to bring your identity card."
+      },
+      "lawyer": {
+        "title": "Lawyer in charge",
+        "phone": "Phone",
+        "email": "Email",
+        "message": "Write a message",
+        "messageShort": "Message",
+        "call": "Call"
+      },
+      "documentsCard": {
+        "title": "Recent documents",
+        "all": "All documents →",
+        "empty": "No documents attached."
+      },
+      "finance": {
+        "title": "Finance",
+        "billed": "Total billed",
+        "paid": "Paid",
+        "unpaid": "Unpaid",
+        "pay": "Pay invoice"
+      }
+    },
+    "chat": {
+      "section": "Messages",
+      "loadError": "An error occurred while loading messages",
+      "loading": "Loading",
+      "loadingMore": "Loading…",
+      "emptyTitle": "Start the conversation",
+      "olderMessages": "Earlier messages",
+      "messages": "Messages",
+      "composerLabel": "Write a message",
+      "composerPlaceholder": "Write a message…",
+      "send": "Send",
+      "sending": "Sending…",
+      "hint": "Enter to send · Shift+Enter for a new line",
+      "sendFailed": "The message could not be sent",
+      "tryAgain": "Please try again.",
+      "you": "You",
+      "read": "Read",
+      "today": "Today",
+      "yesterday": "Yesterday"
+    },
+    "documentRequests": {
+      "title": "Requests from your lawyer",
+      "waiting": "{count} documents are awaited from you. Please attach your files and send them.",
+      "allSubmitted": "All requested documents have been sent. Your lawyer will review them and let you know.",
+      "accepted": "{approved}/{total} documents accepted",
+      "acceptedLabel": "Accepted documents",
+      "listLabel": "Document requests",
+      "optional": "Optional",
+      "overdue": "Overdue:",
+      "due": "Deadline:",
+      "rejectionTitle": "Reason the lawyer rejected it",
+      "underReview": "Under review — your lawyer is checking the documents you sent.",
+      "approved": "The lawyer has accepted the document",
+      "previousFiles": "Previously sent files",
+      "submittedFiles": "Files sent",
+      "download": "Download",
+      "downloadNamed": "Download: {name}",
+      "pickFile": "Select a file",
+      "pickFileFor": "“{title}” — select a file",
+      "dropZone": "Drag your file here, or click to select it",
+      "dropZoneFor": "“{title}” — drag your file here, or click to select it",
+      "fileHint": "PDF, DOCX, XLSX, JPG, PNG · up to 20MB · {max} files at a time",
+      "filesToSend": "Files to send",
+      "remove": "Remove",
+      "removeNamed": "Remove: {name}",
+      "send": "Send",
+      "resend": "Send again",
+      "sending": "Sending…",
+      "pickFirst": "Please select a file first.",
+      "submittedTitle": "Document sent",
+      "submittedBody": "“{title}” — your lawyer will review it and let you know.",
+      "submitFailed": "The document could not be sent",
+      "tryAgain": "Please try again.",
+      "fileRejected": "The file was not added",
+      "fileTypeError": "{name} — only PDF, Word, Excel, JPG, PNG and TXT files may be sent.",
+      "fileSizeError": "{name} — exceeds 20MB.",
+      "fileCountError": "No more than {max} files may be sent at a time.",
+      "status": {
+        "PENDING": "Not sent",
+        "SUBMITTED": "Under review",
+        "UNDER_REVIEW": "Under review",
+        "APPROVED": "Accepted",
+        "REJECTED": "Send again"
+      }
+    },
+    "profile": {
+      "title": "Profile and settings",
+      "description": "Manage your personal details, login password and notification preferences here.",
+      "soon": "Coming soon",
+      "soonLower": "coming soon",
+      "activeCases": "{count} active cases",
+      "changePhoto": "Change photo",
+      "removePhoto": "Remove",
+      "personal": "Personal details",
+      "photo": "Profile photo",
+      "photoHint": "JPG or PNG · up to 2MB · {soon}",
+      "lastName": "Surname",
+      "firstName": "First name",
+      "registryNumber": "Registration number",
+      "registryHelper": "To change this, please contact your lawyer",
+      "phone": "Phone number",
+      "phoneHelper": "8-digit number",
+      "email": "E-mail address",
+      "emailHelper": "To change this, please contact an administrator",
+      "address": "Address",
+      "workplace": "Place of work",
+      "save": "Save",
+      "cancel": "Cancel",
+      "savedToast": "Profile saved",
+      "saveFailed": "Could not save",
+      "changePassword": "Change password",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "newPasswordHelper": "More than 8 characters, containing letters and digits",
+      "repeatPassword": "Repeat new password",
+      "updatePassword": "Update password",
+      "passwordChanged": "Password changed",
+      "passwordChangedBody": "Sessions on other devices have been ended.",
+      "passwordFailed": "Password was not changed",
+      "error": "Something went wrong",
+      "notificationSettings": "Notification settings",
+      "notifications": {
+        "caseUpdates": {
+          "label": "Case progress updates",
+          "description": "We will notify you whenever a new note or decision is added to a case."
+        },
+        "newDocuments": {
+          "label": "New documents",
+          "description": "We will notify you when a lawyer attaches a document."
+        },
+        "invoices": {
+          "label": "Invoices and payments",
+          "description": "We will remind you when a new invoice is issued and when a due date approaches."
+        },
+        "messages": {
+          "label": "Messages",
+          "description": "We will notify you when a message arrives from your lawyer."
+        },
+        "marketing": {
+          "label": "Marketing information",
+          "description": "We will send new articles and invitations to training events."
+        }
+      },
+      "channels": "Delivery channels",
+      "channelEmail": "E-mail",
+      "channelPortal": "Portal notifications",
+      "security": "Security",
+      "logout": "Log out",
+      "account": "Account details",
+      "clientCode": "Client code",
+      "joined": "Joined",
+      "lastLogin": "Last login",
+      "activeCasesLabel": "Active cases",
+      "devices": "Active devices",
+      "devicesHint": "A list of signed-in devices will be added soon. Changing your password ends sessions on all other devices.",
+      "logoutAll": "Log out of all devices",
+      "twoFactor": "Two-factor authentication",
+      "twoFactorHint": "A code will be sent by SMS each time you log in. · {soon}"
+    },
+    "redirecting": "Redirecting to the sign-in page…"
   }
 }

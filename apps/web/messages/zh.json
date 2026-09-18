@@ -43,293 +43,6 @@
       "real-estate": "不动产"
     }
   },
-  "common": {
-    "home": "首页",
-    "readMore": "查看详情",
-    "all": "全部",
-    "back": "返回",
-    "breadcrumb": "路径导航",
-    "getAdvice": "咨询申请",
-    "yearsOfExperience": "{years} 年执业经验",
-    "lawyersUnavailable": "律师信息暂时无法加载。",
-    "lawyersComingSoon": "律师信息即将上线。",
-    "postsUnavailable": "文章暂时无法加载。",
-    "postsComingSoon": "文章即将发布。",
-    "views": "{count} 次浏览"
-  },
-  "servicesPage": {
-    "metaTitle": "服务",
-    "metaDescription": "我们在六大业务领域提供法律咨询、文书起草及出庭代理服务。",
-    "title": "业务领域",
-    "description": "我们在六大业务领域提供法律咨询、文书起草及出庭代理服务。",
-    "crumb": "服务",
-    "crumbAll": "全部领域",
-    "listHeading": "业务领域",
-    "processOverline": "合作流程",
-    "processTitle": "四个步骤",
-    "step": "第 {number} 步：",
-    "notFound": "未找到该服务",
-    "whatWeDo": "我们做什么",
-    "scope": "服务范围",
-    "faqHeading": "常见问题",
-    "lawyersHeading": "该领域的律师",
-    "pricingHeading": "收费说明",
-    "pricingNote": "收费标准依据工作范围与期限，在委托合同中约定。"
-  },
-  "faqPage": {
-    "metaTitle": "常见问题",
-    "metaDescription": "按业务领域整理的客户最常提出的问题及解答。",
-    "title": "法律信息与常见问题",
-    "description": "按业务领域整理的客户最常提出的问题及解答。",
-    "crumb": "常见问题",
-    "categoryNav": "问题分类",
-    "helpTitle": "没有找到答案？",
-    "helpText": "请给我们留言——收到请求后我们会与您联系。",
-    "helpCta": "提交问题"
-  },
-  "postCategory": {
-    "NEWS": "资讯",
-    "ADVICE": "法律建议",
-    "LEGAL_UPDATE": "法规更新"
-  },
-  "home": {
-    "hero": {
-      "overline": "法律顾问与辩护代理服务",
-      "overlineShort": "法律顾问服务",
-      "title": "维护您权利的坚实依靠",
-      "lead": "我们在民事、刑事、家事、商事、劳动及不动产领域提供辩护代理与法律咨询。您可通过客户门户随时查看案件进展。",
-      "leadShort": "在民事、刑事、家事及商事领域提供专业法律协助。",
-      "primaryCta": "提交咨询申请",
-      "secondaryCta": "查看服务"
-    },
-    "services": {
-      "overline": "业务领域",
-      "title": "我们处理哪些问题？",
-      "description": "我们在六大业务领域全面覆盖个人与企业的法律需求。"
-    },
-    "advantagesSection": {
-      "overline": "我们的工作原则",
-      "title": "我们的工作以何为本",
-      "description": "从接受委托到案件了结由同一团队负责，每一步均以书面记录。"
-    },
-    "advantages": [
-      {
-        "value": "6",
-        "label": "业务领域",
-        "note": "民事、刑事、家事、商事、劳动、不动产"
-      },
-      {
-        "value": "门户",
-        "label": "在线查看案件进展",
-        "note": "文件、账单与消息集中管理"
-      },
-      {
-        "value": "合同",
-        "label": "条款透明",
-        "note": "工作范围、期限与费用均以书面约定"
-      },
-      {
-        "value": "保密",
-        "label": "信息保护",
-        "note": "严格管理访问权限"
-      }
-    ],
-    "team": {
-      "overline": "律师团队",
-      "title": "负责您案件的专业人员",
-      "all": "全部律师"
-    },
-    "news": {
-      "overline": "资讯与文章",
-      "title": "法律环境的最新动态",
-      "titleShort": "最新法律动态",
-      "all": "全部文章"
-    },
-    "cta": {
-      "title": "不确定该如何解决您的问题？",
-      "text": "请简要说明您的情况并提交申请。律师审阅后会与您联系，说明法律途径与下一步安排。",
-      "textShort": "提交申请后，律师将与您联系。"
-    }
-  },
-  "about": {
-    "metaTitle": "关于我们",
-    "metaDescription": "Strategy Law Firm 是提供专业法律服务的机构，为个人和企业提供辩护代理与法律咨询。",
-    "title": "关于我们",
-    "description": "Strategy Law Firm 是提供专业法律服务的机构。",
-    "crumb": "关于我们",
-    "story": {
-      "overline": "关于我们",
-      "title": "让法律问题变得清晰，并始终陪伴在您身边",
-      "p1": "Strategy Law Firm 为个人与企业提供专业法律协助，业务包括辩护代理、法律咨询、文书起草，以及在行政机关和法院的代理工作。",
-      "p2": "接受委托时，我们首先评估实际可行性，并明确告知我们能够做到的事情。工作进展通过客户门户记录，文件、期限与下一步安排始终集中可见。"
-    },
-    "values": {
-      "overline": "使命与价值观",
-      "title": "让法律协助对每个人都清晰易懂、触手可及"
-    },
-    "process": {
-      "overline": "合作流程",
-      "title": "案件如何推进"
-    },
-    "valueItems": [
-      {
-        "title": "诚信",
-        "text": "我们如实告知客户案件的实际可能性，绝不承诺无法兑现的结果。"
-      },
-      {
-        "title": "透明",
-        "text": "收费结构、案件进展与时间安排从一开始即以书面明确。"
-      },
-      {
-        "title": "保密",
-        "text": "依法严格保护客户信息，内部系统的访问权限受到严格管理。"
-      },
-      {
-        "title": "通俗表达",
-        "text": "我们不使用晦涩的法律术语，而以便于您作出决定的方式说明法律状况。"
-      }
-    ],
-    "processSteps": [
-      {
-        "step": "01",
-        "title": "接收申请",
-        "text": "您通过门户或联系页面提交申请，我们确认问题类型。"
-      },
-      {
-        "step": "02",
-        "title": "初步评估",
-        "text": "我们查阅材料，说明法律途径与风险。"
-      },
-      {
-        "step": "03",
-        "title": "合同与方案",
-        "text": "以书面方式约定工作内容、期限与费用条件。"
-      },
-      {
-        "step": "04",
-        "title": "办理案件",
-        "text": "在行政机关与法院代理，并在客户门户持续更新进展。"
-      }
-    ]
-  },
-  "contact": {
-    "metaTitle": "联系我们",
-    "metaDescription": "联系 Strategy Law Firm：地址、电话、电子邮箱，辩护代理与法律咨询申请。",
-    "title": "联系我们",
-    "description": "请通过客户门户提交辩护代理或法律咨询申请，收到后我们会与您联系。",
-    "crumb": "联系我们",
-    "requests": {
-      "title": "提交申请",
-      "description": "辩护代理与法律咨询申请通过客户门户提交。登录后，您可在同一处查看申请状态、指派的律师以及已立案的案件。",
-      "cta": "提交申请",
-      "LAWYER": {
-        "title": "委托律师",
-        "description": "我们指派律师承办您的案件，并在法院及行政机关代理。"
-      },
-      "CONSULTATION": {
-        "title": "法律咨询",
-        "description": "由律师帮助您厘清问题，并就下一步提供建议。"
-      },
-      "signUpPrefix": "如果尚未注册，请先",
-      "signUpLink": "注册",
-      "signUpSuffix": "后继续。紧急事项请拨打 {phone}。"
-    },
-    "office": {
-      "title": "办公室信息",
-      "address": "地址",
-      "phone": "电话",
-      "email": "电子邮箱",
-      "hours": "办公时间",
-      "social": "社交媒体"
-    },
-    "map": {
-      "label": "办公室位置地图",
-      "caption": "地图位置"
-    }
-  },
-  "lawyers": {
-    "metaTitle": "律师团队",
-    "metaDescription": "从各业务领域的专业律师中选择适合您的一位。",
-    "title": "律师团队",
-    "description": "从各业务领域的专业律师中选择适合您的一位。",
-    "descriptionCounted": "从各业务领域的 {count} 位专业律师中选择适合您的一位。",
-    "crumb": "律师团队",
-    "filterLabel": "按业务领域筛选",
-    "failedTitle": "律师信息加载失败",
-    "failedDescription": "无法连接到接口，请稍后重试。",
-    "noneTitle": "暂无律师信息",
-    "noneForFilter": "未找到“{spec}”领域的律师",
-    "noneDescription": "请选择其他领域或点击“全部”。"
-  },
-  "lawyerDetail": {
-    "notFound": "未找到该律师",
-    "contactTitle": "联系方式",
-    "phone": "电话",
-    "email": "电子邮箱",
-    "bookCta": "预约时间",
-    "specializations": "业务领域",
-    "education": "教育背景与资质",
-    "bio": "个人简介"
-  },
-  "news": {
-    "metaTitle": "资讯与文章",
-    "metaDescription": "这里发布法规更新、实务建议与本所动态。",
-    "title": "资讯与文章",
-    "description": "这里发布法规更新、实务建议与本所动态。",
-    "crumb": "资讯与文章",
-    "crumbAll": "全部文章",
-    "categoryLabel": "分类",
-    "featured": "精选",
-    "search": "搜索文章",
-    "searchSubmit": "搜索",
-    "searchResult": "“{query}”的搜索结果：{count} 篇文章",
-    "clearSearch": "清除",
-    "failedTitle": "资讯加载失败",
-    "failedDescription": "请确认接口是否正常运行后重试。",
-    "noneTitle": "未找到文章",
-    "noneDescription": "请选择其他分类或修改搜索条件。",
-    "mongolianNote": "以下文章为蒙古文。",
-    "related": "相关文章",
-    "share": "分享：",
-    "copyLink": "复制链接",
-    "shareAction": "分享",
-    "shareEmail": "通过邮件发送",
-    "readingTime": "阅读约 {minutes} 分钟"
-  },
-  "states": {
-    "retry": "重试",
-    "getHelp": "获取帮助",
-    "loading": "加载中",
-    "errorTitle": "出现错误",
-    "errorMessage": "加载内容时出现错误，请重试。",
-    "pagination": "分页",
-    "pageTitle": "页面加载失败",
-    "pageMessage": "临时错误，请重试。"
-  },
-  "notFound": {
-    "title": "未找到页面",
-    "homeCta": "返回首页",
-    "contactCta": "联系我们",
-    "quickLinks": "快捷链接",
-    "links": {
-      "services": {
-        "title": "服务",
-        "caption": "六大业务领域"
-      },
-      "lawyers": {
-        "title": "律师团队",
-        "caption": "了解我们的团队"
-      },
-      "news": {
-        "title": "资讯",
-        "caption": "最新文章"
-      },
-      "portal": {
-        "title": "客户门户",
-        "caption": "查看案件进展"
-      }
-    }
-  },
   "services": {
     "catalog": {
       "civil": {
@@ -802,6 +515,264 @@
       }
     }
   },
+  "common": {
+    "home": "首页",
+    "readMore": "查看详情",
+    "all": "全部",
+    "back": "返回",
+    "breadcrumb": "路径导航",
+    "getAdvice": "咨询申请",
+    "yearsOfExperience": "{years} 年执业经验",
+    "lawyersUnavailable": "律师信息暂时无法加载。",
+    "lawyersComingSoon": "律师信息即将上线。",
+    "postsUnavailable": "文章暂时无法加载。",
+    "postsComingSoon": "文章即将发布。",
+    "views": "{count} 次浏览"
+  },
+  "servicesPage": {
+    "metaTitle": "服务",
+    "metaDescription": "我们在六大业务领域提供法律咨询、文书起草及出庭代理服务。",
+    "title": "业务领域",
+    "description": "我们在六大业务领域提供法律咨询、文书起草及出庭代理服务。",
+    "crumb": "服务",
+    "crumbAll": "全部领域",
+    "listHeading": "业务领域",
+    "processOverline": "合作流程",
+    "processTitle": "四个步骤",
+    "step": "第 {number} 步：",
+    "notFound": "未找到该服务",
+    "whatWeDo": "我们做什么",
+    "scope": "服务范围",
+    "faqHeading": "常见问题",
+    "lawyersHeading": "该领域的律师",
+    "pricingHeading": "收费说明",
+    "pricingNote": "收费标准依据工作范围与期限，在委托合同中约定。"
+  },
+  "faqPage": {
+    "metaTitle": "常见问题",
+    "metaDescription": "按业务领域整理的客户最常提出的问题及解答。",
+    "title": "法律信息与常见问题",
+    "description": "按业务领域整理的客户最常提出的问题及解答。",
+    "crumb": "常见问题",
+    "categoryNav": "问题分类",
+    "helpTitle": "没有找到答案？",
+    "helpText": "请给我们留言——收到请求后我们会与您联系。",
+    "helpCta": "提交问题"
+  },
+  "home": {
+    "hero": {
+      "overline": "法律顾问与辩护代理服务",
+      "overlineShort": "法律顾问服务",
+      "title": "维护您权利的坚实依靠",
+      "lead": "我们在民事、刑事、家事、商事、劳动及不动产领域提供辩护代理与法律咨询。您可通过客户门户随时查看案件进展。",
+      "leadShort": "在民事、刑事、家事及商事领域提供专业法律协助。",
+      "primaryCta": "提交咨询申请",
+      "secondaryCta": "查看服务"
+    },
+    "services": {
+      "overline": "业务领域",
+      "title": "我们处理哪些问题？",
+      "description": "我们在六大业务领域全面覆盖个人与企业的法律需求。"
+    },
+    "advantagesSection": {
+      "overline": "我们的工作原则",
+      "title": "我们的工作以何为本",
+      "description": "从接受委托到案件了结由同一团队负责，每一步均以书面记录。"
+    },
+    "advantages": [
+      {
+        "value": "6",
+        "label": "业务领域",
+        "note": "民事、刑事、家事、商事、劳动、不动产"
+      },
+      {
+        "value": "门户",
+        "label": "在线查看案件进展",
+        "note": "文件、账单与消息集中管理"
+      },
+      {
+        "value": "合同",
+        "label": "条款透明",
+        "note": "工作范围、期限与费用均以书面约定"
+      },
+      {
+        "value": "保密",
+        "label": "信息保护",
+        "note": "严格管理访问权限"
+      }
+    ],
+    "team": {
+      "overline": "律师团队",
+      "title": "负责您案件的专业人员",
+      "all": "全部律师"
+    },
+    "news": {
+      "overline": "资讯与文章",
+      "title": "法律环境的最新动态",
+      "titleShort": "最新法律动态",
+      "all": "全部文章"
+    },
+    "cta": {
+      "title": "不确定该如何解决您的问题？",
+      "text": "请简要说明您的情况并提交申请。律师审阅后会与您联系，说明法律途径与下一步安排。",
+      "textShort": "提交申请后，律师将与您联系。"
+    }
+  },
+  "about": {
+    "metaTitle": "关于我们",
+    "metaDescription": "Strategy Law Firm 是提供专业法律服务的机构，为个人和企业提供辩护代理与法律咨询。",
+    "title": "关于我们",
+    "description": "Strategy Law Firm 是提供专业法律服务的机构。",
+    "crumb": "关于我们",
+    "story": {
+      "overline": "关于我们",
+      "title": "让法律问题变得清晰，并始终陪伴在您身边",
+      "p1": "Strategy Law Firm 为个人与企业提供专业法律协助，业务包括辩护代理、法律咨询、文书起草，以及在行政机关和法院的代理工作。",
+      "p2": "接受委托时，我们首先评估实际可行性，并明确告知我们能够做到的事情。工作进展通过客户门户记录，文件、期限与下一步安排始终集中可见。"
+    },
+    "values": {
+      "overline": "使命与价值观",
+      "title": "让法律协助对每个人都清晰易懂、触手可及"
+    },
+    "process": {
+      "overline": "合作流程",
+      "title": "案件如何推进"
+    },
+    "valueItems": [
+      {
+        "title": "诚信",
+        "text": "我们如实告知客户案件的实际可能性，绝不承诺无法兑现的结果。"
+      },
+      {
+        "title": "透明",
+        "text": "收费结构、案件进展与时间安排从一开始即以书面明确。"
+      },
+      {
+        "title": "保密",
+        "text": "依法严格保护客户信息，内部系统的访问权限受到严格管理。"
+      },
+      {
+        "title": "通俗表达",
+        "text": "我们不使用晦涩的法律术语，而以便于您作出决定的方式说明法律状况。"
+      }
+    ],
+    "processSteps": [
+      {
+        "step": "01",
+        "title": "接收申请",
+        "text": "您通过门户或联系页面提交申请，我们确认问题类型。"
+      },
+      {
+        "step": "02",
+        "title": "初步评估",
+        "text": "我们查阅材料，说明法律途径与风险。"
+      },
+      {
+        "step": "03",
+        "title": "合同与方案",
+        "text": "以书面方式约定工作内容、期限与费用条件。"
+      },
+      {
+        "step": "04",
+        "title": "办理案件",
+        "text": "在行政机关与法院代理，并在客户门户持续更新进展。"
+      }
+    ]
+  },
+  "contact": {
+    "metaTitle": "联系我们",
+    "metaDescription": "联系 Strategy Law Firm：地址、电话、电子邮箱，辩护代理与法律咨询申请。",
+    "title": "联系我们",
+    "description": "请通过客户门户提交辩护代理或法律咨询申请，收到后我们会与您联系。",
+    "crumb": "联系我们",
+    "requests": {
+      "title": "提交申请",
+      "description": "辩护代理与法律咨询申请通过客户门户提交。登录后，您可在同一处查看申请状态、指派的律师以及已立案的案件。",
+      "cta": "提交申请",
+      "LAWYER": {
+        "title": "委托律师",
+        "description": "我们指派律师承办您的案件，并在法院及行政机关代理。"
+      },
+      "CONSULTATION": {
+        "title": "法律咨询",
+        "description": "由律师帮助您厘清问题，并就下一步提供建议。"
+      },
+      "signUpPrefix": "如果尚未注册，请先",
+      "signUpLink": "注册",
+      "signUpSuffix": "后继续。紧急事项请拨打 {phone}。"
+    },
+    "office": {
+      "title": "办公室信息",
+      "address": "地址",
+      "phone": "电话",
+      "email": "电子邮箱",
+      "hours": "办公时间",
+      "social": "社交媒体"
+    },
+    "map": {
+      "label": "办公室位置地图",
+      "caption": "地图位置"
+    }
+  },
+  "lawyers": {
+    "metaTitle": "律师团队",
+    "metaDescription": "从各业务领域的专业律师中选择适合您的一位。",
+    "title": "律师团队",
+    "description": "从各业务领域的专业律师中选择适合您的一位。",
+    "descriptionCounted": "从各业务领域的 {count} 位专业律师中选择适合您的一位。",
+    "crumb": "律师团队",
+    "filterLabel": "按业务领域筛选",
+    "failedTitle": "律师信息加载失败",
+    "failedDescription": "无法连接到接口，请稍后重试。",
+    "noneTitle": "暂无律师信息",
+    "noneForFilter": "未找到“{spec}”领域的律师",
+    "noneDescription": "请选择其他领域或点击“全部”。"
+  },
+  "lawyerDetail": {
+    "notFound": "未找到该律师",
+    "contactTitle": "联系方式",
+    "phone": "电话",
+    "email": "电子邮箱",
+    "bookCta": "预约时间",
+    "specializations": "业务领域",
+    "education": "教育背景与资质",
+    "bio": "个人简介"
+  },
+  "news": {
+    "metaTitle": "资讯与文章",
+    "metaDescription": "这里发布法规更新、实务建议与本所动态。",
+    "title": "资讯与文章",
+    "description": "这里发布法规更新、实务建议与本所动态。",
+    "crumb": "资讯与文章",
+    "crumbAll": "全部文章",
+    "categoryLabel": "分类",
+    "featured": "精选",
+    "search": "搜索文章",
+    "searchSubmit": "搜索",
+    "searchResult": "“{query}”的搜索结果：{count} 篇文章",
+    "clearSearch": "清除",
+    "failedTitle": "资讯加载失败",
+    "failedDescription": "请确认接口是否正常运行后重试。",
+    "noneTitle": "未找到文章",
+    "noneDescription": "请选择其他分类或修改搜索条件。",
+    "mongolianNote": "以下文章为蒙古文。",
+    "related": "相关文章",
+    "share": "分享：",
+    "copyLink": "复制链接",
+    "shareAction": "分享",
+    "shareEmail": "通过邮件发送",
+    "readingTime": "阅读约 {minutes} 分钟"
+  },
+  "states": {
+    "retry": "重试",
+    "getHelp": "获取帮助",
+    "loading": "加载中",
+    "errorTitle": "出现错误",
+    "errorMessage": "加载内容时出现错误，请重试。",
+    "pagination": "分页",
+    "pageTitle": "页面加载失败",
+    "pageMessage": "临时错误，请重试。"
+  },
   "privacy": {
     "metaTitle": "隐私政策",
     "metaDescription": "Strategy Law Firm 如何收集、使用和保护客户的个人信息。",
@@ -927,5 +898,725 @@
     "privacyPrefix": "个人信息的处理方式，请阅读我们的",
     "privacyLink": "隐私政策",
     "privacySuffix": "。"
+  },
+  "notFound": {
+    "title": "未找到页面",
+    "homeCta": "返回首页",
+    "contactCta": "联系我们",
+    "quickLinks": "快捷链接",
+    "links": {
+      "services": {
+        "title": "服务",
+        "caption": "六大业务领域"
+      },
+      "lawyers": {
+        "title": "律师团队",
+        "caption": "了解我们的团队"
+      },
+      "news": {
+        "title": "资讯",
+        "caption": "最新文章"
+      },
+      "portal": {
+        "title": "客户门户",
+        "caption": "查看案件进展"
+      }
+    }
+  },
+  "enums": {
+    "postCategory": {
+      "NEWS": "资讯",
+      "ADVICE": "法律建议",
+      "LEGAL_UPDATE": "法规更新"
+    },
+    "caseStatus": {
+      "NEW": "新建",
+      "IN_PROGRESS": "进行中",
+      "WAITING": "待处理",
+      "CLOSED": "已结案"
+    },
+    "caseType": {
+      "CIVIL": "民事案件",
+      "CRIMINAL": "刑事案件",
+      "FAMILY": "家事案件",
+      "BUSINESS": "商事纠纷",
+      "LABOR": "劳动纠纷",
+      "REAL_ESTATE": "不动产",
+      "OTHER": "其他"
+    },
+    "serviceRequestType": {
+      "LAWYER": "委托律师",
+      "CONSULTATION": "法律咨询"
+    },
+    "serviceRequestStatus": {
+      "NEW": "新申请",
+      "ACCEPTED": "已受理",
+      "REJECTED": "未受理",
+      "CONVERTED": "已立案"
+    },
+    "caseEvent": {
+      "NOTE": "备注",
+      "HEARING": "开庭",
+      "MEETING": "会面",
+      "DEADLINE": "期限",
+      "STATUS_CHANGE": "状态变更",
+      "DOCUMENT": "文件"
+    },
+    "invoiceStatus": {
+      "DRAFT": "草稿",
+      "SENT": "已发送",
+      "AWAITING_CONFIRMATION": "确认中",
+      "PAID": "已付款",
+      "OVERDUE": "逾期",
+      "CANCELLED": "已取消"
+    },
+    "role": {
+      "ADMIN": "管理员",
+      "LAWYER": "律师",
+      "CLIENT": "客户"
+    }
+  },
+  "portal": {
+    "login": {
+      "title": "登录",
+      "description": "请输入手机号码或电子邮箱。",
+      "identifier": "手机号或邮箱",
+      "password": "密码",
+      "remember": "记住我",
+      "forgot": "忘记密码？",
+      "submit": "登录",
+      "submitting": "正在登录…",
+      "or": "或",
+      "otpCta": "使用一次性验证码登录",
+      "noAccount": "还没有账户？",
+      "registerCta": "注册",
+      "back": "返回",
+      "otpTitle": "验证码",
+      "otpDescription": "请输入发送至 {identifier} 的 {length} 位验证码。",
+      "otpFallbackIdentifier": "已登记的手机号码",
+      "otpSoonNote": "一次性验证码登录功能即将开放。",
+      "otpSoon": "即将推出",
+      "otpResend": "重新发送验证码",
+      "otpDigit": "第 {index} 位",
+      "genericError": "登录时发生错误",
+      "failedToast": "登录失败"
+    },
+    "register": {
+      "title": "注册",
+      "mobileTitle": "创建账户",
+      "description": "已签订合同的客户方可使用本门户。",
+      "haveAccount": "已有账户？",
+      "loginCta": "登录",
+      "lastName": "姓",
+      "firstName": "名",
+      "phone": "手机号码",
+      "phoneHelper": "合同中登记的号码",
+      "email": "电子邮箱",
+      "password": "密码",
+      "passwordHelper": "不少于 8 个字符，且须包含数字",
+      "agree": "我同意服务条款和隐私政策",
+      "agreeShort": "我同意服务条款",
+      "submit": "创建账户",
+      "submitting": "正在注册…",
+      "successToast": "注册成功",
+      "successToastBody": "欢迎使用客户门户。",
+      "genericError": "注册时发生错误",
+      "failedToast": "注册失败"
+    },
+    "forgotPassword": {
+      "title": "找回密码",
+      "back": "返回登录",
+      "description": "输入已登记的手机号或邮箱，我们将向您发送找回说明。",
+      "identifier": "手机号或邮箱",
+      "identifierHelper": "请输入合同中登记的联系方式",
+      "submit": "发送重置链接",
+      "soon": "即将推出",
+      "soonToast": "密码找回服务即将上线。",
+      "soonToastWithPhone": "密码找回服务即将上线。目前请拨打 {phone}。",
+      "linkValidity": "链接有效期为 30 分钟",
+      "sent": "密码找回服务即将上线。",
+      "sentWithPhone": "密码找回服务即将上线。在此期间请联系 {phone}。",
+      "checkSpam": "如未收到邮件，请查看垃圾邮件文件夹。",
+      "checkSpamWithPhone": "如未收到邮件，请查看垃圾邮件文件夹。如问题持续，请联系 {phone}。"
+    },
+    "authPanel": {
+      "panelTitle": "客户门户",
+      "panelLead": "在同一处查看案件进展、文件和账单。可直接与律师消息沟通。",
+      "panelLeadShort": "在同一处查看案件进展、文件和账单。",
+      "support": "如遇问题：{phone} · {email}",
+      "supportShort": "如遇问题：{phone}",
+      "back": "返回",
+      "features": {
+        "progress": "案件进展实时信息",
+        "documents": "安全保存并下载文件",
+        "invoices": "账单与付款记录",
+        "chat": "与律师直接沟通的渠道"
+      }
+    },
+    "searchPlaceholder": "搜索案件、文件",
+    "dashboard": {
+      "loadError": "加载数据时发生错误",
+      "greeting": "您好，{name}",
+      "casesLoading": "正在加载案件信息",
+      "activeCasesCount": "您有 {count} 件进行中的案件",
+      "myCases": "我的案件",
+      "noCasesTitle": "暂无登记的案件",
+      "noCasesDescription": "以您名义登记的案件将显示在此处。",
+      "upcoming": "即将进行的开庭与会面",
+      "upcomingShort": "即将进行",
+      "noUpcoming": "暂无安排的开庭或会面。",
+      "recentNotifications": "最新通知",
+      "noNotifications": "暂无通知。",
+      "unpaid": "您有未支付的账单",
+      "unpaidShort": "未支付账单",
+      "dueDate": "付款截止日期",
+      "dueDateShort": "截止日期",
+      "invoiceTotal": "共 {count} 份账单",
+      "details": "详情",
+      "payCta": "支付款项",
+      "confirmingTitle": "正在确认付款",
+      "confirmingText": "正在核实您标记的付款。",
+      "seeAll": "查看全部 →",
+      "seeAllShort": "全部 →",
+      "documentRequests": "有 {count} 项文件向您提出申请",
+      "sendDocuments": "发送文件",
+      "unreadMessages": "您有 {count} 条未读消息",
+      "readMessages": "查看消息",
+      "openRequests": "{count} 项申请正在处理中",
+      "viewRequests": "查看我的申请",
+      "stats": {
+        "activeCases": "进行中的案件",
+        "unreadNotifications": "未读通知",
+        "unpaidInvoices": "未支付账单",
+        "upcomingEvents": "即将进行的会面"
+      },
+      "nextEvent": {
+        "HEARING": "下次开庭",
+        "MEETING": "下次会面",
+        "DEADLINE": "截止日期",
+        "DOCUMENT": "文件待处理"
+      },
+      "updatedAt": "更新时间：{date}",
+      "unreadLabel": "未读",
+      "documentsCount": "{count} 份文件",
+      "messagesCount": "{count} 条消息"
+    },
+    "error": {
+      "title": "发生错误",
+      "message": "加载信息时发生错误。请稍候再试。",
+      "support": "如问题反复出现，请拨打 {phone}。",
+      "offlineTitle": "网络连接已中断",
+      "offlineMessage": "请检查您的网络连接。连接恢复后请重试。"
+    },
+    "cases": {
+      "title": "案件列表",
+      "loading": "加载中…",
+      "summary": "共 {total} 件案件 · {active} 件进行中、{waiting} 件待处理、{closed} 件已结案",
+      "newRequest": "提交新请求",
+      "searchLabel": "按案件编号或名称搜索",
+      "filterByStatus": "按状态筛选",
+      "all": "全部",
+      "loadError": "加载出错",
+      "noneTitle": "未找到案件",
+      "noneDescription": "您名下暂无登记的案件。",
+      "noneFiltered": "没有符合该筛选条件的案件。",
+      "totalCount": "共 {count} 件案件",
+      "columns": {
+        "number": "编号",
+        "title": "案件名称",
+        "type": "类型",
+        "lawyer": "负责律师",
+        "status": "状态",
+        "updated": "更新时间"
+      },
+      "range": "正在显示第 {from}–{to} 件，共 {total} 件案件"
+    },
+    "documents": {
+      "uploadedToast": "上传成功",
+      "uploadFailed": "文件上传失败",
+      "tryAgain": "请重试。",
+      "pickCaseTitle": "请选择案件",
+      "pickCaseBody": "请先选择要上传该文件的案件。",
+      "tooLarge": "文件过大",
+      "downloadFailed": "下载失败",
+      "previewFailed": "预览失败",
+      "view": "查看",
+      "download": "下载",
+      "title": "文件",
+      "loading": "加载中…",
+      "uploading": "上传中…",
+      "addFile": "添加文件",
+      "uploadSection": "上传文件",
+      "caseLabel": "案件",
+      "casePlaceholder": "请选择要上传该文件的案件",
+      "pickFile": "选择文件",
+      "dropzoneLabel": "请将文件拖拽至此，或点击从电脑中选择",
+      "dropzoneTitle": "请将文件拖拽至此",
+      "dropzoneHint": "或点击从电脑中选择 · PDF、DOCX、JPG、PNG · 最大 20MB",
+      "allFiles": "全部文件",
+      "filterByCase": "按案件筛选",
+      "loadError": "加载出错",
+      "emptyTitle": "暂无文件",
+      "emptyDescription": "请在上方区域上传您的第一份文件。",
+      "columns": {
+        "name": "文件名",
+        "kind": "类型",
+        "uploadedBy": "上传人",
+        "date": "日期",
+        "actions": "操作"
+      },
+      "close": "关闭",
+      "downloadCta": "下载",
+      "all": "全部",
+      "kinds": {
+        "IMG": "图片",
+        "TXT": "文本",
+        "FILE": "文件",
+        "PDF": "PDF 文件",
+        "DOCX": "Word 文件",
+        "XLSX": "Excel 表格"
+      },
+      "belongsTo": "本文件属于案件 {caseNumber}",
+      "you": "您",
+      "uploaderYou": "{name}（您）",
+      "uploaderLawyer": "{name}（律师）",
+      "dropzoneHintShort": "PDF、DOCX、JPG · 最大 20MB",
+      "filesSummary": "{count} 个文件 · {size}",
+      "documentsCount": "{count} 份文件"
+    },
+    "invoices": {
+      "title": "账单与付款",
+      "description": "在此查看各案件产生的账单及您的付款记录。",
+      "summaryLabel": "付款摘要",
+      "allInvoices": "全部账单",
+      "filterByStatus": "按状态筛选",
+      "loadError": "发生错误",
+      "noneTitle": "暂无账单",
+      "noneDescription": "您的案件生成账单后将显示在此处。",
+      "noneFiltered": "没有符合该状态的账单。",
+      "selectedLabel": "已选账单",
+      "pay": "支付账单",
+      "all": "全部",
+      "billed": "账单总额",
+      "paid": "已付款",
+      "outstanding": "未付款余额",
+      "outstandingShort": "余额",
+      "viewDetail": "— 查看详情",
+      "paidOn": "付款日期：{date}",
+      "markedOn": "付款已标记：{date} · 确认中",
+      "dueOn": "截止日期：{date}",
+      "status": {
+        "DRAFT": "草稿",
+        "SENT": "未付款",
+        "AWAITING_CONFIRMATION": "待确认",
+        "PAID": "已付款",
+        "OVERDUE": "逾期",
+        "CANCELLED": "已取消"
+      },
+      "detail": {
+        "issuer": "开票方",
+        "case": "案件",
+        "total": "总金额",
+        "rejectedTitle": "付款未确认",
+        "rejectedHint": "请核对您的银行转账，并点击“支付账单”重新标记。",
+        "reviewTitle": "您的付款正在审核中",
+        "pay": "支付账单",
+        "confirming": "确认中",
+        "service": "服务",
+        "created": "创建日期",
+        "due": "截止日期",
+        "paid": "付款日期",
+        "confirmedBy": "确认人",
+        "markedAt": "已于 {date} 标记。",
+        "reviewBody": "确认后我们将向您发送通知。",
+        "yourNote": "您的备注：{note}",
+        "account": "账户：{bank} · {number}",
+        "reference": "转账备注：{number}"
+      },
+      "payment": {
+        "title": "付款说明",
+        "description": "请向以下账户进行银行转账，然后点击“已付款”按钮。我们将核查该笔交易并予以确认。",
+        "cancel": "取消",
+        "bankError": "无法加载账户信息",
+        "transferInfo": "银行转账信息",
+        "bank": "银行",
+        "accountNumber": "账号",
+        "recipient": "收款人",
+        "amount": "应付金额",
+        "reference": "转账备注",
+        "noteLabel": "交易信息",
+        "noteHelper": "选填：银行、日期、金额、转账备注",
+        "copy": "复制",
+        "submit": "已付款",
+        "submitting": "正在提交……",
+        "copyAccountNumber": "复制账号",
+        "copyAmount": "复制应付金额",
+        "copyReference": "复制转账备注",
+        "referenceHint": "请务必在转账备注中填写账单编号 {number}，以便我们尽快核对并确认您的付款。",
+        "previousRejected": "上一次标记未获确认：{reason}",
+        "notePlaceholder": "示例：Khan Bank、{date}、{amount}、备注 {number}",
+        "markedTitle": "付款已标记",
+        "markedBody": "{number} — 核查并确认后我们将向您发送通知。",
+        "markFailed": "无法标记付款",
+        "tryAgain": "请重试。",
+        "copied": "已复制",
+        "copyFailed": "复制失败",
+        "copyFailedBody": "请手动复制该内容。"
+      },
+      "backToList": "返回账单列表",
+      "forbidden": "403 — 无访问权限",
+      "notFound": "未找到账单"
+    },
+    "nav": {
+      "home": "首页",
+      "cases": "案件",
+      "requests": "我的申请",
+      "documents": "文件",
+      "invoices": "账单",
+      "messages": "消息",
+      "notifications": "通知",
+      "profile": "个人资料"
+    },
+    "titles": {
+      "home": "首页",
+      "caseDetail": "案件详情",
+      "cases": "案件",
+      "newRequest": "新建申请",
+      "requests": "我的申请",
+      "documents": "文件",
+      "invoice": "账单",
+      "invoices": "账单",
+      "messages": "消息",
+      "notifications": "通知",
+      "profile": "个人资料"
+    },
+    "pendingDocumentRequests": "项待处理的文件请求",
+    "unreadMessages": "条未读消息",
+    "messages": {
+      "title": "消息",
+      "loadError": "加载消息时发生错误",
+      "emptyTitle": "暂无会话",
+      "emptyDescription": "以您名义登记案件后，您可在此与承办律师沟通。",
+      "conversations": "会话",
+      "loading": "正在加载……",
+      "unreadSummary": "您有 {count} 条未读消息",
+      "noUnread": "没有未读消息",
+      "you": "您",
+      "preview": "{sender}：{body}",
+      "noMessagesYet": "暂无消息。开始沟通",
+      "unreadCount": "{count} 条未读"
+    },
+    "breadcrumbRoot": "门户",
+    "requests": {
+      "title": "我的申请",
+      "description": "委托律师、法律咨询的申请。申请受理并指派律师后，即开立案件。",
+      "newRequest": "新建申请",
+      "loadError": "无法加载申请",
+      "emptyTitle": "尚未提交申请",
+      "emptyDescription": "提交委托律师或法律咨询申请后，其进展将显示在此处。",
+      "send": "提交申请",
+      "outcome": {
+        "review": "申请正在审核中。作出决定后将立即通知您。",
+        "rejectedTitle": "申请未受理",
+        "goToCase": "前往案件",
+        "accepted": "申请已受理。将尽快为您指派律师。",
+        "acceptedOn": "申请已于 {date} 受理。将尽快为您指派律师。",
+        "rejectedReason": "原因：{reason}",
+        "converted": "已指派律师，案件已开立。",
+        "convertedWithCase": "已指派律师，案件 {caseNumber} 已开立。"
+      },
+      "new": {
+        "title": "新建申请",
+        "description": "请说明所发生的情况并提交。管理员将进行审核，并指派合适的律师。",
+        "typeLabel": "申请类型",
+        "caseTypeLabel": "法律领域",
+        "caseTypePlaceholder": "请选择领域",
+        "titleLabel": "标题",
+        "titlePlaceholder": "例如：租赁合同被提前解除",
+        "descriptionLabel": "发生了什么？",
+        "descriptionPlaceholder": "请简要说明事情何时发生、发生了什么，以及您至今采取的措施（合同、通知、诉讼、是否已向有关机构提出请求）。",
+        "descriptionHelper": "至少 30 个字符",
+        "cancel": "取消",
+        "submitting": "提交中…",
+        "submit": "提交申请",
+        "typeHint": {
+          "LAWYER": "将指派律师承办您的案件，并在法院及有关机构代表您。",
+          "CONSULTATION": "将为您安排律师，帮助厘清问题并就下一步提供建议。"
+        },
+        "createdTitle": "申请已提交",
+        "createdBody": "“{title}”——我们将审核后向您发送通知。",
+        "failed": "申请提交失败",
+        "tryAgain": "请重试。"
+      }
+    },
+    "notifications": {
+      "emptyTitle": "暂无通知",
+      "emptyDescription": "有关案件进展、账单及文件的通知将显示在此处。",
+      "noneFilteredTitle": "没有符合该筛选条件的通知",
+      "noneFilteredDescription": "请选择其他筛选条件或清除筛选。",
+      "clearFilter": "清除筛选",
+      "filterLabel": "筛选通知",
+      "markAllRead": "全部标为已读",
+      "loadingLabel": "加载中",
+      "title": "通知",
+      "loading": "加载中…",
+      "unreadSummary": "您有 {count} 条未读通知",
+      "noUnread": "没有未读通知",
+      "unreadShort": "{count} 条未读",
+      "error": "出现错误",
+      "allReadToast": "已全部标为已读",
+      "allReadBody": "{count} 条通知",
+      "today": "今天",
+      "yesterday": "昨天",
+      "monthDay": "{month} 月 {day} 日",
+      "monthDayYear": "{year} 年 {month} 月 {day} 日",
+      "unreadLabel": "未读",
+      "markRead": "标为已读",
+      "filters": {
+        "all": "全部",
+        "unread": "未读",
+        "case": "案件",
+        "invoice": "账单",
+        "message": "消息"
+      }
+    },
+    "loadingLabel": "正在加载",
+    "caseDetail": {
+      "tabs": {
+        "overview": "概览",
+        "timeline": "进展记录",
+        "timelineShort": "进展",
+        "documents": "文件",
+        "requests": "文件请求",
+        "requestsShort": "请求",
+        "invoices": "账单",
+        "messages": "消息"
+      },
+      "cases": "案件",
+      "forbiddenCrumb": "无访问权限",
+      "notFoundCrumb": "未找到",
+      "forbiddenTitle": "403 — 您无权查看该案件",
+      "notFoundTitle": "404 — 未找到案件",
+      "loadError": "出现错误",
+      "backToCases": "返回案件列表",
+      "pickFile": "选择文件",
+      "breadcrumbLabel": "面包屑导航",
+      "metaMobile": "立案 {opened} · 更新 {updated}",
+      "metaDesktop": "立案：{opened} · 最近更新：{updated}",
+      "metaClosed": "已结案：{date}",
+      "uploading": "上传中…",
+      "addDocument": "添加文件",
+      "contactLawyer": "联系律师",
+      "unreadBadge": "{count} 条未读",
+      "pendingBadge": "{count} 项待处理",
+      "uploadedTitle": "上传成功",
+      "uploadedBody": "{name} 已添加至本案件。",
+      "uploadFailed": "文件上传失败",
+      "downloadFailed": "下载失败",
+      "tryAgain": "请重试。",
+      "documentsHint": "PDF、Word、Excel、图片、文本——单个文件不超过 20MB。",
+      "noDocumentsTitle": "尚未附上文件",
+      "firstDocument": "上传第一份文件",
+      "noRequestsTitle": "暂无文件请求",
+      "noRequestsDescription": "律师向您索取文件时，将在此处列出并向您发送通知。",
+      "noInvoices": "暂无账单",
+      "invoiceColumns": {
+        "number": "编号",
+        "description": "说明",
+        "amount": "金额",
+        "due": "付款期限",
+        "status": "状态"
+      },
+      "assignedLawyer": "承办律师",
+      "chatEmpty": "请向承办律师留言提问。收到回复时将向您发送通知。",
+      "download": "下载",
+      "downloadNamed": "下载：{name}",
+      "requestsAlert": {
+        "title": "律师向您索取 {count} 份文件",
+        "overdue": "部分文件已超过期限。",
+        "body": "请上传并发送律师所需的文件。",
+        "cta": "发送文件"
+      },
+      "overview": {
+        "title": "案件概览",
+        "noDescription": "尚未填写说明。",
+        "caseType": "案件类型",
+        "opened": "立案",
+        "documents": "已附文件",
+        "documentsCount": "{count} 个文件",
+        "closed": "已结案",
+        "invoices": "账单"
+      },
+      "timeline": {
+        "title": "进展记录",
+        "empty": "暂无已记录的案件事项。"
+      },
+      "nextEvent": {
+        "title": "下一项案件事项",
+        "empty": "暂无已安排的案件事项。",
+        "month": "{month}月",
+        "hearingNote": "请于开庭前 15 分钟到场，并记得携带本人身份证件。"
+      },
+      "lawyer": {
+        "title": "承办律师",
+        "phone": "电话",
+        "email": "邮箱",
+        "message": "撰写消息",
+        "messageShort": "消息",
+        "call": "拨打电话"
+      },
+      "documentsCard": {
+        "title": "最新文件",
+        "all": "全部文件 →",
+        "empty": "尚未附上文件。"
+      },
+      "finance": {
+        "title": "财务",
+        "billed": "账单总额",
+        "paid": "已付款",
+        "unpaid": "未付款",
+        "pay": "支付账单"
+      }
+    },
+    "chat": {
+      "section": "消息",
+      "loadError": "加载消息时发生错误",
+      "loading": "正在加载",
+      "loadingMore": "正在加载……",
+      "emptyTitle": "开始沟通",
+      "olderMessages": "更早的消息",
+      "messages": "消息",
+      "composerLabel": "撰写消息",
+      "composerPlaceholder": "撰写消息……",
+      "send": "发送",
+      "sending": "正在发送……",
+      "hint": "Enter 发送 · Shift+Enter 换行",
+      "sendFailed": "消息发送失败",
+      "tryAgain": "请重试。",
+      "you": "您",
+      "read": "已读",
+      "today": "今天",
+      "yesterday": "昨天"
+    },
+    "documentRequests": {
+      "title": "律师发来的请求",
+      "waiting": "律师正在等待您提交 {count} 份文件。请上传文件并发送。",
+      "allSubmitted": "所需文件已全部提交。律师审阅后将另行通知。",
+      "accepted": "已接收 {approved}/{total} 份文件",
+      "acceptedLabel": "已接收的文件",
+      "listLabel": "文件请求",
+      "optional": "非必需",
+      "overdue": "已逾期：",
+      "due": "截止期限：",
+      "rejectionTitle": "律师退回原因",
+      "underReview": "审阅中——律师正在核查您提交的文件。",
+      "approved": "律师已接收该文件",
+      "previousFiles": "此前提交的文件",
+      "submittedFiles": "已提交的文件",
+      "download": "下载",
+      "downloadNamed": "下载：{name}",
+      "pickFile": "选择文件",
+      "pickFileFor": "“{title}”——选择文件",
+      "dropZone": "请将文件拖拽至此，或点击选择",
+      "dropZoneFor": "“{title}”——请将文件拖拽至此，或点击选择",
+      "fileHint": "PDF、DOCX、XLSX、JPG、PNG · 最大 20MB · 每次最多 {max} 个文件",
+      "filesToSend": "待发送的文件",
+      "remove": "移除",
+      "removeNamed": "移除：{name}",
+      "send": "发送",
+      "resend": "重新发送",
+      "sending": "发送中…",
+      "pickFirst": "请先选择文件。",
+      "submittedTitle": "文件已提交",
+      "submittedBody": "“{title}”——律师审阅后将另行通知。",
+      "submitFailed": "提交失败",
+      "tryAgain": "请重试。",
+      "fileRejected": "文件未添加",
+      "fileTypeError": "{name}——仅可提交 PDF、Word、Excel、JPG、PNG、TXT 文件。",
+      "fileSizeError": "{name}——超过 20MB。",
+      "fileCountError": "每次最多提交 {max} 个文件。",
+      "status": {
+        "PENDING": "未提交",
+        "SUBMITTED": "审阅中",
+        "UNDER_REVIEW": "审阅中",
+        "APPROVED": "已接收",
+        "REJECTED": "重新提交"
+      }
+    },
+    "profile": {
+      "title": "个人资料与设置",
+      "description": "在此管理您的个人信息、登录密码及通知偏好。",
+      "soon": "即将推出",
+      "soonLower": "即将推出",
+      "activeCases": "{count} 个进行中的案件",
+      "changePhoto": "更换照片",
+      "removePhoto": "删除",
+      "personal": "个人信息",
+      "photo": "个人资料照片",
+      "photoHint": "JPG 或 PNG · 最大 2MB · {soon}",
+      "lastName": "姓",
+      "firstName": "名",
+      "registryNumber": "登记号码",
+      "registryHelper": "如需更改，请联系您的律师",
+      "phone": "电话号码",
+      "phoneHelper": "8 位数字",
+      "email": "电子邮箱",
+      "emailHelper": "如需更改，请联系管理员",
+      "address": "地址",
+      "workplace": "工作单位",
+      "save": "保存",
+      "cancel": "取消",
+      "savedToast": "个人资料已保存",
+      "saveFailed": "保存失败",
+      "changePassword": "修改密码",
+      "currentPassword": "当前密码",
+      "newPassword": "新密码",
+      "newPasswordHelper": "8 个字符以上，包含字母和数字",
+      "repeatPassword": "重复输入新密码",
+      "updatePassword": "更新密码",
+      "passwordChanged": "密码已修改",
+      "passwordChangedBody": "其他设备上的会话已结束。",
+      "passwordFailed": "密码未能修改",
+      "error": "出现错误",
+      "notificationSettings": "通知设置",
+      "notifications": {
+        "caseUpdates": {
+          "label": "案件进展更新",
+          "description": "案件中每新增记录或决定时，都会通知您。"
+        },
+        "newDocuments": {
+          "label": "新文件",
+          "description": "律师上传文件时通知您。"
+        },
+        "invoices": {
+          "label": "账单与付款",
+          "description": "新账单生成及付款期限临近时提醒您。"
+        },
+        "messages": {
+          "label": "消息",
+          "description": "收到律师的消息时通知您。"
+        },
+        "marketing": {
+          "label": "营销信息",
+          "description": "向您发送新文章及培训活动邀请。"
+        }
+      },
+      "channels": "接收渠道",
+      "channelEmail": "电子邮箱",
+      "channelPortal": "门户通知",
+      "security": "安全",
+      "logout": "退出登录",
+      "account": "账户信息",
+      "clientCode": "客户编号",
+      "joined": "注册时间",
+      "lastLogin": "上次登录",
+      "activeCasesLabel": "进行中的案件",
+      "devices": "活动设备",
+      "devicesHint": "已登录设备列表即将上线。修改密码后，其他设备上的会话将被结束。",
+      "logoutAll": "退出所有设备",
+      "twoFactor": "双重身份验证",
+      "twoFactorHint": "每次登录时将通过短信发送验证码。· {soon}"
+    },
+    "redirecting": "正在跳转至登录页面……"
   }
 }
