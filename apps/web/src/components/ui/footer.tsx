@@ -1,5 +1,6 @@
 // Figma: Design System / Footer (13:59, 1440) + Footer mobile (23:62, 390)
 import Link from 'next/link';
+import { COMMITMENTS } from '@/content/commitments';
 import { SOCIAL_LINKS } from '@/content/social';
 import { loadFirmSettings } from '@/lib/firm';
 import { formatPhone, phoneHref } from '@/lib/format';
@@ -18,7 +19,8 @@ const COMPANY = [
   { label: 'Хуульчид', href: '/lawyers' },
   { label: 'Мэдээ ба нийтлэл', href: '/news' },
   { label: 'Түгээмэл асуулт', href: '/faq' },
-  { label: 'Ажлын байр', href: 'mailto:careers@lawfirm.mn' },
+  // The careers mailbox only appears once its address is confirmed (content/commitments.ts).
+  ...(COMMITMENTS.careersEmail ? [{ label: 'Ажлын байр', href: `mailto:${COMMITMENTS.careersEmail}` }] : [{ label: 'Үйлчилгээ', href: '/services' }]),
 ];
 const link = 'focus-ring rounded-sm text-body-sm text-text-on-inverse-muted hover:text-text-on-inverse';
 

@@ -59,7 +59,7 @@ export default function FaqPage() {
             <div className="flex flex-col gap-3 rounded-lg bg-bg-accent-soft px-5 py-6 md:flex-row md:items-center md:justify-between md:gap-6 md:p-7">
               <div className="flex flex-col gap-1.5">
                 <p className="text-h4 text-text-brand">Хариултаа олсонгүй юу?</p>
-                <p className="text-body-sm text-text-secondary">Бидэнд бичээрэй — ажлын 1 өдрийн дотор хариулна.</p>
+                <p className="text-body-sm text-text-secondary">Бидэнд бичээрэй — хүсэлтийг хүлээн авмагц холбогдоно.</p>
               </div>
               <Button asChild size="md" className="w-full md:w-auto">
                 <Link href="/contact">Асуулт илгээх</Link>

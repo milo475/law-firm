@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { ChevronRightIcon } from '@/components/icons';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { PRICING_NOTE } from '@/content/commitments';
 import { SERVICES, findService, type ServiceDefinition } from '@/content/services';
 import { apiFetch, type LawyerProfile } from '@/lib/api';
 import { initials, shortName } from '@/lib/utils';
@@ -147,6 +148,7 @@ export default async function ServiceDetailPage({ params }: Params) {
                   </div>
                 ))}
               </dl>
+              <p className="text-caption text-text-muted">{PRICING_NOTE}</p>
             </div>
           </aside>
         </div>

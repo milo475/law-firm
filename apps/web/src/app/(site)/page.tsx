@@ -57,7 +57,7 @@ export default async function HomePage() {
               </span>
             </p>
             <div className="flex flex-col gap-5 md:flex-row md:flex-wrap md:gap-4 md:pt-2">
-              <Button asChild size="lg" className="w-full md:w-auto"><Link href="/contact">Үнэгүй зөвлөгөө авах</Link></Button>
+              <Button asChild size="lg" className="w-full md:w-auto"><Link href="/contact">Зөвлөгөө авах хүсэлт илгээх</Link></Button>
               <Button asChild variant="secondary" size="lg" className="w-full md:w-auto"><Link href="/services">Үйлчилгээ үзэх</Link></Button>
             </div>
           </div>
@@ -178,8 +178,8 @@ export default async function HomePage() {
               Асуудлаа хэрхэн шийдвэрлэхээ мэдэхгүй байна уу?
             </h2>
             <p className="text-body text-text-secondary md:max-w-[720px] md:text-body-lg">
-              <span className="md:hidden">30 минутын үнэгүй зөвлөгөөнд бүртгүүлээрэй.</span>
-              <span className="hidden md:inline">30 минутын үнэгүй анхан шатны зөвлөгөөнд бүртгүүлээрэй. Ажлын 1 өдрийн дотор холбогдоно.</span>
+              <span className="md:hidden">Хүсэлтээ илгээвэл өмгөөлөгч тантай холбогдоно.</span>
+              <span className="hidden md:inline">Асуудлаа товч бичиж хүсэлт илгээнэ үү. Өмгөөлөгч танилцаад холбогдож, эрх зүйн боломж, дараагийн алхмыг тодруулна.</span>
             </p>
           </div>
           <div className="flex shrink-0 flex-col gap-3 md:flex-row">
