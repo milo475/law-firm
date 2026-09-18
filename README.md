@@ -105,7 +105,7 @@ web → `next.config.ts`).
 | `COOKIE_DOMAIN` | Prod cookie domain (хоосон = host) | `.lawfirm.mn` |
 | `REMINDERS_ENABLED` | Өдөр тутмын сануулга асаах/унтраах (`NODE_ENV=test` үед хэзээ ч ажиллахгүй) | `true` |
 | `REMINDERS_CRON` | Сануулгын cron (серверийн цаг, сек мин цаг өдөр сар гараг) | `0 0 8 * * *` |
-| `THROTTLE_LIMIT` | API-ийн глобал хязгаар: нэг IP-ээс минутад илгээх хүсэлт (default 120). E2E-г нэг машинаас ажиллуулахад өсгөнө | `120` |
+| `THROTTLE_LIMIT` | API-ийн глобал хязгаар: нэг IP-ээс минутад илгээх хүсэлт (default 120). Нэвтрэх/бүртгүүлэх/refresh нь үүний тодорхой хувь (120 үед 10/5/30). E2E-г нэг машинаас ажиллуулахад өсгөнө (`5000`) | `120` |
 | `REFRESH_REUSE_GRACE_SECONDS` | Rotate хийгдсэн refresh токеныг өөр таб дахин илгээхэд бүх сессийг хаахгүй байх хугацаа (сек, `0` = унтраах) | `30` |
 | `COOKIE_PATH_PREFIX` | Браузерт API ямар зам дор харагдаж байгаа нь. Хоосон = шууд дуудаж байна (refresh cookie `/auth`); `/api` = вэб дамжуулж байна (`/api/auth`) | `` / `/api` |
 | `TRUST_PROXY_HOPS` | API-ийн өмнөх proxy-ийн тоо (зөвхөн `NODE_ENV=production` үед). Railway: edge → web → api = 2 | `1` |
@@ -282,7 +282,7 @@ docker compose exec postgres createdb -U lawfirm lawfirm_test      # нэг уд
 export DATABASE_URL="postgresql://lawfirm:lawfirm@localhost:5432/lawfirm_test?schema=public"
 pnpm db:deploy && pnpm db:seed                                      # нэг удаа
 pnpm build
-THROTTLE_LIMIT=1000 node apps/api/dist/main &                       # api :4000 (test DB); e2e нэг IP-ээс олон хүсэлт илгээдэг
+THROTTLE_LIMIT=5000 node apps/api/dist/main &                       # api :4000 (test DB); e2e нэг IP-ээс олон хүсэлт илгээдэг
 pnpm --filter @law-firm/web start &                                 # web :3001
 pnpm --filter @law-firm/web e2e
 ```
@@ -981,7 +981,32 @@ Playwright (42 тест): нийтийн сайт (2), портал (2), адм�
 
 ---
 
-## 17. Production тэмдэглэл
+## 17. Аюулгүй байдал ба кодын эрүүл мэнд
+
+```bash
+pnpm audit       # хамаарлын эмзэг байдал (high ба дээш үед унана)
+pnpm deadcode    # knip: ашиглагдахгүй файл, export, хамаарал
+```
+
+### Хамгаалалт хаана хэрэгждэг
+
+| Эрсдэл | Хаана |
+| --- | --- |
+| Нууц үг таах (brute force) | `/auth/login` минутад 10, `/auth/register` 5, `/auth/refresh` 30 (`THROTTLE_LIMIT`-ийн хувиар; e2e-д `THROTTLE_LIMIT=5000`) |
+| Production дээр жишээ нууц түлхүүр | `validateEnv` нь `.env.example`-ийн утга, 32 тэмдэгтээс богино, эсвэл access = refresh байвал API-г асаахгүй |
+| Clickjacking | Вэб дээр `X-Frame-Options: DENY` + `frame-ancestors 'none'` (портал, админ хоёуланд) |
+| Нэвтэрсэн хуудас кэшлэгдэх | `/portal/*`, `/admin/*` (гурван хэлэнд) `Cache-Control: private, no-store` |
+| Зургийн оптимайзерыг гадны хостод ашиглах | `images.remotePatterns` нь зөвхөн `R2_PUBLIC_URL`-ийн хост + localhost |
+| `javascript:` / `data:` URL хадгалах | `ImageUrlSchema` — avatar, нийтлэлийн ковер зөвхөн http(s) |
+| Баримт руу хандах | Файл бүр хэргийн эрхээр шалгагдаж, 5 минутын presigned URL-ээр очно |
+| Мэдээлэл задрах | Нийтийн `GET /testimonials` 7 талбар, `PUBLIC_USER_SELECT` нь и-мэйл/утсыг нуудаг, алдаанд stack trace буцаахгүй |
+
+CSP (script-src) одоохондоо байхгүй: Next-ийн inline bootstrap script-д nonce хэрэгтэй бөгөөд энэ нь
+middleware-ийн өөрчлөлт шаардана — `'unsafe-inline'`-тай хуурамч бодлого тавихаас татгалзсан.
+
+---
+
+## 18. Production тэмдэглэл
 
 - `pnpm build` → `apps/api/dist`, `apps/web/.next`. API: `node dist/main`, web: `next start`.
 - API `trust proxy` = `TRUST_PROXY_HOPS` (зөвхөн production), cookie `secure` = true.

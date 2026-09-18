@@ -2,6 +2,14 @@ import { z } from 'zod';
 
 export const MN_PHONE_REGEX = /^(\+976)?[0-9]{8}$/;
 
+/**
+ * A browser-facing image URL. `z.url()` alone accepts `javascript:` and `data:` URLs — harmless in an
+ * <img src> but not in an anchor — so the scheme is pinned to http(s) where the value is stored.
+ */
+export const ImageUrlSchema = z
+  .url({ message: 'Зургийн холбоос буруу байна' })
+  .refine((value) => /^https?:\/\//i.test(value), 'Зургийн холбоос http эсвэл https байх ёстой');
+
 export const UuidSchema = z.uuid({ message: 'ID буруу форматтай байна' });
 
 export const PaginationSchema = z.object({

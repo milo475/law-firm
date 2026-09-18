@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { Role } from '../generated/prisma/enums.js';
-import { EmailSchema, PaginationSchema, PasswordSchema, PhoneSchema } from './common.js';
+import { EmailSchema, ImageUrlSchema, PaginationSchema, PasswordSchema, PhoneSchema } from './common.js';
 
 export const RoleSchema = z.enum(Role, { message: 'Хэрэглэгчийн эрх буруу байна' });
 
@@ -9,7 +9,7 @@ export const UpdateMeSchema = z
     firstName: z.string().trim().min(2, 'Нэр хамгийн багадаа 2 тэмдэгт байна').max(64),
     lastName: z.string().trim().min(2, 'Овог хамгийн багадаа 2 тэмдэгт байна').max(64),
     phone: PhoneSchema.nullable(),
-    avatarUrl: z.url({ message: 'Зургийн холбоос буруу байна' }).nullable(),
+    avatarUrl: ImageUrlSchema.nullable(),
   })
   .partial();
 export type UpdateMeInput = z.infer<typeof UpdateMeSchema>;
@@ -87,7 +87,7 @@ export const UpdateUserSchema = z
     lastName: z.string().trim().min(2).max(64),
     role: RoleSchema,
     isActive: z.boolean(),
-    avatarUrl: z.url().nullable(),
+    avatarUrl: ImageUrlSchema.nullable(),
     lawyerProfile: LawyerProfileInputSchema.partial(),
   })
   .partial();

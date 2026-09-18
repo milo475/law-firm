@@ -62,6 +62,39 @@ const EnvSchema = z.object({
 
 export type Env = z.infer<typeof EnvSchema>;
 
+/** Anyone who can read .env.example could forge tokens signed with these. */
+const PLACEHOLDER_SECRETS = new Set([
+  'change-me-access-secret-at-least-32-chars',
+  'change-me-refresh-secret-at-least-32-chars',
+  'secret',
+  'changeme',
+]);
+
+/**
+ * Extra rules that only apply to a real deployment. Keeping them out of the schema lets the
+ * dev and test setups stay short while a production boot refuses obviously unsafe values.
+ */
+function assertProductionSafety(env: Env): void {
+  if (env.NODE_ENV !== 'production') return;
+  const problems: string[] = [];
+  for (const [name, secret] of [
+    ['JWT_ACCESS_SECRET', env.JWT_ACCESS_SECRET],
+    ['JWT_REFRESH_SECRET', env.JWT_REFRESH_SECRET],
+  ] as const) {
+    if (PLACEHOLDER_SECRETS.has(secret)) problems.push(`  - ${name}: still the example value from .env.example`);
+    else if (secret.length < 32) problems.push(`  - ${name}: must be at least 32 characters in production`);
+  }
+  if (env.JWT_ACCESS_SECRET === env.JWT_REFRESH_SECRET) {
+    problems.push('  - JWT_ACCESS_SECRET / JWT_REFRESH_SECRET: must differ, or a stolen access token can be replayed as a refresh token');
+  }
+  if (env.CORS_ORIGIN.split(',').some((origin) => origin.trim() === '*')) {
+    problems.push('  - CORS_ORIGIN: "*" cannot be combined with cookie credentials');
+  }
+  if (problems.length > 0) {
+    throw new Error(`Unsafe production environment:\n${problems.join('\n')}`);
+  }
+}
+
 /** Used by ConfigModule.forRoot({ validate }) — throws a readable error listing every problem. */
 export function validateEnv(config: Record<string, unknown>): Env {
   const result = EnvSchema.safeParse(config);
@@ -69,6 +102,7 @@ export function validateEnv(config: Record<string, unknown>): Env {
     const issues = result.error.issues.map((issue) => `  - ${issue.path.join('.') || '(root)'}: ${issue.message}`);
     throw new Error(`Invalid environment configuration:\n${issues.join('\n')}`);
   }
+  assertProductionSafety(result.data);
   return result.data;
 }
 

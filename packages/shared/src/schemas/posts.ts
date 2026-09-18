@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { PostCategory, PostStatus } from '../generated/prisma/enums.js';
-import { DateInputSchema, PaginationSchema } from './common.js';
+import { DateInputSchema, ImageUrlSchema, PaginationSchema } from './common.js';
 
 export const PostCategorySchema = z.enum(PostCategory, { message: 'Ангилал буруу байна' });
 export const PostStatusSchema = z.enum(PostStatus, { message: 'Төлөв буруу байна' });
@@ -17,7 +17,7 @@ export const CreatePostSchema = z.object({
   slug: SlugSchema.optional(),
   excerpt: z.string().trim().min(10, 'Товч агуулга хэт богино байна').max(500),
   content: z.string().trim().min(20, 'Агуулга хэт богино байна'),
-  coverImageUrl: z.url({ message: 'Зургийн холбоос буруу байна' }).nullable().optional(),
+  coverImageUrl: ImageUrlSchema.nullable().optional(),
   category: PostCategorySchema,
   status: PostStatusSchema.default('DRAFT'),
   publishedAt: DateInputSchema.optional(),

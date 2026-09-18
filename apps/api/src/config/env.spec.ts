@@ -43,6 +43,32 @@ describe('validateEnv', () => {
     expect(() => validateEnv({ ...REQUIRED, R2_ENDPOINT: 'account.r2.cloudflarestorage.com' })).toThrow(/R2_ENDPOINT/);
   });
 
+  describe('production safety checks', () => {
+    const PROD = { ...REQUIRED, NODE_ENV: 'production', JWT_ACCESS_SECRET: 'a'.repeat(40), JWT_REFRESH_SECRET: 'b'.repeat(40) };
+
+    it('accepts two long, distinct secrets', () => {
+      expect(validateEnv(PROD).NODE_ENV).toBe('production');
+    });
+
+    it('refuses the placeholder secrets from .env.example', () => {
+      expect(() => validateEnv({ ...PROD, JWT_ACCESS_SECRET: 'change-me-access-secret-at-least-32-chars' })).toThrow(/still the example value/);
+    });
+
+    it('refuses a secret shorter than 32 characters, which is fine in development', () => {
+      expect(() => validateEnv({ ...PROD, JWT_REFRESH_SECRET: 'c'.repeat(20) })).toThrow(/at least 32 characters/);
+      expect(validateEnv({ ...REQUIRED, JWT_REFRESH_SECRET: 'c'.repeat(20) }).JWT_REFRESH_SECRET).toHaveLength(20);
+    });
+
+    it('refuses one secret used for both tokens', () => {
+      const secret = 'd'.repeat(40);
+      expect(() => validateEnv({ ...PROD, JWT_ACCESS_SECRET: secret, JWT_REFRESH_SECRET: secret })).toThrow(/must differ/);
+    });
+
+    it('refuses a wildcard CORS origin, which cannot carry credentials', () => {
+      expect(() => validateEnv({ ...PROD, CORS_ORIGIN: 'https://lawfirm.mn,*' })).toThrow(/cannot be combined/);
+    });
+  });
+
   it('keeps the refresh cookie on /auth by default and accepts a proxy prefix', () => {
     expect(validateEnv(REQUIRED)).toMatchObject({ COOKIE_PATH_PREFIX: '', TRUST_PROXY_HOPS: 1 });
     expect(validateEnv({ ...REQUIRED, COOKIE_PATH_PREFIX: '/api/' }).COOKIE_PATH_PREFIX).toBe('/api');

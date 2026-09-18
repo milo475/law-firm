@@ -1,6 +1,7 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiBearerAuth, ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { CurrentUser, Public } from '../common/decorators';
 import type { RequestUser } from '../common/types/request-user';
@@ -18,6 +19,18 @@ import { LoginDto, RegisterDto } from './dto/auth.dto';
 
 type RequestWithCookies = Request & { cookies?: Record<string, string> };
 
+/**
+ * Credential endpoints need a far smaller budget than ordinary API calls: with the global limit a
+ * single IP could try 120 passwords a minute. The shares are derived from THROTTLE_LIMIT so raising
+ * that one knob for an e2e or load run lifts these too (default 120 → login 10, register 5, refresh 30).
+ * Decorators are evaluated at import time, so this reads process.env rather than ConfigService.
+ */
+const GLOBAL_LIMIT = Number(process.env.THROTTLE_LIMIT ?? 120) || 120;
+const LOGIN_SHARE = 1 / 12;
+const REGISTER_SHARE = 1 / 24;
+const REFRESH_SHARE = 1 / 4;
+const authThrottle = (share: number) => ({ default: { ttl: 60_000, limit: Math.max(1, Math.ceil(GLOBAL_LIMIT * share)) } });
+
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -27,6 +40,7 @@ export class AuthController {
   ) {}
 
   @Public()
+  @Throttle(authThrottle(LOGIN_SHARE))
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'И-мэйл эсвэл утас + нууц үгээр нэвтрэх' })
@@ -36,6 +50,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle(authThrottle(REGISTER_SHARE))
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Харилцагчаар бүртгүүлэх (зөвхөн CLIENT)' })
@@ -45,6 +60,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle(authThrottle(REFRESH_SHARE))
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @ApiCookieAuth(REFRESH_COOKIE)
