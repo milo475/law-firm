@@ -36,7 +36,8 @@ export default function NotFound() {
 
           {/* Quick links — desktop: four 220px bg-page cards (gap 32); mobile: full-width rows with chevron */}
           <nav aria-label="Түргэн холбоосууд" className="w-full pt-4 md:w-auto md:pt-8">
-            <ul className="flex flex-col gap-3 md:flex-row md:gap-8">
+            {/* Four 220px cards need 976px, so they wrap (and sit closer) until the Figma width. */}
+            <ul className="flex flex-col gap-3 md:flex-row md:flex-wrap md:justify-center md:gap-4 xl:gap-8">
               {QUICK_LINKS.map((item) => (
                 <li key={item.href}>
                   <Link

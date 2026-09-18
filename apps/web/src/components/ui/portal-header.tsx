@@ -33,14 +33,14 @@ export function PortalHeader({ title, user, unreadCount = 0, backHref, onSearch,
   return (
     <header className={cn('sticky top-0 z-30 border-b border-border-default bg-bg-surface', className)}>
       {/* Desktop 72px */}
-      <div className="hidden h-[72px] items-center justify-between px-8 md:flex">
-        <h1 className="text-h4">{title}</h1>
-        <div className="flex items-center gap-4">
+      <div className="hidden h-[72px] items-center justify-between gap-4 px-8 md:flex">
+        <h1 className="truncate text-h4">{title}</h1>
+        <div className="flex shrink-0 items-center gap-4">
           {onSearch && (
             <form
               role="search"
               onSubmit={(e) => { e.preventDefault(); onSearch(new FormData(e.currentTarget).get('q')?.toString() ?? ''); }}
-              className="flex h-11 w-[280px] items-center gap-2.5 rounded-md border border-border-default bg-bg-surface-alt px-3.5 focus-within:border-2 focus-within:border-border-focus"
+              className="hidden h-11 w-[280px] items-center gap-2.5 rounded-md border border-border-default bg-bg-surface-alt px-3.5 focus-within:border-2 focus-within:border-border-focus lg:flex"
             >
               <SearchIcon size={16} className="shrink-0 text-text-muted" />
               <input name="q" type="search" placeholder={searchPlaceholder} aria-label={searchPlaceholder} className="w-full bg-transparent text-body-sm text-text-primary outline-none placeholder:text-text-muted" />
@@ -49,7 +49,7 @@ export function PortalHeader({ title, user, unreadCount = 0, backHref, onSearch,
           {bell}
           <Link href={profileHref} className="focus-ring flex items-center gap-2.5 rounded-md pr-1">
             <Avatar size="sm" initials={initials} src={user.avatarUrl} className="size-9" />
-            <span className="text-body-sm-medium text-text-primary">{user.lastName.charAt(0)}. {user.firstName}</span>
+            <span className="hidden text-body-sm-medium text-text-primary lg:inline">{user.lastName.charAt(0)}. {user.firstName}</span>
           </Link>
         </div>
       </div>

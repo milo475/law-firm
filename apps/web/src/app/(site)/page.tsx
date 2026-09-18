@@ -50,8 +50,8 @@ export default async function HomePage() {
     <>
       {/* Hero (15:45 / 24:1018) */}
       <section className="bg-bg-surface">
-        <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-5 px-5 py-10 md:px-6 md:py-24 lg:flex-row lg:items-center lg:gap-20">
-          <div className="flex flex-col gap-5 lg:w-[560px] lg:shrink-0 lg:gap-6">
+        <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-5 px-5 py-10 md:px-6 md:py-24 xl:flex-row xl:items-center xl:gap-20">
+          <div className="flex flex-col gap-5 xl:w-[560px] xl:shrink-0 xl:gap-6">
             <p className="text-overline text-text-accent">
               <span className="md:hidden">Эрх зүйн зөвлөх үйлчилгээ</span>
               <span className="hidden md:inline">Эрх зүйн зөвлөх үйлчилгээ · 2009 оноос</span>
@@ -79,7 +79,7 @@ export default async function HomePage() {
               ))}
             </dl>
           </div>
-          <ImagePlaceholder className="h-[220px] rounded-lg lg:h-[480px] lg:w-[520px] lg:shrink-0" markSize={72} />
+          <ImagePlaceholder className="h-[220px] rounded-lg xl:h-[480px] xl:w-[520px] xl:shrink-0" markSize={72} />
         </div>
       </section>
 

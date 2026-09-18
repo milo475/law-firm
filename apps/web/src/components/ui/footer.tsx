@@ -29,7 +29,8 @@ export async function Footer() {
     <footer className="bg-bg-inverse text-text-on-inverse">
       {/* Desktop */}
       <div className="mx-auto hidden max-w-[1200px] flex-col gap-12 px-6 pb-8 pt-16 md:flex">
-        <div className="flex gap-16">
+        {/* Figma gap is 64px at 1440; narrower screens need less room (and may wrap) so the row never overflows. */}
+        <div className="flex flex-wrap gap-8 lg:gap-12 xl:gap-16">
           <div className="flex w-[340px] shrink-0 flex-col gap-4">
             <Logo theme="dark" />
             <p className="w-[300px] text-body-sm text-text-on-inverse-muted">2009 оноос хойш иргэд, аж ахуйн нэгжид найдвартай эрх зүйн туслалцаа үзүүлж байна.</p>

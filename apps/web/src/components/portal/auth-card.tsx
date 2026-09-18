@@ -27,32 +27,33 @@ interface AuthCardProps {
 
 /**
  * Auth layout shared by login / register / forgot-password.
- * Desktop (lg+): 560px navy brand panel on the left + centred 440px card on bg-page.
- * Below lg: brand block (or nav header) stacked on top, then the form on a white surface.
+ * Desktop (xl+): 560px navy brand panel on the left + centred 440px card on bg-page.
+ * Below xl: brand block (or nav header) stacked on top, then the form on a white surface
+ * (560 + 2×120 padding + 440 needs the full 1280px).
  */
 export async function AuthCard({ children, className, mobileNav }: AuthCardProps) {
   // Server component (login / register / forgot-password pages): the support phone is the firm's phone from the settings.
   const supportPhone = formatPhone((await loadFirmSettings()).phone);
   return (
-    <main className="flex flex-1 flex-col lg:flex-row">
+    <main className="flex flex-1 flex-col xl:flex-row">
       {/* Brand panel — Figma "Brand panel" 28:35 / mobile "Brand" 35:929 */}
       <aside
         className={cn(
           'flex flex-col items-center gap-4 bg-bg-inverse px-5 py-10 text-center',
-          'lg:sticky lg:top-0 lg:h-screen lg:w-[560px] lg:shrink-0 lg:items-start lg:justify-between lg:p-16 lg:text-left',
-          mobileNav && 'hidden lg:flex',
+          'xl:sticky xl:top-0 xl:h-screen xl:w-[560px] xl:shrink-0 xl:items-start xl:justify-between xl:p-16 xl:text-left',
+          mobileNav && 'hidden xl:flex',
         )}
       >
         <Logo theme="dark" />
-        <div className="flex flex-col items-center gap-4 lg:max-w-[432px] lg:items-start lg:gap-5">
-          <p className="font-serif text-[26px] font-semibold leading-[34px] tracking-[-0.2px] text-text-on-inverse lg:text-h2 lg:text-text-on-inverse">
+        <div className="flex flex-col items-center gap-4 xl:max-w-[432px] xl:items-start xl:gap-5">
+          <p className="font-serif text-[26px] font-semibold leading-[34px] tracking-[-0.2px] text-text-on-inverse xl:text-h2 xl:text-text-on-inverse">
             Харилцагчийн портал
           </p>
-          <p className="max-w-[320px] text-body-sm text-text-on-inverse-muted lg:hidden">Хэргийн явц, баримт, нэхэмжлэхээ нэг дороос хянаарай.</p>
-          <p className="hidden text-body-lg text-text-on-inverse-muted lg:block">
+          <p className="max-w-[320px] text-body-sm text-text-on-inverse-muted xl:hidden">Хэргийн явц, баримт, нэхэмжлэхээ нэг дороос хянаарай.</p>
+          <p className="hidden text-body-lg text-text-on-inverse-muted xl:block">
             Хэргийнхээ явц, баримт бичиг, нэхэмжлэхээ нэг дороос хянаарай. Хуульчтайгаа шууд мессежээр холбогдоно.
           </p>
-          <ul className="hidden flex-col gap-3.5 lg:flex">
+          <ul className="hidden flex-col gap-3.5 xl:flex">
             {FEATURES.map((feature) => (
               <li key={feature} className="flex items-center gap-3 text-body text-text-on-inverse">
                 <CheckCircleIcon className="shrink-0" />
@@ -61,13 +62,13 @@ export async function AuthCard({ children, className, mobileNav }: AuthCardProps
             ))}
           </ul>
         </div>
-        <p className="hidden text-body-sm text-text-on-inverse-muted lg:block">
+        <p className="hidden text-body-sm text-text-on-inverse-muted xl:block">
           Асуудал гарвал: {supportPhone} · {SUPPORT_EMAIL}
         </p>
       </aside>
 
       {mobileNav && (
-        <header className="flex h-16 items-center gap-2.5 border-b border-border-default bg-bg-surface pl-4 pr-2 lg:hidden">
+        <header className="flex h-16 items-center gap-2.5 border-b border-border-default bg-bg-surface pl-4 pr-2 xl:hidden">
           <Link href={mobileNav.backHref} aria-label="Буцах" className="focus-ring flex size-11 items-center justify-center rounded-md text-text-primary">
             <BackIcon />
           </Link>
@@ -76,7 +77,7 @@ export async function AuthCard({ children, className, mobileNav }: AuthCardProps
       )}
 
       {/* Form panel — Figma "Form panel" 28:63 / mobile "Form" 35:938 */}
-      <div className="flex flex-1 flex-col items-center bg-bg-surface md:justify-center md:bg-bg-page md:px-6 md:py-12 lg:px-16 xl:px-[120px]">
+      <div className="flex flex-1 flex-col items-center bg-bg-surface md:justify-center md:bg-bg-page md:px-6 md:py-12 xl:px-[120px]">
         <div
           className={cn(
             'flex w-full flex-col gap-5 bg-bg-surface px-5 py-8',
