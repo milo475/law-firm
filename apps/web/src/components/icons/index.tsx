@@ -102,6 +102,13 @@ export const ChevronRightIcon = (p: IconProps) => (
 export const ArrowRightIcon = (p: IconProps) => (
   <svg viewBox="0 0 13.9 9.6" {...base(p, 13.9, 9.6)}><path {...stroke} strokeLinejoin="miter" d="M0.8 4.8H12.8M8.8 8.8L12.8 4.8L8.8 0.8" /></svg>
 );
+/** Testimonial rating star — filled through `currentColor`, so an empty star is just a muted colour. */
+export const StarIcon = (p: IconProps) => (
+  <svg viewBox="0 0 20 20" {...base(p, 20, 20)}>
+    <path fill="currentColor" d="M10 2.5L12.4 7.4L17.8 8.2L13.9 12L14.8 17.4L10 14.8L5.2 17.4L6.1 12L2.2 8.2L7.6 7.4L10 2.5Z" />
+  </svg>
+);
+
 export const CheckIcon = (p: IconProps) => (
   <svg viewBox="0 0 12 24" {...base(p, 12, 24)}><path {...stroke} strokeWidth={2} d="M0 12L4 16L12 8" /></svg>
 );

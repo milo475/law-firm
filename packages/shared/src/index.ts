@@ -20,6 +20,8 @@ export {
   CaseMemberRole,
   TaskStatus,
   TaskPriority,
+  TestimonialStatus,
+  TestimonialSource,
 } from './generated/prisma/enums.js';
 
 // ─── Model types ─────────────────────────────────────────────────────────────
@@ -40,6 +42,7 @@ export type {
   Notification,
   ContactRequest,
   AuditLog,
+  Testimonial,
 } from './generated/prisma/client.js';
 
 // ─── Zod schemas, labels, utils ──────────────────────────────────────────────

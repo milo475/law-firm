@@ -137,6 +137,9 @@ async function main() {
   await purge('ServiceRequest', prisma.serviceRequest, {
     OR: [...labelled('title'), { requesterId: { in: userIds } }, { assignedCaseId: { in: caseIds } }],
   });
+  await purge('Testimonial', prisma.testimonial, {
+    OR: [...labelled('body'), { caseId: { in: caseIds } }, { authorUserId: { in: userIds } }, { approvedById: { in: userIds } }],
+  });
   await purgeIds('Case', prisma.case, caseIds);
   await purge('Post', prisma.post, { OR: [...labelled('title'), { authorId: { in: userIds } }] });
   await purge('Notification', prisma.notification, { OR: [{ userId: { in: userIds } }, { actorId: { in: userIds } }] });

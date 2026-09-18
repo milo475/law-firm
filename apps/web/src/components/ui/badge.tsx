@@ -107,6 +107,12 @@ export const CLIENT_DOCUMENT_REQUEST_BADGE: Record<string, { tone: BadgeTone; la
 };
 
 /** `label` overrides the map copy — localized surfaces (the portal) pass a translated label, the admin panel keeps the map. */
+export const TESTIMONIAL_STATUS_BADGE: Record<string, { tone: BadgeTone; label: string }> = {
+  PENDING: { tone: 'pending', label: 'Хянагдаагүй' },
+  PUBLISHED: { tone: 'progress', label: 'Нийтэлсэн' },
+  REJECTED: { tone: 'closed', label: 'Татгалзсан' },
+};
+
 export function StatusBadge({ map, status, label, className }: { map: Record<string, { tone: BadgeTone; label: string }>; status: string; label?: React.ReactNode; className?: string }) {
   const entry = map[status] ?? { tone: 'closed' as BadgeTone, label: status };
   return <Badge tone={entry.tone} className={className}>{label ?? entry.label}</Badge>;

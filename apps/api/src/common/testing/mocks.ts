@@ -41,7 +41,7 @@ export function createPrismaMock() {
     Object.fromEntries(methods.map((method) => [method, jest.fn()]));
 
   const mock = {
-    user: delegate('findUnique', 'findFirst', 'findMany', 'create', 'update', 'count'),
+    user: delegate('findUnique', 'findUniqueOrThrow', 'findFirst', 'findMany', 'create', 'update', 'count'),
     refreshToken: delegate('findUnique', 'create', 'update', 'updateMany', 'count'),
     post: delegate('findMany', 'findFirst', 'findUnique', 'count', 'create', 'update', 'delete'),
     case: delegate('findMany', 'findFirst', 'findUnique', 'count', 'create', 'update', 'groupBy'),
@@ -58,6 +58,7 @@ export function createPrismaMock() {
     lawyerProfile: delegate('findUnique', 'findFirst', 'findMany', 'create', 'update'),
     contactRequest: delegate('findMany', 'findUnique', 'count', 'create', 'update'),
     serviceRequest: delegate('findMany', 'findUnique', 'count', 'create', 'update', 'updateMany'),
+    testimonial: delegate('findMany', 'findFirst', 'findUnique', 'count', 'create', 'update', 'delete'),
     auditLog: delegate('create'),
     setting: delegate('findUnique', 'upsert'),
     $queryRaw: jest.fn(),

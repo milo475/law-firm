@@ -21,7 +21,8 @@
     "faq": "FAQ",
     "contact": "Contact",
     "portal": "Client portal",
-    "cta": "Request advice"
+    "cta": "Request advice",
+    "reviews": ""
   },
   "footer": {
     "description": "A professional legal services firm. We provide representation and legal advice to individuals and businesses.",
@@ -1617,6 +1618,64 @@
       "twoFactor": "Two-factor authentication",
       "twoFactorHint": "A code will be sent by SMS each time you log in. · {soon}"
     },
-    "redirecting": "Redirecting to the sign-in page…"
+    "redirecting": "Redirecting to the sign-in page…",
+    "testimonial": {
+      "cta": "",
+      "ctaHint": "",
+      "title": "",
+      "description": "",
+      "bodyLabel": "",
+      "bodyPlaceholder": "",
+      "bodyHelper": "",
+      "ratingLabel": "",
+      "ratingValue": "",
+      "ratingClear": "",
+      "consent": "",
+      "consentHelper": "",
+      "submit": "",
+      "submitting": "",
+      "cancel": "",
+      "sentTitle": "",
+      "sentBody": "",
+      "failed": "",
+      "tryAgain": "",
+      "myTitle": "",
+      "status": {
+        "PENDING": "",
+        "PUBLISHED": "",
+        "REJECTED": ""
+      },
+      "statusPendingHint": "",
+      "statusPublishedHint": "",
+      "statusRejectedHint": "",
+      "revoke": "",
+      "revoking": "",
+      "revokedTitle": "",
+      "revokedBody": "",
+      "revokeFailed": "",
+      "consentRevoked": "",
+      "alreadyLeft": ""
+    }
+  },
+  "reviews": {
+    "metaTitle": "",
+    "metaDescription": "",
+    "title": "",
+    "description": "",
+    "crumb": "",
+    "nav": "",
+    "homeOverline": "",
+    "homeTitle": "",
+    "all": "",
+    "serviceTitle": "",
+    "filterLabel": "",
+    "noneTitle": "",
+    "noneDescription": "",
+    "noneFiltered": "",
+    "failedTitle": "",
+    "failedDescription": "",
+    "ratingLabel": "",
+    "inOriginalLanguage": "",
+    "count": ""
   }
 }

@@ -4,7 +4,7 @@ import { routing, BCP47, type Locale } from '@/i18n/routing';
 import { apiFetch, type Paginated, type PostListItem } from '@/lib/api';
 import { siteUrl } from '@/lib/seo';
 
-const STATIC_PATHS = ['/', '/about', '/services', '/lawyers', '/news', '/faq', '/contact', '/privacy', '/terms'];
+const STATIC_PATHS = ['/', '/about', '/services', '/lawyers', '/reviews', '/news', '/faq', '/contact', '/privacy', '/terms'];
 
 /** `/services` in the default locale, `/en/services` elsewhere. */
 function localized(base: URL, locale: Locale, pathname: string): string {

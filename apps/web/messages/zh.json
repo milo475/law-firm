@@ -21,7 +21,8 @@
     "faq": "常见问题",
     "contact": "联系我们",
     "portal": "客户门户",
-    "cta": "咨询申请"
+    "cta": "咨询申请",
+    "reviews": ""
   },
   "footer": {
     "description": "提供专业法律服务的机构，为个人和企业提供辩护代理与法律咨询。",
@@ -1617,6 +1618,64 @@
       "twoFactor": "双重身份验证",
       "twoFactorHint": "每次登录时将通过短信发送验证码。· {soon}"
     },
-    "redirecting": "正在跳转至登录页面……"
+    "redirecting": "正在跳转至登录页面……",
+    "testimonial": {
+      "cta": "",
+      "ctaHint": "",
+      "title": "",
+      "description": "",
+      "bodyLabel": "",
+      "bodyPlaceholder": "",
+      "bodyHelper": "",
+      "ratingLabel": "",
+      "ratingValue": "",
+      "ratingClear": "",
+      "consent": "",
+      "consentHelper": "",
+      "submit": "",
+      "submitting": "",
+      "cancel": "",
+      "sentTitle": "",
+      "sentBody": "",
+      "failed": "",
+      "tryAgain": "",
+      "myTitle": "",
+      "status": {
+        "PENDING": "",
+        "PUBLISHED": "",
+        "REJECTED": ""
+      },
+      "statusPendingHint": "",
+      "statusPublishedHint": "",
+      "statusRejectedHint": "",
+      "revoke": "",
+      "revoking": "",
+      "revokedTitle": "",
+      "revokedBody": "",
+      "revokeFailed": "",
+      "consentRevoked": "",
+      "alreadyLeft": ""
+    }
+  },
+  "reviews": {
+    "metaTitle": "",
+    "metaDescription": "",
+    "title": "",
+    "description": "",
+    "crumb": "",
+    "nav": "",
+    "homeOverline": "",
+    "homeTitle": "",
+    "all": "",
+    "serviceTitle": "",
+    "filterLabel": "",
+    "noneTitle": "",
+    "noneDescription": "",
+    "noneFiltered": "",
+    "failedTitle": "",
+    "failedDescription": "",
+    "ratingLabel": "",
+    "inOriginalLanguage": "",
+    "count": ""
   }
 }

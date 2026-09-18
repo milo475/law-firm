@@ -11,6 +11,7 @@ const PUBLIC_PAGES: [string, string][] = [
   ['services', '/services'],
   ['service-detail', '/services/civil'],
   ['lawyers', '/lawyers'],
+  ['reviews', '/reviews'],
   ['news', '/news'],
   ['news-detail', '/news/geree-baiguulahad-anhaarah-zuils'],
   ['faq', '/faq'],
@@ -49,6 +50,7 @@ const ADMIN_PAGES: [string, string][] = [
   ['admin-post-new', '/admin/posts/new'],
   ['admin-invoices', '/admin/invoices'],
   ['admin-requests', '/admin/requests'],
+  ['admin-testimonials', '/admin/testimonials'],
   ['admin-settings', '/admin/settings'],
   ['admin-profile', '/admin/profile'],
 ];

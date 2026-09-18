@@ -17,6 +17,9 @@ describe('AuditInterceptor.entityFromRoute', () => {
     ['/notifications/read-all', 'notifications'],
     ['/users/me/password', 'users'],
     ['/contact/:id/status', 'contact'],
+    ['/admin/testimonials', 'testimonials'],
+    ['/admin/testimonials/:id', 'testimonials'],
+    ['/admin/stats', 'stats'],
   ])('%s → %s', (route, entity) => {
     expect(AuditInterceptor.entityFromRoute(route)).toBe(entity);
   });

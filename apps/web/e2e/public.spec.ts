@@ -49,9 +49,14 @@ test.describe('Нийтийн сайт', () => {
   test('хуульчдын мэргэшлийн шүүлтүүр түлхүүрээр ажиллаж, хуучин холбоос шилжинэ', async ({ page }) => {
     const cards = page.locator('main a[href^="/lawyers/"]:visible');
 
+    // The page is ISR-cached and the build ran without an API, so the first hit can be the empty
+    // shell; poll until the revalidated render arrives.
     await page.goto('/lawyers');
+    await expect.poll(async () => {
+      await page.reload();
+      return cards.count();
+    }).toBeGreaterThan(1);
     const total = await cards.count();
-    expect(total).toBeGreaterThan(1);
 
     // The chip navigates to the ASCII key, not the Mongolian label.
     await page.getByRole('navigation', { name: 'Мэргэшлийн чиглэлээр шүүх' }).getByRole('link', { name: 'Иргэний' }).click();

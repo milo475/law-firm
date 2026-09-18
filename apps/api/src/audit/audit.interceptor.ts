@@ -70,6 +70,8 @@ export class AuditInterceptor implements NestInterceptor {
     if (segments.length >= 3 && segments[1].startsWith(':') && NESTED_RESOURCES.has(segments[2])) {
       return segments[2];
     }
+    // Staff-only twins of a public resource: /admin/testimonials/:id → `testimonials`
+    if (segments[0] === 'admin' && segments.length >= 2 && !segments[1].startsWith(':')) return segments[1];
     return segments[0];
   }
 

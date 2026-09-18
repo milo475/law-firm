@@ -418,3 +418,44 @@ export interface NotificationItem {
   /** Who caused it; null for system or public events. */
   actor?: PublicUser | null;
 }
+
+/** GET /testimonials — the public shape; nothing here identifies the client beyond the name they agreed to show. */
+export interface PublicTestimonial {
+  id: string;
+  authorName: string;
+  authorTitle: string | null;
+  body: string;
+  rating: number | null;
+  caseType: string | null;
+  publishedAt: string | null;
+}
+
+/** GET /testimonials/mine (CLIENT) — the author's own row with its current status. */
+export interface MyTestimonial extends PublicTestimonial {
+  status: 'PENDING' | 'PUBLISHED' | 'REJECTED';
+  consentGiven: boolean;
+  createdAt: string;
+  case: { id: string; caseNumber: string; title: string } | null;
+}
+
+/** GET /admin/testimonials (ADMIN, LAWYER) */
+export interface AdminTestimonial extends PublicTestimonial {
+  status: 'PENDING' | 'PUBLISHED' | 'REJECTED';
+  source: 'PORTAL' | 'MANUAL';
+  consentGiven: boolean;
+  consentedAt: string | null;
+  consentNote: string | null;
+  displayOrder: number;
+  isFeatured: boolean;
+  createdAt: string;
+  updatedAt: string;
+  authorUserId: string | null;
+  authorUser: { id: string; firstName: string; lastName: string; email: string } | null;
+  case: { id: string; caseNumber: string; title: string; type: string } | null;
+  approvedBy: { id: string; firstName: string; lastName: string } | null;
+}
+
+export interface TestimonialSummary {
+  pending: number;
+  published: number;
+}

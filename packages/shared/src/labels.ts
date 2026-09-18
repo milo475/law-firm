@@ -10,6 +10,8 @@ import type {
   PostStatus,
   ServiceRequestStatus,
   ServiceRequestType,
+  TestimonialSource,
+  TestimonialStatus,
   TaskPriority,
   TaskStatus,
   Role,
@@ -89,4 +91,15 @@ export const SERVICE_REQUEST_STATUS_LABELS: Record<ServiceRequestStatus, string>
   ACCEPTED: 'Хүлээж авсан',
   REJECTED: 'Татгалзсан',
   CONVERTED: 'Хэрэг нээгдсэн',
+};
+
+export const TESTIMONIAL_STATUS_LABELS: Record<TestimonialStatus, string> = {
+  PENDING: 'Хянагдаагүй',
+  PUBLISHED: 'Нийтэлсэн',
+  REJECTED: 'Татгалзсан',
+};
+
+export const TESTIMONIAL_SOURCE_LABELS: Record<TestimonialSource, string> = {
+  PORTAL: 'Порталаас',
+  MANUAL: 'Гараар',
 };

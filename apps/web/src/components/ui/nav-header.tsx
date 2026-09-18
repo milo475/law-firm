@@ -11,7 +11,7 @@ import { Button } from './button';
 import { LanguageSwitcher } from './language-switcher';
 import { Logo } from './logo';
 
-const PUBLIC_NAV = ['about', 'services', 'lawyers', 'news', 'faq', 'contact'] as const;
+const PUBLIC_NAV = ['about', 'services', 'lawyers', 'reviews', 'news', 'faq', 'contact'] as const;
 
 export function NavHeader() {
   const t = useTranslations('nav');
@@ -23,12 +23,12 @@ export function NavHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border-default bg-bg-surface">
-      {/* Desktop — 1440 frame: 88px, 120px side padding (max 1200 content).
-          The full row (logo + 6 links + two actions) only fits from 1280px, so narrower
-          screens get the compact header with the drawer menu. */}
-      <div className="mx-auto hidden h-[88px] max-w-[1200px] items-center justify-between gap-4 px-6 xl:flex">
-        <Logo />
-        <nav aria-label={t('menu')} className="flex items-center gap-3">
+      {/* Desktop — 1440 frame: 88px (Figma uses a 1200 content column; the row is allowed to run to
+          1320 so the seven links, the language switcher and both actions fit without shrinking).
+          Below 1280 the compact header with the drawer menu takes over. */}
+      <div className="mx-auto hidden h-[88px] max-w-[1320px] items-center justify-between gap-4 px-6 xl:flex">
+        <span className="shrink-0"><Logo /></span>
+        <nav aria-label={t('menu')} className="flex items-center gap-2">
           {PUBLIC_NAV.map((item) => (
             <Link
               key={item}
@@ -40,7 +40,7 @@ export function NavHeader() {
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <LanguageSwitcher />
           <Link href="/portal" className="focus-ring inline-flex h-11 items-center whitespace-nowrap rounded-md px-3 text-body-medium text-text-brand hover:bg-bg-brand-soft">
             {t('portal')}

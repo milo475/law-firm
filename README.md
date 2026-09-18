@@ -776,7 +776,66 @@ LAWYER хүсэлтийг удирдахгүй (403): хуваарилагдса
 
 ---
 
-## 14. Гурван хэл (mn · en · zh)
+## 14. Харилцагчийн сэтгэгдэл (Testimonial)
+
+Сайт дээрх сэтгэгдэл бүр **бодит харилцагчийнх**. Хоёр эх сурвалжтай: харилцагч порталаас өөрөө
+бичих (`source=PORTAL`), эсвэл Facebook, и-мэйл, амаар ирсэн сэтгэгдлийг ажилтан гараар оруулах
+(`source=MANUAL`). Аль нь ч эхлээд `PENDING` төлөвтэй үүсч, ажилтан хянасны дараа нийтлэгдэнэ.
+
+### Нууцлал — код түвшний баталгаа
+
+Хуулийн фирмийн харилцагчийн нэрийг зөвшөөрөлгүй нийтлэх нь өмгөөллийн нууцын зөрчил. Тиймээс:
+
+| Дүрэм | Хаана хэрэгждэг |
+| --- | --- |
+| `PUBLISHED` болгохын тулд `consentGiven=true` **ба** `consentNote` байх ёстой | `TestimonialsService.update()` — UI биш service давхарга |
+| Нийтийн `GET /testimonials` зөвхөн `id, authorName, authorTitle, body, rating, caseType, publishedAt` буцаана | `PUBLIC_SELECT` — `authorUserId`, `caseId`, и-мэйл, утас хэзээ ч гарахгүй |
+| Харилцагч зөвшөөрлөө цуцалбал сэтгэгдэл шууд сайтаас алга болно | `POST /testimonials/:id/revoke-consent` → `PENDING`, `consentGiven=false`, `publishedAt=null`, `isFeatured=false` |
+| Нийтлэх товч дарахад зөвшөөрлийн баталгаажуулалт + тэмдэглэл шаардана | `PublishTestimonialModal` (админ) |
+
+`consentNote` нь зөвшөөрлийг хэрхэн авсны бичлэг: «Порталаас баталсан», «2026-09-20-нд и-мэйлээр» гэх мэт.
+Порталаас ирсэн сэтгэгдэлд автоматаар бичигдэнэ.
+
+### Endpoint-ууд
+
+| Endpoint | Эрх | Тайлбар |
+| --- | --- | --- |
+| `GET /testimonials` | Нийтийн | Зөвхөн `PUBLISHED`. `caseType`, `featured`, `limit` шүүлт; онцлох нь эхэнд, дараа нь `displayOrder` |
+| `POST /testimonials` | CLIENT | Хаагдсан **өөрийн** хэрэгт сэтгэгдэл үлдээх. `consentGiven: true` заавал (үгүй бол 400), нэг хэрэгт нэг удаа (давхардвал 409) |
+| `GET /testimonials/mine` | CLIENT | Өөрийн сэтгэгдлүүд төлөвтэйгээ |
+| `POST /testimonials/:id/revoke-consent` | CLIENT | Нийтлэх зөвшөөрлөө цуцлах |
+| `GET /admin/testimonials` | ADMIN, LAWYER | Бүх сэтгэгдэл; `status`, `source`, `caseType` шүүлт; хянагдаагүй нь эхэнд |
+| `GET /admin/testimonials/summary` | ADMIN, LAWYER | Хянагдаагүй / нийтэлсэн тоо |
+| `POST /admin/testimonials` | ADMIN, LAWYER | Гараар нэмэх (`MANUAL`, `PENDING`) |
+| `PATCH /admin/testimonials/:id` | ADMIN, LAWYER | Засах, төлөв солих, эрэмбэ, онцлох |
+| `DELETE /admin/testimonials/:id` | ADMIN, LAWYER | Устгах |
+
+Шинэ сэтгэгдэл ирэхэд бүх идэвхтэй ажилтанд мэдэгдэл очно; нийтэлсэн/татгалзсаныг зохиогчид нь мэдэгдэнэ.
+Бүх мутаци audit log-д бичигдэнэ (`entity = testimonials`).
+
+### Харагдах газар
+
+- **Нүүр хуудас** — `isFeatured` сэтгэгдлээс 3. Нийтэлсэн сэтгэгдэл байхгүй бол блок бүхэлдээ харагдахгүй.
+- **`/reviews`** — бүх нийтэлсэн сэтгэгдэл, чиглэлээр шүүх (`?type=civil`). Цэс, хөл, sitemap-д гурван хэлээр.
+- **`/services/[slug]`** — тухайн `caseType`-ийн 2 сэтгэгдэл; байхгүй бол хэсэг харагдахгүй.
+
+Сэтгэгдлийн **бичвэр орчуулагдахгүй** — харилцагчийн бичсэн эх хэлээр нь харагдана. `/en`, `/zh`
+дээр жагсаалтын дээр «Сэтгэгдлүүд эх хэлээрээ байна.» гэсэн тэмдэглэгээ гарна (нийтлэлийнхтэй ижил).
+Шошго, гарчиг нь `reviews.*` түлхүүрээр орчуулагдана; порталын форм `portal.testimonial.*`.
+
+**Review / AggregateRating JSON-LD зориуд нэмээгүй** — баталгаажсан үнэлгээний тоо цөөн байхад
+хайлтын системийн бодлого зөрчигдөх эрсдэлтэй. Сэтгэгдэл олширсон үед дахин авч үзнэ.
+
+### Порталын урсгал
+
+Хэрэг `CLOSED` болмогц хэргийн «Тойм» табд «Үйлчилгээний талаар сэтгэгдэл үлдээх» карт гарна →
+форм (бичвэр 30–1000 тэмдэгт, үнэлгээ 1–5 сонголт, зөвшөөрлийн checkbox заавал) → илгээмэгц
+«Танай сэтгэгдлийг хүлээн авлаа» → төлөв («Хянагдаж байна» / «Сайтад нийтлэгдсэн» / «Нийтлээгүй»)
+болон «Нийтлэхийг цуцлах» товч тэр картад үлдэнэ.
+
+---
+
+## 15. Гурван хэл (mn · en · zh)
 
 Сайт `next-intl`-ээр ажиллана. Анхдагч хэл **монгол** бөгөөд URL нь угтваргүй (`/services`), англи нь `/en/...`,
 хятад нь `/zh/...` (`localePrefix: 'as-needed'`). Хэлийг `NEXT_LOCALE` cookie санана; Accept-Language-ийг зөвхөн
@@ -833,7 +892,7 @@ README-д биш, тусдаа шийдвэрээр хийнэ.
 
 ---
 
-## 15. Тест
+## 16. Тест
 
 ```bash
 pnpm test            # эсвэл: pnpm --filter @law-firm/api test
@@ -922,12 +981,22 @@ Playwright (42 тест): нийтийн сайт (2), портал (2), адм�
 
 ---
 
-## 16. Production тэмдэглэл
+## 17. Production тэмдэглэл
 
 - `pnpm build` → `apps/api/dist`, `apps/web/.next`. API: `node dist/main`, web: `next start`.
 - API `trust proxy` = `TRUST_PROXY_HOPS` (зөвхөн production), cookie `secure` = true.
 - Web ба API нэг үндсэн домэйны subdomain дээр байвал `COOKIE_DOMAIN=.lawfirm.mn` тохируулж болно.
-- Migration: `pnpm db:deploy`.
+- Migration: `pnpm db:deploy`. Railway дээр `pnpm start:api` нь эхлэхдээ `prisma migrate deploy`
+  ажиллуулдаг тул шинэ migration deploy хийхэд автоматаар орно. Гараар ажиллуулах бол
+  **Railway → api service → Console**:
+
+  ```bash
+  pnpm --filter @law-firm/shared exec prisma migrate deploy --schema prisma/schema.prisma
+  pnpm --filter @law-firm/shared exec prisma migrate status --schema prisma/schema.prisma   # шалгах
+  ```
+
+  `DATABASE_URL` тухайн service-ийн env-ээс шууд уншигдана; өгөгдөлд гар хүрэхгүй, зөвхөн
+  бүтцийн өөрчлөлт хийнэ (`Testimonial` хүснэгт + `TestimonialStatus`, `TestimonialSource` enum).
 
 ### Railway (web + api хоёр service)
 

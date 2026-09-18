@@ -24,6 +24,7 @@ import { PerformanceModule } from './performance/performance.module';
 import { PostsModule } from './posts/posts.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RemindersModule } from './reminders/reminders.module';
+import { TestimonialsModule } from './testimonials/testimonials.module';
 import { ServiceRequestsModule } from './service-requests/service-requests.module';
 import { SettingsModule } from './settings/settings.module';
 import { StorageModule } from './storage/storage.module';
@@ -62,6 +63,7 @@ import { UsersModule } from './users/users.module';
     NotificationsModule,
     ContactModule,
     ServiceRequestsModule,
+    TestimonialsModule,
     AdminModule,
     SettingsModule,
     TasksModule,

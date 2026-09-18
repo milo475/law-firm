@@ -100,6 +100,19 @@ enum ServiceRequestStatus {
   CONVERTED
 }
 
+enum TestimonialStatus {
+  PENDING
+  PUBLISHED
+  REJECTED
+}
+
+/// Where the testimonial came from: the client wrote it in the portal, or staff typed in
+/// something that arrived by e-mail, Facebook or word of mouth.
+enum TestimonialSource {
+  PORTAL
+  MANUAL
+}
+
 enum TaskStatus {
   TODO
   IN_PROGRESS
@@ -151,6 +164,8 @@ model User {
   actedNotifications       Notification[]    @relation("NotificationActor")
   taskAttachments          TaskAttachment[]  @relation("TaskAttachmentUploader")
   updatedSettings          Setting[]         @relation("SettingUpdater")
+  testimonials             Testimonial[]     @relation("TestimonialAuthor")
+  approvedTestimonials     Testimonial[]     @relation("TestimonialApprover")
   serviceRequests          ServiceRequest[]  @relation("ServiceRequestRequester")
   reviewedServiceRequests  ServiceRequest[]  @relation("ServiceRequestReviewer")
   auditLogs                AuditLog[]
@@ -237,6 +252,7 @@ model Case {
   messages         Message[]
   members          CaseMember[]
   tasks            Task[]
+  testimonials     Testimonial[]
   /// The service request this case was opened from, if any.
   serviceRequest   ServiceRequest?
 
@@ -504,4 +520,44 @@ model TaskAttachment {
   createdAt    DateTime @default(now())
 
   @@index([taskId, createdAt])
+}
+
+/// A client testimonial shown on the public site.
+///
+/// Publishing a client's name is only lawful with their permission, so `consentGiven` gates the
+/// PUBLISHED status in the service layer (not just in the UI) and `consentNote` records how the
+/// permission was obtained. The public endpoint never returns `authorUserId` or `caseId`.
+model Testimonial {
+  id           String            @id @default(uuid()) @db.Uuid
+  /// Full name, as the client agreed to have it shown.
+  authorName   String
+  /// Optional role or company, e.g. «ХХК-ийн захирал».
+  authorTitle  String?
+  body         String            @db.Text
+  rating       Int?
+  /// Lets the service pages show testimonials from their own area of law.
+  caseType     CaseType?
+  status       TestimonialStatus @default(PENDING)
+  source       TestimonialSource @default(MANUAL)
+  authorUserId String?           @db.Uuid
+  authorUser   User?             @relation("TestimonialAuthor", fields: [authorUserId], references: [id], onDelete: SetNull)
+  caseId       String?           @db.Uuid
+  case         Case?             @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  consentGiven Boolean           @default(false)
+  consentedAt  DateTime?
+  /// How the consent was obtained: «порталаас баталсан», «2026-09-20-нд и-мэйлээр», …
+  consentNote  String?           @db.Text
+  displayOrder Int               @default(0)
+  isFeatured   Boolean           @default(false)
+  publishedAt  DateTime?
+  approvedById String?           @db.Uuid
+  approvedBy   User?             @relation("TestimonialApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  /// One testimonial per client per case (NULLs never collide, so manual rows are unaffected).
+  @@unique([authorUserId, caseId])
+  @@index([status, displayOrder])
+  @@index([caseType, status])
+  @@index([isFeatured, status])
 }

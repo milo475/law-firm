@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { DownloadIcon } from '@/components/icons';
 import { ChatThread } from '@/components/messages/chat-thread';
 import { DocumentRequestsPanel } from '@/components/portal/document-requests-panel';
+import { TestimonialPanel } from '@/components/portal/testimonial-panel';
 import { useUser } from '@/components/portal/user-context';
 import { Avatar } from '@/components/ui/avatar';
 import { CASE_STATUS_BADGE, INVOICE_STATUS_BADGE, StatusBadge } from '@/components/ui/badge';
@@ -140,6 +141,8 @@ export default function CaseDetailPage() {
   const lawyerCard = <LawyerCard lawyer={lawyer} onMessage={() => setTab('messages')} />;
   const recentDocs = <RecentDocumentsCard documents={docs} loading={documents.isLoading} onShowAll={() => setTab('documents')} onDownload={(d) => void download(d)} />;
   const finance = <FinanceCard invoices={invoiceItems} loading={invoices.isLoading} />;
+  // A testimonial is only asked for once the work is done.
+  const testimonial = c.status === 'CLOSED' ? <TestimonialPanel caseId={id} /> : null;
 
   return (
     <div className="flex flex-col">
@@ -213,6 +216,7 @@ export default function CaseDetailPage() {
           {/* Mobile + tablet: single column in the mobile frame's order (36:1096) */}
           <div className="flex flex-col gap-4 xl:hidden">
             {overview}
+            {testimonial}
             {nextEventCard}
             {timelineCard}
             {lawyerCard}
@@ -220,7 +224,7 @@ export default function CaseDetailPage() {
           </div>
           {/* Desktop: fluid left column + 344px right column (31:403) */}
           <div className="hidden items-start gap-6 xl:flex">
-            <div className="flex min-w-0 flex-1 flex-col gap-6">{overview}{timelineCard}{recentDocs}</div>
+            <div className="flex min-w-0 flex-1 flex-col gap-6">{overview}{testimonial}{timelineCard}{recentDocs}</div>
             <div className="flex w-[344px] shrink-0 flex-col gap-5">{lawyerCard}{nextEventCard}{finance}</div>
           </div>
         </TabsContent>

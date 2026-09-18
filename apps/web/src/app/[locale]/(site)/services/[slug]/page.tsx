@@ -8,8 +8,10 @@ import { Button } from '@/components/ui/button';
 import { COMMITMENTS, priceRow } from '@/content/commitments';
 import { SERVICES, SERVICE_FAQ_IDS, findService, type ServicePricingRow } from '@/content/services';
 import { isSpecializationKey, matchesSpecialization } from '@/content/specializations';
+import { OriginalLanguageNote, TestimonialCard } from '@/components/ui/testimonial-card';
 import { Link } from '@/i18n/navigation';
-import { apiFetch, type LawyerProfile } from '@/lib/api';
+import type { Locale } from '@/i18n/routing';
+import { apiFetch, type LawyerProfile, type PublicTestimonial } from '@/lib/api';
 import { alternateLanguages } from '@/lib/seo';
 import { initials, shortName } from '@/lib/utils';
 import { ServiceFaqAccordion } from './faq-accordion';
@@ -46,6 +48,15 @@ async function lawyersFor(slug: string): Promise<LawyerProfile[] | null> {
     return (matched.length ? matched : all).slice(0, 3);
   } catch {
     return null;
+  }
+}
+
+/** Published testimonials from this area of law; an empty list hides the whole block. */
+async function testimonialsFor(caseType: string): Promise<PublicTestimonial[]> {
+  try {
+    return await apiFetch<PublicTestimonial[]>(`/testimonials?caseType=${caseType}&limit=2`, { next: { revalidate: 60 } });
+  } catch {
+    return [];
   }
 }
 
@@ -90,14 +101,15 @@ export default async function ServiceDetailPage({ params }: Params) {
   setRequestLocale(locale);
   const service = findService(slug);
   if (!service) notFound();
-  const [t, tCommon, tCatalog, tServices] = await Promise.all([
+  const [t, tCommon, tCatalog, tServices, tReviews] = await Promise.all([
     getTranslations('servicesPage'),
     getTranslations('common'),
     getTranslations('services.catalog'),
     getTranslations('services'),
+    getTranslations('reviews'),
   ]);
   const title = tCatalog(`${slug}.title`);
-  const lawyers = await lawyersFor(slug);
+  const [lawyers, testimonials] = await Promise.all([lawyersFor(slug), testimonialsFor(service.caseType)]);
   const faqItems = (SERVICE_FAQ_IDS[slug] ?? []).map((id) => ({
     id,
     question: tCatalog(`${slug}.faq.${id}.question`),
@@ -144,6 +156,24 @@ export default async function ServiceDetailPage({ params }: Params) {
 
             <h3 className="text-h4 md:text-h3">{t('faqHeading')}</h3>
             <ServiceFaqAccordion items={faqItems} />
+
+            {/* Testimonials from this area — hidden entirely when there are none. */}
+            {testimonials.length > 0 && (
+              <div className="flex flex-col gap-4 md:gap-6">
+                <h3 className="text-h4 md:text-h3">{tReviews('serviceTitle')}</h3>
+                <OriginalLanguageNote locale={locale as Locale} />
+                <ul className="grid gap-4 md:grid-cols-2 md:gap-6">
+                  {testimonials.map((testimonial) => (
+                    <li key={testimonial.id}>
+                      <TestimonialCard testimonial={testimonial} locale={locale as Locale} />
+                    </li>
+                  ))}
+                </ul>
+                <div>
+                  <Button asChild variant="secondary" size="md"><Link href={`/reviews?type=${slug}`}>{tReviews('all')}</Link></Button>
+                </div>
+              </div>
+            )}
           </article>
 
           <aside className="flex w-full flex-col gap-6 lg:w-[320px] lg:shrink-0">

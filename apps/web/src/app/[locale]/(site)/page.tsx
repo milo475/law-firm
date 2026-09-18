@@ -2,10 +2,11 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Button } from '@/components/ui/button';
 import { ImagePlaceholder, LawyerCard, NewsCard, ServiceCard } from '@/components/ui/card';
+import { OriginalLanguageNote, TestimonialCard } from '@/components/ui/testimonial-card';
 import { SERVICES } from '@/content/services';
 import { Link } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
-import { apiFetch, type LawyerProfile, type Paginated, type PostListItem } from '@/lib/api';
+import { apiFetch, type LawyerProfile, type Paginated, type PostListItem, type PublicTestimonial } from '@/lib/api';
 import { loadFirmSettings } from '@/lib/firm';
 import { formatDate, formatPhone, phoneHref } from '@/lib/format';
 import { cn, shortName } from '@/lib/utils';
@@ -27,18 +28,20 @@ const SECTION = 'mx-auto w-full max-w-[1200px] px-5 py-14 md:px-6 md:py-24';
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const [t, tCommon, tCatalog, tCategory] = await Promise.all([
+  const [t, tCommon, tCatalog, tCategory, tReviews] = await Promise.all([
     getTranslations('home'),
     getTranslations('common'),
     getTranslations('services.catalog'),
     getTranslations('enums.postCategory'),
+    getTranslations('reviews'),
   ]);
   // Advantages band — "Stats" (16:92 desktop / 24:1085 mobile). How we work, not numbers we cannot back up.
   const advantages = t.raw('advantages') as { value: string; label: string; note: string }[];
-  const [lawyers, posts, firm] = await Promise.all([
+  const [lawyers, posts, firm, testimonials] = await Promise.all([
     load<LawyerProfile[]>('/lawyers'),
     load<Paginated<PostListItem>>('/posts?limit=3'),
     loadFirmSettings(),
+    load<PublicTestimonial[]>('/testimonials?featured=true&limit=3'),
   ]);
 
   return (
@@ -133,6 +136,27 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       </section>
 
       {/* News (16:145 / 24:1119) */}
+      {/* Testimonials — only when the firm has published ones; no placeholder cards. */}
+      {testimonials && testimonials.length > 0 && (
+        <section className="bg-bg-surface-alt">
+          <div className={cn(SECTION, 'flex flex-col gap-8 md:gap-12')}>
+            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between md:gap-8">
+              <SectionHead overline={tReviews('homeOverline')} title={tReviews('homeTitle')} />
+              <Button asChild variant="secondary" size="md" className="hidden md:inline-flex"><Link href="/reviews">{tReviews('all')}</Link></Button>
+            </div>
+            <OriginalLanguageNote locale={locale as Locale} />
+            <ul className="grid gap-4 md:grid-cols-3 md:gap-8">
+              {testimonials.map((testimonial, index) => (
+                <li key={testimonial.id} className={cn('h-full', index >= 2 && 'hidden md:block')}>
+                  <TestimonialCard testimonial={testimonial} locale={locale as Locale} />
+                </li>
+              ))}
+            </ul>
+            <Button asChild variant="secondary" size="md" className="w-full md:hidden"><Link href="/reviews">{tReviews('all')}</Link></Button>
+          </div>
+        </section>
+      )}
+
       <section className="bg-bg-page">
         <div className={cn(SECTION, 'flex flex-col gap-8 md:gap-12')}>
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between md:gap-8">

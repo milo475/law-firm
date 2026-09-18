@@ -13,18 +13,20 @@ const link = 'focus-ring rounded-sm text-body-sm text-text-on-inverse-muted hove
 /** Contacts and the legal name come from the firm settings an ADMIN edits on /admin/settings. */
 export async function Footer() {
   const year = new Date().getFullYear();
-  const [firm, t, tNav, tService, tServices] = await Promise.all([
+  const [firm, t, tNav, tService, tServices, tReviews] = await Promise.all([
     loadFirmSettings(),
     getTranslations('footer'),
     getTranslations('nav'),
     getTranslations('services.catalog'),
     getTranslations('services'),
+    getTranslations('reviews'),
   ]);
 
   const services = SERVICES.map((service) => ({ label: tService(`${service.slug}.title`), href: `/services/${service.slug}` }));
   const company = [
     { label: tNav('about'), href: '/about' },
     { label: tNav('lawyers'), href: '/lawyers' },
+    { label: tReviews('nav'), href: '/reviews' },
     { label: t('news'), href: '/news' },
     { label: tNav('faq'), href: '/faq' },
     // The careers mailbox only appears once its address is confirmed (content/commitments.ts).

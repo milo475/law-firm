@@ -114,6 +114,17 @@ export const SERVICE_REQUEST_STATUS_LABELS: Record<string, string> = {
   CONVERTED: 'Хэрэг нээгдсэн',
 };
 
+export const TESTIMONIAL_STATUS_LABELS: Record<string, string> = {
+  PENDING: 'Хянагдаагүй',
+  PUBLISHED: 'Нийтэлсэн',
+  REJECTED: 'Татгалзсан',
+};
+
+export const TESTIMONIAL_SOURCE_LABELS: Record<string, string> = {
+  PORTAL: 'Порталаас',
+  MANUAL: 'Гараар',
+};
+
 export const CASE_EVENT_LABELS: Record<string, string> = {
   NOTE: 'Тэмдэглэл',
   HEARING: 'Шүүх хурал',
