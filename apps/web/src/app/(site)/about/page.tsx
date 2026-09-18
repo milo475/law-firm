@@ -5,22 +5,22 @@ import { PageHeader } from '@/components/ui/page-header';
 
 export const metadata: Metadata = {
   title: 'Бидний тухай',
-  description: 'Strategy Law Firm нь 2009 оноос хойш Монгол Улсын иргэд, аж ахуйн нэгжид эрх зүйн иж бүрэн үйлчилгээ үзүүлж байна.',
+  description: 'Strategy Law Firm — хууль зүйн мэргэжлийн туслалцаа үзүүлэгч байгууллага. Иргэн, аж ахуйн нэгжид өмгөөлөл, эрх зүйн зөвлөгөө үзүүлнэ.',
 };
 
 const VALUES = [
   { title: 'Шударга байдал', text: 'Бид харилцагчдаа хэргийн бодит боломжийг үнэн зөвөөр хэлдэг. Амлаж чадахгүй зүйлээ хэзээ ч амладаггүй.' },
   { title: 'Ил тод байдал', text: 'Төлбөрийн бүтэц, хэргийн явц, хугацааны төлөвлөгөөг эхнээс нь бичгээр тодорхойлж өгнө.' },
   { title: 'Нууцлал', text: 'Харилцагчийн мэдээллийг хуулийн дагуу чанд хамгаална. Дотоод системд хандах эрхийг хатуу зохицуулдаг.' },
-  { title: 'Тасралтгүй хөгжил', text: 'Хуульч бүр жилд дор хаяж 40 цагийн мэргэжлийн сургалтад хамрагддаг.' },
+  { title: 'Ойлгомжтой хэл', text: 'Эрх зүйн нөхцөл байдлыг хуулийн хэллэгээр биш, шийдвэр гаргахад хэрэгтэй хэлбэрээр тайлбарлана.' },
 ];
 
-const MILESTONES = [
-  { year: '2009', title: 'Фирм үүсэв', text: 'Гурван хуульчтай, Сүхбаатар дүүрэгт анхны оффис.' },
-  { year: '2013', title: 'Эрүүгийн алба', text: 'Өмгөөллийн тусгай алба байгуулж, 8 хуульч нэмэгдэв.' },
-  { year: '2018', title: 'Бизнесийн практик', text: 'Компанийн эрх зүйн чиглэлээр 40 гаруй ААН-тэй гэрээ байгуулав.' },
-  { year: '2022', title: 'Дижитал портал', text: 'Харилцагч хэргийн явцаа онлайнаар хянах систем нэвтрүүлэв.' },
-  { year: '2026', title: 'Олон улсын сүлжээ', text: 'Азийн 14 орны хуулийн фирмүүдийн сүлжээнд элсэв.' },
+/** How an engagement runs — process, not history: nothing here is a claim about the firm's past. */
+const PROCESS = [
+  { step: '01', title: 'Хүсэлт хүлээн авах', text: 'Порталаар эсхүл холбоо барих хэсгээр хүсэлтээ илгээнэ. Асуудлын төрлийг тодруулна.' },
+  { step: '02', title: 'Урьдчилсан үнэлгээ', text: 'Баримт бичигтэй танилцаж, эрх зүйн боломж, эрсдэлийг тайлбарлана.' },
+  { step: '03', title: 'Гэрээ, төлөвлөгөө', text: 'Хийх ажил, хугацаа, төлбөрийн нөхцөлийг бичгээр тохиролцоно.' },
+  { step: '04', title: 'Хэрэг хөтлөх', text: 'Байгууллага, шүүхэд төлөөлж, явцын мэдээллийг харилцагчийн порталд тогтмол оруулна.' },
 ];
 
 export default function AboutPage() {
@@ -28,7 +28,7 @@ export default function AboutPage() {
     <>
       <PageHeader
         title="Бидний тухай"
-        description="Strategy Law Firm нь 2009 оноос хойш Монгол Улсын иргэд, аж ахуйн нэгжид эрх зүйн иж бүрэн үйлчилгээ үзүүлж байна."
+        description="Strategy Law Firm — хууль зүйн мэргэжлийн туслалцаа үзүүлэгч байгууллага."
         crumbs={[{ label: 'Нүүр', href: '/' }, { label: 'Бидний тухай' }]}
       />
 
@@ -36,10 +36,10 @@ export default function AboutPage() {
       <section className="bg-bg-surface">
         <div className="mx-auto flex max-w-[1200px] flex-col gap-5 px-5 py-14 md:px-6 lg:flex-row lg:items-center lg:gap-20 lg:py-24">
           <div className="flex flex-col gap-5 lg:w-[560px] lg:shrink-0 lg:gap-6">
-            <p className="text-overline text-text-accent">БИДНИЙ ТҮҮХ</p>
-            <h2 className="text-h3 md:text-h2">Гурван хуульчаас эхэлсэн зам</h2>
-            <p className="text-body text-text-secondary">2009 онд гурван хуульч Улаанбаатар хотод жижиг оффис түрээслэн Strategy Law Firm-ийг үүсгэн байгуулсан. Анхны харилцагчид маань хөдөлмөрийн маргаантай иргэд байв.</p>
-            <p className="text-body text-text-secondary">Өнөөдөр бид 24 хуульчтай, зургаан үндсэн чиглэлээр мэргэшсэн, жилд дунджаар 180 гаруй хэрэг хөтөлдөг фирм болон өргөжсөн. Гэхдээ анхны зарчим маань хэвээр — харилцагч бүрийн хэрэг ижил чухал.</p>
+            <p className="text-overline text-text-accent">БИДНИЙ ТУХАЙ</p>
+            <h2 className="text-h3 md:text-h2">Эрх зүйн асуудлыг ойлгомжтой болгож, дэргэд нь зогсоно</h2>
+            <p className="text-body text-text-secondary">Strategy Law Firm нь иргэн, аж ахуйн нэгжид хууль зүйн мэргэжлийн туслалцаа үзүүлдэг. Өмгөөллийн үйлчилгээ, эрх зүйн зөвлөгөө, баримт бичгийн боловсруулалт, байгууллага болон шүүхэд төлөөлөх ажлыг хариуцан гүйцэтгэнэ.</p>
+            <p className="text-body text-text-secondary">Хэрэг бүрийг хүлээн авахдаа эхлээд бодит боломжийг нь үнэлж, хийж чадах зүйлээ тодорхой хэлдэг. Ажлын явцыг харилцагчийн порталаар хөтөлж, баримт бичиг, хугацаа, дараагийн алхам нь үргэлж нэг дор харагдаж байхаар зохион байгуулсан.</p>
           </div>
           <ImagePlaceholder className="order-first h-[220px] rounded-lg lg:order-none lg:h-[420px] lg:flex-1" markSize={56} />
         </div>
@@ -68,17 +68,17 @@ export default function AboutPage() {
       <section className="bg-bg-inverse">
         <div className="mx-auto flex max-w-[1200px] flex-col gap-8 px-5 py-14 md:px-6 lg:gap-12 lg:py-24">
           <div className="flex flex-col gap-3 lg:gap-4">
-            <p className="text-overline text-accent-default">ТҮҮХЭН ЗАМНАЛ</p>
-            <h2 className="text-h3 text-text-on-inverse md:text-h2">Чухал үе шатууд</h2>
+            <p className="text-overline text-accent-default">ХАМТРАН АЖИЛЛАХ ЯВЦ</p>
+            <h2 className="text-h3 text-text-on-inverse md:text-h2">Хэрэг хэрхэн урагшилдаг вэ</h2>
           </div>
           <ol className="flex flex-col gap-6 lg:flex-row lg:gap-0">
-            {MILESTONES.map((m) => (
-              <li key={m.year} className="flex gap-3.5 lg:flex-1 lg:flex-col lg:gap-2.5 lg:pr-6">
+            {PROCESS.map((p) => (
+              <li key={p.step} className="flex gap-3.5 lg:flex-1 lg:flex-col lg:gap-2.5 lg:pr-6">
                 <span aria-hidden className="mt-2 size-2.5 shrink-0 rounded-full bg-accent-default lg:mt-0 lg:size-3.5" />
                 <div className="flex flex-col gap-1 lg:gap-2.5">
-                  <span className="text-h4 text-accent-default lg:text-h3">{m.year}</span>
-                  <p className="text-body-medium text-text-on-inverse">{m.title}</p>
-                  <p className="text-body-sm text-text-on-inverse-muted">{m.text}</p>
+                  <span className="text-h4 text-accent-default lg:text-h3">{p.step}</span>
+                  <p className="text-body-medium text-text-on-inverse">{p.title}</p>
+                  <p className="text-body-sm text-text-on-inverse-muted">{p.text}</p>
                 </div>
               </li>
             ))}

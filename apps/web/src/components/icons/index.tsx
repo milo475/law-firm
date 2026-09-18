@@ -189,6 +189,13 @@ export const ContactPhoneIcon = (p: IconProps) => (
     <path {...stroke} d="M18 13H14C13.5 13 13 13.5 13 14C13 21 19 27 26 27C26.5 27 27 26.5 27 26V22.5L23.5 21.5L22 23.5C19.5 22.5 18 21 17 18.5L19 17L18 13Z" />
   </svg>
 );
+export const ContactFacebookIcon = (p: IconProps) => (
+  <svg viewBox="0 0 40 40" {...base(p, 40, 40)}>
+    <path d={contactTile} fill="var(--gold-100)" />
+    <path {...stroke} d="M22.5 14.5H24.5M22.5 14.5C21.4 14.5 20.5 15.4 20.5 16.5V19M22.5 14.5V14.5M20.5 19H18.5M20.5 19V26M20.5 19H23" />
+  </svg>
+);
+
 export const ContactMailIcon = (p: IconProps) => (
   <svg viewBox="0 0 40 40" {...base(p, 40, 40)}>
     <path d={contactTile} fill="var(--gold-100)" />

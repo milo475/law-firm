@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     default: 'Strategy Law Firm',
     template: '%s | Strategy Law Firm',
   },
-  description: '2009 оноос хойш иргэд, аж ахуйн нэгжид найдвартай эрх зүйн туслалцаа үзүүлж байна.',
+  description: 'Хууль зүйн мэргэжлийн туслалцаа үзүүлэгч байгууллага. Иргэн, аж ахуйн нэгжид өмгөөлөл, эрх зүйн зөвлөгөө үзүүлнэ.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

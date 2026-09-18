@@ -1,5 +1,6 @@
 // Figma: Design System / Footer (13:59, 1440) + Footer mobile (23:62, 390)
 import Link from 'next/link';
+import { SOCIAL_LINKS } from '@/content/social';
 import { loadFirmSettings } from '@/lib/firm';
 import { formatPhone, phoneHref } from '@/lib/format';
 import { Logo } from './logo';
@@ -33,7 +34,7 @@ export async function Footer() {
         <div className="flex flex-wrap gap-8 lg:gap-12 xl:gap-16">
           <div className="flex w-[340px] shrink-0 flex-col gap-4">
             <Logo theme="dark" variant="lockup" />
-            <p className="w-[300px] text-body-sm text-text-on-inverse-muted">2009 оноос хойш иргэд, аж ахуйн нэгжид найдвартай эрх зүйн туслалцаа үзүүлж байна.</p>
+            <p className="w-[300px] text-body-sm text-text-on-inverse-muted">Хууль зүйн мэргэжлийн туслалцаа үзүүлэгч байгууллага. Иргэн, аж ахуйн нэгжид өмгөөлөл, эрх зүйн зөвлөгөө үзүүлнэ.</p>
           </div>
           <FooterColumn title="Үйлчилгээ" items={SERVICES} />
           <FooterColumn title="Компани" items={COMPANY} />
@@ -43,6 +44,9 @@ export async function Footer() {
             <a href={phoneHref(firm.phone)} className={link}>{formatPhone(firm.phone)}</a>
             <a href={`mailto:${firm.email}`} className={link}>{firm.email}</a>
             <p className="text-body-sm text-text-on-inverse-muted">{firm.workingHours}</p>
+            {SOCIAL_LINKS.map((social) => (
+              <a key={social.href} href={social.href} target="_blank" rel="noreferrer noopener" className={link}>{social.label}</a>
+            ))}
           </div>
         </div>
         <div className="h-px w-full bg-border-inverse" />
@@ -58,7 +62,7 @@ export async function Footer() {
       {/* Mobile */}
       <div className="flex flex-col gap-7 px-5 pb-7 pt-10 md:hidden">
         <Logo theme="dark" variant="lockup" />
-        <p className="text-body-sm text-text-on-inverse-muted">2009 оноос хойш найдвартай эрх зүйн туслалцаа.</p>
+        <p className="text-body-sm text-text-on-inverse-muted">Хууль зүйн мэргэжлийн туслалцаа үзүүлэгч байгууллага.</p>
         <div className="flex flex-col gap-3">
           <p className="text-body-medium">Үйлчилгээ</p>
           <div className="flex flex-wrap gap-x-2.5 gap-y-2.5">
@@ -72,6 +76,9 @@ export async function Footer() {
             <a href={`mailto:${firm.email}`} className={link}>{firm.email}</a>
             <span>{firm.address}</span>
             <span>{firm.workingHours}</span>
+            {SOCIAL_LINKS.map((social) => (
+              <a key={social.href} href={social.href} target="_blank" rel="noreferrer noopener" className={link}>{social.label}</a>
+            ))}
           </div>
         </div>
         <div className="h-px w-full bg-border-inverse" />

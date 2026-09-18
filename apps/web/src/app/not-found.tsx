@@ -7,7 +7,7 @@ import { NavHeader } from '@/components/ui/nav-header';
 
 const QUICK_LINKS = [
   { href: '/services', title: 'Үйлчилгээ', caption: '6 чиглэлийн жагсаалт' },
-  { href: '/lawyers', title: 'Хуульчид', caption: '24 мэргэжилтэн' },
+  { href: '/lawyers', title: 'Хуульчид', caption: 'Манай багийн танилцуулга' },
   { href: '/news', title: 'Мэдээ', caption: 'Сүүлийн нийтлэлүүд' },
   { href: '/portal', title: 'Портал', caption: 'Хэргээ хянах' },
 ];

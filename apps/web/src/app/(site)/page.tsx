@@ -1,10 +1,8 @@
 // Figma: 01 Public Site / Public / 01 Home / Desktop (15:19) + Mobile (24:1007)
 import Link from 'next/link';
-import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ImagePlaceholder, LawyerCard, NewsCard, ServiceCard } from '@/components/ui/card';
 import { SERVICES } from '@/content/services';
-import { TESTIMONIALS } from '@/content/testimonials';
 import { apiFetch, type LawyerProfile, type Paginated, type PostListItem } from '@/lib/api';
 import { loadFirmSettings } from '@/lib/firm';
 import { CATEGORY_LABELS, formatDate, formatPhone, phoneHref } from '@/lib/format';
@@ -21,19 +19,12 @@ async function load<T>(path: string): Promise<T | null> {
   }
 }
 
-// Hero "Trust" row (desktop only in Figma)
-const HERO_STATS = [
-  { value: '17', label: 'жилийн туршлага' },
-  { value: '1 200+', label: 'шийдвэрлэсэн хэрэг' },
-  { value: '24', label: 'мэргэшсэн хуульч' },
-];
-
-// Advantages band — "Stats" (16:92 desktop / 24:1085 mobile)
+// Advantages band — "Stats" (16:92 desktop / 24:1085 mobile). How we work, not numbers we cannot back up.
 const ADVANTAGES = [
-  { value: '17', label: 'Жилийн туршлага', note: '2009 оноос хойш тасралтгүй' },
-  { value: '1 200+', label: 'Шийдвэрлэсэн хэрэг', note: 'Иргэний болон эрүүгийн' },
-  { value: '94%', label: 'Амжилттай шийдвэрлэлт', note: 'Сүүлийн 3 жилийн дундаж' },
-  { value: '24', label: 'Мэргэшсэн хуульч', note: '6 чиглэлээр мэргэшсэн' },
+  { value: '6', label: 'Үйлчилгээний чиглэл', note: 'Иргэний, эрүүгийн, гэр бүл, бизнес, хөдөлмөр, үл хөдлөх' },
+  { value: 'Портал', label: 'Хэргийн явц онлайн', note: 'Баримт, нэхэмжлэх, мессеж нэг дор' },
+  { value: 'Гэрээ', label: 'Ил тод нөхцөл', note: 'Ажлын хүрээ, хугацаа, төлбөрийг бичгээр' },
+  { value: 'Нууцлал', label: 'Мэдээллийн хамгаалалт', note: 'Хандах эрхийг хатуу зохицуулна' },
 ];
 
 // Section paddings: Figma desktop px-120/py-96 inside a 1440 frame (=1200 content), mobile px-20/py-56.
@@ -54,30 +45,21 @@ export default async function HomePage() {
           <div className="flex flex-col gap-5 xl:w-[560px] xl:shrink-0 xl:gap-6">
             <p className="text-overline text-text-accent">
               <span className="md:hidden">Эрх зүйн зөвлөх үйлчилгээ</span>
-              <span className="hidden md:inline">Эрх зүйн зөвлөх үйлчилгээ · 2009 оноос</span>
+              <span className="hidden md:inline">Эрх зүйн зөвлөх, өмгөөллийн үйлчилгээ</span>
             </p>
             <h1 className="font-serif text-[32px] font-bold leading-10 tracking-[-0.5px] text-text-brand md:text-h1">
               Таны эрхийг хамгаалах бат бөх түшиг
             </h1>
             <p className="text-body text-text-secondary md:max-w-[520px] md:text-body-lg">
-              <span className="md:hidden">24 хуульчийн баг зургаан чиглэлээр мэргэжлийн туслалцаа үзүүлнэ. Эхний зөвлөгөө үнэгүй.</span>
+              <span className="md:hidden">Иргэний, эрүүгийн, гэр бүлийн болон бизнесийн эрх зүйн чиглэлээр мэргэжлийн туслалцаа үзүүлнэ.</span>
               <span className="hidden md:inline">
-                Иргэний, эрүүгийн, гэр бүлийн болон бизнесийн эрх зүйн чиглэлээр 24 хуульчийн баг танд мэргэжлийн туслалцаа үзүүлнэ. Эхний зөвлөгөө үнэ төлбөргүй.
+                Иргэний, эрүүгийн, гэр бүлийн, бизнесийн, хөдөлмөрийн болон үл хөдлөх хөрөнгийн эрх зүйн чиглэлээр өмгөөлөл, зөвлөгөө үзүүлнэ. Хэргийнхээ явцыг харилцагчийн порталаас хянана.
               </span>
             </p>
             <div className="flex flex-col gap-5 md:flex-row md:flex-wrap md:gap-4 md:pt-2">
               <Button asChild size="lg" className="w-full md:w-auto"><Link href="/contact">Үнэгүй зөвлөгөө авах</Link></Button>
               <Button asChild variant="secondary" size="lg" className="w-full md:w-auto"><Link href="/services">Үйлчилгээ үзэх</Link></Button>
             </div>
-            <dl className="hidden flex-wrap gap-8 pt-6 md:flex">
-              {HERO_STATS.map((s) => (
-                <div key={s.label} className="flex flex-col gap-0.5">
-                  <dt className="sr-only">{s.label}</dt>
-                  <dd className="text-h4 text-text-brand">{s.value}</dd>
-                  <dd className="text-body-sm text-text-muted">{s.label}</dd>
-                </div>
-              ))}
-            </dl>
           </div>
           <ImagePlaceholder className="h-[220px] rounded-lg xl:h-[480px] xl:w-[520px] xl:shrink-0" markSize={72} />
         </div>
@@ -100,9 +82,9 @@ export default async function HomePage() {
         <div className={cn(SECTION, 'flex flex-col gap-8 md:gap-14')}>
           <SectionHead
             inverse
-            overline="Бидний давуу тал"
-            title="Тоо баримтаар илэрхийлэгдэх итгэл"
-            description="17 жилийн хугацаанд хуримтлуулсан туршлага, тогтвортой багийн хамт олон."
+            overline="Бидний ажиллах зарчим"
+            title="Юунд тулгуурлан ажилладаг вэ"
+            description="Хэргийг хүлээн авахаас шийдвэрлэх хүртэл нэг баг хөтөлж, явц бүрийг бичгээр баримтжуулна."
           />
           <ul className="grid grid-cols-2 gap-x-4 gap-y-6 lg:grid-cols-4 lg:gap-8">
             {ADVANTAGES.map((a) => (
@@ -187,27 +169,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials (16:177) — desktop design only */}
-      <section className="hidden bg-bg-surface md:block">
-        <div className={cn(SECTION, 'flex flex-col gap-12')}>
-          <SectionHead overline="Харилцагчийн сэтгэгэл" title="Бидний ажлыг харилцагчид ингэж үнэлдэг" />
-          <div className="grid gap-8 md:grid-cols-3">
-            {TESTIMONIALS.map((t) => (
-              <figure key={t.id} className="flex flex-col gap-6 rounded-lg border border-border-default bg-bg-page p-8">
-                <span aria-hidden className="text-h1 text-accent-default">“</span>
-                <blockquote className="text-body text-text-primary">{t.quote}</blockquote>
-                <figcaption className="mt-auto flex items-center gap-3">
-                  <Avatar size="sm" initials={t.initials} className="size-10" />
-                  <div className="flex flex-col gap-0.5">
-                    <p className="text-body-sm-medium text-text-primary">{t.author}</p>
-                    <p className="text-caption text-text-muted">{t.role}</p>
-                  </div>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* CTA band (16:209 / 24:1140) */}
       <section className="bg-bg-accent-soft">

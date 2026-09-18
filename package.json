@@ -23,6 +23,8 @@
     "db:seed": "pnpm --filter @law-firm/shared db:seed",
     "db:clean": "pnpm --filter @law-firm/shared db:clean",
     "db:admin": "pnpm --filter @law-firm/shared db:admin",
+    "db:purge-demo": "pnpm --filter @law-firm/shared db:purge-demo",
+    "db:seed-content": "pnpm --filter @law-firm/shared db:seed-content",
     "db:studio": "pnpm --filter @law-firm/shared db:studio",
     "clean": "turbo run clean && rm -rf node_modules"
   },

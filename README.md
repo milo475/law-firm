@@ -80,6 +80,8 @@ Seed нь **идемпотент**: дахин ажиллуулахад өөри
 | `pnpm db:seed` | `prisma db seed` — жишээ өгөгдөл (идемпотент) |
 | `pnpm db:clean` | Тестийн үлдэгдэл өгөгдлийг устгана (зөвхөн `*_test` DB) |
 | `pnpm db:admin` | ADMIN хэрэглэгч үүсгэх / нууц үгийг нь сэргээх (deploy хийсний дараа эхний админ) |
+| `pnpm db:purge-demo` | Жишээ (seed) агуулгыг устгана — ADMIN болон тохиргоог үлдээнэ. `--yes`-гүй бол зөвхөн жагсаана |
+| `pnpm db:seed-content` | `prisma/content/*.md` нийтлэлүүдийг DRAFT төлөвтэй импортлоно (slug-аар upsert) |
 | `pnpm db:studio` | Prisma Studio |
 
 ---
@@ -169,6 +171,8 @@ law-firm/
     ├── prisma/seed.ts           argon2 hash-тай seed (идемпотент)
     ├── prisma/clean-test-data.ts  `pnpm db:clean` — тестийн үлдэгдлийг цэвэрлэнэ (зөвхөн *_test DB)
     ├── prisma/create-admin.ts   `pnpm db:admin` — ADMIN үүсгэх/нууц үг сэргээх (argon2id)
+    ├── prisma/purge-demo.ts     `pnpm db:purge-demo` — жишээ агуулгыг устгана (ADMIN, Setting үлдэнэ)
+    ├── prisma/seed-content.ts   `pnpm db:seed-content` — prisma/content/*.md → DRAFT нийтлэл
     ├── prisma.config.ts         Prisma 7 config (DATABASE_URL, seed command)
     └── src/                     db.ts (client factory + singleton), schemas/ (zod), labels.ts, utils/
 ```
@@ -917,6 +921,32 @@ DATABASE_URL="postgresql://postgres:…@…proxy.rlwy.net:PORT/railway" \
   өөрөөр хэлбэл нууц үг сэргээхэд ч энэ командыг ашиглана.
 - Аргументаар ч болно: `pnpm db:admin -- --email … --password … [--first … --last … --phone …]`.
 - Нэвтрэх хаяг нь `/portal/login` (ажилтан `/admin` руу шилждэг); нэвтрэх нэр нь и-мэйл эсвэл утас.
+
+### Ашиглалтад гаргах дараалал (demo → бодит агуулга)
+
+Deploy хийсний дараа production DB-д seed-ийн жишээ өгөгдөл үлдсэн байвал дараах дарааллаар цэвэрлэж,
+бодит агуулгаа оруулна. Бүгдийг **гараар**, api service-ийн Console-оос ажиллуулна:
+
+```bash
+pnpm db:purge-demo                 # юу устахыг ХАРУУЛНА, юуг ч устгахгүй
+pnpm db:purge-demo --yes           # жишээ агуулгыг устгана (ADMIN, тохиргоо үлдэнэ)
+pnpm db:purge-demo --yes --with-files   # R2 дээрх холбогдох файлуудыг бас устгана
+pnpm db:admin                      # ADMIN байхгүй бол үүсгэнэ (ADMIN_EMAIL / ADMIN_PASSWORD)
+pnpm db:seed-content               # нийтлэлүүдийг DRAFT-аар оруулна
+```
+
+`db:purge-demo` нь Task, Case (түүний event/баримт/мессеж/нэхэмжлэх/гишүүд), Post, ServiceRequest,
+ContactRequest, Notification, AuditLog, LawyerProfile болон **ADMIN бус** хэрэглэгчдийг устгана.
+`Setting` (фирмийн мэдээлэл, данс) болон ADMIN бүртгэлүүд хэвээр үлдэнэ. Буцаах боломжгүй тул
+`--yes` өгөх хүртэл юу ч устгахгүй.
+
+### Нийтлэлийн эх файлууд (`prisma/content/`)
+
+Нийтлэл бүр front matter (`slug`, `title`, `excerpt`, `category`) + markdown биетэй. `db:seed-content`
+нь slug-аар upsert хийдэг тул дахин ажиллуулахад давхардахгүй; **аль хэдийн нийтэлсэн** нийтлэлийн
+төлөв, нийтэлсэн огноог хөнддөггүй, зөвхөн гарчиг/тойм/агуулгыг шинэчилнэ. Шинээр орж ирсэн нийтлэл
+үргэлж **DRAFT** байна — өмгөөлөгч уншиж, хууль зүйн үнэн зөвийг нь шалгаад `/admin/posts`-оос
+нийтэлнэ.
 
 **Rate limit:** `TRUST_PROXY_HOPS` буруу бол throttler бүх хэрэглэгчийг нэг IP гэж үзнэ. Шалгах:
 `NODE_ENV=production` үед лог дээрх `req.ip` (эсвэл түр `/health`-д нэмж) бодит клиентийн IP байх

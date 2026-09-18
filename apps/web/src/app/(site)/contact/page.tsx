@@ -1,15 +1,14 @@
 // Figma: 01 Public Site / Public / 10 Contact / Desktop (22:843) + Mobile (26:1538)
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ContactClockIcon, ContactMailIcon, ContactPhoneIcon, ContactPinIcon, MapPinIcon } from '@/components/icons';
+import { ContactClockIcon, ContactFacebookIcon, ContactMailIcon, ContactPhoneIcon, ContactPinIcon, MapPinIcon } from '@/components/icons';
 import { PageHeader } from '@/components/ui/page-header';
+import { SOCIAL_LINKS } from '@/content/social';
 import type { FirmSettings } from '@/lib/api';
 import { loadFirmSettings } from '@/lib/firm';
 import { formatPhone, phoneHref } from '@/lib/format';
 
 export const metadata: Metadata = { title: 'Холбоо барих', description: 'Strategy Law Firm-тэй холбогдох: хаяг, утас, и-мэйл, өмгөөлөгч авах, зөвлөгөө авах хүсэлт.' };
-
-const tel = (phone: string) => `tel:${phone.replace(/[^+\d]/g, '')}`;
 
 /** Signed-out visitors are sent to the sign-in page and come back to the form with the chosen type. */
 const REQUEST_OPTIONS = [
@@ -17,8 +16,8 @@ const REQUEST_OPTIONS = [
   { type: 'CONSULTATION', title: 'Зөвлөгөө авах', description: 'Асуудлаа тодруулж, дараагийн алхмыг зөвлөх хуульчтай холбогдоно.' },
 ] as const;
 
-type OfficeLine = { text: string; href?: string; desktopOnly?: boolean };
-/** Address, main phone, e-mail and hours come from the firm settings; the second lines are fixed office notes. */
+type OfficeLine = { text: string; href?: string; desktopOnly?: boolean; external?: boolean };
+/** Address, phone, e-mail and hours come from the firm settings an ADMIN edits on /admin/settings. */
 const office = (firm: FirmSettings): { label: string; Icon: typeof ContactPinIcon; lines: OfficeLine[] }[] => [
   {
     label: 'Хаяг',
@@ -28,26 +27,22 @@ const office = (firm: FirmSettings): { label: string; Icon: typeof ContactPinIco
   {
     label: 'Утас',
     Icon: ContactPhoneIcon,
-    lines: [
-      { text: formatPhone(firm.phone), href: phoneHref(firm.phone) },
-      { text: '+976 9911-2233 (яаралтай)', href: tel('+976 9911-2233'), desktopOnly: true },
-    ],
+    lines: [{ text: formatPhone(firm.phone), href: phoneHref(firm.phone) }],
   },
   {
     label: 'Имэйл',
     Icon: ContactMailIcon,
-    lines: [
-      { text: firm.email, href: `mailto:${firm.email}` },
-      { text: 'portal@lawfirm.mn', href: 'mailto:portal@lawfirm.mn', desktopOnly: true },
-    ],
+    lines: [{ text: firm.email, href: `mailto:${firm.email}` }],
   },
   {
     label: 'Ажлын цаг',
     Icon: ContactClockIcon,
-    lines: [
-      { text: firm.workingHours },
-      { text: 'Бямба 10:00–14:00 (урьдчилан захиалгаар)', desktopOnly: true },
-    ],
+    lines: [{ text: firm.workingHours }],
+  },
+  {
+    label: 'Олон нийтийн сүлжээ',
+    Icon: ContactFacebookIcon,
+    lines: SOCIAL_LINKS.map((social) => ({ text: social.label, href: social.href, external: true })),
   },
 ];
 
@@ -106,7 +101,13 @@ export default async function ContactPage() {
                     {lines.map((line) => (
                       <p key={line.text} className={line.desktopOnly ? 'hidden text-body-sm text-text-secondary lg:block' : 'text-body-sm text-text-secondary'}>
                         {line.href ? (
-                          <a href={line.href} className="focus-ring rounded-sm hover:text-text-brand">{line.text}</a>
+                          <a
+                            href={line.href}
+                            className="focus-ring rounded-sm hover:text-text-brand"
+                            {...(line.external ? { target: '_blank', rel: 'noreferrer noopener' } : {})}
+                          >
+                            {line.text}
+                          </a>
                         ) : (
                           line.text
                         )}
