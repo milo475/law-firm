@@ -17,6 +17,8 @@ const serverApiUrl = (process.env.API_URL ?? 'http://localhost:4000').replace(/\
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Lockfiles outside the repo (e.g. ~/package-lock.json) otherwise make Next guess the wrong root.
+  outputFileTracingRoot: path.resolve(__dirname, '../..'),
   env: {
     NEXT_PUBLIC_API_URL: publicApiUrl,
   },

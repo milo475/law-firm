@@ -16,7 +16,31 @@ import { fileURLToPath } from 'node:url';
 const WEB_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const MESSAGES = path.join(WEB_DIR, 'messages');
 const LOCALES = ['mn', 'en', 'zh'];
-const DEFAULT_CSV = path.resolve(WEB_DIR, '../../i18n-translations.csv');
+const REPO_ROOT = path.resolve(WEB_DIR, '../..');
+const CSV_NAME = 'i18n-translations.csv';
+
+/**
+ * pnpm runs the script with the package as the working directory, so a relative file name typed at
+ * the repo root would be looked up in apps/web. INIT_CWD is where the user actually stood.
+ */
+const CALLER_DIR = process.env.INIT_CWD || process.cwd();
+
+/** Directories a relative file name is looked up in, in order. */
+const searchDirs = () => [...new Set([CALLER_DIR, process.cwd(), REPO_ROOT, WEB_DIR])];
+
+/** Existing file for reading: the first candidate that exists, or null with the list that was tried. */
+function resolveExisting(file) {
+  if (file && path.isAbsolute(file)) return { path: fs.existsSync(file) ? file : null, tried: [file] };
+  const name = file || CSV_NAME;
+  const tried = searchDirs().map((dir) => path.resolve(dir, name));
+  return { path: tried.find((candidate) => fs.existsSync(candidate)) ?? null, tried };
+}
+
+/** Target for writing: an absolute path as given, otherwise next to the caller. */
+function resolveTarget(file) {
+  if (file && path.isAbsolute(file)) return file;
+  return path.resolve(CALLER_DIR, file || CSV_NAME);
+}
 
 /** Where each top-level namespace shows up, for the "context" column. */
 const CONTEXT = {
@@ -90,7 +114,8 @@ function parseCsv(text) {
   return rows.filter((r) => r.some((c) => c.trim().length > 0));
 }
 
-function exportCsv(file = DEFAULT_CSV) {
+function exportCsv(file) {
+  const target = resolveTarget(file);
   const flat = LOCALES.map((locale) => flatten(read(locale)));
   const [mn, en, zh] = flat;
   const lines = ['key,mn,en,zh,context'];
@@ -98,13 +123,17 @@ function exportCsv(file = DEFAULT_CSV) {
     const context = CONTEXT[key.split('.')[0]] ?? '';
     lines.push([key, value, en[key] ?? '', zh[key] ?? '', context].map(csvCell).join(','));
   }
-  fs.writeFileSync(file, `${lines.join('\n')}\n`);
-  console.log(`${Object.keys(mn).length} keys → ${path.relative(process.cwd(), file)}`);
+  fs.writeFileSync(target, `${lines.join('\n')}\n`);
+  console.log(`${Object.keys(mn).length} keys → ${target}`);
 }
 
-function importCsv(file = DEFAULT_CSV) {
-  if (!fs.existsSync(file)) throw new Error(`${file} not found — run pnpm i18n:export first`);
-  const rows = parseCsv(fs.readFileSync(file, 'utf8'));
+function importCsv(file) {
+  const { path: source, tried } = resolveExisting(file);
+  if (!source) {
+    throw new Error(`${file || CSV_NAME} not found — run pnpm i18n:export first. Looked in:\n  ${tried.join('\n  ')}`);
+  }
+  console.log(`Reading ${source}`);
+  const rows = parseCsv(fs.readFileSync(source, 'utf8'));
   const header = rows.shift();
   const index = { key: header.indexOf('key'), en: header.indexOf('en'), zh: header.indexOf('zh') };
   if (index.key === -1 || index.en === -1 || index.zh === -1) throw new Error('The CSV needs key, en and zh columns');
@@ -157,8 +186,8 @@ function check() {
 
 const [command, file] = process.argv.slice(2);
 try {
-  if (command === 'export') exportCsv(file ? path.resolve(file) : undefined);
-  else if (command === 'import') importCsv(file ? path.resolve(file) : undefined);
+  if (command === 'export') exportCsv(file);
+  else if (command === 'import') importCsv(file);
   else if (command === 'check') check();
   else {
     console.error('Usage: i18n.mjs export|import|check [file]');
