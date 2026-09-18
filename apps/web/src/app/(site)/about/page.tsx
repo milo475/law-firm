@@ -5,7 +5,7 @@ import { PageHeader } from '@/components/ui/page-header';
 
 export const metadata: Metadata = {
   title: 'Бидний тухай',
-  description: 'Law Firm нь 2009 оноос хойш Монгол Улсын иргэд, аж ахуйн нэгжид эрх зүйн иж бүрэн үйлчилгээ үзүүлж байна.',
+  description: 'Strategy Law Firm нь 2009 оноос хойш Монгол Улсын иргэд, аж ахуйн нэгжид эрх зүйн иж бүрэн үйлчилгээ үзүүлж байна.',
 };
 
 const VALUES = [
@@ -28,7 +28,7 @@ export default function AboutPage() {
     <>
       <PageHeader
         title="Бидний тухай"
-        description="Law Firm нь 2009 оноос хойш Монгол Улсын иргэд, аж ахуйн нэгжид эрх зүйн иж бүрэн үйлчилгээ үзүүлж байна."
+        description="Strategy Law Firm нь 2009 оноос хойш Монгол Улсын иргэд, аж ахуйн нэгжид эрх зүйн иж бүрэн үйлчилгээ үзүүлж байна."
         crumbs={[{ label: 'Нүүр', href: '/' }, { label: 'Бидний тухай' }]}
       />
 
@@ -38,7 +38,7 @@ export default function AboutPage() {
           <div className="flex flex-col gap-5 lg:w-[560px] lg:shrink-0 lg:gap-6">
             <p className="text-overline text-text-accent">БИДНИЙ ТҮҮХ</p>
             <h2 className="text-h3 md:text-h2">Гурван хуульчаас эхэлсэн зам</h2>
-            <p className="text-body text-text-secondary">2009 онд гурван хуульч Улаанбаатар хотод жижиг оффис түрээслэн Law Firm-ийг үүсгэн байгуулсан. Анхны харилцагчид маань хөдөлмөрийн маргаантай иргэд байв.</p>
+            <p className="text-body text-text-secondary">2009 онд гурван хуульч Улаанбаатар хотод жижиг оффис түрээслэн Strategy Law Firm-ийг үүсгэн байгуулсан. Анхны харилцагчид маань хөдөлмөрийн маргаантай иргэд байв.</p>
             <p className="text-body text-text-secondary">Өнөөдөр бид 24 хуульчтай, зургаан үндсэн чиглэлээр мэргэшсэн, жилд дунджаар 180 гаруй хэрэг хөтөлдөг фирм болон өргөжсөн. Гэхдээ анхны зарчим маань хэвээр — харилцагч бүрийн хэрэг ижил чухал.</p>
           </div>
           <ImagePlaceholder className="order-first h-[220px] rounded-lg lg:order-none lg:h-[420px] lg:flex-1" markSize={56} />

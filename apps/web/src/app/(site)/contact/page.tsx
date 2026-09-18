@@ -7,7 +7,7 @@ import type { FirmSettings } from '@/lib/api';
 import { loadFirmSettings } from '@/lib/firm';
 import { formatPhone, phoneHref } from '@/lib/format';
 
-export const metadata: Metadata = { title: 'Холбоо барих', description: 'Law Firm-тэй холбогдох: хаяг, утас, и-мэйл, өмгөөлөгч авах, зөвлөгөө авах хүсэлт.' };
+export const metadata: Metadata = { title: 'Холбоо барих', description: 'Strategy Law Firm-тэй холбогдох: хаяг, утас, и-мэйл, өмгөөлөгч авах, зөвлөгөө авах хүсэлт.' };
 
 const tel = (phone: string) => `tel:${phone.replace(/[^+\d]/g, '')}`;
 

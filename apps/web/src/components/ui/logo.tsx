@@ -15,7 +15,7 @@ export function Logo({ theme = 'light', href = '/', scale = 1, className }: { th
       </span>
       <span className="flex flex-col" style={{ gap: 2 * scale }}>
         <span className={cn('font-serif font-semibold whitespace-nowrap', dark ? 'text-text-on-inverse' : 'text-text-brand')} style={{ fontSize: 22 * scale, lineHeight: `${30 * scale}px` }}>
-          LAW FIRM
+          STRATEGY LAW FIRM
         </span>
         <span className="font-sans font-semibold uppercase tracking-[1.2px] text-text-accent whitespace-nowrap" style={{ fontSize: 12 * scale, lineHeight: `${16 * scale}px` }}>
           ХУУЛИЙН ФИРМ
@@ -25,7 +25,7 @@ export function Logo({ theme = 'light', href = '/', scale = 1, className }: { th
   );
   if (!href) return content;
   return (
-    <Link href={href} className="focus-ring rounded-md" aria-label="Law Firm — нүүр хуудас">
+    <Link href={href} className="focus-ring rounded-md" aria-label="Strategy Law Firm — нүүр хуудас">
       {content}
     </Link>
   );

@@ -7,7 +7,7 @@ import { formatPhone, phoneHref } from '@/lib/format';
 
 export const metadata: Metadata = {
   title: 'Нууцлалын бодлого',
-  description: 'Law Firm харилцагчийн хувийн мэдээллийг хэрхэн цуглуулж, ашиглаж, хамгаалдаг тухай.',
+  description: 'Strategy Law Firm харилцагчийн хувийн мэдээллийг хэрхэн цуглуулж, ашиглаж, хамгаалдаг тухай.',
 };
 
 const UPDATED = '2026 оны 9 дүгээр сарын 16';

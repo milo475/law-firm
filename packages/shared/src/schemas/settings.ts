@@ -75,7 +75,7 @@ export interface FirmSettingsResponse extends Omit<FirmSettings, 'registrationNu
 
 /** What the public site showed before the details became editable; served until an ADMIN saves real ones. */
 export const EXAMPLE_FIRM_SETTINGS: FirmSettingsResponse = {
-  name: '«Law Firm» ХХК',
+  name: '«Strategy Law Firm» ХХК',
   registrationNumber: null,
   phone: '70001199',
   email: 'info@lawfirm.mn',

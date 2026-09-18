@@ -4,9 +4,9 @@ import { ADMIN_USER, createPrismaMock, type PrismaMock } from '../common/testing
 import type { PrismaService } from '../prisma/prisma.service';
 import { SettingsService } from './settings.service';
 
-const SAVED = { bankName: 'Голомт банк', accountNumber: '1105123456', accountName: 'Law Firm ХХН' };
+const SAVED = { bankName: 'Голомт банк', accountNumber: '1105123456', accountName: 'Strategy Law Firm ХХН' };
 const FIRM = {
-  name: '«Law Firm» ХХК',
+  name: '«Strategy Law Firm» ХХК',
   registrationNumber: '5190028',
   phone: '70001199',
   email: 'info@lawfirm.mn',
@@ -29,7 +29,7 @@ describe('SettingsService', () => {
       await expect(service.getBankAccount()).resolves.toEqual({
         bankName: 'Хаан банк',
         accountNumber: '5023118822',
-        accountName: '«Law Firm» ХХН',
+        accountName: '«Strategy Law Firm» ХХН',
         updatedAt: null,
       });
       expect(prisma.setting.findUnique).toHaveBeenCalledWith(expect.objectContaining({ where: { key: 'bank-account' } }));

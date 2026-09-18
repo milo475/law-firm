@@ -20,8 +20,8 @@ const sourceSerif = Source_Serif_4({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Law Firm',
-    template: '%s | Law Firm',
+    default: 'Strategy Law Firm',
+    template: '%s | Strategy Law Firm',
   },
   description: '2009 оноос хойш иргэд, аж ахуйн нэгжид найдвартай эрх зүйн туслалцаа үзүүлж байна.',
 };

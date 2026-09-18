@@ -28,8 +28,10 @@ export function NavHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border-default bg-bg-surface">
-      {/* Desktop — 1440 frame: 88px, 120px side padding (max 1200 content) */}
-      <div className="mx-auto hidden h-[88px] max-w-[1200px] items-center justify-between gap-6 px-6 lg:flex">
+      {/* Desktop — 1440 frame: 88px, 120px side padding (max 1200 content).
+          The full row (logo + 6 links + two actions) only fits from 1280px, so narrower
+          screens get the compact header with the drawer menu. */}
+      <div className="mx-auto hidden h-[88px] max-w-[1200px] items-center justify-between gap-6 px-6 xl:flex">
         <Logo />
         <nav aria-label="Үндсэн цэс" className="flex items-center gap-5 xl:gap-7">
           {PUBLIC_NAV.map((item) => (
@@ -53,8 +55,8 @@ export function NavHeader() {
         </div>
       </div>
 
-      {/* Mobile — 390 frame: 64px, logo scaled 0.8, 44px menu button */}
-      <div className="flex h-16 items-center justify-between pl-4 pr-2 lg:hidden">
+      {/* Mobile and tablet — 390 frame: 64px, logo scaled 0.8, 44px menu button */}
+      <div className="flex h-16 items-center justify-between pl-4 pr-2 xl:hidden">
         <Logo scale={0.8} />
         <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
           <DialogPrimitive.Trigger asChild>

@@ -38,7 +38,7 @@ async function bootstrap() {
 
   if (nodeEnv !== 'production') {
     const swaggerConfig = new DocumentBuilder()
-      .setTitle('Law Firm API')
+      .setTitle('Strategy Law Firm API')
       .setDescription('Хуулийн фирмийн вэб сайт + харилцагчийн порталын REST API')
       .setVersion('0.1.0')
       .addBearerAuth()

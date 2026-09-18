@@ -126,7 +126,7 @@ export function BankAccountSettingsCard() {
             error={errors.accountNumber?.message}
             {...register('accountNumber')}
           />
-          <Input label="Хүлээн авагч" required placeholder="«Law Firm» ХХН" error={errors.accountName?.message} {...register('accountName')} />
+          <Input label="Хүлээн авагч" required placeholder="«Strategy Law Firm» ХХН" error={errors.accountName?.message} {...register('accountName')} />
           <SaveRow updatedAt={account.updatedAt} dirty={isDirty} pending={save.isPending} onReset={() => reset(bankFormValues(account))} />
         </form>
       </Card>
@@ -192,7 +192,7 @@ export function FirmSettingsCard() {
         )}
         <form noValidate onSubmit={handleSubmit((values) => save.mutate(values))} className="flex flex-col gap-5">
           <div className="grid gap-5 md:grid-cols-2">
-            <Input label="Фирмийн нэр" required wrapperClassName="md:col-span-2" placeholder="«Law Firm» ХХК" error={errors.name?.message} {...register('name')} />
+            <Input label="Фирмийн нэр" required wrapperClassName="md:col-span-2" placeholder="«Strategy Law Firm» ХХК" error={errors.name?.message} {...register('name')} />
             <Input label="Регистрийн дугаар" required inputMode="numeric" autoComplete="off" placeholder="5190028" helper="7 оронтой тоо" error={errors.registrationNumber?.message} {...register('registrationNumber')} />
             <Input label="Утас" required type="tel" inputMode="tel" placeholder="7000 1199" helper="8 оронтой; +976-г сайт дээр автоматаар нэмнэ" error={errors.phone?.message} {...register('phone')} />
             <Input label="И-мэйл" required type="email" placeholder="info@lawfirm.mn" error={errors.email?.message} {...register('email')} />
