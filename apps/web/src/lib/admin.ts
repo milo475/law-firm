@@ -6,8 +6,8 @@ export type CaseStatus = 'NEW' | 'IN_PROGRESS' | 'WAITING' | 'CLOSED';
 export type CaseType = 'CIVIL' | 'CRIMINAL' | 'FAMILY' | 'BUSINESS' | 'LABOR' | 'REAL_ESTATE' | 'OTHER';
 export type CaseEventType = 'NOTE' | 'HEARING' | 'MEETING' | 'DEADLINE' | 'STATUS_CHANGE' | 'DOCUMENT';
 export type InvoiceStatus = 'DRAFT' | 'SENT' | 'AWAITING_CONFIRMATION' | 'PAID' | 'OVERDUE' | 'CANCELLED';
-export type ContactStatus = 'NEW' | 'CONTACTED' | 'CLOSED';
-export type PostCategory = 'NEWS' | 'ADVICE' | 'LEGAL_UPDATE';
+type ContactStatus = 'NEW' | 'CONTACTED' | 'CLOSED';
+type PostCategory = 'NEWS' | 'ADVICE' | 'LEGAL_UPDATE';
 export type PostStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 
 export interface LawyerProfileRecord {

@@ -12,7 +12,7 @@ const ALLOWED_EXTENSIONS = new Set(['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 
 /** The client still has to send something. */
 const CLIENT_ACTION_STATUSES: readonly DocumentRequestStatus[] = ['PENDING', 'REJECTED'];
 /** The lawyer still has to look at the submission. */
-export const AWAITING_REVIEW_STATUSES: readonly DocumentRequestStatus[] = ['SUBMITTED', 'UNDER_REVIEW'];
+const AWAITING_REVIEW_STATUSES: readonly DocumentRequestStatus[] = ['SUBMITTED', 'UNDER_REVIEW'];
 
 export const needsClientAction = (request: Pick<DocumentRequestItem, 'status'>) => CLIENT_ACTION_STATUSES.includes(request.status);
 export const isAwaitingReview = (request: Pick<DocumentRequestItem, 'status'>) => AWAITING_REVIEW_STATUSES.includes(request.status);

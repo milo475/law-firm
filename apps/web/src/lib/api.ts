@@ -223,7 +223,7 @@ export interface CaseDetail extends CaseListItem {
   description: string | null;
 }
 
-export type CaseMemberRole = 'LEAD' | 'MEMBER';
+type CaseMemberRole = 'LEAD' | 'MEMBER';
 
 /** GET /cases/:id/members — the staff team working on a case. */
 export interface CaseMemberItem {
@@ -357,7 +357,7 @@ export interface FirmSettings {
 }
 
 export type ServiceRequestType = 'LAWYER' | 'CONSULTATION';
-export type ServiceRequestStatus = 'NEW' | 'ACCEPTED' | 'REJECTED' | 'CONVERTED';
+type ServiceRequestStatus = 'NEW' | 'ACCEPTED' | 'REJECTED' | 'CONVERTED';
 
 /** GET /service-requests, /service-requests/mine, /service-requests/:id — `reviewedBy` is null for clients. */
 export interface ServiceRequestItem {
@@ -453,9 +453,4 @@ export interface AdminTestimonial extends PublicTestimonial {
   authorUser: { id: string; firstName: string; lastName: string; email: string } | null;
   case: { id: string; caseNumber: string; title: string; type: string } | null;
   approvedBy: { id: string; firstName: string; lastName: string } | null;
-}
-
-export interface TestimonialSummary {
-  pending: number;
-  published: number;
 }

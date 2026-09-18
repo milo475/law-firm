@@ -4,7 +4,6 @@
     "description": "提供专业法律服务的机构，为个人和企业提供辩护代理与法律咨询。",
     "skipToContent": "跳至主要内容",
     "languageLabel": "选择语言",
-    "postsInMongolian": "以下文章为蒙古文。",
     "dismissSuggestion": "关闭"
   },
   "nav": {
@@ -1629,7 +1628,6 @@
       "bodyHelper": "30–1000 个字符",
       "ratingLabel": "评分（非必填）",
       "ratingValue": "{rating} 星",
-      "ratingClear": "清除评分",
       "consent": "我同意在网站上公开我的姓名",
       "consentHelper": "未经您同意，您的姓名不会在任何地方公开。您可随时撤回同意。",
       "submit": "提交评价",
@@ -1653,8 +1651,7 @@
       "revokedTitle": "已撤回公开",
       "revokedBody": "您的评价已从网站移除。",
       "revokeFailed": "撤回失败",
-      "consentRevoked": "已撤回公开同意",
-      "alreadyLeft": "您已就该案件留下过评价。"
+      "consentRevoked": "已撤回公开同意"
     }
   },
   "reviews": {

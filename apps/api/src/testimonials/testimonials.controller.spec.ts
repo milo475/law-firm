@@ -17,7 +17,6 @@ describe('TestimonialsController (roles, consent and validation)', () => {
     create: jest.fn(),
     revokeConsent: jest.fn(),
     findAll: jest.fn(),
-    summary: jest.fn(),
     findOne: jest.fn(),
     createManual: jest.fn(),
     update: jest.fn(),

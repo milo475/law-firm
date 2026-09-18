@@ -29,7 +29,7 @@ import { cn, shortName } from '@/lib/utils';
 export { isPayable } from '@/lib/invoices';
 
 /** Client-facing badge labels from the Figma invoice cards — an issued, unpaid invoice reads "Төлөгдөөгүй". */
-export const PORTAL_INVOICE_BADGE: Record<string, { tone: BadgeTone; label: string }> = {
+const PORTAL_INVOICE_BADGE: Record<string, { tone: BadgeTone; label: string }> = {
   ...INVOICE_STATUS_BADGE,
   SENT: { tone: 'pending', label: 'Төлөгдөөгүй' },
 };

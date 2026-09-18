@@ -2,7 +2,6 @@ import { BadRequestException, ConflictException, ForbiddenException, Injectable,
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   CaseStatus,
-  Role,
   TestimonialSource,
   TestimonialStatus,
   type CreateManualTestimonialInput,
@@ -179,15 +178,6 @@ export class TestimonialsService {
     return paginate(items, total, query.page, query.limit);
   }
 
-  /** Staff: counts behind the sidebar badge. */
-  async summary(): Promise<{ pending: number; published: number }> {
-    const [pending, published] = await Promise.all([
-      this.prisma.testimonial.count({ where: { status: TestimonialStatus.PENDING } }),
-      this.prisma.testimonial.count({ where: { status: TestimonialStatus.PUBLISHED } }),
-    ]);
-    return { pending, published };
-  }
-
   async findOne(id: string): Promise<AdminRecord> {
     const record = await this.prisma.testimonial.findUnique({ where: { id }, select: ADMIN_SELECT });
     if (!record) throw new NotFoundException('Сэтгэгдэл олдсонгүй');
@@ -286,11 +276,5 @@ export class TestimonialsService {
     if (!record) throw new NotFoundException('Сэтгэгдэл олдсонгүй');
     await this.prisma.testimonial.delete({ where: { id } });
     return { id };
-  }
-
-  /** Staff view of one client's own row, used by the portal case page to know whether to offer the form. */
-  async findMineForCase(caseId: string, user: RequestUser) {
-    if (user.role !== Role.CLIENT) return null;
-    return this.prisma.testimonial.findFirst({ where: { caseId, authorUserId: user.id }, select: MINE_SELECT });
   }
 }

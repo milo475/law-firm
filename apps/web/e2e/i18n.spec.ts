@@ -48,6 +48,6 @@ test.describe('Хэл сонголт', () => {
     // The article list stays Mongolian in every language, and says so.
     await page.goto('/zh/news');
     await expect(page.locator('html')).toHaveAttribute('lang', 'zh-Hans');
-    await expect(page.getByText(text(zh.site.postsInMongolian, mn.site.postsInMongolian))).toBeVisible();
+    await expect(page.getByText(text(zh.news.mongolianNote, mn.news.mongolianNote))).toBeVisible();
   });
 });

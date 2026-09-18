@@ -19,12 +19,6 @@ export class AdminTestimonialsController {
     return this.testimonials.findAll(query);
   }
 
-  @Get('summary')
-  @ApiOperation({ summary: '[ADMIN, LAWYER] Хянагдаагүй болон нийтэлсэн сэтгэгдлийн тоо (sidebar badge)' })
-  summary() {
-    return this.testimonials.summary();
-  }
-
   @Get(':id')
   @ApiOperation({ summary: '[ADMIN, LAWYER] Сэтгэгдлийн дэлгэрэнгүй' })
   findOne(@Param('id') id: string) {

@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { Avatar } from './avatar';
 import { Logo } from './logo';
 
-export interface SidebarItemProps {
+interface SidebarItemProps {
   href: string;
   label: string;
   icon: React.ReactNode;
@@ -17,7 +17,7 @@ export interface SidebarItemProps {
   onClick?: () => void;
 }
 
-export function SidebarItem({ href, label, icon, active, count, countLabel = 'уншаагүй' }: SidebarItemProps) {
+function SidebarItem({ href, label, icon, active, count, countLabel = 'уншаагүй' }: SidebarItemProps) {
   return (
     <Link
       href={href}

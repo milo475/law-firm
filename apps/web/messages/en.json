@@ -4,7 +4,6 @@
     "description": "A professional legal services firm. We provide representation and legal advice to individuals and businesses.",
     "skipToContent": "Skip to main content",
     "languageLabel": "Choose language",
-    "postsInMongolian": "These articles are published in Mongolian.",
     "dismissSuggestion": "Dismiss"
   },
   "nav": {
@@ -1629,7 +1628,6 @@
       "bodyHelper": "30–1000 characters",
       "ratingLabel": "Rating (optional)",
       "ratingValue": "{rating} stars",
-      "ratingClear": "Clear the rating",
       "consent": "I consent to my name being published on the website",
       "consentHelper": "Without your consent your name is never published anywhere. You can withdraw it at any time.",
       "submit": "Send testimonial",
@@ -1653,8 +1651,7 @@
       "revokedTitle": "Publication withdrawn",
       "revokedBody": "Your testimonial has been removed from the site.",
       "revokeFailed": "It could not be withdrawn",
-      "consentRevoked": "Consent to publication withdrawn",
-      "alreadyLeft": "You have already left a testimonial for this matter."
+      "consentRevoked": "Consent to publication withdrawn"
     }
   },
   "reviews": {

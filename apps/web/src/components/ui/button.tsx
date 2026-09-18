@@ -6,7 +6,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { forwardRef, type ButtonHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
-export const buttonVariants = cva(
+const buttonVariants = cva(
   // base: Label/Button typography, radius/md, ≥44px touch target, focus ring
   'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md font-sans font-semibold transition-colors focus-ring disabled:pointer-events-none select-none',
   {
