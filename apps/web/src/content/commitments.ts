@@ -34,6 +34,3 @@ export const COMMITMENTS: Commitments = {
 export function priceRow(label: string, value: string | null): { label: string; value: string }[] {
   return value ? [{ label, value }] : [];
 }
-
-/** Shown under the price card: what the fee depends on, since the amounts are not published. */
-export const PRICING_NOTE = 'Төлбөрийн хэмжээг ажлын цар хүрээ, хугацаанаас хамааран гэрээгээр тогтооно.';

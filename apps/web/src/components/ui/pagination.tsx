@@ -2,6 +2,7 @@
 // Server-safe when `hrefFor` is given (renders links); use `onPageChange` from client components.
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
 export interface PaginationProps {
@@ -28,6 +29,7 @@ function range(page: number, total: number): (number | '…')[] {
 const cell = 'inline-flex size-11 items-center justify-center rounded-md border border-border-default bg-bg-surface text-body-sm-medium text-text-primary transition-colors focus-ring';
 
 export function Pagination({ page, totalPages, hrefFor, onPageChange, className }: PaginationProps) {
+  const t = useTranslations('states');
   if (totalPages <= 1) return null;
   const items = range(page, totalPages);
 
@@ -51,7 +53,7 @@ export function Pagination({ page, totalPages, hrefFor, onPageChange, className 
   };
 
   return (
-    <nav className={cn('flex flex-wrap items-center gap-2', className)} aria-label="Хуудаслалт">
+    <nav className={cn('flex flex-wrap items-center gap-2', className)} aria-label={t('pagination')}>
       {render(page - 1, '‹', 'Өмнөх хуудас', page <= 1)}
       {items.map((item, i) =>
         item === '…' ? (

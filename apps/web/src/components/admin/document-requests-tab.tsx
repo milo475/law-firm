@@ -198,7 +198,7 @@ function RequestCard({ request, busy, onEdit, onDelete, onReject, onReview, onDo
       )}
       {request.status === 'APPROVED' && request.reviewedBy && (
         <p className="text-caption text-status-progress-fg">
-          Баталсан: {shortName(request.reviewedBy.firstName, request.reviewedBy.lastName)} · {formatDate(request.reviewedAt, true)}
+          Баталсан: {shortName(request.reviewedBy.firstName, request.reviewedBy.lastName)} · {formatDate(request.reviewedAt, 'mn', true)}
         </p>
       )}
 
@@ -211,7 +211,7 @@ function RequestCard({ request, busy, onEdit, onDelete, onReject, onReview, onDo
                 key={doc.id}
                 name={doc.name}
                 mimeType={doc.mimeType}
-                meta={`${formatBytes(doc.size)} · ${formatDate(doc.createdAt, true)}`}
+                meta={`${formatBytes(doc.size)} · ${formatDate(doc.createdAt, 'mn', true)}`}
                 action={<Button variant="ghost" size="sm" onClick={() => onDownload(doc)}>Татах</Button>}
               />
             ))}

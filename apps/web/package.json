@@ -10,6 +10,9 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf .next",
+    "i18n:export": "node scripts/i18n.mjs export",
+    "i18n:import": "node scripts/i18n.mjs import",
+    "i18n:check": "node scripts/i18n.mjs check",
     "e2e": "playwright test --project=desktop --grep-invert screenshots",
     "e2e:screenshots": "playwright test --grep screenshots"
   },
@@ -29,6 +32,7 @@
     "clsx": "^2.1.1",
     "dotenv": "^17.0.0",
     "next": "^15.5.25",
+    "next-intl": "^4.14.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.88.0",

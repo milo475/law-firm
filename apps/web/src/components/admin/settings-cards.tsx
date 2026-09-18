@@ -54,7 +54,7 @@ function ExampleNotice({ title, message }: { title: string; message: string }) {
 function SaveRow({ updatedAt, dirty, pending, onReset }: { updatedAt: string | null; dirty: boolean; pending: boolean; onReset: () => void }) {
   return (
     <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-caption text-text-muted">{updatedAt ? `Сүүлд хадгалсан: ${formatDate(updatedAt, true)}` : 'Бодит мэдээлэл хадгалаагүй'}</p>
+      <p className="text-caption text-text-muted">{updatedAt ? `Сүүлд хадгалсан: ${formatDate(updatedAt, 'mn', true)}` : 'Бодит мэдээлэл хадгалаагүй'}</p>
       <div className="flex gap-3">
         <Button type="button" variant="ghost" size="md" disabled={!dirty || pending} onClick={onReset}>Буцаах</Button>
         <Button type="submit" size="md" disabled={(!dirty && updatedAt !== null) || pending}>{pending ? 'Хадгалж байна…' : 'Хадгалах'}</Button>

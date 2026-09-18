@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { EmptyCasesGlyph, ErrorStateGlyph } from '@/components/icons';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import { Button } from './button';
 
 // State card: surface + border-default + radius-lg; 40/20px padding & 16px gap on mobile, 64/40px & 20px on desktop.
@@ -32,15 +33,16 @@ export function EmptyState({ title: heading, description: text, action, icon, cl
   );
 }
 
-export function ErrorState({ title: heading = 'Алдаа гарлаа', message, onRetry, className }: { title?: string; message?: string; onRetry?: () => void; className?: string }) {
+export function ErrorState({ title: heading, message, onRetry, className }: { title?: string; message?: string; onRetry?: () => void; className?: string }) {
+  const t = useTranslations('states');
   return (
     <div role="alert" className={cn(stateCard, className)}>
       <span className={cn(disc, 'bg-status-danger-bg text-status-danger-fg')} aria-hidden><ErrorStateGlyph /></span>
-      <p className={title}>{heading}</p>
-      <p className={description}>{message || 'Мэдээллийг ачаалах явцад алдаа гарлаа. Дахин оролдоно уу.'}</p>
+      <p className={title}>{heading ?? t('errorTitle')}</p>
+      <p className={description}>{message || t('errorMessage')}</p>
       <div className={actions}>
-        {onRetry && <Button variant="primary" size="md" onClick={onRetry}>Дахин оролдох</Button>}
-        <Button asChild variant="secondary" size="md"><Link href="/contact">Тусламж авах</Link></Button>
+        {onRetry && <Button variant="primary" size="md" onClick={onRetry}>{t('retry')}</Button>}
+        <Button asChild variant="secondary" size="md"><Link href="/contact">{t('getHelp')}</Link></Button>
       </div>
     </div>
   );
@@ -51,8 +53,9 @@ export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivEl
 }
 
 export function TableSkeleton({ rows = 5 }: { rows?: number }) {
+  const t = useTranslations('states');
   return (
-    <div className="overflow-hidden rounded-lg border border-border-default bg-bg-surface" aria-busy aria-label="Ачааллаж байна">
+    <div className="overflow-hidden rounded-lg border border-border-default bg-bg-surface" aria-busy aria-label={t('loading')}>
       <div className="h-14 border-b border-border-default bg-bg-surface-alt" />
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="flex h-14 items-center gap-6 border-b border-border-subtle px-6 last:border-b-0">

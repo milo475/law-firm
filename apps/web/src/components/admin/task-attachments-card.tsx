@@ -132,7 +132,7 @@ export function TaskAttachmentsCard({ taskId, viewer }: { taskId: string; viewer
               <FileChip
                 name={item.name}
                 mimeType={item.mimeType}
-                meta={`${formatBytes(item.size)} · ${formatDate(item.createdAt, true)} · ${shortName(item.uploadedBy.firstName, item.uploadedBy.lastName)}`}
+                meta={`${formatBytes(item.size)} · ${formatDate(item.createdAt, 'mn', true)} · ${shortName(item.uploadedBy.firstName, item.uploadedBy.lastName)}`}
                 action={
                   <div className="flex shrink-0 gap-1">
                     <Button variant="ghost" size="sm" onClick={() => void download(item)} aria-label={`Татах: ${item.name}`}>Татах</Button>

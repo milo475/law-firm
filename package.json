@@ -26,6 +26,9 @@
     "db:purge-demo": "pnpm --filter @law-firm/shared db:purge-demo",
     "db:seed-content": "pnpm --filter @law-firm/shared db:seed-content",
     "db:studio": "pnpm --filter @law-firm/shared db:studio",
+    "i18n:export": "pnpm --filter @law-firm/web i18n:export",
+    "i18n:import": "pnpm --filter @law-firm/web i18n:import",
+    "i18n:check": "pnpm --filter @law-firm/web i18n:check",
     "clean": "turbo run clean && rm -rf node_modules"
   },
   "devDependencies": {

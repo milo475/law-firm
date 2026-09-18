@@ -1,21 +1,36 @@
-export function formatDate(value: string | Date | null | undefined, withTime = false): string {
+import { BCP47, type Locale } from '@/i18n/routing';
+
+/**
+ * Dates and numbers follow the reader's language (mn: 2026.09.18, en: 09/18/2026, zh: 2026/09/18);
+ * money keeps the ₮ symbol in every language and only the grouping changes.
+ */
+export function formatDate(value: string | Date | null | undefined, locale: Locale = 'mn', withTime = false): string {
   if (!value) return '—';
   const date = typeof value === 'string' ? new Date(value) : value;
   if (Number.isNaN(date.getTime())) return '—';
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const dd = String(date.getDate()).padStart(2, '0');
-  if (!withTime) return `${yyyy}.${mm}.${dd}`;
-  const hh = String(date.getHours()).padStart(2, '0');
-  const mi = String(date.getMinutes()).padStart(2, '0');
-  return `${yyyy}.${mm}.${dd} ${hh}:${mi}`;
+  return new Intl.DateTimeFormat(BCP47[locale], {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    ...(withTime ? { hour: '2-digit', minute: '2-digit', hour12: false } : {}),
+  }).format(date);
 }
 
-/** 1500000 → "1 500 000₮" (space thousands separator, as in the Figma portal frames) */
-export function formatMoney(value: string | number): string {
+/** The long form used in article headers: "2026 оны есдүгээр сарын 18" / "September 18, 2026". */
+export function formatDateLong(value: string | Date | null | undefined, locale: Locale = 'mn'): string {
+  if (!value) return '—';
+  const date = typeof value === 'string' ? new Date(value) : value;
+  if (Number.isNaN(date.getTime())) return '—';
+  return new Intl.DateTimeFormat(BCP47[locale], { year: 'numeric', month: 'long', day: 'numeric' }).format(date);
+}
+
+/** 1500000 → "1 500 000₮" (space thousands separator, as in the Figma portal frames). ₮ in every language. */
+export function formatMoney(value: string | number, locale: Locale = 'mn'): string {
   const amount = typeof value === 'string' ? Number(value) : value;
   if (Number.isNaN(amount)) return '—';
-  return `${amount.toLocaleString('en-US', { maximumFractionDigits: 2 }).replace(/,/g, ' ')}₮`;
+  const grouped = new Intl.NumberFormat(BCP47[locale], { maximumFractionDigits: 2 }).format(amount);
+  // The Figma frames group with spaces; other languages keep their own separator.
+  return `${locale === 'mn' ? grouped.replace(/,/g, ' ') : grouped}₮`;
 }
 
 /** "70001199" → "+976 7000-1199" (the firm's contact format); anything else is shown as stored. */

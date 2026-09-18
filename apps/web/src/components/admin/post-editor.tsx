@@ -139,7 +139,7 @@ export function PostEditor({ post }: { post?: ManagedPost }) {
             <h3 className="text-h4">Нийтлэх</h3>
             {post && <StatusBadge map={POST_STATUS_BADGE} status={post.status} />}
           </div>
-          {post?.publishedAt && <p className="text-caption text-text-muted">Нийтэлсэн {formatDate(post.publishedAt, true)} · {post.viewCount} үзсэн</p>}
+          {post?.publishedAt && <p className="text-caption text-text-muted">Нийтэлсэн {formatDate(post.publishedAt, 'mn', true)} · {post.viewCount} үзсэн</p>}
           <Button size="md" disabled={save.isPending || uploadCover.isPending} onClick={submit('PUBLISHED')}>{isPublished ? 'Шинэчилж нийтлэх' : 'Нийтлэх'}</Button>
           <Button variant="secondary" size="md" disabled={save.isPending || uploadCover.isPending} onClick={submit('DRAFT')}>{isPublished ? 'Ноорог болгох' : 'Ноорог хадгалах'}</Button>
           {post && post.status !== 'ARCHIVED' && <Button variant="ghost" size="md" disabled={save.isPending} onClick={submit('ARCHIVED')}>Архивлах</Button>}

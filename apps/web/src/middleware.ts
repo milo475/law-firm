@@ -1,8 +1,12 @@
+import createIntlMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
+import { routing, type Locale } from '@/i18n/routing';
 
 const LOGIN_PATH = '/portal/login';
 const PUBLIC_PORTAL_PATHS = ['/portal/login', '/portal/register', '/portal/forgot-password'];
 const STAFF_ROLES = new Set(['ADMIN', 'LAWYER']);
+
+const intlMiddleware = createIntlMiddleware(routing);
 
 /**
  * Reads the role claim from the access-token cookie for routing decisions only.
@@ -21,42 +25,66 @@ function roleFromAccessToken(token: string | undefined): string | null {
   }
 }
 
+/** Splits `/en/portal/cases` into the locale and the route the session rules are written against. */
+function splitLocale(pathname: string): { locale: Locale; prefix: string; route: string } {
+  const [, first, ...rest] = pathname.split('/');
+  if (routing.locales.includes(first as Locale)) {
+    const locale = first as Locale;
+    return {
+      locale,
+      prefix: locale === routing.defaultLocale ? '' : `/${locale}`,
+      route: `/${rest.join('/')}`.replace(/\/$/, '') || '/',
+    };
+  }
+  return { locale: routing.defaultLocale, prefix: '', route: pathname };
+}
+
 /**
  * /portal/* and /admin/* need a session (`access_token`, or the long-lived `lf_session`
- * marker so an expired access token can still refresh on the client).
+ * marker so an expired access token can still refresh on the client) in every language.
  * /admin/* is for ADMIN and LAWYER only: a CLIENT is redirected to /portal.
+ * Everything else only picks the locale; /api/* never reaches this file (see the matcher).
  */
 export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
+  const [, first] = pathname.split('/');
+  const hasPrefix = routing.locales.includes(first as Locale);
+
+  // A language the visitor picked themselves (NEXT_LOCALE) is honoured on unprefixed URLs.
+  // Accept-Language never redirects — the header only offers the switch (LocaleSuggestion).
+  const chosen = request.cookies.get('NEXT_LOCALE')?.value as Locale | undefined;
+  if (!hasPrefix && chosen && chosen !== routing.defaultLocale && routing.locales.includes(chosen)) {
+    const target = new URL(`/${chosen}${pathname === '/' ? '' : pathname}${search}`, request.url);
+    return NextResponse.redirect(target);
+  }
+
+  const { prefix, route } = splitLocale(pathname);
+  const guarded = route === '/portal' || route.startsWith('/portal/') || route === '/admin' || route.startsWith('/admin/');
+  if (!guarded) return intlMiddleware(request);
+
   const hasSession = request.cookies.has('access_token') || request.cookies.has('lf_session');
   const role = roleFromAccessToken(request.cookies.get('access_token')?.value);
   const isStaff = role !== null && STAFF_ROLES.has(role);
+  const to = (target: string) => NextResponse.redirect(new URL(`${prefix}${target}`, request.url));
 
-  if (PUBLIC_PORTAL_PATHS.some((p) => pathname.startsWith(p))) {
-    if (hasSession) {
-      return NextResponse.redirect(new URL(isStaff ? '/admin' : '/portal', request.url));
-    }
-    return NextResponse.next();
+  if (PUBLIC_PORTAL_PATHS.some((p) => route.startsWith(p))) {
+    return hasSession ? to(isStaff ? '/admin' : '/portal') : intlMiddleware(request);
   }
 
   if (!hasSession) {
-    const loginUrl = new URL(LOGIN_PATH, request.url);
+    const loginUrl = new URL(`${prefix}${LOGIN_PATH}`, request.url);
     loginUrl.searchParams.set('next', `${pathname}${search}`);
     return NextResponse.redirect(loginUrl);
   }
 
-  if (pathname.startsWith('/admin') && role === 'CLIENT') {
-    return NextResponse.redirect(new URL('/portal', request.url));
-  }
-
+  if (route.startsWith('/admin') && role === 'CLIENT') return to('/portal');
   // Staff have no client dashboard; send them to the admin panel.
-  if (pathname === '/portal' && isStaff) {
-    return NextResponse.redirect(new URL('/admin', request.url));
-  }
+  if (route === '/portal' && isStaff) return to('/admin');
 
-  return NextResponse.next();
+  return intlMiddleware(request);
 }
 
 export const config = {
-  matcher: ['/portal/:path*', '/admin/:path*'],
+  // Everything except the API proxy, Next's own assets and files with an extension.
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
 };

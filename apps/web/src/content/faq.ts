@@ -1,48 +1,36 @@
-// Figma: 01 Public Site / Public / 09 FAQ — categories (sidebar / chips) + grouped questions
-export interface FaqCategory {
+// Structure only — the questions and answers live in messages/*.json under `faq.categories` / `faq.items`.
+export interface FaqCategoryDefinition {
   id: string;
-  /** Desktop sidebar label. */
-  label: string;
-  /** Mobile chip label. */
-  shortLabel: string;
 }
 
-export interface FaqItem {
+export interface FaqItemDefinition {
   id: string;
-  category: FaqCategory['id'];
-  question: string;
-  answer: string;
+  category: string;
 }
 
-export const FAQ_CATEGORIES: FaqCategory[] = [
-  { id: 'general', label: 'Ерөнхий асуулт', shortLabel: 'Ерөнхий' },
-  { id: 'payment', label: 'Төлбөр, гэрээ', shortLabel: 'Төлбөр' },
-  { id: 'labor', label: 'Хөдөлмөрийн эрх зүй', shortLabel: 'Хөдөлмөр' },
-  { id: 'family', label: 'Гэр бүлийн эрх зүй', shortLabel: 'Гэр бүл' },
-  { id: 'criminal', label: 'Эрүүгийн хэрэг', shortLabel: 'Эрүүгийн' },
-  { id: 'portal', label: 'Харилцагчийн портал', shortLabel: 'Портал' },
+export const FAQ_CATEGORIES: FaqCategoryDefinition[] = [
+  { id: 'general' },
+  { id: 'payment' },
+  { id: 'labor' },
+  { id: 'family' },
+  { id: 'criminal' },
+  { id: 'portal' },
 ];
 
-export const FAQ: FaqItem[] = [
-  // Ерөнхий асуулт
-  { id: 'first-consult', category: 'general', question: 'Анхан шатны уулзалт хэрхэн явагддаг вэ?', answer: 'Хүсэлтээ илгээсний дараа асуудлын төрлийг тодруулж, уулзалт товлоно. Уулзалтаар асуудлын мөн чанар, эрх зүйн боломж, дараагийн алхмыг тайлбарлана. Ажлын хүрээ тодорхой болсны дараа төлбөрийн нөхцөлийг бичгээр тохиролцоно.' },
-  { id: 'bring-documents', category: 'general', question: 'Уулзалтад ямар баримт авчрах вэ?', answer: 'Асуудалтай холбоотой бүх бичиг баримт — гэрээ, мэдэгдэл, захидал харилцаа, шүүхийн мэдэгдэх хуудас зэргийг авчирна уу. Эх хувь байх шаардлагагүй, хуулбар болон гар утасны зураг ч болно.' },
-  { id: 'track-case', category: 'general', question: 'Хэргийн явцыг хэрхэн хянах вэ?', answer: 'Харилцагчийн порталд нэвтэрснээр хэргийн явц, шүүх хурлын тов, баримт бичиг, нэхэмжлэх, мэдэгдлээ бодит цагийн горимд харна. Портал руу нэвтрэх мэдээллийг гэрээ байгуулахад олгоно.' },
-  // Төлбөр, гэрээ
-  { id: 'fees', category: 'payment', question: 'Төлбөр хэрхэн тооцогддог вэ?', answer: 'Хэргийн төрөл, цар хүрээ, шаардагдах цагаас хамааран цагийн үнэлгээгээр эсвэл тогтмол үнээр тооцож гэрээнд тусгана. Үнийн саналыг анхан шатны уулзалтын дараа бичгээр өгнө.' },
-  { id: 'advance', category: 'payment', question: 'Урьдчилгаа төлбөр байдаг уу?', answer: 'Ихэнх хэрэгт гэрээ байгуулахад нийт төлбөрийн тодорхой хувийг урьдчилгаа болгон төлнө. Үлдэгдлийг гэрээнд заасан үе шат бүрээр нэхэмжилнэ.' },
-  { id: 'invoices', category: 'payment', question: 'Нэхэмжлэхээ хаанаас харах вэ?', answer: 'Нэхэмжлэхийг харилцагчийн порталын «Нэхэмжлэх» хэсгээс харж, банкны шилжүүлгээр төлнө. Онлайн төлбөрийн систем удахгүй нэвтэрнэ.' },
-  // Хөдөлмөрийн эрх зүй
-  { id: 'dismissal-deadline', category: 'labor', question: 'Ажлаас халагдсан бол хэдий хугацаанд хандах ёстой вэ?', answer: 'Ажлаас халагдсан тухай шийдвэрийг хүлээн авснаас хойш 30 хоногийн дотор шүүхэд хандах эрхтэй. Хугацаа алдахгүйн тулд шийдвэр гармагц бидэнтэй холбогдоно уу.' },
-  { id: 'compensation', category: 'labor', question: 'Нөхөн олговор хэрхэн тооцогддог вэ?', answer: 'Ажилгүй байсан хугацааны дундаж цалин, ашиглаагүй ээлжийн амралт болон хуульд заасан бусад олговрыг нэгтгэн тооцно. Тооцоог хуульч таны цалингийн баримт дээр үндэслэн гаргана.' },
-  // Гэр бүлийн эрх зүй
-  { id: 'divorce-duration', category: 'family', question: 'Гэрлэлт цуцлуулах хэрэг хэр удаан үргэлжилдэг вэ?', answer: 'Хоёр тал зөвшилцсөн бол 1–2 сар, хүүхдийн асрамж эсвэл эд хөрөнгийн маргаантай бол 3–6 сар үргэлжилдэг. Хугацаа шүүхийн ачаалал, баримтын бүрдлээс хамаарна.' },
-  { id: 'child-support', category: 'family', question: 'Хүүхдийн тэтгэлэг хэрхэн тогтоогддог вэ?', answer: 'Хүүхдийн тоо, талуудын орлогоос хамааран хуульд заасан хувь хэмжээгээр шүүх тогтооно. Талууд зөвшилцвөл тэтгэлгийн хэмжээг гэрээгээр тохирох боломжтой.' },
-  // Эрүүгийн хэрэг
-  { id: 'urgent', category: 'criminal', question: 'Яаралтай тохиолдолд хэрхэн холбогдох вэ?', answer: '«Холбоо барих» хэсэгт заасан утсаар залгах, эсхүл порталаар хүсэлт илгээнэ үү. Эрүүгийн хэргийн хувьд мэдүүлэг өгөхөөс өмнө өмгөөлөгчтэй холбогдохыг зөвлөж байна.' },
-  { id: 'interrogation', category: 'criminal', question: 'Байцаалтад хуульчгүй орох ёстой юу?', answer: 'Үгүй. Та байцаалтын аль ч шатанд хуульч авах эрхтэй. Хуульчаа ирэх хүртэл мэдүүлэг өгөхөөс татгалзаж болно.' },
-  // Харилцагчийн портал
-  { id: 'portal-login', category: 'portal', question: 'Портал руу хэрхэн нэвтрэх вэ?', answer: 'Гэрээ байгуулахад таны и-мэйл хаяг руу нэвтрэх мэдээлэл илгээнэ. Нууц үгээ мартсан бол нэвтрэх хуудасны «Нууц үг сэргээх» холбоосоор шинэчилнэ.' },
-  { id: 'documents', category: 'portal', question: 'Баримт бичгээ хэрхэн илгээх вэ?', answer: 'Портал дээрх хэргийн хуудаснаас баримт хавсаргах боломжтой. PDF, Word, Excel, зураг (JPG, PNG) файлыг 20MB хүртэл хэмжээтэй дэмжинэ.' },
-  { id: 'confidentiality', category: 'portal', question: 'Нууцлалыг хэрхэн хангадаг вэ?', answer: 'Хуульч-үйлчлүүлэгчийн нууцлалын зарчмыг чанд баримталж, бүх мэдээллийг шифрлэн хадгална. Таны зөвшөөрөлгүйгээр гуравдагч этгээдэд мэдээлэл дамжуулахгүй.' },
+export const FAQ: FaqItemDefinition[] = [
+  { id: 'first-consult', category: 'general' },
+  { id: 'bring-documents', category: 'general' },
+  { id: 'track-case', category: 'general' },
+  { id: 'fees', category: 'payment' },
+  { id: 'advance', category: 'payment' },
+  { id: 'invoices', category: 'payment' },
+  { id: 'dismissal-deadline', category: 'labor' },
+  { id: 'compensation', category: 'labor' },
+  { id: 'divorce-duration', category: 'family' },
+  { id: 'child-support', category: 'family' },
+  { id: 'urgent', category: 'criminal' },
+  { id: 'interrogation', category: 'criminal' },
+  { id: 'portal-login', category: 'portal' },
+  { id: 'documents', category: 'portal' },
+  { id: 'confidentiality', category: 'portal' },
 ];

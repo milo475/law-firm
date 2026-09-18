@@ -1,0 +1,931 @@
+{
+  "site": {
+    "name": "",
+    "description": "",
+    "skipToContent": "",
+    "languageLabel": "",
+    "postsInMongolian": "",
+    "dismissSuggestion": ""
+  },
+  "nav": {
+    "menu": "",
+    "mobileMenu": "",
+    "openMenu": "",
+    "closeMenu": "",
+    "menuTitle": "",
+    "menuDescription": "",
+    "about": "",
+    "services": "",
+    "lawyers": "",
+    "news": "",
+    "faq": "",
+    "contact": "",
+    "portal": "",
+    "cta": ""
+  },
+  "footer": {
+    "description": "",
+    "descriptionShort": "",
+    "services": "",
+    "company": "",
+    "contact": "",
+    "news": "",
+    "careers": "",
+    "rights": "",
+    "privacy": "",
+    "terms": "",
+    "serviceShort": {
+      "civil": "",
+      "criminal": "",
+      "family": "",
+      "business": "",
+      "labor": "",
+      "real-estate": ""
+    }
+  },
+  "services": {
+    "catalog": {
+      "civil": {
+        "title": "",
+        "teaser": "",
+        "short": "",
+        "highlights": [
+          "",
+          "",
+          ""
+        ],
+        "intro": "",
+        "body": [
+          "",
+          ""
+        ],
+        "items": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "note": {
+          "title": "",
+          "text": ""
+        },
+        "faq": {
+          "when": {
+            "question": "",
+            "answer": ""
+          },
+          "docs": {
+            "question": "",
+            "answer": ""
+          },
+          "fee": {
+            "question": "",
+            "answer": ""
+          },
+          "duration": {
+            "question": "",
+            "answer": ""
+          }
+        },
+        "pricing": [
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          }
+        ]
+      },
+      "criminal": {
+        "title": "",
+        "teaser": "",
+        "short": "",
+        "highlights": [
+          "",
+          "",
+          ""
+        ],
+        "intro": "",
+        "body": [
+          "",
+          ""
+        ],
+        "items": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "note": {
+          "title": "",
+          "text": ""
+        },
+        "faq": {
+          "when": {
+            "question": "",
+            "answer": ""
+          },
+          "docs": {
+            "question": "",
+            "answer": ""
+          },
+          "fee": {
+            "question": "",
+            "answer": ""
+          },
+          "duration": {
+            "question": "",
+            "answer": ""
+          }
+        },
+        "pricing": [
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          }
+        ]
+      },
+      "family": {
+        "title": "",
+        "teaser": "",
+        "short": "",
+        "highlights": [
+          "",
+          "",
+          ""
+        ],
+        "intro": "",
+        "body": [
+          "",
+          ""
+        ],
+        "items": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "note": {
+          "title": "",
+          "text": ""
+        },
+        "faq": {
+          "when": {
+            "question": "",
+            "answer": ""
+          },
+          "docs": {
+            "question": "",
+            "answer": ""
+          },
+          "fee": {
+            "question": "",
+            "answer": ""
+          },
+          "privacy": {
+            "question": "",
+            "answer": ""
+          }
+        },
+        "pricing": [
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          }
+        ]
+      },
+      "business": {
+        "title": "",
+        "teaser": "",
+        "short": "",
+        "highlights": [
+          "",
+          "",
+          ""
+        ],
+        "intro": "",
+        "body": [
+          "",
+          ""
+        ],
+        "items": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "note": {
+          "title": "",
+          "text": ""
+        },
+        "faq": {
+          "monthly": {
+            "question": "",
+            "answer": ""
+          },
+          "docs": {
+            "question": "",
+            "answer": ""
+          },
+          "fee": {
+            "question": "",
+            "answer": ""
+          },
+          "duration": {
+            "question": "",
+            "answer": ""
+          }
+        },
+        "pricing": [
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          }
+        ]
+      },
+      "labor": {
+        "title": "",
+        "teaser": "",
+        "short": "",
+        "highlights": [
+          "",
+          "",
+          ""
+        ],
+        "intro": "",
+        "body": [
+          "",
+          ""
+        ],
+        "items": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "note": {
+          "title": "",
+          "text": ""
+        },
+        "faq": {
+          "when": {
+            "question": "",
+            "answer": ""
+          },
+          "docs": {
+            "question": "",
+            "answer": ""
+          },
+          "fee": {
+            "question": "",
+            "answer": ""
+          },
+          "duration": {
+            "question": "",
+            "answer": ""
+          }
+        },
+        "pricing": [
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          }
+        ]
+      },
+      "real-estate": {
+        "title": "",
+        "teaser": "",
+        "short": "",
+        "highlights": [
+          "",
+          "",
+          ""
+        ],
+        "intro": "",
+        "body": [
+          "",
+          ""
+        ],
+        "items": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "note": {
+          "title": "",
+          "text": ""
+        },
+        "faq": {
+          "check": {
+            "question": "",
+            "answer": ""
+          },
+          "docs": {
+            "question": "",
+            "answer": ""
+          },
+          "fee": {
+            "question": "",
+            "answer": ""
+          },
+          "duration": {
+            "question": "",
+            "answer": ""
+          }
+        },
+        "pricing": [
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          },
+          {
+            "label": "",
+            "value": ""
+          }
+        ]
+      }
+    },
+    "process": [
+      {
+        "title": "",
+        "text": ""
+      },
+      {
+        "title": "",
+        "text": ""
+      },
+      {
+        "title": "",
+        "text": ""
+      },
+      {
+        "title": "",
+        "text": ""
+      }
+    ],
+    "commitments": {
+      "firstConsultation": "",
+      "writtenOpinion": "",
+      "assetCheck": "",
+      "urgentResponse": ""
+    }
+  },
+  "faq": {
+    "categories": {
+      "general": {
+        "label": "",
+        "shortLabel": ""
+      },
+      "payment": {
+        "label": "",
+        "shortLabel": ""
+      },
+      "labor": {
+        "label": "",
+        "shortLabel": ""
+      },
+      "family": {
+        "label": "",
+        "shortLabel": ""
+      },
+      "criminal": {
+        "label": "",
+        "shortLabel": ""
+      },
+      "portal": {
+        "label": "",
+        "shortLabel": ""
+      }
+    },
+    "items": {
+      "first-consult": {
+        "question": "",
+        "answer": ""
+      },
+      "bring-documents": {
+        "question": "",
+        "answer": ""
+      },
+      "track-case": {
+        "question": "",
+        "answer": ""
+      },
+      "fees": {
+        "question": "",
+        "answer": ""
+      },
+      "advance": {
+        "question": "",
+        "answer": ""
+      },
+      "invoices": {
+        "question": "",
+        "answer": ""
+      },
+      "dismissal-deadline": {
+        "question": "",
+        "answer": ""
+      },
+      "compensation": {
+        "question": "",
+        "answer": ""
+      },
+      "divorce-duration": {
+        "question": "",
+        "answer": ""
+      },
+      "child-support": {
+        "question": "",
+        "answer": ""
+      },
+      "urgent": {
+        "question": "",
+        "answer": ""
+      },
+      "interrogation": {
+        "question": "",
+        "answer": ""
+      },
+      "portal-login": {
+        "question": "",
+        "answer": ""
+      },
+      "documents": {
+        "question": "",
+        "answer": ""
+      },
+      "confidentiality": {
+        "question": "",
+        "answer": ""
+      }
+    }
+  },
+  "common": {
+    "home": "",
+    "readMore": "",
+    "all": "",
+    "back": "",
+    "breadcrumb": "",
+    "getAdvice": "",
+    "yearsOfExperience": "",
+    "lawyersUnavailable": "",
+    "lawyersComingSoon": "",
+    "postsUnavailable": "",
+    "postsComingSoon": "",
+    "views": ""
+  },
+  "servicesPage": {
+    "metaTitle": "",
+    "metaDescription": "",
+    "title": "",
+    "description": "",
+    "crumb": "",
+    "crumbAll": "",
+    "listHeading": "",
+    "processOverline": "",
+    "processTitle": "",
+    "step": "",
+    "notFound": "",
+    "whatWeDo": "",
+    "scope": "",
+    "faqHeading": "",
+    "lawyersHeading": "",
+    "pricingHeading": "",
+    "pricingNote": ""
+  },
+  "faqPage": {
+    "metaTitle": "",
+    "metaDescription": "",
+    "title": "",
+    "description": "",
+    "crumb": "",
+    "categoryNav": "",
+    "helpTitle": "",
+    "helpText": "",
+    "helpCta": ""
+  },
+  "postCategory": {
+    "NEWS": "",
+    "ADVICE": "",
+    "LEGAL_UPDATE": ""
+  },
+  "home": {
+    "hero": {
+      "overline": "",
+      "overlineShort": "",
+      "title": "",
+      "lead": "",
+      "leadShort": "",
+      "primaryCta": "",
+      "secondaryCta": ""
+    },
+    "services": {
+      "overline": "",
+      "title": "",
+      "description": ""
+    },
+    "advantagesSection": {
+      "overline": "",
+      "title": "",
+      "description": ""
+    },
+    "advantages": [
+      {
+        "value": "",
+        "label": "",
+        "note": ""
+      },
+      {
+        "value": "",
+        "label": "",
+        "note": ""
+      },
+      {
+        "value": "",
+        "label": "",
+        "note": ""
+      },
+      {
+        "value": "",
+        "label": "",
+        "note": ""
+      }
+    ],
+    "team": {
+      "overline": "",
+      "title": "",
+      "all": ""
+    },
+    "news": {
+      "overline": "",
+      "title": "",
+      "titleShort": "",
+      "all": ""
+    },
+    "cta": {
+      "title": "",
+      "text": "",
+      "textShort": ""
+    }
+  },
+  "about": {
+    "metaTitle": "",
+    "metaDescription": "",
+    "title": "",
+    "description": "",
+    "crumb": "",
+    "story": {
+      "overline": "",
+      "title": "",
+      "p1": "",
+      "p2": ""
+    },
+    "values": {
+      "overline": "",
+      "title": ""
+    },
+    "process": {
+      "overline": "",
+      "title": ""
+    },
+    "valueItems": [
+      {
+        "title": "",
+        "text": ""
+      },
+      {
+        "title": "",
+        "text": ""
+      },
+      {
+        "title": "",
+        "text": ""
+      },
+      {
+        "title": "",
+        "text": ""
+      }
+    ],
+    "processSteps": [
+      {
+        "step": "",
+        "title": "",
+        "text": ""
+      },
+      {
+        "step": "",
+        "title": "",
+        "text": ""
+      },
+      {
+        "step": "",
+        "title": "",
+        "text": ""
+      },
+      {
+        "step": "",
+        "title": "",
+        "text": ""
+      }
+    ]
+  },
+  "contact": {
+    "metaTitle": "",
+    "metaDescription": "",
+    "title": "",
+    "description": "",
+    "crumb": "",
+    "requests": {
+      "title": "",
+      "description": "",
+      "cta": "",
+      "LAWYER": {
+        "title": "",
+        "description": ""
+      },
+      "CONSULTATION": {
+        "title": "",
+        "description": ""
+      },
+      "signUpPrefix": "",
+      "signUpLink": "",
+      "signUpSuffix": ""
+    },
+    "office": {
+      "title": "",
+      "address": "",
+      "phone": "",
+      "email": "",
+      "hours": "",
+      "social": ""
+    },
+    "map": {
+      "label": "",
+      "caption": ""
+    }
+  },
+  "lawyers": {
+    "metaTitle": "",
+    "metaDescription": "",
+    "title": "",
+    "description": "",
+    "descriptionCounted": "",
+    "crumb": "",
+    "filterLabel": "",
+    "failedTitle": "",
+    "failedDescription": "",
+    "noneTitle": "",
+    "noneForFilter": "",
+    "noneDescription": ""
+  },
+  "lawyerDetail": {
+    "notFound": "",
+    "contactTitle": "",
+    "phone": "",
+    "email": "",
+    "bookCta": "",
+    "specializations": "",
+    "education": "",
+    "bio": ""
+  },
+  "news": {
+    "metaTitle": "",
+    "metaDescription": "",
+    "title": "",
+    "description": "",
+    "crumb": "",
+    "crumbAll": "",
+    "categoryLabel": "",
+    "featured": "",
+    "search": "",
+    "searchSubmit": "",
+    "searchResult": "",
+    "clearSearch": "",
+    "failedTitle": "",
+    "failedDescription": "",
+    "noneTitle": "",
+    "noneDescription": "",
+    "mongolianNote": "",
+    "related": "",
+    "share": "",
+    "copyLink": "",
+    "shareAction": "",
+    "shareEmail": "",
+    "readingTime": ""
+  },
+  "states": {
+    "retry": "",
+    "getHelp": "",
+    "loading": "",
+    "errorTitle": "",
+    "errorMessage": "",
+    "pagination": "",
+    "pageTitle": "",
+    "pageMessage": ""
+  },
+  "privacy": {
+    "metaTitle": "",
+    "metaDescription": "",
+    "title": "",
+    "description": "",
+    "crumb": "",
+    "updated": "",
+    "updatedDate": "",
+    "sections": [
+      {
+        "title": "",
+        "items": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "title": "",
+        "items": [
+          "",
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "title": "",
+        "items": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "title": "",
+        "items": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "title": "",
+        "items": [
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    ],
+    "contactTitle": "",
+    "contactPrefix": "",
+    "contactOr": "",
+    "contactSuffix": "",
+    "termsPrefix": "",
+    "termsLink": "",
+    "termsSuffix": ""
+  },
+  "terms": {
+    "metaTitle": "",
+    "metaDescription": "",
+    "title": "",
+    "description": "",
+    "crumb": "",
+    "updated": "",
+    "updatedDate": "",
+    "registration": "",
+    "sections": [
+      {
+        "title": "",
+        "items": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "title": "",
+        "items": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "title": "",
+        "items": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "title": "",
+        "items": [
+          "",
+          ""
+        ]
+      },
+      {
+        "title": "",
+        "items": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "title": "",
+        "items": [
+          "",
+          "",
+          ""
+        ]
+      }
+    ],
+    "contactTitle": "",
+    "contactPrefix": "",
+    "contactOr": "",
+    "contactSuffix": "",
+    "privacyPrefix": "",
+    "privacyLink": "",
+    "privacySuffix": ""
+  },
+  "notFound": {
+    "title": "",
+    "homeCta": "",
+    "contactCta": "",
+    "quickLinks": "",
+    "links": {
+      "services": {
+        "title": "",
+        "caption": ""
+      },
+      "lawyers": {
+        "title": "",
+        "caption": ""
+      },
+      "news": {
+        "title": "",
+        "caption": ""
+      },
+      "portal": {
+        "title": "",
+        "caption": ""
+      }
+    }
+  }
+}
