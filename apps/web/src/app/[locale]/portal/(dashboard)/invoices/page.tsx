@@ -2,20 +2,19 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import Link from 'next/link';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState, useSyncExternalStore } from 'react';
 import { Button } from '@/components/ui/button';
 import { CardSkeleton, EmptyState, ErrorState, Skeleton } from '@/components/ui/states';
 import { ApiError, api, type InvoiceItem, type Paginated } from '@/lib/api';
 import { formatDate, formatMoney } from '@/lib/format';
+import { Link } from '@/i18n/navigation';
+import type { Locale } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
-import { InvoiceDetailPanel, InvoiceStatusBadge, PORTAL_INVOICE_BADGE, PaymentModal, isPayable } from './invoice-panel';
+import { InvoiceDetailPanel, InvoiceStatusBadge, PaymentModal, isPayable } from './invoice-panel';
 
 // Status chips (same pattern as the cases toolbar) — labels follow the client-facing badge copy.
-const STATUS_OPTIONS = [
-  { value: 'ALL', label: 'Бүгд' },
-  ...['SENT', 'AWAITING_CONFIRMATION', 'OVERDUE', 'PAID', 'CANCELLED', 'DRAFT'].map((value) => ({ value, label: PORTAL_INVOICE_BADGE[value].label })),
-];
+const STATUS_VALUES = ['ALL', 'SENT', 'AWAITING_CONFIRMATION', 'OVERDUE', 'PAID', 'CANCELLED', 'DRAFT'];
 
 // The side "Invoice detail" panel needs the 1180px desktop main column; below that, cards link to the detail route.
 const WIDE_QUERY = '(min-width: 1280px)';
@@ -39,6 +38,8 @@ function sortInvoices(items: InvoiceItem[]) {
 }
 
 export default function InvoicesPage() {
+  const t = useTranslations('portal.invoices');
+  const tStatus = useTranslations('portal.invoices.status');
   const isWide = useIsWide();
   const [status, setStatus] = useState('ALL');
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -70,18 +71,18 @@ export default function InvoicesPage() {
     <div className="flex flex-col gap-5 md:gap-0">
       {/* Header — desktop only (mobile relies on the portal header title) */}
       <div className="hidden flex-col gap-3 pb-2 md:flex">
-        <h2 className="text-h2">Нэхэмжлэх ба төлбөр</h2>
-        <p className="text-body text-text-secondary">Хэрэг тус бүрээр үүссэн нэхэмжлэх, төлбөрийн түүхээ эндээс хянана.</p>
+        <h2 className="text-h2">{t('title')}</h2>
+        <p className="text-body text-text-secondary">{t('description')}</p>
       </div>
 
       {/* Summary — 3 "Sum card"s on desktop; full-bleed white strip with 2 sums on mobile */}
       {!all.isError && (
-        <section aria-label="Төлбөрийн хураангуй" className="-mx-5 -mt-6 bg-bg-surface p-5 md:mx-0 md:mt-0 md:bg-transparent md:px-0 md:py-2">
+        <section aria-label={t('summaryLabel')} className="-mx-5 -mt-6 bg-bg-surface p-5 md:mx-0 md:mt-0 md:bg-transparent md:px-0 md:py-2">
           <dl className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5">
-            <SumCard className="hidden md:flex" label="Нийт нэхэмжилсэн" value={totals?.billed ?? null} tone="total" />
-            <SumCard label="Төлөгдсөн" value={totals?.paid ?? null} tone="paid" />
+            <SumCard className="hidden md:flex" label={t('billed')} value={totals?.billed ?? null} tone="total" />
+            <SumCard label={t('paid')} value={totals?.paid ?? null} tone="paid" />
             <SumCard
-              label={<><span className="md:hidden">Үлдэгдэл</span><span className="hidden md:inline">Төлөгдөөгүй үлдэгдэл</span></>}
+              label={<><span className="md:hidden">{t('outstandingShort')}</span><span className="hidden md:inline">{t('outstanding')}</span></>}
               value={totals?.outstanding ?? null}
               tone="due"
             />
@@ -91,37 +92,37 @@ export default function InvoicesPage() {
 
       <div className="flex flex-col gap-6 md:pt-4 xl:flex-row xl:items-start">
         <section aria-labelledby="invoices-heading" className="flex min-w-0 flex-1 flex-col gap-3.5 md:gap-4">
-          <h3 id="invoices-heading" className="font-serif text-[20px] font-semibold leading-7 text-text-primary md:text-h4">Бүх нэхэмжлэх</h3>
+          <h3 id="invoices-heading" className="font-serif text-[20px] font-semibold leading-7 text-text-primary md:text-h4">{t('allInvoices')}</h3>
 
-          <div role="radiogroup" aria-label="Төлөвөөр шүүх" className="flex flex-wrap gap-2.5">
-            {STATUS_OPTIONS.map((opt) => {
-              const active = opt.value === status;
+          <div role="radiogroup" aria-label={t('filterByStatus')} className="flex flex-wrap gap-2.5">
+            {STATUS_VALUES.map((value) => {
+              const active = value === status;
               return (
                 <button
-                  key={opt.value}
+                  key={value}
                   type="button"
                   role="radio"
                   aria-checked={active}
-                  onClick={() => setStatus(opt.value)}
+                  onClick={() => setStatus(value)}
                   className={cn(
                     'focus-ring inline-flex h-11 items-center justify-center rounded-full px-4 text-body-sm-medium transition-colors md:px-[18px]',
                     active ? 'bg-brand-primary text-text-on-inverse' : 'border border-border-default bg-bg-surface text-text-secondary hover:bg-bg-brand-soft',
                   )}
                 >
-                  {opt.label}
+                  {value === 'ALL' ? t('all') : tStatus(value)}
                 </button>
               );
             })}
           </div>
 
           {query.isError ? (
-            <ErrorState message={query.error instanceof ApiError ? query.error.message : 'Алдаа гарлаа'} onRetry={() => void query.refetch()} />
+            <ErrorState message={query.error instanceof ApiError ? query.error.message : t('loadError')} onRetry={() => void query.refetch()} />
           ) : query.isLoading ? (
             <div className="flex flex-col gap-3.5 md:gap-4"><CardSkeleton /><CardSkeleton /><CardSkeleton /></div>
           ) : items.length === 0 ? (
             <EmptyState
-              title="Нэхэмжлэх байхгүй байна"
-              description={status === 'ALL' ? 'Таны хэрэгт нэхэмжлэх үүсмэгц энд харагдана.' : 'Энэ төлөвт тохирох нэхэмжлэх байхгүй.'}
+              title={t('noneTitle')}
+              description={status === 'ALL' ? t('noneDescription') : t('noneFiltered')}
             />
           ) : (
             <ul className="flex flex-col gap-3.5 md:gap-4">
@@ -142,7 +143,7 @@ export default function InvoicesPage() {
 
         {/* Figma "Detail" column (344px) — selected invoice, wide desktop only */}
         {selected && !query.isLoading && !query.isError && (
-          <aside aria-label="Сонгосон нэхэмжлэх" className="sticky top-[96px] hidden w-[344px] shrink-0 xl:block">
+          <aside aria-label={t('selectedLabel')} className="sticky top-[96px] hidden w-[344px] shrink-0 xl:block">
             <InvoiceDetailPanel invoice={selected} as="h3" titleHref={`/portal/invoices/${selected.id}`} onPay={() => openPay(selected)} />
           </aside>
         )}
@@ -161,6 +162,7 @@ const SUM_TONE = {
 
 /** Figma "Sum card" (32:568) desktop · "Sum" (36:1277) mobile. */
 function SumCard({ label, value, tone, className }: { label: React.ReactNode; value: number | null; tone: keyof typeof SUM_TONE; className?: string }) {
+  const locale = useLocale() as Locale;
   return (
     <div
       className={cn(
@@ -174,7 +176,7 @@ function SumCard({ label, value, tone, className }: { label: React.ReactNode; va
         {value === null ? (
           <Skeleton className="h-7 w-24 md:h-11 md:w-40" />
         ) : (
-          <span className={cn('block truncate font-serif text-[20px] font-semibold leading-7 md:text-h2', SUM_TONE[tone])}>{formatMoney(value)}</span>
+          <span className={cn('block truncate font-serif text-[20px] font-semibold leading-7 md:text-h2', SUM_TONE[tone])}>{formatMoney(value, locale)}</span>
         )}
       </dd>
     </div>
@@ -183,13 +185,15 @@ function SumCard({ label, value, tone, className }: { label: React.ReactNode; va
 
 /** Figma "Invoice" card (32:583 desktop · 36:1285 mobile). Unpaid invoices get the 1.5px status outline. */
 function InvoiceCard({ invoice, selectable, selected, onSelect, onPay }: { invoice: InvoiceItem; selectable: boolean; selected: boolean; onSelect: () => void; onPay: () => void }) {
+  const t = useTranslations('portal.invoices');
+  const locale = useLocale() as Locale;
   const payable = isPayable(invoice);
   const dateLine =
     invoice.status === 'PAID' && invoice.paidAt
-      ? `Төлсөн: ${formatDate(invoice.paidAt)}`
+      ? t('paidOn', { date: formatDate(invoice.paidAt, locale) })
       : invoice.status === 'AWAITING_CONFIRMATION' && invoice.paymentMarkedAt
-        ? `Төлбөр тэмдэглэсэн: ${formatDate(invoice.paymentMarkedAt)} · баталгаажуулж байна`
-        : `Эцсийн хугацаа: ${formatDate(invoice.dueDate)}`;
+        ? t('markedOn', { date: formatDate(invoice.paymentMarkedAt, locale) })
+        : t('dueOn', { date: formatDate(invoice.dueDate, locale) });
   // Stretched hit area: the number control covers the whole card; the pay buttons sit above it (z-10).
   const stretched = 'focus-ring rounded-sm text-left text-body-sm-medium text-text-primary after:absolute after:inset-0 after:rounded-lg';
 
@@ -210,7 +214,7 @@ function InvoiceCard({ invoice, selectable, selected, onSelect, onPay }: { invoi
         {selectable ? (
           <button type="button" aria-pressed={selected} onClick={onSelect} className={stretched}>
             {invoice.invoiceNumber}
-            <span className="sr-only"> — дэлгэрэнгүйг харах</span>
+            <span className="sr-only"> {t('viewDetail')}</span>
           </button>
         ) : (
           <Link href={`/portal/invoices/${invoice.id}`} className={stretched}>{invoice.invoiceNumber}</Link>
@@ -222,16 +226,16 @@ function InvoiceCard({ invoice, selectable, selected, onSelect, onPay }: { invoi
 
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 flex-1 items-center justify-between gap-3 md:flex-col md:items-start md:justify-start md:gap-0.5">
-          <p className="font-serif text-[20px] font-semibold leading-7 text-text-primary md:text-h4">{formatMoney(invoice.amount)}</p>
+          <p className="font-serif text-[20px] font-semibold leading-7 text-text-primary md:text-h4">{formatMoney(invoice.amount, locale)}</p>
           <p className="text-caption text-text-muted">{dateLine}</p>
         </div>
         {payable && (
-          <Button size="sm" className="relative z-10 hidden md:inline-flex" onClick={onPay}>Төлбөр төлөх</Button>
+          <Button size="sm" className="relative z-10 hidden md:inline-flex" onClick={onPay}>{t('pay')}</Button>
         )}
       </div>
 
       {payable && (
-        <Button size="md" className="relative z-10 w-full md:hidden" onClick={onPay}>Төлбөр төлөх</Button>
+        <Button size="md" className="relative z-10 w-full md:hidden" onClick={onPay}>{t('pay')}</Button>
       )}
     </article>
   );

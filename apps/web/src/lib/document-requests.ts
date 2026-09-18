@@ -23,18 +23,35 @@ export function isRequestOverdue(request: Pick<DocumentRequestItem, 'status' | '
   return new Date(request.dueDate).getTime() < now.getTime();
 }
 
-/** Splits picked files into accepted ones and Mongolian error messages (type / size / count). */
-export function validateRequestFiles(files: File[], alreadySelected = 0): { accepted: File[]; errors: string[] } {
+/** Messages for the three rejection reasons; localized surfaces pass their own, the admin panel keeps the defaults. */
+export interface FileValidationMessages {
+  type: (name: string) => string;
+  size: (name: string) => string;
+  count: (max: number) => string;
+}
+
+const DEFAULT_FILE_MESSAGES: FileValidationMessages = {
+  type: (name) => `${name} — зөвхөн PDF, Word, Excel, JPG, PNG, TXT файл илгээнэ.`,
+  size: (name) => `${name} — 20MB-аас хэтэрсэн.`,
+  count: (max) => `Нэг удаад ${max}-аас ихгүй файл илгээнэ.`,
+};
+
+/** Splits picked files into accepted ones and error messages (type / size / count). */
+export function validateRequestFiles(
+  files: File[],
+  alreadySelected = 0,
+  messages: FileValidationMessages = DEFAULT_FILE_MESSAGES,
+): { accepted: File[]; errors: string[] } {
   const accepted: File[] = [];
   const errors: string[] = [];
   for (const file of files) {
     const extension = file.name.split('.').pop()?.toLowerCase() ?? '';
     if (!ALLOWED_EXTENSIONS.has(extension)) {
-      errors.push(`${file.name} — зөвхөн PDF, Word, Excel, JPG, PNG, TXT файл илгээнэ.`);
+      errors.push(messages.type(file.name));
     } else if (file.size > MAX_REQUEST_FILE_BYTES) {
-      errors.push(`${file.name} — 20MB-аас хэтэрсэн.`);
+      errors.push(messages.size(file.name));
     } else if (alreadySelected + accepted.length >= MAX_REQUEST_FILES) {
-      errors.push(`Нэг удаад ${MAX_REQUEST_FILES}-аас ихгүй файл илгээнэ.`);
+      errors.push(messages.count(MAX_REQUEST_FILES));
       break;
     } else {
       accepted.push(file);

@@ -43,293 +43,6 @@
       "real-estate": "Real estate"
     }
   },
-  "common": {
-    "home": "Home",
-    "readMore": "Read more",
-    "all": "All",
-    "back": "Back",
-    "breadcrumb": "Breadcrumb",
-    "getAdvice": "Request advice",
-    "yearsOfExperience": "{years} years of experience",
-    "lawyersUnavailable": "Lawyer profiles could not be loaded.",
-    "lawyersComingSoon": "Lawyer profiles will be added soon.",
-    "postsUnavailable": "Articles could not be loaded.",
-    "postsComingSoon": "Articles will be published soon.",
-    "views": "{count} views"
-  },
-  "servicesPage": {
-    "metaTitle": "Services",
-    "metaDescription": "We advise, prepare documents and represent clients in court across six principal practice areas.",
-    "title": "Practice areas",
-    "description": "We advise, prepare documents and represent clients in court across six principal practice areas.",
-    "crumb": "Services",
-    "crumbAll": "All practice areas",
-    "listHeading": "Practice areas",
-    "processOverline": "How we work together",
-    "processTitle": "In four steps",
-    "step": "Step {number}:",
-    "notFound": "Service not found",
-    "whatWeDo": "What we do",
-    "scope": "Scope of the service",
-    "faqHeading": "Frequently asked questions",
-    "lawyersHeading": "Lawyers in this practice area",
-    "pricingHeading": "Fees",
-    "pricingNote": "Fees are agreed in the engagement contract and depend on the scope and duration of the work."
-  },
-  "faqPage": {
-    "metaTitle": "FAQ",
-    "metaDescription": "Answers to the questions clients ask most often, grouped by practice area.",
-    "title": "Legal information and frequently asked questions",
-    "description": "Answers to the questions clients ask most often, grouped by practice area.",
-    "crumb": "FAQ",
-    "categoryNav": "Question categories",
-    "helpTitle": "Didn't find your answer?",
-    "helpText": "Write to us — we will get in touch once we receive your request.",
-    "helpCta": "Send a question"
-  },
-  "postCategory": {
-    "NEWS": "News",
-    "ADVICE": "Advice",
-    "LEGAL_UPDATE": "Legislative update"
-  },
-  "home": {
-    "hero": {
-      "overline": "Legal advice and representation",
-      "overlineShort": "Legal advisory services",
-      "title": "A firm foundation for protecting your rights",
-      "lead": "We provide representation and advice in civil, criminal, family, business, employment and real estate law. You can follow the progress of your case in the client portal.",
-      "leadShort": "Professional assistance in civil, criminal, family and business law.",
-      "primaryCta": "Send a request for advice",
-      "secondaryCta": "View services"
-    },
-    "services": {
-      "overline": "Practice areas",
-      "title": "What matters do we handle?",
-      "description": "We cover the legal needs of individuals and businesses across six principal practice areas."
-    },
-    "advantagesSection": {
-      "overline": "How we work",
-      "title": "What our work is built on",
-      "description": "One team handles your matter from intake to resolution, and every step is documented in writing."
-    },
-    "advantages": [
-      {
-        "value": "6",
-        "label": "Practice areas",
-        "note": "Civil, criminal, family, business, employment, real estate"
-      },
-      {
-        "value": "Portal",
-        "label": "Case progress online",
-        "note": "Documents, invoices and messages in one place"
-      },
-      {
-        "value": "Contract",
-        "label": "Transparent terms",
-        "note": "Scope, timeline and fees agreed in writing"
-      },
-      {
-        "value": "Confidentiality",
-        "label": "Data protection",
-        "note": "Access rights are strictly controlled"
-      }
-    ],
-    "team": {
-      "overline": "Our lawyers",
-      "title": "The professionals who will handle your matter",
-      "all": "All lawyers"
-    },
-    "news": {
-      "overline": "News and articles",
-      "title": "Recent developments in the legal landscape",
-      "titleShort": "Recent legal developments",
-      "all": "All articles"
-    },
-    "cta": {
-      "title": "Not sure how to resolve your issue?",
-      "text": "Describe your situation briefly and send us a request. A lawyer will review it, get in touch and explain the legal options and next steps.",
-      "textShort": "Send a request and a lawyer will contact you."
-    }
-  },
-  "about": {
-    "metaTitle": "About us",
-    "metaDescription": "Strategy Law Firm is a professional legal services firm providing representation and legal advice to individuals and businesses.",
-    "title": "About us",
-    "description": "Strategy Law Firm is a professional legal services firm.",
-    "crumb": "About us",
-    "story": {
-      "overline": "ABOUT US",
-      "title": "We make legal matters clear and stand beside you",
-      "p1": "Strategy Law Firm provides professional legal assistance to individuals and businesses. Our work covers legal representation, legal advice, drafting of documents, and representation before public bodies and the courts.",
-      "p2": "When we take on a matter we first assess what is realistically achievable and say plainly what we can do. The work is tracked in the client portal, so documents, deadlines and next steps are always in one place."
-    },
-    "values": {
-      "overline": "MISSION AND VALUES",
-      "title": "Making legal assistance clear and accessible to everyone"
-    },
-    "process": {
-      "overline": "HOW WE WORK TOGETHER",
-      "title": "How a matter moves forward"
-    },
-    "valueItems": [
-      {
-        "title": "Integrity",
-        "text": "We tell clients honestly what their case can realistically achieve. We never promise what we cannot deliver."
-      },
-      {
-        "title": "Transparency",
-        "text": "The fee structure, the progress of the matter and the timeline are set out in writing from the start."
-      },
-      {
-        "title": "Confidentiality",
-        "text": "Client information is protected as the law requires. Access to our internal system is strictly controlled."
-      },
-      {
-        "title": "Plain language",
-        "text": "We explain the legal situation in terms you can act on, not in legal jargon."
-      }
-    ],
-    "processSteps": [
-      {
-        "step": "01",
-        "title": "Receiving the request",
-        "text": "You send a request through the portal or the contact page. We clarify the type of matter."
-      },
-      {
-        "step": "02",
-        "title": "Initial assessment",
-        "text": "We review the documents and explain the legal options and the risks."
-      },
-      {
-        "step": "03",
-        "title": "Contract and plan",
-        "text": "The scope of work, the timeline and the fee terms are agreed in writing."
-      },
-      {
-        "step": "04",
-        "title": "Handling the matter",
-        "text": "We represent you before public bodies and the courts and post updates in the client portal."
-      }
-    ]
-  },
-  "contact": {
-    "metaTitle": "Contact",
-    "metaDescription": "Get in touch with Strategy Law Firm: address, phone, e-mail, requests for representation and advice.",
-    "title": "Contact",
-    "description": "Send your request for representation or advice through the portal. We will get in touch once we receive it.",
-    "crumb": "Contact",
-    "requests": {
-      "title": "Send a request",
-      "description": "Requests for representation and advice are submitted through the client portal. Once you sign in, you can see the status of your request, the lawyer assigned to you and your open matters in one place.",
-      "cta": "Submit a request",
-      "LAWYER": {
-        "title": "Request representation",
-        "description": "We assign a lawyer to take on your matter and represent you before the courts and public bodies."
-      },
-      "CONSULTATION": {
-        "title": "Request advice",
-        "description": "You are connected with a lawyer who clarifies your situation and advises on the next step."
-      },
-      "signUpPrefix": "If you do not have an account,",
-      "signUpLink": "sign up",
-      "signUpSuffix": "to continue. For urgent matters, call {phone}."
-    },
-    "office": {
-      "title": "Office details",
-      "address": "Address",
-      "phone": "Phone",
-      "email": "E-mail",
-      "hours": "Office hours",
-      "social": "Social media"
-    },
-    "map": {
-      "label": "Map of the office location",
-      "caption": "Map location"
-    }
-  },
-  "lawyers": {
-    "metaTitle": "Lawyers",
-    "metaDescription": "Choose the lawyer who fits your matter from our specialists in each practice area.",
-    "title": "Our lawyers",
-    "description": "Choose the lawyer who fits your matter from our specialists in each practice area.",
-    "descriptionCounted": "Choose the lawyer who fits your matter from our {count} specialists across the practice areas.",
-    "crumb": "Lawyers",
-    "filterLabel": "Filter by practice area",
-    "failedTitle": "Lawyer profiles could not be loaded",
-    "failedDescription": "We could not reach the API. Please wait a moment and try again.",
-    "noneTitle": "No lawyer profiles yet",
-    "noneForFilter": "No lawyers found in \"{spec}\"",
-    "noneDescription": "Choose another practice area or select \"All\"."
-  },
-  "lawyerDetail": {
-    "notFound": "Lawyer not found",
-    "contactTitle": "Contact",
-    "phone": "Phone",
-    "email": "E-mail",
-    "bookCta": "Book an appointment",
-    "specializations": "Practice areas",
-    "education": "Education and credentials",
-    "bio": "Biography"
-  },
-  "news": {
-    "metaTitle": "News and articles",
-    "metaDescription": "Legislative updates, practical advice and firm news are published here.",
-    "title": "News and articles",
-    "description": "Legislative updates, practical advice and firm news are published here.",
-    "crumb": "News and articles",
-    "crumbAll": "All articles",
-    "categoryLabel": "Category",
-    "featured": "Featured",
-    "search": "Search articles",
-    "searchSubmit": "Search",
-    "searchResult": "Results for «{query}»: {count} articles",
-    "clearSearch": "Clear",
-    "failedTitle": "The news could not be loaded",
-    "failedDescription": "Check that the API is running and try again.",
-    "noneTitle": "No articles found",
-    "noneDescription": "Choose another category or change your search.",
-    "mongolianNote": "These articles are published in Mongolian.",
-    "related": "Related articles",
-    "share": "Share:",
-    "copyLink": "Copy link",
-    "shareAction": "Share",
-    "shareEmail": "Send by e-mail",
-    "readingTime": "{minutes} min read"
-  },
-  "states": {
-    "retry": "Try again",
-    "getHelp": "Get help",
-    "loading": "Loading",
-    "errorTitle": "Something went wrong",
-    "errorMessage": "An error occurred while loading the content. Please try again.",
-    "pagination": "Pagination",
-    "pageTitle": "The page could not be loaded",
-    "pageMessage": "A temporary error. Please try again."
-  },
-  "notFound": {
-    "title": "Page not found",
-    "homeCta": "Go to the home page",
-    "contactCta": "Contact",
-    "quickLinks": "Quick links",
-    "links": {
-      "services": {
-        "title": "Services",
-        "caption": "All six practice areas"
-      },
-      "lawyers": {
-        "title": "Lawyers",
-        "caption": "Meet our team"
-      },
-      "news": {
-        "title": "News",
-        "caption": "Latest articles"
-      },
-      "portal": {
-        "title": "Client portal",
-        "caption": "Follow your matter"
-      }
-    }
-  },
   "services": {
     "catalog": {
       "civil": {
@@ -802,6 +515,264 @@
       }
     }
   },
+  "common": {
+    "home": "Home",
+    "readMore": "Read more",
+    "all": "All",
+    "back": "Back",
+    "breadcrumb": "Breadcrumb",
+    "getAdvice": "Request advice",
+    "yearsOfExperience": "{years} years of experience",
+    "lawyersUnavailable": "Lawyer profiles could not be loaded.",
+    "lawyersComingSoon": "Lawyer profiles will be added soon.",
+    "postsUnavailable": "Articles could not be loaded.",
+    "postsComingSoon": "Articles will be published soon.",
+    "views": "{count} views"
+  },
+  "servicesPage": {
+    "metaTitle": "Services",
+    "metaDescription": "We advise, prepare documents and represent clients in court across six principal practice areas.",
+    "title": "Practice areas",
+    "description": "We advise, prepare documents and represent clients in court across six principal practice areas.",
+    "crumb": "Services",
+    "crumbAll": "All practice areas",
+    "listHeading": "Practice areas",
+    "processOverline": "How we work together",
+    "processTitle": "In four steps",
+    "step": "Step {number}:",
+    "notFound": "Service not found",
+    "whatWeDo": "What we do",
+    "scope": "Scope of the service",
+    "faqHeading": "Frequently asked questions",
+    "lawyersHeading": "Lawyers in this practice area",
+    "pricingHeading": "Fees",
+    "pricingNote": "Fees are agreed in the engagement contract and depend on the scope and duration of the work."
+  },
+  "faqPage": {
+    "metaTitle": "FAQ",
+    "metaDescription": "Answers to the questions clients ask most often, grouped by practice area.",
+    "title": "Legal information and frequently asked questions",
+    "description": "Answers to the questions clients ask most often, grouped by practice area.",
+    "crumb": "FAQ",
+    "categoryNav": "Question categories",
+    "helpTitle": "Didn't find your answer?",
+    "helpText": "Write to us — we will get in touch once we receive your request.",
+    "helpCta": "Send a question"
+  },
+  "home": {
+    "hero": {
+      "overline": "Legal advice and representation",
+      "overlineShort": "Legal advisory services",
+      "title": "A firm foundation for protecting your rights",
+      "lead": "We provide representation and advice in civil, criminal, family, business, employment and real estate law. You can follow the progress of your case in the client portal.",
+      "leadShort": "Professional assistance in civil, criminal, family and business law.",
+      "primaryCta": "Send a request for advice",
+      "secondaryCta": "View services"
+    },
+    "services": {
+      "overline": "Practice areas",
+      "title": "What matters do we handle?",
+      "description": "We cover the legal needs of individuals and businesses across six principal practice areas."
+    },
+    "advantagesSection": {
+      "overline": "How we work",
+      "title": "What our work is built on",
+      "description": "One team handles your matter from intake to resolution, and every step is documented in writing."
+    },
+    "advantages": [
+      {
+        "value": "6",
+        "label": "Practice areas",
+        "note": "Civil, criminal, family, business, employment, real estate"
+      },
+      {
+        "value": "Portal",
+        "label": "Case progress online",
+        "note": "Documents, invoices and messages in one place"
+      },
+      {
+        "value": "Contract",
+        "label": "Transparent terms",
+        "note": "Scope, timeline and fees agreed in writing"
+      },
+      {
+        "value": "Confidentiality",
+        "label": "Data protection",
+        "note": "Access rights are strictly controlled"
+      }
+    ],
+    "team": {
+      "overline": "Our lawyers",
+      "title": "The professionals who will handle your matter",
+      "all": "All lawyers"
+    },
+    "news": {
+      "overline": "News and articles",
+      "title": "Recent developments in the legal landscape",
+      "titleShort": "Recent legal developments",
+      "all": "All articles"
+    },
+    "cta": {
+      "title": "Not sure how to resolve your issue?",
+      "text": "Describe your situation briefly and send us a request. A lawyer will review it, get in touch and explain the legal options and next steps.",
+      "textShort": "Send a request and a lawyer will contact you."
+    }
+  },
+  "about": {
+    "metaTitle": "About us",
+    "metaDescription": "Strategy Law Firm is a professional legal services firm providing representation and legal advice to individuals and businesses.",
+    "title": "About us",
+    "description": "Strategy Law Firm is a professional legal services firm.",
+    "crumb": "About us",
+    "story": {
+      "overline": "ABOUT US",
+      "title": "We make legal matters clear and stand beside you",
+      "p1": "Strategy Law Firm provides professional legal assistance to individuals and businesses. Our work covers legal representation, legal advice, drafting of documents, and representation before public bodies and the courts.",
+      "p2": "When we take on a matter we first assess what is realistically achievable and say plainly what we can do. The work is tracked in the client portal, so documents, deadlines and next steps are always in one place."
+    },
+    "values": {
+      "overline": "MISSION AND VALUES",
+      "title": "Making legal assistance clear and accessible to everyone"
+    },
+    "process": {
+      "overline": "HOW WE WORK TOGETHER",
+      "title": "How a matter moves forward"
+    },
+    "valueItems": [
+      {
+        "title": "Integrity",
+        "text": "We tell clients honestly what their case can realistically achieve. We never promise what we cannot deliver."
+      },
+      {
+        "title": "Transparency",
+        "text": "The fee structure, the progress of the matter and the timeline are set out in writing from the start."
+      },
+      {
+        "title": "Confidentiality",
+        "text": "Client information is protected as the law requires. Access to our internal system is strictly controlled."
+      },
+      {
+        "title": "Plain language",
+        "text": "We explain the legal situation in terms you can act on, not in legal jargon."
+      }
+    ],
+    "processSteps": [
+      {
+        "step": "01",
+        "title": "Receiving the request",
+        "text": "You send a request through the portal or the contact page. We clarify the type of matter."
+      },
+      {
+        "step": "02",
+        "title": "Initial assessment",
+        "text": "We review the documents and explain the legal options and the risks."
+      },
+      {
+        "step": "03",
+        "title": "Contract and plan",
+        "text": "The scope of work, the timeline and the fee terms are agreed in writing."
+      },
+      {
+        "step": "04",
+        "title": "Handling the matter",
+        "text": "We represent you before public bodies and the courts and post updates in the client portal."
+      }
+    ]
+  },
+  "contact": {
+    "metaTitle": "Contact",
+    "metaDescription": "Get in touch with Strategy Law Firm: address, phone, e-mail, requests for representation and advice.",
+    "title": "Contact",
+    "description": "Send your request for representation or advice through the portal. We will get in touch once we receive it.",
+    "crumb": "Contact",
+    "requests": {
+      "title": "Send a request",
+      "description": "Requests for representation and advice are submitted through the client portal. Once you sign in, you can see the status of your request, the lawyer assigned to you and your open matters in one place.",
+      "cta": "Submit a request",
+      "LAWYER": {
+        "title": "Request representation",
+        "description": "We assign a lawyer to take on your matter and represent you before the courts and public bodies."
+      },
+      "CONSULTATION": {
+        "title": "Request advice",
+        "description": "You are connected with a lawyer who clarifies your situation and advises on the next step."
+      },
+      "signUpPrefix": "If you do not have an account,",
+      "signUpLink": "sign up",
+      "signUpSuffix": "to continue. For urgent matters, call {phone}."
+    },
+    "office": {
+      "title": "Office details",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "E-mail",
+      "hours": "Office hours",
+      "social": "Social media"
+    },
+    "map": {
+      "label": "Map of the office location",
+      "caption": "Map location"
+    }
+  },
+  "lawyers": {
+    "metaTitle": "Lawyers",
+    "metaDescription": "Choose the lawyer who fits your matter from our specialists in each practice area.",
+    "title": "Our lawyers",
+    "description": "Choose the lawyer who fits your matter from our specialists in each practice area.",
+    "descriptionCounted": "Choose the lawyer who fits your matter from our {count} specialists across the practice areas.",
+    "crumb": "Lawyers",
+    "filterLabel": "Filter by practice area",
+    "failedTitle": "Lawyer profiles could not be loaded",
+    "failedDescription": "We could not reach the API. Please wait a moment and try again.",
+    "noneTitle": "No lawyer profiles yet",
+    "noneForFilter": "No lawyers found in \"{spec}\"",
+    "noneDescription": "Choose another practice area or select \"All\"."
+  },
+  "lawyerDetail": {
+    "notFound": "Lawyer not found",
+    "contactTitle": "Contact",
+    "phone": "Phone",
+    "email": "E-mail",
+    "bookCta": "Book an appointment",
+    "specializations": "Practice areas",
+    "education": "Education and credentials",
+    "bio": "Biography"
+  },
+  "news": {
+    "metaTitle": "News and articles",
+    "metaDescription": "Legislative updates, practical advice and firm news are published here.",
+    "title": "News and articles",
+    "description": "Legislative updates, practical advice and firm news are published here.",
+    "crumb": "News and articles",
+    "crumbAll": "All articles",
+    "categoryLabel": "Category",
+    "featured": "Featured",
+    "search": "Search articles",
+    "searchSubmit": "Search",
+    "searchResult": "Results for «{query}»: {count} articles",
+    "clearSearch": "Clear",
+    "failedTitle": "The news could not be loaded",
+    "failedDescription": "Check that the API is running and try again.",
+    "noneTitle": "No articles found",
+    "noneDescription": "Choose another category or change your search.",
+    "mongolianNote": "These articles are published in Mongolian.",
+    "related": "Related articles",
+    "share": "Share:",
+    "copyLink": "Copy link",
+    "shareAction": "Share",
+    "shareEmail": "Send by e-mail",
+    "readingTime": "{minutes} min read"
+  },
+  "states": {
+    "retry": "Try again",
+    "getHelp": "Get help",
+    "loading": "Loading",
+    "errorTitle": "Something went wrong",
+    "errorMessage": "An error occurred while loading the content. Please try again.",
+    "pagination": "Pagination",
+    "pageTitle": "The page could not be loaded",
+    "pageMessage": "A temporary error. Please try again."
+  },
   "privacy": {
     "metaTitle": "Privacy policy",
     "metaDescription": "How Strategy Law Firm collects, uses and protects clients' personal data.",
@@ -927,5 +898,725 @@
     "privacyPrefix": "How we process personal data is described in our",
     "privacyLink": "privacy policy",
     "privacySuffix": "."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "homeCta": "Go to the home page",
+    "contactCta": "Contact",
+    "quickLinks": "Quick links",
+    "links": {
+      "services": {
+        "title": "Services",
+        "caption": "All six practice areas"
+      },
+      "lawyers": {
+        "title": "Lawyers",
+        "caption": "Meet our team"
+      },
+      "news": {
+        "title": "News",
+        "caption": "Latest articles"
+      },
+      "portal": {
+        "title": "Client portal",
+        "caption": "Follow your matter"
+      }
+    }
+  },
+  "enums": {
+    "postCategory": {
+      "NEWS": "News",
+      "ADVICE": "Advice",
+      "LEGAL_UPDATE": "Legislative update"
+    },
+    "caseStatus": {
+      "NEW": "",
+      "IN_PROGRESS": "",
+      "WAITING": "",
+      "CLOSED": ""
+    },
+    "caseType": {
+      "CIVIL": "",
+      "CRIMINAL": "",
+      "FAMILY": "",
+      "BUSINESS": "",
+      "LABOR": "",
+      "REAL_ESTATE": "",
+      "OTHER": ""
+    },
+    "serviceRequestType": {
+      "LAWYER": "",
+      "CONSULTATION": ""
+    },
+    "serviceRequestStatus": {
+      "NEW": "",
+      "ACCEPTED": "",
+      "REJECTED": "",
+      "CONVERTED": ""
+    },
+    "caseEvent": {
+      "NOTE": "",
+      "HEARING": "",
+      "MEETING": "",
+      "DEADLINE": "",
+      "STATUS_CHANGE": "",
+      "DOCUMENT": ""
+    },
+    "invoiceStatus": {
+      "DRAFT": "",
+      "SENT": "",
+      "AWAITING_CONFIRMATION": "",
+      "PAID": "",
+      "OVERDUE": "",
+      "CANCELLED": ""
+    },
+    "role": {
+      "ADMIN": "",
+      "LAWYER": "",
+      "CLIENT": ""
+    }
+  },
+  "portal": {
+    "login": {
+      "title": "",
+      "description": "",
+      "identifier": "",
+      "password": "",
+      "remember": "",
+      "forgot": "",
+      "submit": "",
+      "submitting": "",
+      "or": "",
+      "otpCta": "",
+      "noAccount": "",
+      "registerCta": "",
+      "back": "",
+      "otpTitle": "",
+      "otpDescription": "",
+      "otpFallbackIdentifier": "",
+      "otpSoonNote": "",
+      "otpSoon": "",
+      "otpResend": "",
+      "otpDigit": "",
+      "genericError": "",
+      "failedToast": ""
+    },
+    "register": {
+      "title": "",
+      "mobileTitle": "",
+      "description": "",
+      "haveAccount": "",
+      "loginCta": "",
+      "lastName": "",
+      "firstName": "",
+      "phone": "",
+      "phoneHelper": "",
+      "email": "",
+      "password": "",
+      "passwordHelper": "",
+      "agree": "",
+      "agreeShort": "",
+      "submit": "",
+      "submitting": "",
+      "successToast": "",
+      "successToastBody": "",
+      "genericError": "",
+      "failedToast": ""
+    },
+    "forgotPassword": {
+      "title": "",
+      "back": "",
+      "description": "",
+      "identifier": "",
+      "identifierHelper": "",
+      "submit": "",
+      "soon": "",
+      "soonToast": "",
+      "soonToastWithPhone": "",
+      "linkValidity": "",
+      "sent": "",
+      "sentWithPhone": "",
+      "checkSpam": "",
+      "checkSpamWithPhone": ""
+    },
+    "authPanel": {
+      "panelTitle": "",
+      "panelLead": "",
+      "panelLeadShort": "",
+      "support": "",
+      "supportShort": "",
+      "back": "",
+      "features": {
+        "progress": "",
+        "documents": "",
+        "invoices": "",
+        "chat": ""
+      }
+    },
+    "searchPlaceholder": "",
+    "dashboard": {
+      "loadError": "",
+      "greeting": "",
+      "casesLoading": "",
+      "activeCasesCount": "",
+      "myCases": "",
+      "noCasesTitle": "",
+      "noCasesDescription": "",
+      "upcoming": "",
+      "upcomingShort": "",
+      "noUpcoming": "",
+      "recentNotifications": "",
+      "noNotifications": "",
+      "unpaid": "",
+      "unpaidShort": "",
+      "dueDate": "",
+      "dueDateShort": "",
+      "invoiceTotal": "",
+      "details": "",
+      "payCta": "",
+      "confirmingTitle": "",
+      "confirmingText": "",
+      "seeAll": "",
+      "seeAllShort": "",
+      "documentRequests": "",
+      "sendDocuments": "",
+      "unreadMessages": "",
+      "readMessages": "",
+      "openRequests": "",
+      "viewRequests": "",
+      "stats": {
+        "activeCases": "",
+        "unreadNotifications": "",
+        "unpaidInvoices": "",
+        "upcomingEvents": ""
+      },
+      "nextEvent": {
+        "HEARING": "",
+        "MEETING": "",
+        "DEADLINE": "",
+        "DOCUMENT": ""
+      },
+      "updatedAt": "",
+      "unreadLabel": "",
+      "documentsCount": "",
+      "messagesCount": ""
+    },
+    "error": {
+      "title": "",
+      "message": "",
+      "support": "",
+      "offlineTitle": "",
+      "offlineMessage": ""
+    },
+    "cases": {
+      "title": "",
+      "loading": "",
+      "summary": "",
+      "newRequest": "",
+      "searchLabel": "",
+      "filterByStatus": "",
+      "all": "",
+      "loadError": "",
+      "noneTitle": "",
+      "noneDescription": "",
+      "noneFiltered": "",
+      "totalCount": "",
+      "columns": {
+        "number": "",
+        "title": "",
+        "type": "",
+        "lawyer": "",
+        "status": "",
+        "updated": ""
+      },
+      "range": ""
+    },
+    "documents": {
+      "uploadedToast": "",
+      "uploadFailed": "",
+      "tryAgain": "",
+      "pickCaseTitle": "",
+      "pickCaseBody": "",
+      "tooLarge": "",
+      "downloadFailed": "",
+      "previewFailed": "",
+      "view": "",
+      "download": "",
+      "title": "",
+      "loading": "",
+      "uploading": "",
+      "addFile": "",
+      "uploadSection": "",
+      "caseLabel": "",
+      "casePlaceholder": "",
+      "pickFile": "",
+      "dropzoneLabel": "",
+      "dropzoneTitle": "",
+      "dropzoneHint": "",
+      "allFiles": "",
+      "filterByCase": "",
+      "loadError": "",
+      "emptyTitle": "",
+      "emptyDescription": "",
+      "columns": {
+        "name": "",
+        "kind": "",
+        "uploadedBy": "",
+        "date": "",
+        "actions": ""
+      },
+      "close": "",
+      "downloadCta": "",
+      "all": "",
+      "kinds": {
+        "IMG": "",
+        "TXT": "",
+        "FILE": "",
+        "PDF": "",
+        "DOCX": "",
+        "XLSX": ""
+      },
+      "belongsTo": "",
+      "you": "",
+      "uploaderYou": "",
+      "uploaderLawyer": "",
+      "dropzoneHintShort": "",
+      "filesSummary": "",
+      "documentsCount": ""
+    },
+    "invoices": {
+      "title": "",
+      "description": "",
+      "summaryLabel": "",
+      "allInvoices": "",
+      "filterByStatus": "",
+      "loadError": "",
+      "noneTitle": "",
+      "noneDescription": "",
+      "noneFiltered": "",
+      "selectedLabel": "",
+      "pay": "",
+      "all": "",
+      "billed": "",
+      "paid": "",
+      "outstanding": "",
+      "outstandingShort": "",
+      "viewDetail": "",
+      "paidOn": "",
+      "markedOn": "",
+      "dueOn": "",
+      "status": {
+        "DRAFT": "",
+        "SENT": "",
+        "AWAITING_CONFIRMATION": "",
+        "PAID": "",
+        "OVERDUE": "",
+        "CANCELLED": ""
+      },
+      "detail": {
+        "issuer": "",
+        "case": "",
+        "total": "",
+        "rejectedTitle": "",
+        "rejectedHint": "",
+        "reviewTitle": "",
+        "pay": "",
+        "confirming": "",
+        "service": "",
+        "created": "",
+        "due": "",
+        "paid": "",
+        "confirmedBy": "",
+        "markedAt": "",
+        "reviewBody": "",
+        "yourNote": "",
+        "account": "",
+        "reference": ""
+      },
+      "payment": {
+        "title": "",
+        "description": "",
+        "cancel": "",
+        "bankError": "",
+        "transferInfo": "",
+        "bank": "",
+        "accountNumber": "",
+        "recipient": "",
+        "amount": "",
+        "reference": "",
+        "noteLabel": "",
+        "noteHelper": "",
+        "copy": "",
+        "submit": "",
+        "submitting": "",
+        "copyAccountNumber": "",
+        "copyAmount": "",
+        "copyReference": "",
+        "referenceHint": "",
+        "previousRejected": "",
+        "notePlaceholder": "",
+        "markedTitle": "",
+        "markedBody": "",
+        "markFailed": "",
+        "tryAgain": "",
+        "copied": "",
+        "copyFailed": "",
+        "copyFailedBody": ""
+      },
+      "backToList": "",
+      "forbidden": "",
+      "notFound": ""
+    },
+    "nav": {
+      "home": "",
+      "cases": "",
+      "requests": "",
+      "documents": "",
+      "invoices": "",
+      "messages": "",
+      "notifications": "",
+      "profile": ""
+    },
+    "titles": {
+      "home": "",
+      "caseDetail": "",
+      "cases": "",
+      "newRequest": "",
+      "requests": "",
+      "documents": "",
+      "invoice": "",
+      "invoices": "",
+      "messages": "",
+      "notifications": "",
+      "profile": ""
+    },
+    "pendingDocumentRequests": "",
+    "unreadMessages": "",
+    "messages": {
+      "title": "",
+      "loadError": "",
+      "emptyTitle": "",
+      "emptyDescription": "",
+      "conversations": "",
+      "loading": "",
+      "unreadSummary": "",
+      "noUnread": "",
+      "you": "",
+      "preview": "",
+      "noMessagesYet": "",
+      "unreadCount": ""
+    },
+    "breadcrumbRoot": "",
+    "requests": {
+      "title": "",
+      "description": "",
+      "newRequest": "",
+      "loadError": "",
+      "emptyTitle": "",
+      "emptyDescription": "",
+      "send": "",
+      "outcome": {
+        "review": "",
+        "rejectedTitle": "",
+        "goToCase": "",
+        "accepted": "",
+        "acceptedOn": "",
+        "rejectedReason": "",
+        "converted": "",
+        "convertedWithCase": ""
+      },
+      "new": {
+        "title": "",
+        "description": "",
+        "typeLabel": "",
+        "caseTypeLabel": "",
+        "caseTypePlaceholder": "",
+        "titleLabel": "",
+        "titlePlaceholder": "",
+        "descriptionLabel": "",
+        "descriptionPlaceholder": "",
+        "descriptionHelper": "",
+        "cancel": "",
+        "submitting": "",
+        "submit": "",
+        "typeHint": {
+          "LAWYER": "",
+          "CONSULTATION": ""
+        },
+        "createdTitle": "",
+        "createdBody": "",
+        "failed": "",
+        "tryAgain": ""
+      }
+    },
+    "notifications": {
+      "emptyTitle": "",
+      "emptyDescription": "",
+      "noneFilteredTitle": "",
+      "noneFilteredDescription": "",
+      "clearFilter": "",
+      "filterLabel": "",
+      "markAllRead": "",
+      "loadingLabel": "",
+      "title": "",
+      "loading": "",
+      "unreadSummary": "",
+      "noUnread": "",
+      "unreadShort": "",
+      "error": "",
+      "allReadToast": "",
+      "allReadBody": "",
+      "today": "",
+      "yesterday": "",
+      "monthDay": "",
+      "monthDayYear": "",
+      "unreadLabel": "",
+      "markRead": "",
+      "filters": {
+        "all": "",
+        "unread": "",
+        "case": "",
+        "invoice": "",
+        "message": ""
+      }
+    },
+    "loadingLabel": "",
+    "caseDetail": {
+      "tabs": {
+        "overview": "",
+        "timeline": "",
+        "timelineShort": "",
+        "documents": "",
+        "requests": "",
+        "requestsShort": "",
+        "invoices": "",
+        "messages": ""
+      },
+      "cases": "",
+      "forbiddenCrumb": "",
+      "notFoundCrumb": "",
+      "forbiddenTitle": "",
+      "notFoundTitle": "",
+      "loadError": "",
+      "backToCases": "",
+      "pickFile": "",
+      "breadcrumbLabel": "",
+      "metaMobile": "",
+      "metaDesktop": "",
+      "metaClosed": "",
+      "uploading": "",
+      "addDocument": "",
+      "contactLawyer": "",
+      "unreadBadge": "",
+      "pendingBadge": "",
+      "uploadedTitle": "",
+      "uploadedBody": "",
+      "uploadFailed": "",
+      "downloadFailed": "",
+      "tryAgain": "",
+      "documentsHint": "",
+      "noDocumentsTitle": "",
+      "firstDocument": "",
+      "noRequestsTitle": "",
+      "noRequestsDescription": "",
+      "noInvoices": "",
+      "invoiceColumns": {
+        "number": "",
+        "description": "",
+        "amount": "",
+        "due": "",
+        "status": ""
+      },
+      "assignedLawyer": "",
+      "chatEmpty": "",
+      "download": "",
+      "downloadNamed": "",
+      "requestsAlert": {
+        "title": "",
+        "overdue": "",
+        "body": "",
+        "cta": ""
+      },
+      "overview": {
+        "title": "",
+        "noDescription": "",
+        "caseType": "",
+        "opened": "",
+        "documents": "",
+        "documentsCount": "",
+        "closed": "",
+        "invoices": ""
+      },
+      "timeline": {
+        "title": "",
+        "empty": ""
+      },
+      "nextEvent": {
+        "title": "",
+        "empty": "",
+        "month": "",
+        "hearingNote": ""
+      },
+      "lawyer": {
+        "title": "",
+        "phone": "",
+        "email": "",
+        "message": "",
+        "messageShort": "",
+        "call": ""
+      },
+      "documentsCard": {
+        "title": "",
+        "all": "",
+        "empty": ""
+      },
+      "finance": {
+        "title": "",
+        "billed": "",
+        "paid": "",
+        "unpaid": "",
+        "pay": ""
+      }
+    },
+    "chat": {
+      "section": "",
+      "loadError": "",
+      "loading": "",
+      "loadingMore": "",
+      "emptyTitle": "",
+      "olderMessages": "",
+      "messages": "",
+      "composerLabel": "",
+      "composerPlaceholder": "",
+      "send": "",
+      "sending": "",
+      "hint": "",
+      "sendFailed": "",
+      "tryAgain": "",
+      "you": "",
+      "read": "",
+      "today": "",
+      "yesterday": ""
+    },
+    "documentRequests": {
+      "title": "",
+      "waiting": "",
+      "allSubmitted": "",
+      "accepted": "",
+      "acceptedLabel": "",
+      "listLabel": "",
+      "optional": "",
+      "overdue": "",
+      "due": "",
+      "rejectionTitle": "",
+      "underReview": "",
+      "approved": "",
+      "previousFiles": "",
+      "submittedFiles": "",
+      "download": "",
+      "downloadNamed": "",
+      "pickFile": "",
+      "pickFileFor": "",
+      "dropZone": "",
+      "dropZoneFor": "",
+      "fileHint": "",
+      "filesToSend": "",
+      "remove": "",
+      "removeNamed": "",
+      "send": "",
+      "resend": "",
+      "sending": "",
+      "pickFirst": "",
+      "submittedTitle": "",
+      "submittedBody": "",
+      "submitFailed": "",
+      "tryAgain": "",
+      "fileRejected": "",
+      "fileTypeError": "",
+      "fileSizeError": "",
+      "fileCountError": "",
+      "status": {
+        "PENDING": "",
+        "SUBMITTED": "",
+        "UNDER_REVIEW": "",
+        "APPROVED": "",
+        "REJECTED": ""
+      }
+    },
+    "profile": {
+      "title": "",
+      "description": "",
+      "soon": "",
+      "soonLower": "",
+      "activeCases": "",
+      "changePhoto": "",
+      "removePhoto": "",
+      "personal": "",
+      "photo": "",
+      "photoHint": "",
+      "lastName": "",
+      "firstName": "",
+      "registryNumber": "",
+      "registryHelper": "",
+      "phone": "",
+      "phoneHelper": "",
+      "email": "",
+      "emailHelper": "",
+      "address": "",
+      "workplace": "",
+      "save": "",
+      "cancel": "",
+      "savedToast": "",
+      "saveFailed": "",
+      "changePassword": "",
+      "currentPassword": "",
+      "newPassword": "",
+      "newPasswordHelper": "",
+      "repeatPassword": "",
+      "updatePassword": "",
+      "passwordChanged": "",
+      "passwordChangedBody": "",
+      "passwordFailed": "",
+      "error": "",
+      "notificationSettings": "",
+      "notifications": {
+        "caseUpdates": {
+          "label": "",
+          "description": ""
+        },
+        "newDocuments": {
+          "label": "",
+          "description": ""
+        },
+        "invoices": {
+          "label": "",
+          "description": ""
+        },
+        "messages": {
+          "label": "",
+          "description": ""
+        },
+        "marketing": {
+          "label": "",
+          "description": ""
+        }
+      },
+      "channels": "",
+      "channelEmail": "",
+      "channelPortal": "",
+      "security": "",
+      "logout": "",
+      "account": "",
+      "clientCode": "",
+      "joined": "",
+      "lastLogin": "",
+      "activeCasesLabel": "",
+      "devices": "",
+      "devicesHint": "",
+      "logoutAll": "",
+      "twoFactor": "",
+      "twoFactorHint": ""
+    },
+    "redirecting": ""
   }
 }

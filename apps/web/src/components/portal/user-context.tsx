@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { createContext, useCallback, useContext, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/states';
@@ -22,6 +23,7 @@ export function useUser(): UserContextValue {
 
 /** Loads /auth/me (the api client refreshes on 401); redirects to login when the session is gone. */
 export function UserProvider({ children }: { children: React.ReactNode }) {
+  const t = useTranslations('portal');
   const router = useRouter();
   const queryClient = useQueryClient();
   const query = useQuery({
@@ -55,13 +57,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   if (query.isError) {
     return (
       <div className="flex flex-1 items-center justify-center p-8 text-center text-body-sm text-status-danger-fg" role="alert">
-        {query.error instanceof ApiError && query.error.status !== 401 ? query.error.message : 'Нэвтрэх хуудас руу шилжүүлж байна…'}
+        {query.error instanceof ApiError && query.error.status !== 401 ? query.error.message : t('redirecting')}
       </div>
     );
   }
   if (!query.data) {
     return (
-      <div className="flex min-h-screen" aria-busy aria-label="Ачааллаж байна">
+      <div className="flex min-h-screen" aria-busy aria-label={t('loadingLabel')}>
         <div className="hidden w-[260px] bg-bg-inverse md:block" />
         <div className="flex flex-1 flex-col gap-6 p-8">
           <Skeleton className="h-8 w-48" />

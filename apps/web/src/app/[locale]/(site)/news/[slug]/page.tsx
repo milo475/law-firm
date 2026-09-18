@@ -86,7 +86,7 @@ export default async function PostPage({ params }: Params) {
   const [t, tCommon, tCategory, post] = await Promise.all([
     getTranslations('news'),
     getTranslations('common'),
-    getTranslations('postCategory'),
+    getTranslations('enums.postCategory'),
     loadPost(slug),
   ]);
   if (!post) notFound();

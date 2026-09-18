@@ -31,7 +31,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     getTranslations('home'),
     getTranslations('common'),
     getTranslations('services.catalog'),
-    getTranslations('postCategory'),
+    getTranslations('enums.postCategory'),
   ]);
   // Advantages band — "Stats" (16:92 desktop / 24:1085 mobile). How we work, not numbers we cannot back up.
   const advantages = t.raw('advantages') as { value: string; label: string; note: string }[];

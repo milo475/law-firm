@@ -24,6 +24,35 @@ export function formatDateLong(value: string | Date | null | undefined, locale: 
   return new Intl.DateTimeFormat(BCP47[locale], { year: 'numeric', month: 'long', day: 'numeric' }).format(date);
 }
 
+/** "2026 оны есдүгээр сарын 14, Даваа гараг" / "Monday, September 14, 2026" — the portal's date line. */
+export function formatDateWithWeekday(value: string | Date, locale: Locale = 'mn'): string {
+  const date = typeof value === 'string' ? new Date(value) : value;
+  if (Number.isNaN(date.getTime())) return '—';
+  return new Intl.DateTimeFormat(BCP47[locale], { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }).format(date);
+}
+
+/** "2 цагийн өмнө" / "2 hours ago" / "2小时前" — falls back to the plain date beyond a month. */
+export function formatTimeAgo(value: string | Date, locale: Locale = 'mn'): string {
+  const date = typeof value === 'string' ? new Date(value) : value;
+  if (Number.isNaN(date.getTime())) return '—';
+  const minutes = Math.round((date.getTime() - Date.now()) / 60_000);
+  const relative = new Intl.RelativeTimeFormat(BCP47[locale], { numeric: 'auto' });
+  if (Math.abs(minutes) < 1) return relative.format(0, 'minute');
+  if (Math.abs(minutes) < 60) return relative.format(minutes, 'minute');
+  const hours = Math.round(minutes / 60);
+  if (Math.abs(hours) < 24) return relative.format(hours, 'hour');
+  const days = Math.round(hours / 24);
+  if (Math.abs(days) < 30) return relative.format(days, 'day');
+  return formatDate(date, locale);
+}
+
+/** "9 сар" / "Sep" / "9月" — the small month label on the portal's event tiles. */
+export function formatMonthShort(value: string | Date, locale: Locale = 'mn'): string {
+  const date = typeof value === 'string' ? new Date(value) : value;
+  if (Number.isNaN(date.getTime())) return '—';
+  return new Intl.DateTimeFormat(BCP47[locale], { month: locale === 'en' ? 'short' : 'numeric' }).format(date) + (locale === 'mn' ? ' сар' : '');
+}
+
 /** 1500000 → "1 500 000₮" (space thousands separator, as in the Figma portal frames). ₮ in every language. */
 export function formatMoney(value: string | number, locale: Locale = 'mn'): string {
   const amount = typeof value === 'string' ? Number(value) : value;

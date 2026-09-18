@@ -1,6 +1,7 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRef, useState, type DragEvent } from 'react';
 import { CheckIcon, CloseIcon, DownloadIcon, UploadCircleIcon } from '@/components/icons';
 import { Badge, CLIENT_DOCUMENT_REQUEST_BADGE, StatusBadge } from '@/components/ui/badge';
@@ -19,6 +20,7 @@ import {
   validateRequestFiles,
 } from '@/lib/document-requests';
 import { formatBytes, formatDate } from '@/lib/format';
+import type { Locale } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
 
 const CARD_TITLE = 'font-serif text-[20px] font-semibold leading-7 md:text-h4';
@@ -31,6 +33,7 @@ export function DocumentRequestsPanel({ caseId, requests, onDownload }: {
   requests: DocumentRequestItem[];
   onDownload: (doc: DocumentItem) => void;
 }) {
+  const t = useTranslations('portal.documentRequests');
   const sorted = [...requests].sort((a, b) => CLIENT_ORDER.indexOf(a.status) - CLIENT_ORDER.indexOf(b.status));
   const waiting = requests.filter(needsClientAction).length;
   const approved = requests.filter((request) => request.status === 'APPROVED').length;
@@ -40,18 +43,16 @@ export function DocumentRequestsPanel({ caseId, requests, onDownload }: {
     <div className="flex flex-col gap-4">
       <Card className="flex flex-col gap-3 p-[18px] md:flex-row md:items-center md:justify-between md:gap-6 md:p-6">
         <div className="flex min-w-0 flex-col gap-1">
-          <h3 className={CARD_TITLE}>Хуульчаас ирсэн хүсэлт</h3>
+          <h3 className={CARD_TITLE}>{t('title')}</h3>
           <p className="text-body-sm text-text-secondary">
-            {waiting > 0
-              ? `Танаас ${waiting} баримт хүлээгдэж байна. Файлаа хавсаргаад илгээнэ үү.`
-              : 'Хүссэн бүх баримтыг илгээсэн байна. Хуульч хянаад мэдэгдэнэ.'}
+            {waiting > 0 ? t('waiting', { count: waiting }) : t('allSubmitted')}
           </p>
         </div>
         <div className="flex flex-col gap-1.5 md:w-[240px] md:shrink-0">
-          <p className="text-caption text-text-muted">{approved}/{requests.length} баримт хүлээн авсан</p>
+          <p className="text-caption text-text-muted">{t('accepted', { approved, total: requests.length })}</p>
           <div
             role="progressbar"
-            aria-label="Хүлээн авсан баримт"
+            aria-label={t('acceptedLabel')}
             aria-valuemin={0}
             aria-valuemax={requests.length}
             aria-valuenow={approved}
@@ -61,7 +62,7 @@ export function DocumentRequestsPanel({ caseId, requests, onDownload }: {
           </div>
         </div>
       </Card>
-      <ul className="flex flex-col gap-3" aria-label="Баримтын хүсэлтүүд">
+      <ul className="flex flex-col gap-3" aria-label={t('listLabel')}>
         {sorted.map((request) => (
           <RequestItem key={request.id} caseId={caseId} request={request} onDownload={onDownload} />
         ))}
@@ -71,6 +72,9 @@ export function DocumentRequestsPanel({ caseId, requests, onDownload }: {
 }
 
 function RequestItem({ caseId, request, onDownload }: { caseId: string; request: DocumentRequestItem; onDownload: (doc: DocumentItem) => void }) {
+  const t = useTranslations('portal.documentRequests');
+  const tStatus = useTranslations('portal.documentRequests.status');
+  const locale = useLocale() as Locale;
   const queryClient = useQueryClient();
   const fileInput = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
@@ -85,7 +89,7 @@ function RequestItem({ caseId, request, onDownload }: { caseId: string; request:
       return api.post<DocumentRequestItem>(`/document-requests/${request.id}/submit`, form);
     },
     onSuccess: async () => {
-      toast.success('Баримт илгээгдлээ', `«${request.title}» — хуульч хянаж үзээд мэдэгдэнэ.`);
+      toast.success(t('submittedTitle'), t('submittedBody', { title: request.title }));
       setFiles([]);
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['case-document-requests', caseId] }),
@@ -93,12 +97,16 @@ function RequestItem({ caseId, request, onDownload }: { caseId: string; request:
         queryClient.invalidateQueries({ queryKey: DOCUMENT_REQUEST_SUMMARY_KEY }),
       ]);
     },
-    onError: (error) => toast.danger('Илгээж чадсангүй', error instanceof ApiError ? error.message : 'Дахин оролдоно уу.'),
+    onError: (error) => toast.danger(t('submitFailed'), error instanceof ApiError ? error.message : t('tryAgain')),
   });
 
   function addFiles(list: FileList | File[]) {
-    const { accepted, errors } = validateRequestFiles(Array.from(list), files.length);
-    for (const message of errors) toast.warning('Файл нэмэгдсэнгүй', message);
+    const { accepted, errors } = validateRequestFiles(Array.from(list), files.length, {
+      type: (name) => t('fileTypeError', { name }),
+      size: (name) => t('fileSizeError', { name }),
+      count: (max) => t('fileCountError', { max }),
+    });
+    for (const message of errors) toast.warning(t('fileRejected'), message);
     if (accepted.length > 0) setFiles((current) => [...current, ...accepted]);
   }
 
@@ -124,15 +132,15 @@ function RequestItem({ caseId, request, onDownload }: { caseId: string; request:
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-body-medium text-text-primary">{request.title}</p>
-            {!request.isRequired && <Badge tone="closed" dot={false}>Заавал биш</Badge>}
+            {!request.isRequired && <Badge tone="closed" dot={false}>{t('optional')}</Badge>}
           </div>
           {request.description && <p className="text-body-sm text-text-secondary">{request.description}</p>}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <StatusBadge map={CLIENT_DOCUMENT_REQUEST_BADGE} status={request.status} />
+            <StatusBadge map={CLIENT_DOCUMENT_REQUEST_BADGE} status={request.status} label={tStatus(request.status)} />
             {request.dueDate && (
               <span className={cn('text-caption', overdue ? 'text-body-sm-medium text-status-danger-fg' : 'text-text-muted')}>
-                {overdue ? 'Хугацаа хэтэрсэн: ' : 'Эцсийн хугацаа: '}
-                {formatDate(request.dueDate)}
+                {overdue ? `${t('overdue')} ` : `${t('due')} `}
+                {formatDate(request.dueDate, locale)}
               </span>
             )}
           </div>
@@ -141,29 +149,29 @@ function RequestItem({ caseId, request, onDownload }: { caseId: string; request:
 
       {request.status === 'REJECTED' && request.rejectionReason && (
         <div role="alert" className="flex flex-col gap-1 rounded-md bg-status-danger-bg px-4 py-3 text-status-danger-fg">
-          <p className="text-body-sm-medium">Хуульч буцаасан шалтгаан</p>
+          <p className="text-body-sm-medium">{t('rejectionTitle')}</p>
           <p className="text-body-sm">{request.rejectionReason}</p>
         </div>
       )}
       {isAwaitingReview(request) && (
-        <p className="rounded-md bg-status-new-bg px-4 py-3 text-body-sm text-status-new-fg">Хянагдаж байна — хуульч таны илгээсэн баримтыг шалгаж байна.</p>
+        <p className="rounded-md bg-status-new-bg px-4 py-3 text-body-sm text-status-new-fg">{t('underReview')}</p>
       )}
       {request.status === 'APPROVED' && (
-        <p className="text-body-sm-medium text-status-progress-fg">Хуульч баримтыг хүлээн авсан{request.reviewedAt ? ` · ${formatDate(request.reviewedAt)}` : ''}</p>
+        <p className="text-body-sm-medium text-status-progress-fg">{t('approved')}{request.reviewedAt ? ` · ${formatDate(request.reviewedAt, locale)}` : ''}</p>
       )}
 
       {request.documents.length > 0 && (
         <div className="flex flex-col gap-2">
-          <p className="text-caption text-text-muted">{request.status === 'REJECTED' ? 'Өмнө илгээсэн файл' : 'Илгээсэн файл'}</p>
+          <p className="text-caption text-text-muted">{request.status === 'REJECTED' ? t('previousFiles') : t('submittedFiles')}</p>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {request.documents.map((doc) => (
               <FileChip
                 key={doc.id}
                 name={doc.name}
                 mimeType={doc.mimeType}
-                meta={`${formatBytes(doc.size)} · ${formatDate(doc.createdAt)}`}
+                meta={`${formatBytes(doc.size)} · ${formatDate(doc.createdAt, locale)}`}
                 action={
-                  <Button variant="ghost" size="icon" onClick={() => onDownload(doc)} aria-label={`Татах: ${doc.name}`} title="Татах" className="-my-0.5 -mr-2 text-text-secondary hover:text-text-brand">
+                  <Button variant="ghost" size="icon" onClick={() => onDownload(doc)} aria-label={t('downloadNamed', { name: doc.name })} title={t('download')} className="-my-0.5 -mr-2 text-text-secondary hover:text-text-brand">
                     <DownloadIcon />
                   </Button>
                 }
@@ -181,7 +189,7 @@ function RequestItem({ caseId, request, onDownload }: { caseId: string; request:
             multiple
             accept={REQUEST_FILE_ACCEPT}
             className="sr-only"
-            aria-label={`«${request.title}» — файл сонгох`}
+            aria-label={t('pickFileFor', { title: request.title })}
             onChange={(event) => {
               if (event.target.files?.length) addFiles(event.target.files);
               event.target.value = '';
@@ -190,7 +198,7 @@ function RequestItem({ caseId, request, onDownload }: { caseId: string; request:
           <div
             role="button"
             tabIndex={0}
-            aria-label={`«${request.title}» — файлаа энд чирж оруулна уу, эсвэл товшиж сонгоно уу`}
+            aria-label={t('dropZoneFor', { title: request.title })}
             onClick={pickFiles}
             onKeyDown={(event) => {
               if (event.key === 'Enter' || event.key === ' ') {
@@ -211,13 +219,13 @@ function RequestItem({ caseId, request, onDownload }: { caseId: string; request:
           >
             <UploadCircleIcon className="size-9 text-text-brand" />
             <p className="text-body-sm-medium text-text-brand">
-              <span className="md:hidden">Файл сонгох</span>
-              <span className="hidden md:inline">Файлаа энд чирж оруулна уу, эсвэл товшиж сонгоно уу</span>
+              <span className="md:hidden">{t('pickFile')}</span>
+              <span className="hidden md:inline">{t('dropZone')}</span>
             </p>
-            <p className="text-caption text-text-secondary">PDF, DOCX, XLSX, JPG, PNG · 20MB хүртэл · нэг удаад {MAX_REQUEST_FILES} файл</p>
+            <p className="text-caption text-text-secondary">{t('fileHint', { max: MAX_REQUEST_FILES })}</p>
           </div>
           {files.length > 0 && (
-            <ul aria-label="Илгээх файл" className="grid grid-cols-1 gap-2 md:grid-cols-2">
+            <ul aria-label={t('filesToSend')} className="grid grid-cols-1 gap-2 md:grid-cols-2">
               {files.map((file, index) => (
                 <li key={`${file.name}-${file.size}-${index}`}>
                   <FileChip
@@ -230,8 +238,8 @@ function RequestItem({ caseId, request, onDownload }: { caseId: string; request:
                         size="icon"
                         disabled={submit.isPending}
                         onClick={() => setFiles((current) => current.filter((_, i) => i !== index))}
-                        aria-label={`Хасах: ${file.name}`}
-                        title="Хасах"
+                        aria-label={t('removeNamed', { name: file.name })}
+                        title={t('remove')}
                         className="-my-0.5 -mr-2 text-text-secondary hover:text-text-brand"
                       >
                         <CloseIcon />
@@ -244,10 +252,10 @@ function RequestItem({ caseId, request, onDownload }: { caseId: string; request:
           )}
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
             <Button size="md" className="w-full md:w-auto" disabled={files.length === 0 || submit.isPending} onClick={() => submit.mutate(files)}>
-              {submit.isPending ? 'Илгээж байна…' : request.status === 'REJECTED' ? 'Дахин илгээх' : 'Илгээх'}
+              {submit.isPending ? t('sending') : request.status === 'REJECTED' ? t('resend') : t('send')}
               {!submit.isPending && files.length > 0 ? ` (${files.length})` : ''}
             </Button>
-            {files.length === 0 && <p className="text-caption text-text-muted">Эхлээд файлаа сонгоно уу.</p>}
+            {files.length === 0 && <p className="text-caption text-text-muted">{t('pickFirst')}</p>}
           </div>
         </div>
       )}

@@ -1,9 +1,9 @@
 // Figma: 02 Client Portal / Portal / 08 Messages — inbox: one conversation per case (latest message, unread count).
-// Opening a row goes to that case's "Мессеж" tab, where the chat itself lives.
+// Opening a row goes to that case's messages tab, where the chat itself lives.
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import Link from 'next/link';
+import { useLocale, useTranslations } from 'next-intl';
 import { MessagesIcon } from '@/components/icons';
 import { useUser } from '@/components/portal/user-context';
 import { Avatar } from '@/components/ui/avatar';
@@ -11,6 +11,8 @@ import { EmptyState, ErrorState, Skeleton } from '@/components/ui/states';
 import { ApiError, api, type CaseListItem, type MessageConversation, type Paginated, type PublicUser } from '@/lib/api';
 import { formatDate } from '@/lib/format';
 import { MESSAGE_CONVERSATIONS_KEY } from '@/lib/messages';
+import { Link } from '@/i18n/navigation';
+import type { Locale } from '@/i18n/routing';
 import { cn, initials, shortName } from '@/lib/utils';
 
 interface InboxRow {
@@ -23,6 +25,8 @@ interface InboxRow {
 }
 
 export default function MessagesPage() {
+  const t = useTranslations('portal.messages');
+  const locale = useLocale() as Locale;
   const { user } = useUser();
   const conversations = useQuery({
     queryKey: MESSAGE_CONVERSATIONS_KEY,
@@ -53,15 +57,15 @@ export default function MessagesPage() {
   return (
     <div className="flex flex-col gap-5 md:gap-6">
       <div className="-mx-5 -mt-6 flex flex-col gap-1.5 bg-bg-surface px-5 py-4 md:mx-0 md:mt-0 md:gap-2 md:bg-transparent md:p-0">
-        <h2 className="hidden text-h2 md:block">Мессеж</h2>
+        <h2 className="hidden text-h2 md:block">{t('title')}</h2>
         <p className="text-body-sm text-text-secondary md:text-body">
-          {loading ? 'Ачааллаж байна…' : unread > 0 ? `${unread} уншаагүй мессеж байна` : 'Уншаагүй мессеж байхгүй'}
+          {loading ? t('loading') : unread > 0 ? t('unreadSummary', { count: unread }) : t('noUnread')}
         </p>
       </div>
 
       {error ? (
         <ErrorState
-          message={error instanceof ApiError ? error.message : 'Мессеж ачаалахад алдаа гарлаа'}
+          message={error instanceof ApiError ? error.message : t('loadError')}
           onRetry={() => {
             void conversations.refetch();
             void cases.refetch();
@@ -75,12 +79,12 @@ export default function MessagesPage() {
       ) : rows.length === 0 ? (
         <EmptyState
           icon={<MessagesIcon size={24} />}
-          title="Харилцан яриа алга"
-          description="Таны нэр дээр хэрэг бүртгэгдмэгц хариуцсан хуульчтайгаа энд харилцана."
+          title={t('emptyTitle')}
+          description={t('emptyDescription')}
         />
       ) : (
         <section aria-labelledby="conversations-heading" className="overflow-hidden rounded-lg border border-border-default bg-bg-surface">
-          <h3 id="conversations-heading" className="border-b border-border-default px-5 py-4 text-h4 md:px-6">Харилцан яриа</h3>
+          <h3 id="conversations-heading" className="border-b border-border-default px-5 py-4 text-h4 md:px-6">{t('conversations')}</h3>
           <ul className="divide-y divide-border-default">
             {rows.map((row) => {
               const last = row.lastMessage;
@@ -98,17 +102,19 @@ export default function MessagesPage() {
                           {shortName(row.lawyer.firstName, row.lawyer.lastName)}
                           <span className="text-body-sm text-text-muted"> · {row.caseNumber}</span>
                         </p>
-                        {last && <span className="shrink-0 text-caption text-text-muted">{whenLabel(last.createdAt)}</span>}
+                        {last && <span className="shrink-0 text-caption text-text-muted">{whenLabel(last.createdAt, locale)}</span>}
                       </div>
                       <p className="truncate text-caption text-text-secondary">{row.title}</p>
                       <div className="flex items-center justify-between gap-3">
                         <p className={cn('min-w-0 truncate text-body-sm', row.unreadCount > 0 ? 'text-body-sm-medium text-text-primary' : 'text-text-muted')}>
-                          {last ? `${own ? 'Та' : shortName(last.sender.firstName, last.sender.lastName)}: ${last.body}` : 'Мессеж алга. Харилцаа эхлүүлэх'}
+                          {last
+                            ? t('preview', { sender: own ? t('you') : shortName(last.sender.firstName, last.sender.lastName), body: last.body })
+                            : t('noMessagesYet')}
                         </p>
                         {row.unreadCount > 0 && (
                           <span
                             className="inline-flex min-w-6 shrink-0 items-center justify-center rounded-full bg-accent-default px-2 py-[3px] text-caption text-text-on-accent"
-                            aria-label={`${row.unreadCount} уншаагүй`}
+                            aria-label={t('unreadCount', { count: row.unreadCount })}
                           >
                             {row.unreadCount}
                           </span>
@@ -127,11 +133,11 @@ export default function MessagesPage() {
 }
 
 /** Today → "14:05", otherwise the date. */
-function whenLabel(iso: string): string {
+function whenLabel(iso: string, locale: Locale): string {
   const date = new Date(iso);
   const today = new Date();
   if (date.toDateString() === today.toDateString()) {
     return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
   }
-  return formatDate(iso);
+  return formatDate(iso, locale);
 }

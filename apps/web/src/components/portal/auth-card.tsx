@@ -2,16 +2,12 @@
 import Link from 'next/link';
 import { BackChevronIcon, BackIcon, CheckCircleIcon } from '@/components/icons';
 import { Logo } from '@/components/ui/logo';
+import { getTranslations } from 'next-intl/server';
 import { loadFirmSettings } from '@/lib/firm';
 import { formatPhone } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
-const FEATURES = [
-  'Хэргийн явцын бодит цагийн мэдээлэл',
-  'Баримт бичгээ аюулгүй хадгалах, татах',
-  'Нэхэмжлэх, төлбөрийн түүх',
-  'Хуульчтай шууд харилцах суваг',
-];
+const FEATURE_KEYS = ['progress', 'documents', 'invoices', 'chat'] as const;
 const SUPPORT_EMAIL = 'portal@lawfirm.mn';
 
 interface AuthCardProps {
@@ -33,7 +29,8 @@ interface AuthCardProps {
  */
 export async function AuthCard({ children, className, mobileNav }: AuthCardProps) {
   // Server component (login / register / forgot-password pages): the support phone is the firm's phone from the settings.
-  const supportPhone = formatPhone((await loadFirmSettings()).phone);
+  const [firm, t] = await Promise.all([loadFirmSettings(), getTranslations('portal.authPanel')]);
+  const supportPhone = formatPhone(firm.phone);
   return (
     <main className="flex flex-1 flex-col xl:flex-row">
       {/* Brand panel — Figma "Brand panel" 28:35 / mobile "Brand" 35:929 */}
@@ -47,29 +44,27 @@ export async function AuthCard({ children, className, mobileNav }: AuthCardProps
         <Logo theme="dark" variant="lockup" />
         <div className="flex flex-col items-center gap-4 xl:max-w-[432px] xl:items-start xl:gap-5">
           <p className="font-serif text-[26px] font-semibold leading-[34px] tracking-[-0.2px] text-text-on-inverse xl:text-h2 xl:text-text-on-inverse">
-            Харилцагчийн портал
+            {t('panelTitle')}
           </p>
-          <p className="max-w-[320px] text-body-sm text-text-on-inverse-muted xl:hidden">Хэргийн явц, баримт, нэхэмжлэхээ нэг дороос хянаарай.</p>
-          <p className="hidden text-body-lg text-text-on-inverse-muted xl:block">
-            Хэргийнхээ явц, баримт бичиг, нэхэмжлэхээ нэг дороос хянаарай. Хуульчтайгаа шууд мессежээр холбогдоно.
-          </p>
+          <p className="max-w-[320px] text-body-sm text-text-on-inverse-muted xl:hidden">{t('panelLeadShort')}</p>
+          <p className="hidden text-body-lg text-text-on-inverse-muted xl:block">{t('panelLead')}</p>
           <ul className="hidden flex-col gap-3.5 xl:flex">
-            {FEATURES.map((feature) => (
-              <li key={feature} className="flex items-center gap-3 text-body text-text-on-inverse">
+            {FEATURE_KEYS.map((key) => (
+              <li key={key} className="flex items-center gap-3 text-body text-text-on-inverse">
                 <CheckCircleIcon className="shrink-0" />
-                {feature}
+                {t(`features.${key}`)}
               </li>
             ))}
           </ul>
         </div>
         <p className="hidden text-body-sm text-text-on-inverse-muted xl:block">
-          Асуудал гарвал: {supportPhone} · {SUPPORT_EMAIL}
+          {t('support', { phone: supportPhone, email: SUPPORT_EMAIL })}
         </p>
       </aside>
 
       {mobileNav && (
         <header className="flex h-16 items-center gap-2.5 border-b border-border-default bg-bg-surface pl-4 pr-2 xl:hidden">
-          <Link href={mobileNav.backHref} aria-label="Буцах" className="focus-ring flex size-11 items-center justify-center rounded-md text-text-primary">
+          <Link href={mobileNav.backHref} aria-label={t('back')} className="focus-ring flex size-11 items-center justify-center rounded-md text-text-primary">
             <BackIcon />
           </Link>
           <span className="text-body-medium text-text-primary">{mobileNav.title}</span>
@@ -87,7 +82,7 @@ export async function AuthCard({ children, className, mobileNav }: AuthCardProps
         >
           {children}
         </div>
-        {!mobileNav && <p className="px-5 pb-8 text-caption text-text-muted md:hidden">Асуудал гарвал: {supportPhone}</p>}
+        {!mobileNav && <p className="px-5 pb-8 text-caption text-text-muted md:hidden">{t('supportShort', { phone: supportPhone })}</p>}
       </div>
     </main>
   );

@@ -1,21 +1,29 @@
 // Figma: 02 Client Portal / Portal / 02 Register / Desktop (28:148) + Mobile (35:968)
 import type { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { AuthCard, AuthHeading, AuthSwitchLink } from '@/components/portal/auth-card';
 import { RegisterForm } from './register-form';
 
-export const metadata: Metadata = { title: 'Бүртгүүлэх' };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'portal.register' });
+  return { title: t('title') };
+}
 
-export default function RegisterPage() {
+export default async function RegisterPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('portal.register');
   return (
-    <AuthCard className="md:gap-5" mobileNav={{ title: 'Бүртгүүлэх', backHref: '/portal/login' }}>
+    <AuthCard className="md:gap-5" mobileNav={{ title: t('title'), backHref: '/portal/login' }}>
       <AuthHeading
-        title="Бүртгүүлэх"
-        mobileTitle="Бүртгэл үүсгэх"
-        description="Гэрээ байгуулсан харилцагчид портал ашиглах эрхтэй."
+        title={t('title')}
+        mobileTitle={t('mobileTitle')}
+        description={t('description')}
         descriptionClassName="text-body-sm md:text-body"
       />
       <RegisterForm />
-      <AuthSwitchLink prompt="Бүртгэлтэй юу?" href="/portal/login" label="Нэвтрэх" />
+      <AuthSwitchLink prompt={t('haveAccount')} href="/portal/login" label={t('loginCta')} />
     </AuthCard>
   );
 }

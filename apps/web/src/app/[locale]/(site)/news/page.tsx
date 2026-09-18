@@ -33,7 +33,7 @@ function postMeta(post: PostListItem, locale: Locale, views: (count: number) => 
 
 /** Figma "Featured" (20:704): bg-page tile, 480×300 image, overline "ОНЦЛОХ · <category>", H3 title. Desktop only. */
 async function FeaturedPost({ post, locale }: { post: PostListItem; locale: Locale }) {
-  const [t, tCommon, tCategory] = await Promise.all([getTranslations('news'), getTranslations('common'), getTranslations('postCategory')]);
+  const [t, tCommon, tCategory] = await Promise.all([getTranslations('news'), getTranslations('common'), getTranslations('enums.postCategory')]);
   const href = `/news/${post.slug}`;
   return (
     <article className="hidden gap-10 rounded-lg bg-bg-page p-8 lg:flex lg:items-center">
@@ -55,7 +55,7 @@ async function FeaturedPost({ post, locale }: { post: PostListItem; locale: Loca
 export default async function NewsPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: SearchParams }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const [t, tCommon, tCategory] = await Promise.all([getTranslations('news'), getTranslations('common'), getTranslations('postCategory')]);
+  const [t, tCommon, tCategory] = await Promise.all([getTranslations('news'), getTranslations('common'), getTranslations('enums.postCategory')]);
   const { category = '', page = '1', search = '' } = await searchParams;
   const currentPage = Math.max(1, Number(page) || 1);
   const query = new URLSearchParams({ page: String(currentPage), limit: String(PAGE_SIZE) });

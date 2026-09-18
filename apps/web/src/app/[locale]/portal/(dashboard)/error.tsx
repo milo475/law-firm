@@ -2,12 +2,14 @@
 // + 11 Empty & Error / Mobile (37:1391)
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { ErrorState } from '@/components/ui/states';
 import { formatPhone } from '@/lib/format';
 import { useFirmSettings } from '@/lib/settings';
 
 export default function PortalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  const t = useTranslations('portal.error');
   // Figma's offline variant — shown when the browser reports no connection
   const [offline, setOffline] = useState(false);
   const firm = useFirmSettings();
@@ -20,13 +22,13 @@ export default function PortalError({ error, reset }: { error: Error & { digest?
   }, []);
 
   if (offline) {
-    return <ErrorState title="Сүлжээний холбоо тасарлаа" message="Интернэт холболтоо шалгана уу. Холболт сэргэмэгц дахин оролдоно уу." onRetry={reset} />;
+    return <ErrorState title={t('offlineTitle')} message={t('offlineMessage')} onRetry={reset} />;
   }
-  const support = firm.data ? ` Асуудал давтагдвал ${formatPhone(firm.data.phone)} дугаарт хандана уу.` : '';
+  const support = firm.data ? ` ${t('support', { phone: formatPhone(firm.data.phone) })}` : '';
   return (
     <ErrorState
-      title="Алдаа гарлаа"
-      message={error.message || `Мэдээллийг ачаалах явцад алдаа гарлаа. Түр хүлээгээд дахин оролдоно уу.${support}`}
+      title={t('title')}
+      message={error.message || `${t('message')}${support}`}
       onRetry={reset}
     />
   );

@@ -33,15 +33,18 @@ function dayLabel(d: Date): string {
   return d.getFullYear() === today.getFullYear() ? label : `${d.getFullYear()} оны ${label}`;
 }
 
-/** Groups by calendar day, keeping the API's newest-first order. */
-export function groupByDay(items: NotificationItem[]): { key: string; label: string; items: NotificationItem[] }[] {
+/**
+ * Groups by calendar day, keeping the API's newest-first order.
+ * `formatDay` lets a localized surface (the portal) supply its own day label; the admin panel keeps the Mongolian default.
+ */
+export function groupByDay(items: NotificationItem[], formatDay: (d: Date) => string = dayLabel): { key: string; label: string; items: NotificationItem[] }[] {
   const groups: { key: string; label: string; items: NotificationItem[] }[] = [];
   for (const n of items) {
     const d = new Date(n.createdAt);
     const key = dayKey(d);
     const last = groups[groups.length - 1];
     if (last?.key === key) last.items.push(n);
-    else groups.push({ key, label: dayLabel(d), items: [n] });
+    else groups.push({ key, label: formatDay(d), items: [n] });
   }
   return groups;
 }
@@ -51,12 +54,14 @@ export function groupByDay(items: NotificationItem[]): { key: string; label: str
  * The row itself is the action: a link inside this app area (`linkPrefix`) opens it and marks it read;
  * otherwise an unread row marks read on click. Staff rows also name who caused the notification.
  */
-export function NotificationRow({ item, onRead, pending, linkPrefix, showActor = false }: {
+export function NotificationRow({ item, onRead, pending, linkPrefix, showActor = false, labels }: {
   item: NotificationItem;
   onRead: () => void;
   pending: boolean;
   linkPrefix: '/portal' | '/admin';
   showActor?: boolean;
+  /** Screen-reader copy; localized surfaces pass translations, the admin panel keeps the Mongolian default. */
+  labels?: { unread: string; markRead: string };
 }) {
   const Icon = NOTIFICATION_TYPE_ICONS[item.type] ?? NotifGenericIcon;
   const d = new Date(item.createdAt);
@@ -71,7 +76,7 @@ export function NotificationRow({ item, onRead, pending, linkPrefix, showActor =
       <div className="flex min-w-0 flex-1 flex-col gap-[3px] md:gap-1">
         <div className="flex items-start justify-between gap-3">
           <p className="min-w-0 text-body-sm-medium text-text-primary md:text-body-medium">
-            {item.title}{!item.isRead && <span className="sr-only"> (уншаагүй)</span>}
+            {item.title}{!item.isRead && <span className="sr-only"> ({labels?.unread ?? 'уншаагүй'})</span>}
           </p>
           <span className="shrink-0 pt-0.5 text-caption text-text-muted md:hidden">{meta}</span>
         </div>
@@ -93,7 +98,7 @@ export function NotificationRow({ item, onRead, pending, linkPrefix, showActor =
       {href ? (
         <Link href={href} onClick={() => { if (!item.isRead) onRead(); }} className={actionClass}>{content}</Link>
       ) : !item.isRead ? (
-        <button type="button" onClick={onRead} disabled={pending} className={actionClass}>{content}<span className="sr-only">Уншсан болгох</span></button>
+        <button type="button" onClick={onRead} disabled={pending} className={actionClass}>{content}<span className="sr-only">{labels?.markRead ?? 'Уншсан болгох'}</span></button>
       ) : (
         <div className={rowClass}>{content}</div>
       )}

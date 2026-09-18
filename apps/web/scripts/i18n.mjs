@@ -63,6 +63,8 @@ const CONTEXT = {
   privacy: 'Нууцлалын бодлого',
   terms: 'Үйлчилгээний нөхцөл',
   notFound: '404 хуудас',
+  enums: 'Төлөв, төрөл, эрхийн нэрс (хэрэг, нэхэмжлэх, хүсэлт)',
+  portal: 'Харилцагчийн портал (/portal) — нэвтрэх, хэрэг, баримт, нэхэмжлэх, мессеж, профайл',
 };
 
 const read = (locale) => JSON.parse(fs.readFileSync(path.join(MESSAGES, `${locale}.json`), 'utf8'));

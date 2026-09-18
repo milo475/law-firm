@@ -776,7 +776,59 @@ LAWYER хүсэлтийг удирдахгүй (403): хуваарилагдса
 
 ---
 
-## 14. Тест
+## 14. Гурван хэл (mn · en · zh)
+
+Сайт `next-intl`-ээр ажиллана. Анхдагч хэл **монгол** бөгөөд URL нь угтваргүй (`/services`), англи нь `/en/...`,
+хятад нь `/zh/...` (`localePrefix: 'as-needed'`). Хэлийг `NEXT_LOCALE` cookie санана; Accept-Language-ийг зөвхөн
+санал болгоход ашиглана (албадан шилжүүлэхгүй).
+
+| Файл | Үүрэг |
+| --- | --- |
+| `src/i18n/routing.ts` | Хэлнүүд, BCP-47 map (`mn-MN`, `en`, `zh-Hans`), хэлний нэрс |
+| `src/i18n/request.ts` | Локалийг тодорхойлж, дутуу орчуулгыг **монгол руу fallback** хийнэ |
+| `src/i18n/navigation.ts` | Локаль мэддэг `Link`, `useRouter` (портал доторх бүх холбоос үүнийг ашиглана) |
+| `src/middleware.ts` | Локалийн угтвар + порталын/админы сесс шалгалт |
+| `messages/mn.json` | Эх бичвэр (цорын ганц эх сурвалж) |
+| `messages/en.json`, `messages/zh.json` | Орчуулга; **хоосон утга = монголоор харагдана** |
+
+### Түлхүүрийн бүтэц
+
+`<хэсэг>.<дэд>.<нэр>` — `site.*`, `nav.*`, `home.*`, … нийтийн сайт; `enums.*` төлөв/төрлийн нэрс;
+`portal.*` харилцагчийн портал (`portal.login.*`, `portal.cases.*`, `portal.invoices.*`, `portal.caseDetail.*`,
+`portal.documents.*`, `portal.messages.*`, `portal.requests.*`, `portal.notifications.*`, `portal.profile.*`,
+`portal.documentRequests.*`, `portal.chat.*`).
+
+**Админ самбар (`/admin`) орчуулагдахгүй** — түүний бичвэр кодод монголоороо хэвээр байна.
+Админ, портал хоёрын хуваалцдаг бүрэлдэхүүн (`StatusBadge`, `NotificationRow`, `ChatThread`,
+`validateRequestFiles`) орчуулгыг **дуудагчаас** prop-оор авдаг: портал орчуулсан утга дамжуулна,
+админ анхдагч монгол утгыг хэвээр хэрэглэнэ.
+
+### Огноо, мөнгө
+
+`src/lib/format.ts`: `formatDate`, `formatDateLong`, `formatDateWithWeekday`, `formatTimeAgo`,
+`formatMonthShort`, `formatMoney` — бүгд `locale` авна (`Intl`). Мөнгө бүх хэлэнд **₮**-өөр харагдана.
+
+### Орчуулгын ажлын урсгал (CSV)
+
+```bash
+pnpm i18n:export [файл]   # mn.json → CSV (key, mn, en, zh, context) — дуудсан хавтсанд бичнэ
+pnpm i18n:import [файл]   # бөглөсөн CSV → en.json / zh.json (хоосон нүд хоосон хэвээр)
+pnpm i18n:check           # гурван файлын түлхүүр таарч буй эсэх + үлдсэн орчуулгын тоо
+```
+
+Файлын нэрийг `INIT_CWD` → `process.cwd()` → repo root → `apps/web` дарааллаар хайна, тул repo root-оос ч,
+`apps/web`-ээс ч ажиллана. Одоогийн CSV: `i18n-translations.csv` (repo root).
+
+### Нийтлэл ба серверийн мессеж
+
+Нийтлэлүүд (Post) зөвхөн монголоор; `/en`, `/zh` дээр жагсаалтын дээр «Эдгээр нийтлэл монгол хэл дээр байна.»
+гэсэн тэмдэглэл гарна. API-аас ирдэг алдааны мессеж болон zod-ын шалгалтын мессеж **одоогоор монголоор**
+(жишээ: «Нэхэмжлэх олдсонгүй», «Гарчиг хамгийн багадаа 5 тэмдэгт байна») — эдгээрийг орчуулах төлөвлөгөө
+README-д биш, тусдаа шийдвэрээр хийнэ.
+
+---
+
+## 15. Тест
 
 ```bash
 pnpm test            # эсвэл: pnpm --filter @law-firm/api test
@@ -865,7 +917,7 @@ Playwright (42 тест): нийтийн сайт (2), портал (2), адм�
 
 ---
 
-## 15. Production тэмдэглэл
+## 16. Production тэмдэглэл
 
 - `pnpm build` → `apps/api/dist`, `apps/web/.next`. API: `node dist/main`, web: `next start`.
 - API `trust proxy` = `TRUST_PROXY_HOPS` (зөвхөн production), cookie `secure` = true.
