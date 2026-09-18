@@ -51,7 +51,7 @@ export function Sidebar({ items, user, onLogout, logoutIcon, className }: Sideba
   return (
     <aside className={cn('flex h-full w-[260px] shrink-0 flex-col gap-8 bg-bg-inverse px-4 py-6', className)}>
       <div className="pl-2">
-        <Logo theme="dark" href="/portal" scale={0.85} />
+        <Logo theme="dark" href="/portal" variant="lockup" scale={0.85} />
       </div>
       <nav aria-label="Порталын цэс" className="flex flex-col gap-1">
         {items.map((item) => <SidebarItem key={item.href} {...item} />)}

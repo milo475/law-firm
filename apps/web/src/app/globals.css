@@ -264,3 +264,9 @@
 .prose-mn a { color: var(--text-accent); text-decoration: underline; }
 .prose-mn strong { font-weight: 600; }
 .prose-mn img { border-radius: var(--radius-lg); }
+
+/* Tailwind's .sr-only is absolutely positioned with left:auto, so it keeps the static position it
+   would have had — at the end of a long line that can be past the viewport, which stretches the
+   page's scroll width and gives it a horizontal scrollbar. Pinning left removes that side effect;
+   the element stays clipped and invisible either way. */
+.sr-only { left: 0; }

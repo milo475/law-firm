@@ -32,7 +32,7 @@ export async function Footer() {
         {/* Figma gap is 64px at 1440; narrower screens need less room (and may wrap) so the row never overflows. */}
         <div className="flex flex-wrap gap-8 lg:gap-12 xl:gap-16">
           <div className="flex w-[340px] shrink-0 flex-col gap-4">
-            <Logo theme="dark" />
+            <Logo theme="dark" variant="lockup" />
             <p className="w-[300px] text-body-sm text-text-on-inverse-muted">2009 оноос хойш иргэд, аж ахуйн нэгжид найдвартай эрх зүйн туслалцаа үзүүлж байна.</p>
           </div>
           <FooterColumn title="Үйлчилгээ" items={SERVICES} />
@@ -57,7 +57,7 @@ export async function Footer() {
 
       {/* Mobile */}
       <div className="flex flex-col gap-7 px-5 pb-7 pt-10 md:hidden">
-        <Logo theme="dark" />
+        <Logo theme="dark" variant="lockup" />
         <p className="text-body-sm text-text-on-inverse-muted">2009 оноос хойш найдвартай эрх зүйн туслалцаа.</p>
         <div className="flex flex-col gap-3">
           <p className="text-body-medium">Үйлчилгээ</p>

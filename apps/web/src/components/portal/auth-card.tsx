@@ -44,7 +44,7 @@ export async function AuthCard({ children, className, mobileNav }: AuthCardProps
           mobileNav && 'hidden xl:flex',
         )}
       >
-        <Logo theme="dark" />
+        <Logo theme="dark" variant="lockup" />
         <div className="flex flex-col items-center gap-4 xl:max-w-[432px] xl:items-start xl:gap-5">
           <p className="font-serif text-[26px] font-semibold leading-[34px] tracking-[-0.2px] text-text-on-inverse xl:text-h2 xl:text-text-on-inverse">
             Харилцагчийн портал

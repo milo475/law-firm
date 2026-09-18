@@ -31,22 +31,22 @@ export function NavHeader() {
       {/* Desktop — 1440 frame: 88px, 120px side padding (max 1200 content).
           The full row (logo + 6 links + two actions) only fits from 1280px, so narrower
           screens get the compact header with the drawer menu. */}
-      <div className="mx-auto hidden h-[88px] max-w-[1200px] items-center justify-between gap-6 px-6 xl:flex">
+      <div className="mx-auto hidden h-[88px] max-w-[1200px] items-center justify-between gap-4 px-6 xl:flex">
         <Logo />
-        <nav aria-label="Үндсэн цэс" className="flex items-center gap-5 xl:gap-7">
+        <nav aria-label="Үндсэн цэс" className="flex items-center gap-4">
           {PUBLIC_NAV.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               aria-current={isActive(item.href) ? 'page' : undefined}
-              className={cn('focus-ring inline-flex h-11 items-center rounded-sm text-body transition-colors hover:text-text-brand', isActive(item.href) ? 'text-text-brand' : 'text-text-secondary')}
+              className={cn('focus-ring inline-flex h-11 items-center whitespace-nowrap rounded-sm text-body transition-colors hover:text-text-brand', isActive(item.href) ? 'text-text-brand' : 'text-text-secondary')}
             >
               {item.label}
             </Link>
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <Link href="/portal" className="focus-ring inline-flex h-11 items-center rounded-md px-4 text-body-medium text-text-brand hover:bg-bg-brand-soft">
+          <Link href="/portal" className="focus-ring inline-flex h-11 items-center whitespace-nowrap rounded-md px-3 text-body-medium text-text-brand hover:bg-bg-brand-soft">
             Портал
           </Link>
           <Button asChild size="md">
