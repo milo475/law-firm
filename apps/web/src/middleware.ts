@@ -1,5 +1,6 @@
 import createIntlMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
+import { isSpecializationKey, specializationKeyFor } from '@/content/specializations';
 import { routing, type Locale } from '@/i18n/routing';
 
 const LOGIN_PATH = '/portal/login';
@@ -59,6 +60,22 @@ export function middleware(request: NextRequest) {
   }
 
   const { prefix, route } = splitLocale(pathname);
+
+  // `/lawyers?spec=Иргэний` was the shape before the filter used keys. Normalising here (rather than in
+  // the page) keeps it a real 308 for search engines: a redirect thrown while the page streams would
+  // only reach the browser as a 200 with a client-side hop.
+  if (route === '/lawyers') {
+    const spec = request.nextUrl.searchParams.get('spec');
+    if (spec && !isSpecializationKey(spec)) {
+      const key = specializationKeyFor(spec);
+      if (key) {
+        const target = request.nextUrl.clone();
+        target.searchParams.set('spec', key);
+        return NextResponse.redirect(target, 308);
+      }
+    }
+  }
+
   const guarded = route === '/portal' || route.startsWith('/portal/') || route === '/admin' || route.startsWith('/admin/');
   if (!guarded) return intlMiddleware(request);
 

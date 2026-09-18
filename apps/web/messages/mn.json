@@ -33,15 +33,7 @@
     "careers": "Ажлын байр",
     "rights": "Бүх эрх хуулиар хамгаалагдсан.",
     "privacy": "Нууцлалын бодлого",
-    "terms": "Үйлчилгээний нөхцөл",
-    "serviceShort": {
-      "civil": "Иргэний",
-      "criminal": "Эрүүгийн",
-      "family": "Гэр бүлийн",
-      "business": "Бизнесийн",
-      "labor": "Хөдөлмөрийн",
-      "real-estate": "Үл хөдлөх"
-    }
+    "terms": "Үйлчилгээний нөхцөл"
   },
   "services": {
     "catalog": {
@@ -423,6 +415,14 @@
       "writtenOpinion": "Бичгэн дүгнэлт",
       "assetCheck": "Хөрөнгийн шалгалт",
       "urgentResponse": "Яаралтай оролцоо"
+    },
+    "short": {
+      "civil": "Иргэний",
+      "criminal": "Эрүүгийн",
+      "family": "Гэр бүлийн",
+      "business": "Бизнесийн",
+      "labor": "Хөдөлмөрийн",
+      "real-estate": "Үл хөдлөх"
     }
   },
   "faq": {

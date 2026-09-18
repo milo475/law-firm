@@ -13,11 +13,12 @@ const link = 'focus-ring rounded-sm text-body-sm text-text-on-inverse-muted hove
 /** Contacts and the legal name come from the firm settings an ADMIN edits on /admin/settings. */
 export async function Footer() {
   const year = new Date().getFullYear();
-  const [firm, t, tNav, tService] = await Promise.all([
+  const [firm, t, tNav, tService, tServices] = await Promise.all([
     loadFirmSettings(),
     getTranslations('footer'),
     getTranslations('nav'),
     getTranslations('services.catalog'),
+    getTranslations('services'),
   ]);
 
   const services = SERVICES.map((service) => ({ label: tService(`${service.slug}.title`), href: `/services/${service.slug}` }));
@@ -73,7 +74,7 @@ export async function Footer() {
           <p className="text-body-medium">{t('services')}</p>
           <div className="flex flex-wrap gap-x-2.5 gap-y-2.5">
             {SERVICES.map((service) => (
-              <Link key={service.slug} href={`/services/${service.slug}`} className={link}>{t(`serviceShort.${service.slug}`)}</Link>
+              <Link key={service.slug} href={`/services/${service.slug}`} className={link}>{tServices(`short.${service.slug}`)}</Link>
             ))}
           </div>
         </div>

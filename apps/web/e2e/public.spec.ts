@@ -46,6 +46,38 @@ test.describe('Нийтийн сайт', () => {
     await expect(articleTitles.first()).toContainText('Хөдөлмөрийн');
   });
 
+  test('хуульчдын мэргэшлийн шүүлтүүр түлхүүрээр ажиллаж, хуучин холбоос шилжинэ', async ({ page }) => {
+    const cards = page.locator('main a[href^="/lawyers/"]:visible');
+
+    await page.goto('/lawyers');
+    const total = await cards.count();
+    expect(total).toBeGreaterThan(1);
+
+    // The chip navigates to the ASCII key, not the Mongolian label.
+    await page.getByRole('navigation', { name: 'Мэргэшлийн чиглэлээр шүүх' }).getByRole('link', { name: 'Иргэний' }).click();
+    await expect(page).toHaveURL(/\/lawyers\?spec=civil$/);
+    const civil = await cards.count();
+    expect(civil).toBeGreaterThan(0);
+    expect(civil).toBeLessThan(total);
+
+    // A different area matches a different set of lawyers.
+    await page.goto('/lawyers?spec=family');
+    await expect(cards.first()).toBeVisible();
+    expect(await cards.count()).toBeLessThan(total);
+
+    // Links shared before the keys existed still work: 308 → the same filtered page.
+    const redirect = await page.request.get(`/lawyers?spec=${encodeURIComponent('Иргэний')}`, { maxRedirects: 0 });
+    expect(redirect.status()).toBe(308);
+    expect(redirect.headers().location).toContain('spec=civil');
+    await page.goto(`/lawyers?spec=${encodeURIComponent('Иргэний')}`);
+    await expect(page).toHaveURL(/\/lawyers\?spec=civil$/);
+    expect(await cards.count()).toBe(civil);
+
+    // An unknown value simply shows everyone.
+    await page.goto('/lawyers?spec=zzz');
+    expect(await cards.count()).toBe(total);
+  });
+
   test('хөлний хууль зүйн хуудсууд ажиллана', async ({ page }) => {
     await page.goto('/');
     const footer = page.getByRole('contentinfo');

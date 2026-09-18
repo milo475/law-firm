@@ -33,15 +33,7 @@
     "careers": "招聘",
     "rights": "版权所有。",
     "privacy": "隐私政策",
-    "terms": "服务条款",
-    "serviceShort": {
-      "civil": "民事",
-      "criminal": "刑事",
-      "family": "家事",
-      "business": "商事",
-      "labor": "劳动",
-      "real-estate": "不动产"
-    }
+    "terms": "服务条款"
   },
   "services": {
     "catalog": {
@@ -423,6 +415,14 @@
       "writtenOpinion": "书面法律意见",
       "assetCheck": "不动产核查",
       "urgentResponse": "紧急协助"
+    },
+    "short": {
+      "civil": "民事",
+      "criminal": "刑事",
+      "family": "家事",
+      "business": "商事",
+      "labor": "劳动",
+      "real-estate": "不动产"
     }
   },
   "faq": {

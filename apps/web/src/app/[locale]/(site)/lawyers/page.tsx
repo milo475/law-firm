@@ -5,6 +5,7 @@ import { LawyerCard } from '@/components/ui/card';
 import { PageHeader } from '@/components/ui/page-header';
 import { Pagination } from '@/components/ui/pagination';
 import { EmptyState } from '@/components/ui/states';
+import { SPECIALIZATION_FILTERS, isSpecializationKey, matchesSpecialization, type SpecializationKey } from '@/content/specializations';
 import { Link } from '@/i18n/navigation';
 import { apiFetch, type LawyerProfile } from '@/lib/api';
 import { alternateLanguages } from '@/lib/seo';
@@ -17,18 +18,17 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 export const revalidate = 60;
 
-/**
- * Filter chips — matched (case-insensitive) against each lawyer's specializations, which the firm
- * enters in Mongolian, so the chips stay Mongolian in every language.
- */
-const FILTERS = ['Иргэний', 'Эрүүгийн', 'Гэр бүлийн', 'Бизнесийн', 'Хөдөлмөрийн', 'Үл хөдлөх'];
 const PAGE_SIZE = 8;
 
 type SearchParams = Promise<{ spec?: string; page?: string }>;
 
-function matches(lawyer: LawyerProfile, spec: string): boolean {
-  const needle = spec.toLowerCase();
-  return lawyer.specializations.some((s) => s.toLowerCase().includes(needle)) || lawyer.title.toLowerCase().includes(needle);
+/**
+ * The chips filter on a stable key (`?spec=civil`) and are labelled from `services.short.*`, so they
+ * follow the reader's language; the key is matched against the Mongolian free text the firm enters in
+ * each lawyer's specialisations (see content/specializations.ts).
+ */
+function matches(lawyer: LawyerProfile, spec: SpecializationKey): boolean {
+  return matchesSpecialization([...lawyer.specializations, lawyer.title], spec);
 }
 
 function buildHref(spec: string | undefined, page: number): string {
@@ -59,8 +59,9 @@ function FilterChip({ href, active, children }: { href: string; active: boolean;
 export default async function LawyersPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: SearchParams }) {
   const [{ locale }, { spec, page: pageParam }] = await Promise.all([params, searchParams]);
   setRequestLocale(locale);
-  const [t, tCommon] = await Promise.all([getTranslations('lawyers'), getTranslations('common')]);
-  const activeSpec = spec && FILTERS.includes(spec) ? spec : undefined;
+  const [t, tCommon, tShort] = await Promise.all([getTranslations('lawyers'), getTranslations('common'), getTranslations('services.short')]);
+  // Unknown values (and Mongolian ones the middleware could not map) simply show everyone.
+  const activeSpec = spec && isSpecializationKey(spec) ? spec : undefined;
 
   let lawyers: LawyerProfile[] = [];
   let failed = false;
@@ -88,8 +89,10 @@ export default async function LawyersPage({ params, searchParams }: { params: Pr
           {/* Filters */}
           <nav aria-label={t('filterLabel')} className="flex flex-wrap gap-2.5 md:gap-3">
             <FilterChip href={buildHref(undefined, 1)} active={!activeSpec}>{tCommon('all')}</FilterChip>
-            {FILTERS.map((f) => (
-              <FilterChip key={f} href={buildHref(f, 1)} active={activeSpec === f}>{f}</FilterChip>
+            {SPECIALIZATION_FILTERS.map((filter) => (
+              <FilterChip key={filter.key} href={buildHref(filter.key, 1)} active={activeSpec === filter.key}>
+                {tShort(filter.key)}
+              </FilterChip>
             ))}
           </nav>
 
@@ -97,7 +100,7 @@ export default async function LawyersPage({ params, searchParams }: { params: Pr
             <EmptyState title={t('failedTitle')} description={t('failedDescription')} />
           ) : visible.length === 0 ? (
             <EmptyState
-              title={activeSpec ? t('noneForFilter', { spec: activeSpec }) : t('noneTitle')}
+              title={activeSpec ? t('noneForFilter', { spec: tShort(activeSpec) }) : t('noneTitle')}
               description={activeSpec ? t('noneDescription') : undefined}
             />
           ) : (

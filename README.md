@@ -798,6 +798,11 @@ LAWYER хүсэлтийг удирдахгүй (403): хуваарилагдса
 `portal.documents.*`, `portal.messages.*`, `portal.requests.*`, `portal.notifications.*`, `portal.profile.*`,
 `portal.documentRequests.*`, `portal.chat.*`).
 
+Нийтлэг зургаан чиглэлийн товч нэр (`services.short.civil` …) нь хөлний холбоос ба `/lawyers`-ийн
+шүүлтүүрийн шошго хоёуланд нь ашиглагдана. Шүүлтүүр нь URL-д тогтвортой түлхүүр хэрэглэнэ
+(`/lawyers?spec=civil`); хуульчийн монгол чөлөөт текстэд тааруулах үгсийг `src/content/specializations.ts`
+хадгална. Хуучин `?spec=Иргэний` холбоосыг middleware 308-аар шинэ хаяг руу шилжүүлнэ.
+
 **Админ самбар (`/admin`) орчуулагдахгүй** — түүний бичвэр кодод монголоороо хэвээр байна.
 Админ, портал хоёрын хуваалцдаг бүрэлдэхүүн (`StatusBadge`, `NotificationRow`, `ChatThread`,
 `validateRequestFiles`) орчуулгыг **дуудагчаас** prop-оор авдаг: портал орчуулсан утга дамжуулна,

@@ -7,6 +7,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { COMMITMENTS, priceRow } from '@/content/commitments';
 import { SERVICES, SERVICE_FAQ_IDS, findService, type ServicePricingRow } from '@/content/services';
+import { isSpecializationKey, matchesSpecialization } from '@/content/specializations';
 import { Link } from '@/i18n/navigation';
 import { apiFetch, type LawyerProfile } from '@/lib/api';
 import { alternateLanguages } from '@/lib/seo';
@@ -31,11 +32,17 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
-/** Lawyers whose specialisations mention this service; falls back to the first profiles. null when the API failed. */
-async function lawyersFor(title: string): Promise<LawyerProfile[] | null> {
+/**
+ * Lawyers whose specialisations mention this service; falls back to the first profiles. null when the API failed.
+ * Matching goes through the slug, not the heading: the heading is translated, the firm's specialisations are
+ * Mongolian free text (see content/specializations.ts).
+ */
+async function lawyersFor(slug: string): Promise<LawyerProfile[] | null> {
   try {
     const all = await apiFetch<LawyerProfile[]>('/lawyers', { next: { revalidate: 60 } });
-    const matched = all.filter((l) => l.specializations.some((s) => s.toLowerCase().includes(title.toLowerCase())));
+    const matched = isSpecializationKey(slug)
+      ? all.filter((l) => matchesSpecialization([...l.specializations, l.title], slug))
+      : [];
     return (matched.length ? matched : all).slice(0, 3);
   } catch {
     return null;
@@ -90,7 +97,7 @@ export default async function ServiceDetailPage({ params }: Params) {
     getTranslations('services'),
   ]);
   const title = tCatalog(`${slug}.title`);
-  const lawyers = await lawyersFor(title);
+  const lawyers = await lawyersFor(slug);
   const faqItems = (SERVICE_FAQ_IDS[slug] ?? []).map((id) => ({
     id,
     question: tCatalog(`${slug}.faq.${id}.question`),

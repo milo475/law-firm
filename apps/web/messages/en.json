@@ -33,15 +33,7 @@
     "careers": "Careers",
     "rights": "All rights reserved.",
     "privacy": "Privacy policy",
-    "terms": "Terms of service",
-    "serviceShort": {
-      "civil": "Civil",
-      "criminal": "Criminal",
-      "family": "Family",
-      "business": "Business",
-      "labor": "Employment",
-      "real-estate": "Real estate"
-    }
+    "terms": "Terms of service"
   },
   "services": {
     "catalog": {
@@ -423,6 +415,14 @@
       "writtenOpinion": "Written opinion",
       "assetCheck": "Property check",
       "urgentResponse": "Urgent assistance"
+    },
+    "short": {
+      "civil": "Civil",
+      "criminal": "Criminal",
+      "family": "Family",
+      "business": "Business",
+      "labor": "Employment",
+      "real-estate": "Real estate"
     }
   },
   "faq": {
