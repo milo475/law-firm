@@ -35,6 +35,7 @@ function NewServiceRequestForm() {
   const t = useTranslations('portal.requests.new');
   const tPortal = useTranslations('portal');
   const tRequests = useTranslations('portal.requests');
+  const tCommon = useTranslations('common');
   const tType = useTranslations('enums.serviceRequestType');
   const tCaseType = useTranslations('enums.caseType');
   const router = useRouter();
@@ -60,7 +61,7 @@ function NewServiceRequestForm() {
 
   return (
     <div className="flex flex-col gap-4 md:gap-6">
-      <Breadcrumb className="hidden md:block" items={[{ label: tPortal('breadcrumbRoot'), href: '/portal' }, { label: tRequests('title'), href: '/portal/requests' }, { label: t('title') }]} />
+      <Breadcrumb label={tCommon('breadcrumb')} className="hidden md:block" items={[{ label: tPortal('breadcrumbRoot'), href: '/portal' }, { label: tRequests('title'), href: '/portal/requests' }, { label: t('title') }]} />
       <Card className="flex w-full max-w-[720px] flex-col gap-6 p-5 md:p-8">
         <div className="flex flex-col gap-1.5">
           <h2 className="text-h3 md:text-h2">{t('title')}</h2>

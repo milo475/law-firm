@@ -18,10 +18,12 @@ export interface PortalHeaderProps {
   bellSlot?: React.ReactNode;
   profileHref?: string;
   searchPlaceholder?: string;
+  /** Icon-button labels; the admin panel keeps the Mongolian defaults. */
+  labels?: { back?: string; profile?: string };
   className?: string;
 }
 
-export function PortalHeader({ title, user, unreadCount = 0, backHref, onSearch, notificationsHref = '/portal/notifications', bellSlot, profileHref = '/portal/profile', searchPlaceholder = 'Хэрэг, баримт хайх', className }: PortalHeaderProps) {
+export function PortalHeader({ title, user, unreadCount = 0, backHref, onSearch, notificationsHref = '/portal/notifications', bellSlot, profileHref = '/portal/profile', searchPlaceholder = 'Хэрэг, баримт хайх', labels, className }: PortalHeaderProps) {
   const initials = `${user.lastName.charAt(0)}${user.firstName.charAt(0)}`.toUpperCase();
   const bell = bellSlot ?? (notificationsHref === null ? null : (
     <Link href={notificationsHref} aria-label={unreadCount ? `Мэдэгдэл, ${unreadCount} уншаагүй` : 'Мэдэгдэл'} className="focus-ring relative inline-flex size-11 items-center justify-center rounded-md text-text-secondary hover:bg-bg-surface-alt">
@@ -57,7 +59,7 @@ export function PortalHeader({ title, user, unreadCount = 0, backHref, onSearch,
       <div className="flex h-16 items-center justify-between pl-2 pr-2 md:hidden">
         <div className="flex items-center gap-1">
           {backHref ? (
-            <Link href={backHref} aria-label="Буцах" className="focus-ring inline-flex size-11 items-center justify-center rounded-md text-text-primary">
+            <Link href={backHref} aria-label={labels?.back ?? 'Буцах'} className="focus-ring inline-flex size-11 items-center justify-center rounded-md text-text-primary">
               <BackIcon size={44} />
             </Link>
           ) : <span className="w-2" />}
@@ -65,7 +67,7 @@ export function PortalHeader({ title, user, unreadCount = 0, backHref, onSearch,
         </div>
         <div className="flex items-center">
           {bell}
-          <Link href={profileHref} aria-label="Профайл" className="focus-ring inline-flex size-11 items-center justify-center rounded-md">
+          <Link href={profileHref} aria-label={labels?.profile ?? 'Профайл'} className="focus-ring inline-flex size-11 items-center justify-center rounded-md">
             <Avatar size="sm" initials={initials} src={user.avatarUrl} />
           </Link>
         </div>

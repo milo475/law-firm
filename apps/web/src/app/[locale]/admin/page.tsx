@@ -151,7 +151,7 @@ export default function AdminDashboardPage() {
                   <div className="flex min-w-0 flex-col gap-0.5">
                     <p className="text-caption text-text-accent">{CASE_EVENT_LABELS[event.type] ?? event.type} · {formatDate(event.eventDate, 'mn', true)}</p>
                     <p className="text-body-sm-medium text-text-primary">{event.title}</p>
-                    <Link href={`/admin/cases/${event.case.id}`} className="focus-ring truncate rounded-sm text-caption text-text-muted hover:text-text-brand">
+                    <Link href={`/admin/cases/${event.case.id}`} className="focus-ring -my-1 inline-flex min-h-10 items-center rounded-sm py-1 max-w-full truncate text-caption text-text-muted hover:text-text-brand">
                       {event.case.caseNumber} · {event.case.title}
                     </Link>
                   </div>
@@ -178,7 +178,7 @@ export default function AdminDashboardPage() {
                 {requests.data!.items.map((item) => (
                   <li key={item.id} className="flex items-start justify-between gap-3 py-3 first:pt-0 last:pb-0">
                     <div className="flex min-w-0 flex-col gap-0.5">
-                      <Link href={`/admin/requests/${item.id}`} className="focus-ring rounded-sm text-body-sm-medium text-text-primary hover:text-text-brand hover:underline">{item.title}</Link>
+                      <Link href={`/admin/requests/${item.id}`} className="focus-ring -my-1 inline-flex min-h-10 items-center rounded-sm py-1 text-body-sm-medium text-text-primary hover:text-text-brand hover:underline">{item.title}</Link>
                       <p className="truncate text-caption text-text-muted">
                         {shortName(item.requester.firstName, item.requester.lastName)} · {SERVICE_REQUEST_TYPE_LABELS[item.type]} · {formatDate(item.createdAt, 'mn', true)}
                       </p>
@@ -204,7 +204,7 @@ export default function AdminDashboardPage() {
                 {recentCases.data!.items.map((c) => (
                   <li key={c.id} className="flex items-start justify-between gap-3 py-3 first:pt-0 last:pb-0">
                     <div className="flex min-w-0 flex-col gap-0.5">
-                      <Link href={`/admin/cases/${c.id}`} className="focus-ring rounded-sm text-body-sm-medium text-text-primary hover:text-text-brand">{c.title}</Link>
+                      <Link href={`/admin/cases/${c.id}`} className="focus-ring -my-1 inline-flex min-h-10 items-center rounded-sm py-1 text-body-sm-medium text-text-primary hover:text-text-brand">{c.title}</Link>
                       <p className="text-caption text-text-muted">{c.caseNumber} · {shortName(c.client.firstName, c.client.lastName)}</p>
                     </div>
                     <StatusBadge map={CASE_STATUS_BADGE} status={c.status} />

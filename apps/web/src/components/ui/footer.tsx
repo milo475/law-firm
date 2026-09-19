@@ -8,7 +8,8 @@ import { loadFirmSettings } from '@/lib/firm';
 import { formatPhone, phoneHref } from '@/lib/format';
 import { Logo } from './logo';
 
-const link = 'focus-ring rounded-sm text-body-sm text-text-on-inverse-muted hover:text-text-on-inverse';
+const link =
+  'focus-ring inline-flex min-h-9 items-center rounded-sm text-body-sm text-text-on-inverse-muted hover:text-text-on-inverse md:min-h-0 md:py-1';
 
 /** Contacts and the legal name come from the firm settings an ADMIN edits on /admin/settings. */
 export async function Footer() {

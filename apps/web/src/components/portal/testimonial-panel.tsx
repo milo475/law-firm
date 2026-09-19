@@ -122,7 +122,7 @@ export function TestimonialPanel({ caseId }: { caseId: string }) {
 
   if (!open) {
     return (
-      <Card className="flex flex-col gap-3 p-5 md:flex-row md:items-center md:justify-between md:gap-6 md:p-6">
+      <Card className="flex flex-col gap-3 p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-6 md:p-6">
         <p className="text-body-sm text-text-secondary">{t('ctaHint')}</p>
         <Button size="md" className="w-full shrink-0 md:w-auto" onClick={() => setOpen(true)}>{t('cta')}</Button>
       </Card>

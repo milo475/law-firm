@@ -31,6 +31,7 @@ const TITLES: { match: (p: string) => boolean; key: string; back?: string }[] = 
 export function PortalShell({ children }: { children: React.ReactNode }) {
   const t = useTranslations('portal');
   const tEnums = useTranslations('enums.role');
+  const tCommon = useTranslations('common');
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useUser();
@@ -51,6 +52,7 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
         user={{ firstName: user.firstName, lastName: user.lastName, roleLabel: tEnums(user.role), avatarUrl: user.avatarUrl }}
         onLogout={() => void logout()}
         logoutIcon={<LogoutIcon />}
+        menuLabel={t('menuLabel')}
         items={[
           { href: '/portal', label: t('nav.home'), icon: <HomeIcon />, active: active('/portal') },
           { href: '/portal/cases', label: t('nav.cases'), icon: <CasesIcon />, active: active('/portal/cases'), count: openRequests, countLabel: t('pendingDocumentRequests') },
@@ -71,12 +73,14 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
           bellSlot={<NotificationBell area="portal" />}
           backHref={current.back ?? null}
           searchPlaceholder={t('searchPlaceholder')}
+          labels={{ back: tCommon('back'), profile: t('nav.profile') }}
           onSearch={(q) => router.push(q.trim() ? `/portal/cases?q=${encodeURIComponent(q.trim())}` : '/portal/cases')}
         />
         {/* Figma: Main sections use 32px padding on desktop, 20px on mobile; bottom space clears the 76px tab bar */}
         <main id="main" className="flex-1 px-5 pb-28 pt-6 md:px-8 md:pb-12 md:pt-8">{children}</main>
       </div>
       <BottomTabBar
+        label={t('tabBarLabel')}
         tabs={[
           { href: '/portal', label: t('nav.home'), icon: <TabHomeIcon />, active: active('/portal') },
           { href: '/portal/cases', label: t('nav.cases'), icon: <TabCasesIcon />, active: active('/portal/cases') },

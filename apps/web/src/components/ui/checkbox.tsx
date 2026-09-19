@@ -21,7 +21,9 @@ export const Checkbox = forwardRef<React.ElementRef<typeof CheckboxPrimitive.Roo
           id={id}
           disabled={disabled}
           className={cn(
-            'peer flex size-6 shrink-0 items-center justify-center rounded-sm border-[1.5px] border-border-strong bg-bg-surface transition-colors focus-ring',
+            // `after` widens the tap target to the 44px row without changing how the box looks.
+            'peer relative flex size-6 shrink-0 items-center justify-center rounded-sm border-[1.5px] border-border-strong bg-bg-surface transition-colors focus-ring',
+            'after:absolute after:-inset-2.5 after:content-[""]',
             'data-[state=checked]:border-brand-primary data-[state=checked]:bg-brand-primary',
             'disabled:bg-bg-surface-alt disabled:cursor-not-allowed disabled:data-[state=checked]:border-state-disabled-bg disabled:data-[state=checked]:bg-state-disabled-bg',
           )}

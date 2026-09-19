@@ -527,7 +527,8 @@
     "lawyersComingSoon": "Lawyer profiles will be added soon.",
     "postsUnavailable": "Articles could not be loaded.",
     "postsComingSoon": "Articles will be published soon.",
-    "views": "{count} views"
+    "views": "{count} views",
+    "close": ""
   },
   "servicesPage": {
     "metaTitle": "Services",
@@ -1652,7 +1653,9 @@
       "revokedBody": "Your testimonial has been removed from the site.",
       "revokeFailed": "It could not be withdrawn",
       "consentRevoked": "Consent to publication withdrawn"
-    }
+    },
+    "menuLabel": "",
+    "tabBarLabel": ""
   },
   "reviews": {
     "metaTitle": "Client testimonials",

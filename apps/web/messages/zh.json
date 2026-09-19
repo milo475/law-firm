@@ -527,7 +527,8 @@
     "lawyersComingSoon": "律师信息即将上线。",
     "postsUnavailable": "文章暂时无法加载。",
     "postsComingSoon": "文章即将发布。",
-    "views": "{count} 次浏览"
+    "views": "{count} 次浏览",
+    "close": ""
   },
   "servicesPage": {
     "metaTitle": "服务",
@@ -1652,7 +1653,9 @@
       "revokedBody": "您的评价已从网站移除。",
       "revokeFailed": "撤回失败",
       "consentRevoked": "已撤回公开同意"
-    }
+    },
+    "menuLabel": "",
+    "tabBarLabel": ""
   },
   "reviews": {
     "metaTitle": "客户评价",

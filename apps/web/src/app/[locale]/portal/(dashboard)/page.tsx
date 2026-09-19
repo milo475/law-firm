@@ -180,8 +180,8 @@ export default function DashboardPage() {
       {invoices.isLoading ? (
         <Skeleton className="h-24" />
       ) : dueInvoice ? (
-        <div role="status" className="flex flex-col gap-3 rounded-lg border-l-[3px] border-status-pending-fg bg-status-pending-bg p-5 md:flex-row md:items-center md:justify-between md:gap-6 md:px-7 md:py-6">
-          <div className="flex flex-col gap-1.5">
+        <div role="status" className="flex flex-col gap-3 rounded-lg border-l-[3px] border-status-pending-fg bg-status-pending-bg p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-6 md:px-7 md:py-6">
+          <div className="flex min-w-0 flex-col gap-1.5">
             <p className="text-h4 text-status-pending-fg">
               <span className="md:hidden">{t('unpaidShort')}</span>
               <span className="hidden md:inline">{t('unpaid')}</span>
@@ -191,7 +191,7 @@ export default function DashboardPage() {
               {openInvoices.length > 1 && <> · {t('invoiceTotal', { count: openInvoices.length })}</>}
             </p>
           </div>
-          <div className="flex shrink-0 gap-3">
+          <div className="flex shrink-0 flex-wrap gap-3">
             <Button asChild variant="ghost" size="md" className="hidden md:inline-flex"><Link href={`/portal/invoices/${dueInvoice.id}`}>{t('details')}</Link></Button>
             <Button asChild variant="primary" size="md" className="w-full md:w-auto"><Link href={`/portal/invoices/${dueInvoice.id}`}>{t('payCta')}</Link></Button>
           </div>
@@ -200,8 +200,8 @@ export default function DashboardPage() {
 
       {/* Reported transfers still being confirmed — counted apart from unpaid invoices */}
       {awaitingInvoices.length > 0 && (
-        <div role="status" className="flex flex-col gap-3 rounded-lg border-l-[3px] border-status-new-fg bg-status-new-bg p-5 md:flex-row md:items-center md:justify-between md:gap-6 md:px-7 md:py-6">
-          <div className="flex flex-col gap-1.5">
+        <div role="status" className="flex flex-col gap-3 rounded-lg border-l-[3px] border-status-new-fg bg-status-new-bg p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-6 md:px-7 md:py-6">
+          <div className="flex min-w-0 flex-col gap-1.5">
             <p className="text-h4 text-status-new-fg">{t('confirmingTitle')}</p>
             <p className="text-body-sm text-text-secondary md:text-body">
               {awaitingInvoices.map((i) => `${i.invoiceNumber} · ${formatMoney(i.amount, locale)}`).join(' · ')} — {t('confirmingText')}
@@ -222,7 +222,7 @@ function DocumentRequestsCard({ summary }: { summary: DocumentRequestSummary }) 
   const [first] = summary.cases;
   if (!first) return null;
   return (
-    <div role="status" className="flex flex-col gap-3 rounded-lg border-l-[3px] border-status-new-fg bg-status-new-bg p-5 md:flex-row md:items-center md:justify-between md:gap-6 md:px-7 md:py-6">
+    <div role="status" className="flex flex-col gap-3 rounded-lg border-l-[3px] border-status-new-fg bg-status-new-bg p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-6 md:px-7 md:py-6">
       <div className="flex min-w-0 flex-col gap-1.5">
         <p className="text-h4 text-status-new-fg">{t('documentRequests', { count: summary.total })}</p>
         <p className="text-body-sm text-text-secondary md:text-body">
@@ -248,7 +248,7 @@ function UnreadMessagesCard({ summary }: { summary: MessageUnreadSummary }) {
   const [first] = summary.cases;
   if (!first) return null;
   return (
-    <div role="status" className="flex flex-col gap-3 rounded-lg border-l-[3px] border-status-progress-fg bg-status-progress-bg p-5 md:flex-row md:items-center md:justify-between md:gap-6 md:px-7 md:py-6">
+    <div role="status" className="flex flex-col gap-3 rounded-lg border-l-[3px] border-status-progress-fg bg-status-progress-bg p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-6 md:px-7 md:py-6">
       <div className="flex min-w-0 flex-col gap-1.5">
         <p className="text-h4 text-status-progress-fg">{t('unreadMessages', { count: summary.total })}</p>
         <p className="text-body-sm text-text-secondary md:text-body">
@@ -273,7 +273,7 @@ function ServiceRequestsCard({ requests }: { requests: ServiceRequestItem[] }) {
   const t = useTranslations('portal.dashboard');
   const tStatus = useTranslations('enums.serviceRequestStatus');
   return (
-    <div role="status" className="flex flex-col gap-3 rounded-lg border-l-[3px] border-status-pending-fg bg-status-pending-bg p-5 md:flex-row md:items-center md:justify-between md:gap-6 md:px-7 md:py-6">
+    <div role="status" className="flex flex-col gap-3 rounded-lg border-l-[3px] border-status-pending-fg bg-status-pending-bg p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-6 md:px-7 md:py-6">
       <div className="flex min-w-0 flex-col gap-1.5">
         <p className="text-h4 text-status-pending-fg">{t('openRequests', { count: requests.length })}</p>
         <p className="text-body-sm text-text-secondary md:text-body">

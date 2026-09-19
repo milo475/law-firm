@@ -145,7 +145,7 @@ function TaskCard({ task, viewer, showCase = true, showStatus = true, dragHandle
         </div>
         {dragHandle}
       </div>
-      <Link href={`/admin/tasks/${task.id}`} className="focus-ring break-words rounded-sm text-body-medium text-text-primary hover:text-text-brand hover:underline">{task.title}</Link>
+      <Link href={`/admin/tasks/${task.id}`} className="focus-ring -my-1 inline-flex min-h-10 items-center rounded-sm py-1 break-words text-body-medium text-text-primary hover:text-text-brand hover:underline">{task.title}</Link>
       <p className="text-caption text-text-muted">
         {showCase && `${task.case ? task.case.caseNumber : 'Дотоод'} · `}
         {assigneeName(task, viewer)}
@@ -237,7 +237,7 @@ function DraggableCard({ task, viewer }: { task: TaskItem; viewer: Viewer }) {
               {...attributes}
               {...listeners}
               aria-label={`«${task.title}» даалгаврыг өөр багана руу чирэх`}
-              className="focus-ring -m-1.5 inline-flex size-8 shrink-0 cursor-grab touch-none items-center justify-center rounded-sm text-text-muted hover:bg-bg-surface-alt hover:text-text-secondary active:cursor-grabbing"
+              className="focus-ring relative -m-1.5 inline-flex size-8 shrink-0 cursor-grab touch-none items-center justify-center rounded-sm text-text-muted after:absolute after:-inset-1.5 after:content-[''] hover:bg-bg-surface-alt hover:text-text-secondary active:cursor-grabbing"
             >
               <DragHandleIcon size={18} />
             </button>

@@ -64,6 +64,7 @@ const timeOf = (iso: string, locale: Locale) => formatDate(iso, locale, true).sp
 export default function CaseDetailPage() {
   const t = useTranslations('portal.caseDetail');
   const tCaseStatus = useTranslations('enums.caseStatus');
+  const tCommon = useTranslations('common');
   const tCaseType = useTranslations('enums.caseType');
   const tInvoiceStatus = useTranslations('portal.invoices.status');
   const tChat = useTranslations('portal.chat');
@@ -113,7 +114,7 @@ export default function CaseDetailPage() {
     const forbidden = err instanceof ApiError && err.status === 403;
     return (
       <div className="flex flex-col gap-4">
-        <Breadcrumb items={[{ label: t('cases'), href: '/portal/cases' }, { label: forbidden ? t('forbiddenCrumb') : t('notFoundCrumb') }]} />
+        <Breadcrumb label={tCommon('breadcrumb')} items={[{ label: t('cases'), href: '/portal/cases' }, { label: forbidden ? t('forbiddenCrumb') : t('notFoundCrumb') }]} />
         <ErrorState title={forbidden ? t('forbiddenTitle') : t('notFoundTitle')} message={err instanceof ApiError ? err.message : t('loadError')} />
         <div><Button asChild variant="secondary" size="sm"><Link href="/portal/cases">{t('backToCases')}</Link></Button></div>
       </div>
@@ -161,7 +162,7 @@ export default function CaseDetailPage() {
           <span className="text-caption text-text-muted">{c.caseNumber}</span>
           <StatusBadge map={CASE_STATUS_BADGE} status={c.status} label={tCaseStatus(c.status)} />
         </div>
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
           <div className="flex min-w-0 flex-col gap-3 md:max-w-[640px] md:gap-2.5">
             <div className="flex items-center gap-3.5">
               <h2 className="min-w-0 font-serif text-[26px] font-semibold leading-[34px] tracking-[-0.2px] md:text-h2">{c.title}</h2>
@@ -332,11 +333,11 @@ function RequestsAlert({ count, overdue, onOpen }: { count: number; overdue: boo
     <div
       role="status"
       className={cn(
-        'mb-4 flex flex-col gap-3 rounded-lg border-l-[3px] p-5 md:flex-row md:items-center md:justify-between md:gap-6 md:px-7 xl:mb-6',
+        'mb-4 flex flex-col gap-3 rounded-lg border-l-[3px] p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-6 md:px-7 xl:mb-6',
         overdue ? 'border-status-danger-fg bg-status-danger-bg' : 'border-status-pending-fg bg-status-pending-bg',
       )}
     >
-      <div className="flex flex-col gap-1">
+      <div className="flex min-w-0 flex-col gap-1">
         <p className={cn('text-h4', overdue ? 'text-status-danger-fg' : 'text-status-pending-fg')}>{t('title', { count })}</p>
         <p className="text-body-sm text-text-secondary">{overdue ? `${t('overdue')} ` : ''}{t('body')}</p>
       </div>

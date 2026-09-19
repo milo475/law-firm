@@ -160,6 +160,7 @@ export function PaymentModal({
   onOpenChange: (open: boolean) => void;
 }) {
   const t = useTranslations('portal.invoices.payment');
+  const tCommon = useTranslations('common');
   const locale = useLocale() as Locale;
   const queryClient = useQueryClient();
   const bank = useBankAccount(open);
@@ -200,6 +201,7 @@ export function PaymentModal({
     <Modal open={open} onOpenChange={onOpenChange}>
       {invoice && (
         <ModalContent
+          closeLabel={tCommon('close')}
           title={t('title')}
           description={t('description')}
           footer={

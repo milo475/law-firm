@@ -16,6 +16,7 @@ import { InvoiceDetailPanel, PaymentModal } from '../invoice-panel';
 export default function InvoiceDetailPage() {
   const t = useTranslations('portal.invoices');
   const tNav = useTranslations('portal.nav');
+  const tCommon = useTranslations('common');
   const tPortal = useTranslations('portal');
   const { id } = useParams<{ id: string }>();
   const [payOpen, setPayOpen] = useState(false);
@@ -42,7 +43,7 @@ export default function InvoiceDetailPage() {
 
   return (
     <div className="flex flex-col gap-4 md:gap-6">
-      <Breadcrumb className="hidden md:block" items={[{ label: tPortal('breadcrumbRoot'), href: '/portal' }, { label: tNav('invoices'), href: '/portal/invoices' }, { label: inv.invoiceNumber }]} />
+      <Breadcrumb label={tCommon('breadcrumb')} className="hidden md:block" items={[{ label: tPortal('breadcrumbRoot'), href: '/portal' }, { label: tNav('invoices'), href: '/portal/invoices' }, { label: inv.invoiceNumber }]} />
       <InvoiceDetailPanel invoice={inv} className="w-full max-w-[560px]" onPay={() => setPayOpen(true)} />
       <PaymentModal invoice={inv} open={payOpen} onOpenChange={setPayOpen} />
     </div>

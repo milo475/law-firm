@@ -147,7 +147,7 @@ export default function AdminPostsPage() {
                   <span className="text-caption text-text-accent">{CATEGORY_LABELS[post.category]}</span>
                   <StatusBadge map={POST_STATUS_BADGE} status={post.status} />
                 </div>
-                <Link href={`/admin/posts/${post.id}/edit`} className="focus-ring rounded-sm text-body-medium text-text-primary">{post.title}</Link>
+                <Link href={`/admin/posts/${post.id}/edit`} className="focus-ring -my-1 inline-flex min-h-10 items-center rounded-sm py-1 text-body-medium text-text-primary">{post.title}</Link>
                 <p className="text-caption text-text-muted">{shortName(post.author.firstName, post.author.lastName)} · {formatDate(post.publishedAt)} · {post.viewCount} үзсэн</p>
                 <div className="flex justify-end gap-1">
                   <Button asChild variant="ghost" size="sm"><Link href={`/admin/posts/${post.id}/edit`}>Засах</Link></Button>

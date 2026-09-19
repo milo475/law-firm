@@ -11,14 +11,14 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
 }
 
 // ── Type=Service ─────────────────────────────────────────────────────────────
-export function ServiceCard({ title, description, href, icon, className }: { title: string; description: string; href: string; icon?: React.ReactNode; className?: string }) {
+export function ServiceCard({ title, description, href, cta, icon, className }: { title: string; description: string; href: string; cta: string; icon?: React.ReactNode; className?: string }) {
   return (
     <Card className={cn('flex flex-col items-start gap-4 p-8', className)}>
       <span className="size-14 shrink-0">{icon ?? <ScalesIcon />}</span>
       <h3 className="text-h4">{title}</h3>
       <p className="text-body text-text-secondary">{description}</p>
       <Link href={href} className="focus-ring mt-auto inline-flex h-11 items-center gap-2 rounded-sm text-body-medium text-text-accent hover:underline">
-        Дэлгэрэнгүй
+        {cta}
         <ArrowRightIcon size={12} />
       </Link>
     </Card>

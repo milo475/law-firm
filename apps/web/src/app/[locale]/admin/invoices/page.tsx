@@ -129,7 +129,7 @@ export default function AdminInvoicesPage() {
             {data.items.map((inv) => (
               <li key={inv.id} className={cn('flex flex-col gap-2 rounded-lg border border-border-default bg-bg-surface p-4', inv.status === 'AWAITING_CONFIRMATION' && 'border-l-[3px] border-l-status-pending-fg')}>
                 <div className="flex items-center justify-between gap-3">
-                  <Link href={`/admin/invoices/${inv.id}`} className="focus-ring rounded-sm text-caption text-text-muted hover:text-text-brand">{inv.invoiceNumber}</Link>
+                  <Link href={`/admin/invoices/${inv.id}`} className="focus-ring -my-1 inline-flex min-h-10 items-center rounded-sm py-1 text-caption text-text-muted hover:text-text-brand">{inv.invoiceNumber}</Link>
                   <StatusBadge map={INVOICE_STATUS_BADGE} status={inv.status} />
                 </div>
                 <p className="font-serif text-h4 text-text-brand">{formatMoney(inv.amount)}</p>

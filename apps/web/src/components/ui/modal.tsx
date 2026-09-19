@@ -12,9 +12,11 @@ export interface ModalContentProps extends React.ComponentPropsWithoutRef<typeof
   description?: string;
   footer?: React.ReactNode;
   size?: 'md' | 'lg';
+  /** Close-button label; the admin panel keeps the Mongolian default. */
+  closeLabel?: string;
 }
 
-export function ModalContent({ title, description, footer, size = 'md', className, children, ...props }: ModalContentProps) {
+export function ModalContent({ title, description, footer, size = 'md', closeLabel = 'Хаах', className, children, ...props }: ModalContentProps) {
   return (
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-[rgba(10,30,51,0.6)] data-[state=open]:animate-in data-[state=open]:fade-in" />
@@ -28,7 +30,7 @@ export function ModalContent({ title, description, footer, size = 'md', classNam
       >
         <div className="flex items-center justify-between gap-4 border-b border-border-default py-[14px] pl-7 pr-5">
           <DialogPrimitive.Title className="text-h4">{title}</DialogPrimitive.Title>
-          <DialogPrimitive.Close className="focus-ring -mr-1 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-text-secondary hover:bg-bg-surface-alt" aria-label="Хаах">
+          <DialogPrimitive.Close className="focus-ring -mr-1 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-text-secondary hover:bg-bg-surface-alt" aria-label={closeLabel}>
             <CloseIcon size={44} />
           </DialogPrimitive.Close>
         </div>

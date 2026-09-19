@@ -74,7 +74,10 @@ export function LoginForm() {
         <Input label={t('password')} type="password" placeholder="••••••••" autoComplete="current-password" required error={errors.password?.message} {...register('password')} />
         <div className="flex items-center justify-between gap-3">
           <Checkbox label={t('remember')} checked={remember} onCheckedChange={(v) => setRemember(v === true)} />
-          <Link href="/portal/forgot-password" className="focus-ring rounded-sm text-body-sm-medium text-text-accent hover:underline">
+          <Link
+            href="/portal/forgot-password"
+            className="focus-ring -my-2 inline-flex min-h-11 items-center rounded-sm py-2 text-body-sm-medium text-text-accent hover:underline"
+          >
             {t('forgot')}
           </Link>
         </div>

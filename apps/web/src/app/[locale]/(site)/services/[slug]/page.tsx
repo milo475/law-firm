@@ -70,7 +70,12 @@ function InverseBreadcrumb({ items, label }: { items: { label: string; href?: st
           return (
             <li key={item.label} className="flex items-center gap-2.5">
               {item.href && !last ? (
-                <Link href={item.href} className="focus-ring rounded-sm text-body-sm text-text-on-inverse-muted hover:text-text-on-inverse">{item.label}</Link>
+                <Link
+                  href={item.href}
+                  className="focus-ring -my-1.5 inline-flex min-h-8 items-center rounded-sm py-1.5 text-body-sm text-text-on-inverse-muted hover:text-text-on-inverse"
+                >
+                  {item.label}
+                </Link>
               ) : (
                 <span className="text-body-sm-medium text-text-on-inverse" aria-current={last ? 'page' : undefined}>{item.label}</span>
               )}

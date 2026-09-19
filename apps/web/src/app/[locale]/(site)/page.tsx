@@ -76,7 +76,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <SectionHead overline={t('services.overline')} title={t('services.title')} description={t('services.description')} />
           <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
             {SERVICES.map((s) => (
-              <ServiceCard key={s.slug} title={tCatalog(`${s.slug}.title`)} description={tCatalog(`${s.slug}.teaser`)} href={`/services/${s.slug}`} />
+              <ServiceCard
+                  key={s.slug}
+                  title={tCatalog(`${s.slug}.title`)}
+                  description={tCatalog(`${s.slug}.teaser`)}
+                  href={`/services/${s.slug}`}
+                  cta={tCommon('readMore')}
+                />
             ))}
           </div>
         </div>
@@ -93,9 +99,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           />
           <ul className="grid grid-cols-2 gap-x-4 gap-y-6 lg:grid-cols-4 lg:gap-8">
             {advantages.map((a) => (
-              <li key={a.label} className="flex flex-col gap-1 lg:gap-2 lg:border-l-2 lg:border-border-inverse lg:py-1 lg:pl-7">
+              // `min-w-0` lets the cell shrink below its longest word; without it a value like
+              // "Confidentiality" pushes the whole page sideways on a narrow phone.
+              <li key={a.label} className="flex min-w-0 flex-col gap-1 lg:gap-2 lg:border-l-2 lg:border-border-inverse lg:py-1 lg:pl-7">
                 {/* Mobile: Heading/H2 serif gold; desktop: Data/Number (Inter 40/48 bold) */}
-                <p className="text-h2 text-accent-default lg:font-sans lg:text-[40px] lg:font-bold lg:leading-12 lg:tracking-[-0.5px]">{a.value}</p>
+                {/* Smaller on phones so a long word ("Confidentiality") still fits the 2-column grid. */}
+                <p className="text-h2 hyphens-auto break-words text-accent-default max-sm:text-[clamp(18px,5.6vw,28px)] max-sm:leading-tight lg:font-sans lg:text-[40px] lg:font-bold lg:leading-12 lg:tracking-[-0.5px]">
+                  {a.value}
+                </p>
                 <p className="text-body-sm text-text-on-inverse-muted lg:text-body-medium lg:text-text-on-inverse">{a.label}</p>
                 <p className="hidden text-body-sm text-text-on-inverse-muted lg:block">{a.note}</p>
               </li>

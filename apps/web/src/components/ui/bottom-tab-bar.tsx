@@ -11,10 +11,10 @@ export interface BottomTab {
   active?: boolean;
 }
 
-export function BottomTabBar({ tabs, className }: { tabs: BottomTab[]; className?: string }) {
+export function BottomTabBar({ tabs, label = 'Порталын доод цэс', className }: { tabs: BottomTab[]; label?: string; className?: string }) {
   return (
     <nav
-      aria-label="Порталын доод цэс"
+      aria-label={label}
       className={cn('fixed inset-x-0 bottom-0 z-40 flex h-[76px] items-center border-t border-border-default bg-bg-surface pb-3 pt-2 md:hidden', className)}
       style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
     >

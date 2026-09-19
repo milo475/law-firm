@@ -41,7 +41,7 @@ export function DocumentRequestsPanel({ caseId, requests, onDownload }: {
 
   return (
     <div className="flex flex-col gap-4">
-      <Card className="flex flex-col gap-3 p-[18px] md:flex-row md:items-center md:justify-between md:gap-6 md:p-6">
+      <Card className="flex flex-col gap-3 p-[18px] lg:flex-row lg:items-center lg:justify-between lg:gap-6 md:p-6">
         <div className="flex min-w-0 flex-col gap-1">
           <h3 className={CARD_TITLE}>{t('title')}</h3>
           <p className="text-body-sm text-text-secondary">

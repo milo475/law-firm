@@ -44,16 +44,18 @@ export interface SidebarProps {
   user: { firstName: string; lastName: string; roleLabel: string; avatarUrl?: string | null };
   onLogout: () => void;
   logoutIcon: React.ReactNode;
+  /** Screen-reader name of the nav; the admin panel keeps the Mongolian default. */
+  menuLabel?: string;
   className?: string;
 }
 
-export function Sidebar({ items, user, onLogout, logoutIcon, className }: SidebarProps) {
+export function Sidebar({ items, user, onLogout, logoutIcon, menuLabel = 'Порталын цэс', className }: SidebarProps) {
   return (
     <aside className={cn('flex h-full w-[260px] shrink-0 flex-col gap-8 bg-bg-inverse px-4 py-6', className)}>
       <div className="pl-2">
         <Logo theme="dark" href="/portal" variant="lockup" scale={0.85} />
       </div>
-      <nav aria-label="Порталын цэс" className="flex flex-col gap-1">
+      <nav aria-label={menuLabel} className="flex flex-col gap-1">
         {items.map((item) => <SidebarItem key={item.href} {...item} />)}
       </nav>
       <div className="mt-auto flex flex-col gap-2">
