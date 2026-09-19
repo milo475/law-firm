@@ -1053,7 +1053,24 @@ DSN тохируулаагүй бол **бүрэн унтарсан** — лок
 
 ---
 
-## 19. Production тэмдэглэл
+## 19. SEO ба нийгмийн сүлжээний карт
+
+| Зам | Юу | Тайлбар |
+| --- | --- | --- |
+| `/robots.txt` | `src/app/robots.ts` | `/portal`, `/admin`, `/api/` индексжихийг хориглож, sitemap-ийг заана |
+| `/sitemap.xml` | `src/app/sitemap.ts` | Бүх нийтийн хуудас гурван хэлээр, hreflang-тай |
+| `/opengraph-image` | `src/app/[locale]/opengraph-image.tsx` | 1200×630 карт: фирмийн нэр, тайлбар (тухайн хэлээр), навы дэвсгэр + алтан зураас |
+| `/news/<slug>/opengraph-image` | нийтлэлийн хавтсанд | Гарчгийг зурган дээр гаргана; урт гарчигт фонт багасна. Ковер зурагтай нийтлэл ковероо ашиглана |
+| `/manifest.webmanifest` | `src/app/manifest.ts` | Нэр, өнгө (`#0f2a44`), дүрс |
+| `/apple-icon.png` | `src/app/apple-icon.png` | 180×180, навы дэвсгэр дээр фирмийн тэмдэг |
+
+`metadataBase` нь `NEXT_PUBLIC_SITE_URL`-ээс тул `og:image` абсолют хаягтай гардаг — Facebook,
+Messenger-ийн шаардлага. `twitter:card = summary_large_image`. Картан дээрх домэйн нь мөн
+`NEXT_PUBLIC_SITE_URL`-ээс уншигддаг (таамагласан домэйн бичихгүй; локалд хоосон).
+
+---
+
+## 20. Production тэмдэглэл
 
 - `pnpm build` → `apps/api/dist`, `apps/web/.next`. API: `node dist/main`, web: `next start`.
 - API `trust proxy` = `TRUST_PROXY_HOPS` (зөвхөн production), cookie `secure` = true.

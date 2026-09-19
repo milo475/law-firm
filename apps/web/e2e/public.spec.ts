@@ -83,6 +83,48 @@ test.describe('Нийтийн сайт', () => {
     expect(await cards.count()).toBe(total);
   });
 
+  test('robots.txt порталь, админыг хааж, sitemap-ийг заана', async ({ page }) => {
+    const res = await page.request.get('/robots.txt');
+    expect(res.status()).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('Disallow: /portal');
+    expect(body).toContain('Disallow: /admin');
+    expect(body).toContain('Disallow: /api/');
+    expect(body).toMatch(/Sitemap: https?:\/\/[^\s]+\/sitemap\.xml/);
+  });
+
+  test('нийгмийн сүлжээний зураг гурван хэл дээр ажиллаж, толгойд заагдана', async ({ page }) => {
+    for (const path of ['/opengraph-image', '/en/opengraph-image', '/zh/opengraph-image']) {
+      const res = await page.request.get(path);
+      expect(res.status(), path).toBe(200);
+      expect(res.headers()['content-type'], path).toBe('image/png');
+      expect((await res.body()).byteLength, path).toBeGreaterThan(5_000);
+    }
+
+    await page.goto('/');
+    const ogImage = page.locator('meta[property="og:image"]');
+    // Absolute, so Facebook can fetch it from the shared link.
+    await expect(ogImage).toHaveAttribute('content', /^https?:\/\/.+opengraph-image/);
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
+    await expect(page.locator('link[rel="manifest"]')).toHaveAttribute('href', '/manifest.webmanifest');
+
+    const manifest = await page.request.get('/manifest.webmanifest');
+    expect(manifest.status()).toBe(200);
+    expect((await manifest.json()).name).toBe('Strategy Law Firm');
+    expect((await page.request.get('/apple-icon.png')).headers()['content-type']).toBe('image/png');
+  });
+
+  test('нийтлэлийн холбоос гарчигтай зурагтайгаа хуваалцагдана', async ({ page }) => {
+    await page.goto('/news');
+    const href = await page.locator('main a[href^="/news/"]').first().getAttribute('href');
+    await page.goto(href!);
+    const ogImage = await page.locator('meta[property="og:image"]').getAttribute('content');
+    expect(ogImage).toBeTruthy();
+    const res = await page.request.get(ogImage!);
+    expect(res.status()).toBe(200);
+    expect(res.headers()['content-type']).toBe('image/png');
+  });
+
   test('хөлний хууль зүйн хуудсууд ажиллана', async ({ page }) => {
     await page.goto('/');
     const footer = page.getByRole('contentinfo');

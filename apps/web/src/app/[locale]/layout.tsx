@@ -44,7 +44,21 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title: { default: t('name'), template: `%s | ${t('name')}` },
     description: t('description'),
     alternates: { languages: alternateLanguages('/') },
-    openGraph: { title: t('name'), description: t('description'), locale: BCP47[locale], type: 'website' },
+    openGraph: {
+      title: t('name'),
+      description: t('description'),
+      locale: BCP47[locale],
+      type: 'website',
+      siteName: t('name'),
+      url: locale === routing.defaultLocale ? '/' : `/${locale}`,
+    },
+    // Facebook and Messenger read the OG tags; X needs to be told the card is a large image.
+    twitter: { card: 'summary_large_image', title: t('name'), description: t('description') },
+    icons: {
+      icon: '/icon.png',
+      apple: '/apple-icon.png',
+    },
+    manifest: '/manifest.webmanifest',
   };
 }
 

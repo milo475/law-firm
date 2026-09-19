@@ -3,11 +3,12 @@
 // there is room for it (footer, sign-in panel, sidebar).
 import Image from 'next/image';
 import Link from 'next/link';
+import { FIRM_NAME } from '@/lib/brand';
 import { cn } from '@/lib/utils';
 
 const MARK = { src: '/brand/mark.png', width: 146, height: 127 };
 const LOCKUP = { src: '/brand/logo.png', width: 338, height: 178 };
-const FIRM_NAME = 'Strategy Law Firm';
+
 
 export interface LogoProps {
   theme?: 'light' | 'dark';

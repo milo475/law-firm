@@ -44,7 +44,15 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return {
     title: post.title,
     description: post.excerpt,
-    openGraph: { title: post.title, description: post.excerpt, type: 'article', publishedTime: post.publishedAt ?? undefined, images: post.coverImageUrl ? [post.coverImageUrl] : undefined },
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      type: 'article',
+      publishedTime: post.publishedAt ?? undefined,
+      // With a cover, share that; with none, leave `images` unset so Next falls back to
+      // opengraph-image.tsx, which draws the headline. Setting it to undefined suppresses both.
+      ...(post.coverImageUrl ? { images: [post.coverImageUrl] } : {}),
+    },
   };
 }
 
