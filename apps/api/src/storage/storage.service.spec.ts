@@ -56,6 +56,30 @@ describe('StorageService', () => {
     expect(url).toBe('https://cdn.lawfirm.mn/public/covers/a.png');
   });
 
+  it('writes public objects to the public bucket, without a prefix, when one is configured', async () => {
+    const { service, client } = createService({ R2_PUBLIC_BUCKET: 'law-firm-public', R2_PUBLIC_URL: 'https://pub-x.r2.dev' });
+    const url = await service.uploadPublic({ key: 'posts/a.png', body: Buffer.from('x'), mimeType: 'image/png', size: 1 });
+    const command = client.send.mock.calls[0][0] as PutObjectCommand;
+    expect(command.input).toMatchObject({ Bucket: 'law-firm-public', Key: 'posts/a.png' });
+    expect(url).toBe('https://pub-x.r2.dev/posts/a.png');
+  });
+
+  it('keeps documents in the private bucket even when a public one exists', async () => {
+    const { service, client } = createService({ R2_PUBLIC_BUCKET: 'law-firm-public' });
+    await service.upload({ key: 'cases/1/file.pdf', body: Buffer.from('x'), mimeType: 'application/pdf', size: 1 });
+    await service.delete('cases/1/file.pdf');
+    expect((client.send.mock.calls[0][0] as PutObjectCommand).input.Bucket).toBe('test-bucket');
+    expect((client.send.mock.calls[1][0] as DeleteObjectCommand).input.Bucket).toBe('test-bucket');
+  });
+
+  it('checks both buckets at boot', async () => {
+    const { service, client } = createService({ R2_PUBLIC_BUCKET: 'law-firm-public' });
+    await service.onModuleInit();
+    const buckets = client.send.mock.calls.map((call) => (call[0] as HeadBucketCommand).input.Bucket);
+    expect(client.send.mock.calls.every((call) => call[0] instanceof HeadBucketCommand)).toBe(true);
+    expect(buckets).toEqual(['test-bucket', 'law-firm-public']);
+  });
+
   it('does not prefix a key that already starts with public/', async () => {
     const { service, client } = createService();
     await service.uploadPublic({ key: 'public/covers/a.png', body: Buffer.from('x'), mimeType: 'image/png', size: 1 });

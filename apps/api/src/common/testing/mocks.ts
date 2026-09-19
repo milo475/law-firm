@@ -20,6 +20,7 @@ export const TEST_ENV: Env = {
   R2_ACCESS_KEY_ID: 'minioadmin',
   R2_SECRET_ACCESS_KEY: 'minioadmin',
   R2_BUCKET: 'test-bucket',
+  R2_PUBLIC_BUCKET: '',
   R2_PUBLIC_URL: 'http://localhost:9000/test-bucket',
   COOKIE_PATH_PREFIX: '',
   TRUST_PROXY_HOPS: 1,

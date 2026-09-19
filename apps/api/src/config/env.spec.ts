@@ -44,7 +44,13 @@ describe('validateEnv', () => {
   });
 
   describe('production safety checks', () => {
-    const PROD = { ...REQUIRED, NODE_ENV: 'production', JWT_ACCESS_SECRET: 'a'.repeat(40), JWT_REFRESH_SECRET: 'b'.repeat(40) };
+    const PROD = {
+      ...REQUIRED,
+      NODE_ENV: 'production',
+      JWT_ACCESS_SECRET: 'a'.repeat(40),
+      JWT_REFRESH_SECRET: 'b'.repeat(40),
+      R2_PUBLIC_BUCKET: 'law-firm-public',
+    };
 
     it('accepts two long, distinct secrets', () => {
       expect(validateEnv(PROD).NODE_ENV).toBe('production');
@@ -66,6 +72,12 @@ describe('validateEnv', () => {
 
     it('refuses a wildcard CORS origin, which cannot carry credentials', () => {
       expect(() => validateEnv({ ...PROD, CORS_ORIGIN: 'https://lawfirm.mn,*' })).toThrow(/cannot be combined/);
+    });
+
+    it('demands a separate public bucket, so documents never sit in a world-readable one', () => {
+      const { R2_PUBLIC_BUCKET: _omitted, ...withoutPublicBucket } = PROD;
+      expect(() => validateEnv(withoutPublicBucket)).toThrow(/R2_PUBLIC_BUCKET: required in production/);
+      expect(() => validateEnv({ ...PROD, R2_PUBLIC_BUCKET: 'law-firm-documents' })).toThrow(/must differ from R2_BUCKET/);
     });
   });
 

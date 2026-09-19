@@ -36,7 +36,14 @@ const EnvSchema = z.object({
   R2_ENDPOINT: z.string().url('R2_ENDPOINT must be a URL').default('http://localhost:9000'),
   R2_ACCESS_KEY_ID: z.string().min(1),
   R2_SECRET_ACCESS_KEY: z.string().min(1),
+  /** Private bucket: client documents and task attachments; only ever read through presigned URLs. */
   R2_BUCKET: z.string().min(1).default('law-firm-documents'),
+  /**
+   * Public bucket: post covers and lawyer photos, the one R2_PUBLIC_URL points at. Optional locally
+   * (a single MinIO bucket with a `public/` prefix), required in production so client documents can
+   * never sit in a bucket that has r2.dev or a public domain switched on.
+   */
+  R2_PUBLIC_BUCKET: z.string().default('').transform((value) => value.trim()),
   /**
    * Browser-facing base URL of the bucket root for public objects (post covers):
    * the R2 public bucket URL / custom domain, or http://localhost:9000/<bucket> with MinIO.
@@ -89,6 +96,12 @@ function assertProductionSafety(env: Env): void {
   }
   if (env.CORS_ORIGIN.split(',').some((origin) => origin.trim() === '*')) {
     problems.push('  - CORS_ORIGIN: "*" cannot be combined with cookie credentials');
+  }
+  if (!env.R2_PUBLIC_BUCKET) {
+    problems.push('  - R2_PUBLIC_BUCKET: required in production, so the document bucket can stay private');
+  }
+  if (env.R2_PUBLIC_BUCKET === env.R2_BUCKET) {
+    problems.push('  - R2_PUBLIC_BUCKET: must differ from R2_BUCKET — the public bucket is world-readable');
   }
   if (problems.length > 0) {
     throw new Error(`Unsafe production environment:\n${problems.join('\n')}`);

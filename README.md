@@ -43,9 +43,18 @@ MINIO_ROOT_USER=minioadmin MINIO_ROOT_PASSWORD=minioadmin \
 MinIO унтраалттай үед баримт/хавсралт хуулах хүсэлт 500 буцаана (бусад хэсэг хэвийн ажиллана).
 
 Файл хадгалалт S3 API дээр ажиллана: production-д **Cloudflare R2**, локалд ижил клиент MinIO руу
-заана (`R2_ENDPOINT=http://localhost:9000`). Bucket байхгүй бол зөвхөн локалд (production биш үед)
-API өөрөө үүсгээд `public/` prefix-ийг нээнэ; R2 дээр bucket болон нийтийн хандалтыг Cloudflare
-dashboard дээр тохируулна.
+заана (`R2_ENDPOINT=http://localhost:9000`).
+
+**Хоёр bucket**, учир нь хоёр төрлийн обьектын шаардлага эсрэг:
+
+| Bucket | Юу хадгалдаг | Хандалт |
+| --- | --- | --- |
+| `R2_BUCKET` (`law-firm-documents`) | Харилцагчийн баримт, даалгаврын хавсралт | **Хувийн.** r2.dev, нийтийн домэйн хэзээ ч асаахгүй. Зөвхөн API-ийн 5 минутын presigned URL-аар татна |
+| `R2_PUBLIC_BUCKET` (`law-firm-public`) | Нийтлэлийн cover, хуульчийн зураг | **Нийтийн.** `R2_PUBLIC_URL` үүн рүү заана |
+
+`R2_PUBLIC_BUCKET` хоосон бол (локал MinIO) хуучин нэг bucket-ийн бүтэц хэвээр: нийтийн обьект
+`public/` prefix дор бичигдэнэ. Production-д заавал, мөн `R2_BUCKET`-ээс өөр байх ёстой — эс бөгөөс
+API асахгүй. Bucket байхгүй бол зөвхөн локалд API өөрөө үүсгэнэ; R2 дээр Cloudflare dashboard-оос.
 
 ### Seed нэвтрэх мэдээлэл
 
@@ -111,8 +120,9 @@ web → `next.config.ts`).
 | `TRUST_PROXY_HOPS` | API-ийн өмнөх proxy-ийн тоо (зөвхөн `NODE_ENV=production` үед). Railway: edge → web → api = 2 | `1` |
 | `R2_ENDPOINT` | S3 endpoint. R2: `https://<account-id>.r2.cloudflarestorage.com`, локал MinIO: `http://localhost:9000` | `http://localhost:9000` |
 | `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | R2 API token (Object Read & Write) эсвэл MinIO-гийн түлхүүр | `minioadmin` |
-| `R2_BUCKET` | Баримт хадгалах bucket (R2 дээр dashboard-оос үүсгэнэ; локалд API өөрөө үүсгэнэ) | `law-firm-documents` |
-| `R2_PUBLIC_URL` | Нийтлэлийн cover зургийн (bucket-ийн `public/` prefix) browser-т харагдах base URL — **bucket-ийн root**. R2: `https://pub-xxxx.r2.dev`, MinIO: `http://localhost:9000/<bucket>` | `https://cdn.lawfirm.mn` |
+| `R2_BUCKET` | **Хувийн** bucket: баримт, хавсралт. Нийтэд хэзээ ч нээхгүй | `law-firm-documents` |
+| `R2_PUBLIC_BUCKET` | **Нийтийн** bucket: cover, хуульчийн зураг. Production-д заавал, `R2_BUCKET`-ээс өөр байна. Локалд хоосон → нэг bucket + `public/` | `law-firm-public` |
+| `R2_PUBLIC_URL` | Нийтийн bucket-ийн root URL. R2: `https://pub-xxxx.r2.dev`, MinIO: `http://localhost:9000/<bucket>` | `https://cdn.lawfirm.mn` |
 | `NEXT_PUBLIC_API_URL` | Browser талын API URL. `/api` бол вэбийн ижил origin дээрх proxy | `http://localhost:4000` / `/api` |
 | `API_URL` | SSR/middleware талын, мөн `/api` proxy-ийн очих API URL (үргэлж бүтэн хаяг) | `http://localhost:4000` |
 
@@ -267,7 +277,7 @@ ADMIN болон LAWYER портал login-оор нэвтэрмэгц `/admin` 
 | `GET/POST/PATCH /lawyers/:userId/profile` | ADMIN, LAWYER (өөрийн) | Нийтийн профайл |
 | `GET /admin/stats` | ADMIN, LAWYER | Хэрэглэгчийн scope-оор тооцно |
 | `GET /posts/manage`, `GET /posts/manage/:id` | ADMIN, LAWYER (өөрийн) | Ноорог, архив орно |
-| `POST /posts/cover` | ADMIN, LAWYER | JPG/PNG/WEBP, ≤5MB → bucket-ийн `public/` → `{ url }` |
+| `POST /posts/cover` | ADMIN, LAWYER | JPG/PNG/WEBP, ≤5MB → нийтийн bucket → `{ url }` |
 | `GET /contact` | ADMIN | Хуучин «Холбоо барих» маягтын мессежүүд, зөвхөн унших |
 
 Web талын `POST /api/revalidate` route нь нэвтэрсэн ADMIN/LAWYER-ийн хүсэлтээр `/`, `/news`, `/news/[slug]`-ийг
@@ -929,8 +939,8 @@ grace дотор зэрэг ирсэн хүсэлт бүх сесс хаахгү
 Нийт 460 тест, DB шаардахгүй (Prisma mock). Баг нэмэхээс өмнөх 249 тест хэвээр ногоон.
 
 Хадгалалт (S3 клиентийг mock хийнэ): R2 тохиргоо (`region: 'auto'`, path-style), upload-ийн content type/length,
-`public/` prefix ба bucket-гүй нийтийн URL, татах URL-ийн `Content-Disposition` болон хугацаа, устгах,
-bucket байгаа эсэхийг шалгах, локалд bucket үүсгэх, production-д хэзээ ч үүсгэхгүй бөгөөд алдаанд унахгүй.
+хувийн/нийтийн bucket-ийн хуваарилалт, татах URL-ийн `Content-Disposition` болон хугацаа, устгах,
+хоёр bucket-ийг boot дээр шалгах, локалд bucket үүсгэх, production-д хэзээ ч үүсгэхгүй бөгөөд алдаанд унахгүй.
 
 `packages/shared` дээр 10 тест: тестийн өгөгдлийн угтвар (`E2E `, `e2e.`), холболтын мөрөөс DB-ийн нэр
 унших, `pnpm db:clean`-ий хамгаалалт (dev DB → алдаа, `--force` нь DB-ийн нэртэй яг таарах ёстой).
@@ -1048,7 +1058,7 @@ Env (нарийн жагсаалт `.env.example`-ийн төгсгөлд):
 
 - **api:** `NODE_ENV=production`, `DATABASE_URL`, `PORT`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`,
   `CORS_ORIGIN=https://<web>.up.railway.app`, `COOKIE_PATH_PREFIX=/api`, `TRUST_PROXY_HOPS=2`,
-  `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_URL`.
+  `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_BUCKET`, `R2_PUBLIC_URL`.
 - **web:** `NODE_ENV=production`, `NEXT_PUBLIC_API_URL=/api`, `API_URL=http://api.railway.internal:4000`.
 
 `prisma migrate deploy` болон seed нь production-д ажиллах ёстой тул `prisma`, `tsx`, `dotenv`,
