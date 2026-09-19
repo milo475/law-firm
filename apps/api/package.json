@@ -29,6 +29,7 @@
     "@nestjs/schedule": "^6.1.3",
     "@nestjs/swagger": "^11.4.7",
     "@nestjs/throttler": "^6.5.0",
+    "@sentry/nestjs": "^10.75.0",
     "argon2": "^0.45.1",
     "cookie-parser": "^1.4.7",
     "cron": "4.4.0",

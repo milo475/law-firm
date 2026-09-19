@@ -24,6 +24,8 @@ export const TEST_ENV: Env = {
   R2_PUBLIC_URL: 'http://localhost:9000/test-bucket',
   COOKIE_PATH_PREFIX: '',
   TRUST_PROXY_HOPS: 1,
+  SENTRY_DSN: '',
+  RAILWAY_GIT_COMMIT_SHA: '',
 };
 
 export function createConfigMock(overrides: Partial<Env> = {}): ConfigService<Env, true> {

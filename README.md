@@ -1018,7 +1018,42 @@ middleware-ийн өөрчлөлт шаардана — `'unsafe-inline'`-тай
 
 ---
 
-## 18. Production тэмдэглэл
+## 18. Алдааны мониторинг (Sentry)
+
+DSN тохируулаагүй бол **бүрэн унтарсан** — локал хөгжүүлэлт, тест, e2e үед Sentry рүү юу ч явахгүй.
+
+| Талбар | Env | Тайлбар |
+| --- | --- | --- |
+| API | `SENTRY_DSN` | Хоосон = унтраалттай |
+| Вэб | `NEXT_PUBLIC_SENTRY_DSN` | Браузерын багцад ордог тул build үед хэрэгтэй |
+| Source map | `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN` | Гурвуулаа байвал `next build` source map-ыг илгээж, дараа нь устгана. Token байхгүй бол алхам бүхэлдээ алгасна |
+| Release | `RAILWAY_GIT_COMMIT_SHA` | Railway өөрөө өгдөг; stack trace аль build-ынх нь тодорхой болно |
+
+`tracesSampleRate: 0.1`, `environment = NODE_ENV`, `sendDefaultPii: false`.
+
+### Юу очих вэ, юуг далдалсан бэ
+
+Алдааны **хэлбэр** очно: stack, маршрут (`/cases/:id/documents`), HTTP статус, release, хэрэглэгчийн
+`id`. **4xx огт илгээхгүй** — буруу нууц үг, 403, 404 нь хэрэглэгчийн талын алдаа бөгөөд жинхэнэ
+доголдлыг дарна. Зөвхөн 5xx ба боловсруулаагүй exception.
+
+`scrubEvent` (`packages/shared/src/utils/sentry-scrub.ts`) event бүрийг дараах байдлаар цэвэрлэнэ:
+
+- cookie, `authorization` болон бусад нууц толгой → `[Filtered]`
+- хүсэлтийн **body бүхэлдээ** → `[Filtered]` (хэргийн тайлбар, мессеж, сэтгэгдэл тэнд байдаг)
+- query string, URL-ийн `?...` хэсэг → хасагдана (хайлтын үг харилцагчийн мэдээлэл)
+- `user` → зөвхөн `id`; и-мэйл, IP, нэр хасагдана
+- `password`, `token`, `email`, `phone`, `firstName`, `lastName`, `authorName`, `title`, `body`,
+  `description`, `fileName`, `storageKey` гэх мэт түлхүүртэй утга хаана ч байсан `[Filtered]`
+- үлдсэн чөлөөт бичвэрт и-мэйл, 8 оронтой утасны дугаарыг regex-ээр далдална
+- session replay бүрэн унтраалттай (портал бичлэгт орохгүй)
+
+Хэргийн дугаар (`LF-2026-0001`) үлддэг — энэ нь ажилтанд алдааг олоход хэрэгтэй бөгөөд өөрөө
+харилцагчийг илчлэхгүй. Дүрмүүдийг `sentry-scrub.spec.ts` шалгана.
+
+---
+
+## 19. Production тэмдэглэл
 
 - `pnpm build` → `apps/api/dist`, `apps/web/.next`. API: `node dist/main`, web: `next start`.
 - API `trust proxy` = `TRUST_PROXY_HOPS` (зөвхөн production), cookie `secure` = true.

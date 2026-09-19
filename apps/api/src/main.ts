@@ -1,3 +1,5 @@
+// Must come first: Sentry patches the runtime before the app's modules are loaded.
+import { sentryEnabled } from './instrument';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -53,6 +55,7 @@ async function bootstrap() {
   // '::' also accepts IPv4, and is required by Railway's IPv6-only private network.
   await app.listen(port, '::');
   logger.log(`API listening on port ${port} (${nodeEnv})`);
+  logger.log(sentryEnabled ? 'Sentry error reporting enabled' : 'Sentry disabled (no SENTRY_DSN)');
   if (nodeEnv !== 'production') logger.log(`Swagger UI: http://localhost:${port}/docs`);
 }
 

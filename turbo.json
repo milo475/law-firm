@@ -20,7 +20,13 @@
     "TRUST_PROXY_HOPS",
     "COOKIE_PATH_PREFIX",
     "API_URL",
-    "NEXT_PUBLIC_API_URL"
+    "NEXT_PUBLIC_API_URL",
+    "SENTRY_DSN",
+    "NEXT_PUBLIC_SENTRY_DSN",
+    "SENTRY_ORG",
+    "SENTRY_PROJECT",
+    "SENTRY_AUTH_TOKEN",
+    "RAILWAY_GIT_COMMIT_SHA"
   ],
   "tasks": {
     "build": {

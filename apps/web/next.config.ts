@@ -1,3 +1,4 @@
+import { withSentryConfig } from '@sentry/nextjs';
 import createNextIntlPlugin from 'next-intl/plugin';
 import type { NextConfig } from 'next';
 import path from 'node:path';
@@ -58,6 +59,8 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.resolve(__dirname, '../..'),
   env: {
     NEXT_PUBLIC_API_URL: publicApiUrl,
+    // Railway sets the commit SHA; it becomes the Sentry release so a stack trace points at a build.
+    NEXT_PUBLIC_COMMIT_SHA: process.env.RAILWAY_GIT_COMMIT_SHA ?? '',
   },
   images: {
     remotePatterns: imageHosts(),
@@ -81,4 +84,17 @@ const nextConfig: NextConfig = {
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
-export default withNextIntl(nextConfig);
+/**
+ * Source maps are only uploaded when SENTRY_AUTH_TOKEN is present, so a build without Sentry
+ * credentials (local, CI without secrets) behaves exactly as before.
+ */
+export default withSentryConfig(withNextIntl(nextConfig), {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: !process.env.SENTRY_AUTH_TOKEN,
+  sourcemaps: { disable: !process.env.SENTRY_AUTH_TOKEN, deleteSourcemapsAfterUpload: true },
+  // The tunnel would route browser events through the app's own domain; not needed here.
+  disableLogger: true,
+  telemetry: false,
+});

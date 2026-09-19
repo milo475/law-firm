@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import * as Sentry from '@sentry/nestjs';
 import type { Request, Response } from 'express';
 import { ZodValidationException } from 'nestjs-zod';
 
@@ -70,6 +71,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
         `${request.method} ${request.url} → ${statusCode}`,
         exception instanceof Error ? exception.stack : String(exception),
       );
+      // Only server failures reach Sentry; a 4xx is the caller being wrong, and reporting those
+      // would bury the ones nobody expected. The route, not the URL, so no query string travels.
+      Sentry.captureException(exception, {
+        tags: { route: request.route?.path ?? request.path, method: request.method, status: String(statusCode) },
+      });
     }
 
     const body: ErrorResponseBody = {

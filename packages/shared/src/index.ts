@@ -51,6 +51,7 @@ export * from './labels.js';
 export * from './utils/slug.js';
 export * from './utils/case-number.js';
 export * from './utils/test-data.js';
+export * from './utils/sentry-scrub.js';
 
 /** A User with secrets stripped — the shape returned by the API. */
 export type SafeUser = {

@@ -63,6 +63,11 @@ const EnvSchema = z.object({
     .default('')
     .transform((value) => value.trim().replace(/\/+$/, ''))
     .refine((value) => value === '' || value.startsWith('/'), 'COOKIE_PATH_PREFIX must start with /'),
+  /** Sentry DSN; empty turns error reporting off entirely (local development, tests). */
+  SENTRY_DSN: z.string().default('').transform((value) => value.trim()),
+  /** Release name for Sentry; Railway injects the commit SHA. */
+  RAILWAY_GIT_COMMIT_SHA: z.string().default('').transform((value) => value.trim()),
+
   /** Proxy hops in front of the API (Railway edge → web rewrite → api = 2). Only applied when NODE_ENV=production. */
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(1),
 });
