@@ -8,6 +8,9 @@ import type { StorageService } from '../storage/storage.service';
 import { TaskAttachmentsService } from './task-attachments.service';
 import { TasksService } from './tasks.service';
 
+/** A real %PDF- header: uploads are checked against the file's bytes, not its declared type. */
+const PDF_BYTES = Buffer.from('%PDF-1.7\n1 0 obj\n<< >>\nendobj\n');
+
 const MEMBER: RequestUser = { id: 'member-lawyer-id', email: 'member@lawfirm.mn', role: 'LAWYER' };
 const taskRow = {
   id: 'task-1',
@@ -24,7 +27,7 @@ const file = (overrides: Record<string, unknown> = {}) => ({
   originalname: Buffer.from('Гэрээний төсөл.PDF', 'utf8').toString('latin1'),
   mimetype: 'application/pdf',
   size: 2048,
-  buffer: Buffer.from('%PDF-1.4'),
+  buffer: PDF_BYTES,
   ...overrides,
 });
 

@@ -101,6 +101,27 @@ test.describe('Баримтын хүсэлт', () => {
     await client.context().close();
   });
 
+  test('PDF гэж хуурсан файлыг агуулгаар нь илрүүлж 415 буцаана', async () => {
+    const lawyerApi = await apiAs(LAWYER1);
+    const created = await createCaseForClient1(lawyerApi, `E2E агуулгын шалгалт ${uniqueId()}`);
+    const res = await lawyerApi.post(`/cases/${created.id}/document-requests`, { data: { items: [{ title: 'Гэрээний хуулбар' }] } });
+    const [request] = (await res.json()) as { id: string }[];
+    await lawyerApi.dispose();
+
+    const client = await apiAs(CLIENT1);
+    // A Windows executable and a plain ZIP, both announced as application/pdf.
+    const exe = { name: 'contract.pdf', mimeType: 'application/pdf', buffer: Buffer.from('MZ\u0090\u0000\u0003This program cannot be run in DOS mode') };
+    const zip = { name: 'contract.pdf', mimeType: 'application/pdf', buffer: Buffer.from([0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x00, 0x00]) };
+    for (const fake of [exe, zip]) {
+      const submit = await client.post(`/document-requests/${request.id}/submit`, { multipart: { files: fake } });
+      expect(submit.status()).toBe(415);
+    }
+    // The real thing still goes through.
+    const ok = await client.post(`/document-requests/${request.id}/submit`, { multipart: { files: pdf('contract.pdf') } });
+    expect(ok.status()).toBe(201);
+    await client.dispose();
+  });
+
   test('өөр харилцагч хүсэлтэд файл илгээж чадахгүй (403), хэргийг нь ч нээж чадахгүй', async ({ page }) => {
     const lawyerApi = await apiAs(LAWYER1);
     const created = await createCaseForClient1(lawyerApi, `E2E эрхийн шалгалт ${uniqueId()}`);

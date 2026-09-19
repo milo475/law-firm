@@ -1008,7 +1008,9 @@ pnpm deadcode    # knip: ашиглагдахгүй файл, export, хамаа
 | Нэвтэрсэн хуудас кэшлэгдэх | `/portal/*`, `/admin/*` (гурван хэлэнд) `Cache-Control: private, no-store` |
 | Зургийн оптимайзерыг гадны хостод ашиглах | `images.remotePatterns` нь зөвхөн `R2_PUBLIC_URL`-ийн хост + localhost |
 | `javascript:` / `data:` URL хадгалах | `ImageUrlSchema` — avatar, нийтлэлийн ковер зөвхөн http(s) |
-| Баримт руу хандах | Файл бүр хэргийн эрхээр шалгагдаж, 5 минутын presigned URL-ээр очно |
+| Баримт руу хандах | Файл бүр хэргийн эрхээр шалгагдаж, 5 минутын presigned URL-ээр очно (`Content-Disposition: attachment`) |
+| Хортой файл жинхэнэ төрлөө нуух | Browser-ийн мэдээлсэн төрөлд итгэхгүй — эхний байтуудаас гарын үсгийг нь уншиж, зөрвөл **415**. `.exe`, ZIP-ийг PDF гэж хуурах боломжгүй; SVG зураг болж орохгүй |
+| Файлын нэрээр зам гаргах | `sanitizeFileName`: `../`, удирдлагын тэмдэгт арилж, 255 тэмдэгтэд багтаана; DB-д цэвэрлэсэн нэр очно |
 | Мэдээлэл задрах | Нийтийн `GET /testimonials` 7 талбар, `PUBLIC_USER_SELECT` нь и-мэйл/утсыг нуудаг, алдаанд stack trace буцаахгүй |
 
 CSP (script-src) одоохондоо байхгүй: Next-ийн inline bootstrap script-д nonce хэрэгтэй бөгөөд энэ нь

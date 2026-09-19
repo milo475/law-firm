@@ -20,6 +20,7 @@ export const TASK_ATTACHMENT_LABELS = {
   missingFile: 'Файл сонгоно уу (multipart талбар: "file")',
   tooLarge: 'Файлын хэмжээ 20MB-аас хэтэрч болохгүй',
   unsupported: 'Зөвхөн PDF, Word, Excel, зураг, текст файл хавсаргах боломжтой',
+  contentMismatch: 'Файлын агуулга нь заасан төрөлтэй тохирохгүй байна',
   notFound: 'Хавсралт олдсонгүй',
   deleteForbidden: 'Зөвхөн өөрийн хавсаргасан файлыг устгах боломжтой',
 } as const;

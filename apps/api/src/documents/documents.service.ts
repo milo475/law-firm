@@ -18,6 +18,7 @@ import {
 import { CASE_MEMBERSHIP_SELECT, CasesService } from '../cases/cases.service';
 import type { RequestUser } from '../common/types/request-user';
 import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
+import { contentMatchesMimeType, sanitizeFileName } from '../common/utils/file-signature';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 
@@ -68,9 +69,9 @@ export class DocumentsService {
 
   async upload(caseId: string, file: UploadedFile | undefined, input: UploadDocumentInput, user: RequestUser) {
     if (!file) throw new BadRequestException('Файл сонгоно уу (multipart талбар: "file")');
-    this.assertValidFile(file);
-
+    // Access first: someone with no business on this case gets 403, not a verdict about their file.
     const record = await this.cases.assertAccessById(caseId, user);
+    this.assertValidFile(file);
     const stored = await this.storeFile(record.caseNumber, file, input.name);
 
     return this.prisma.document.create({
@@ -85,7 +86,11 @@ export class DocumentsService {
     });
   }
 
-  /** Size + MIME type checks shared by direct uploads and document request submissions. */
+  /**
+   * Size, declared type and *actual* bytes. The browser's Content-Type is a claim, not evidence:
+   * renaming an executable to .pdf is enough to get past a type-only check, so the signature has
+   * to agree with what was declared.
+   */
   assertValidFile(file: UploadedFile): void {
     if (file.size > MAX_DOCUMENT_SIZE_BYTES) {
       throw new PayloadTooLargeException('Файлын хэмжээ 20MB-аас хэтэрч болохгүй');
@@ -93,15 +98,18 @@ export class DocumentsService {
     if (!(ALLOWED_DOCUMENT_MIME_TYPES as readonly string[]).includes(file.mimetype)) {
       throw new UnsupportedMediaTypeException('Зөвхөн PDF, Word, Excel, зураг, текст файл хавсаргах боломжтой');
     }
+    if (!contentMatchesMimeType(file.buffer, file.mimetype)) {
+      throw new UnsupportedMediaTypeException('Файлын агуулга нь заасан төрөлтэй тохирохгүй байна');
+    }
   }
 
   /** Uploads the file to MinIO under the case prefix and returns the columns for a Document row. */
   async storeFile(caseNumber: string, file: UploadedFile, displayName?: string): Promise<StoredFile> {
     // multer decodes multipart filenames as latin1
-    const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+    const originalName = sanitizeFileName(Buffer.from(file.originalname, 'latin1').toString('utf8'));
     const storageKey = `cases/${caseNumber}/${randomUUID()}${extname(originalName).toLowerCase()}`;
     await this.storage.upload({ key: storageKey, body: file.buffer, mimeType: file.mimetype, size: file.size });
-    return { name: displayName?.trim() || originalName, mimeType: file.mimetype, size: file.size, storageKey };
+    return { name: sanitizeFileName(displayName?.trim() || originalName), mimeType: file.mimetype, size: file.size, storageKey };
   }
 
   /** Best-effort cleanup of objects whose database write failed. */

@@ -5,6 +5,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { DocumentsService } from './documents.service';
 
+/** A real %PDF- header: uploads are checked against the file's bytes, not its declared type. */
+const PDF_BYTES = Buffer.from('%PDF-1.7\n1 0 obj\n<< >>\nendobj\n');
+
 describe('DocumentsService (staff)', () => {
   let service: DocumentsService;
   let prisma: PrismaMock;
@@ -50,7 +53,7 @@ describe('DocumentsService (staff)', () => {
 
   it('a LAWYER cannot upload to a case they do not handle → 403, nothing stored', async () => {
     prisma.case.findUnique.mockResolvedValue({ id: 'case-1', caseNumber: 'LF-2026-0001', title: 'x', clientId: 'client-id', lawyerId: LAWYER_USER.id, status: 'NEW' });
-    const file = { originalname: 'a.pdf', mimetype: 'application/pdf', size: 10, buffer: Buffer.from('x') };
+    const file = { originalname: 'a.pdf', mimetype: 'application/pdf', size: 10, buffer: PDF_BYTES };
     await expect(service.upload('case-1', file, { isVisibleToClient: false }, OTHER_LAWYER)).rejects.toBeInstanceOf(ForbiddenException);
     expect(storage.upload).not.toHaveBeenCalled();
   });
@@ -58,7 +61,7 @@ describe('DocumentsService (staff)', () => {
   it('staff uploads keep the isVisibleToClient flag', async () => {
     prisma.case.findUnique.mockResolvedValue({ id: 'case-1', caseNumber: 'LF-2026-0001', title: 'x', clientId: 'client-id', lawyerId: LAWYER_USER.id, status: 'NEW' });
     prisma.document.create.mockImplementation(async ({ data }: any) => data);
-    const file = { originalname: 'a.pdf', mimetype: 'application/pdf', size: 10, buffer: Buffer.from('x') };
+    const file = { originalname: 'a.pdf', mimetype: 'application/pdf', size: 10, buffer: PDF_BYTES };
     await service.upload('case-1', file, { isVisibleToClient: false }, LAWYER_USER);
     expect(prisma.document.create.mock.calls[0][0].data.isVisibleToClient).toBe(false);
   });

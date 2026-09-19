@@ -9,6 +9,9 @@ import { StorageService } from '../storage/storage.service';
 import { DocumentRequestNotificationsListener } from './document-request-notifications.listener';
 import { DocumentRequestsService } from './document-requests.service';
 
+/** A real %PDF- header: uploads are checked against the file's bytes, not its declared type. */
+const PDF_BYTES = Buffer.from('%PDF-1.7\n1 0 obj\n<< >>\nendobj\n');
+
 const caseRecord = { id: 'case-1', caseNumber: 'LF-2026-0001', clientId: CLIENT_USER.id, lawyerId: LAWYER_USER.id, status: 'IN_PROGRESS' };
 const requestRow = (status: string) => ({
   id: 'req-1',
@@ -77,7 +80,7 @@ describe('Document request events → notifications (EventEmitter2 wiring)', () 
 
   it('document-request.submitted → the assigned lawyer hears that the document arrived', async () => {
     prisma.documentRequest.findUnique.mockResolvedValue(requestRow('PENDING'));
-    const pdf = { originalname: 'a.pdf', mimetype: 'application/pdf', size: 10, buffer: Buffer.from('x') };
+    const pdf = { originalname: 'a.pdf', mimetype: 'application/pdf', size: 10, buffer: PDF_BYTES };
     await service.submit('req-1', [pdf], CLIENT_USER);
     expect(sent()).toEqual([
       {

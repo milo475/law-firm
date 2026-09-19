@@ -20,6 +20,7 @@ import {
 import type { RequestUser } from '../common/types/request-user';
 import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
 import type { UploadedFile } from '../documents/documents.service';
+import { contentMatchesMimeType, sanitizeFileName } from '../common/utils/file-signature';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { TasksService } from './tasks.service';
@@ -59,15 +60,19 @@ export class TaskAttachmentsService {
     if (!(TASK_ATTACHMENT_MIME_TYPES as readonly string[]).includes(file.mimetype)) {
       throw new UnsupportedMediaTypeException(TASK_ATTACHMENT_LABELS.unsupported);
     }
+    // The declared type is only a claim; the first bytes have to agree with it.
+    if (!contentMatchesMimeType(file.buffer, file.mimetype)) {
+      throw new UnsupportedMediaTypeException(TASK_ATTACHMENT_LABELS.contentMismatch);
+    }
     await this.tasks.assertVisibleById(taskId, user);
 
     // multer decodes multipart filenames as latin1
-    const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+    const originalName = sanitizeFileName(Buffer.from(file.originalname, 'latin1').toString('utf8'));
     const storageKey = `tasks/${taskId}/${randomUUID()}${extname(originalName).toLowerCase()}`;
     await this.storage.upload({ key: storageKey, body: file.buffer, mimeType: file.mimetype, size: file.size });
     try {
       return await this.prisma.taskAttachment.create({
-        data: { taskId, name: input.name?.trim() || originalName, mimeType: file.mimetype, size: file.size, storageKey, uploadedById: user.id },
+        data: { taskId, name: sanitizeFileName(input.name?.trim() || originalName), mimeType: file.mimetype, size: file.size, storageKey, uploadedById: user.id },
         select: TASK_ATTACHMENT_SELECT,
       });
     } catch (error) {

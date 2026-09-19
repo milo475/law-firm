@@ -22,6 +22,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nes
 import { Role } from '@law-firm/shared';
 import type { UploadedFile as UploadedFileShape } from '../documents/documents.service';
 import { StorageService } from '../storage/storage.service';
+import { contentMatchesMimeType } from '../common/utils/file-signature';
 import { CurrentUser, Public, Roles } from '../common/decorators';
 import type { RequestUser } from '../common/types/request-user';
 import { CreatePostDto, PostManageQueryDto, PostQueryDto, UpdatePostDto } from './dto/posts.dto';
@@ -74,6 +75,10 @@ export class PostsController {
       throw new UnsupportedMediaTypeException('Зөвхөн JPG, PNG, WEBP зураг оруулах боломжтой');
     }
     if (file.size > MAX_COVER_BYTES) throw new PayloadTooLargeException('Зургийн хэмжээ 5MB-аас хэтэрч болохгүй');
+    // The browser's Content-Type is a claim; check the image signature before it reaches the bucket.
+    if (!contentMatchesMimeType(file.buffer, file.mimetype)) {
+      throw new UnsupportedMediaTypeException('Файлын агуулга нь зураг биш байна');
+    }
     const ext = extname(Buffer.from(file.originalname, 'latin1').toString('utf8')).toLowerCase() || '.jpg';
     const url = await this.storage.uploadPublic({ key: `posts/${randomUUID()}${ext}`, body: file.buffer, mimeType: file.mimetype, size: file.size });
     return { url };

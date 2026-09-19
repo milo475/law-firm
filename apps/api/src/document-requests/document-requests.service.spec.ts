@@ -16,6 +16,9 @@ import { StorageService } from '../storage/storage.service';
 import { DOCUMENT_REQUEST_EVENTS } from './document-request.events';
 import { DocumentRequestsService } from './document-requests.service';
 
+/** A real %PDF- header: uploads are checked against the file's bytes, not its declared type. */
+const PDF_BYTES = Buffer.from('%PDF-1.7\n1 0 obj\n<< >>\nendobj\n');
+
 const caseRecord = {
   id: 'case-1',
   caseNumber: 'LF-2026-0001',
@@ -35,11 +38,13 @@ const requestRow = (status: string, documents = 0) => ({
   _count: { documents },
 });
 
+const PNG_BYTES = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(16)]);
+
 const file = (name = 'unemleh.pdf', mimetype = 'application/pdf') => ({
   originalname: name,
   mimetype,
   size: 2048,
-  buffer: Buffer.from('%PDF-1.4'),
+  buffer: mimetype === 'image/png' ? PNG_BYTES : PDF_BYTES,
 });
 
 describe('DocumentRequestsService', () => {
