@@ -9,6 +9,7 @@ import {
   type FirmSettingsResponse,
   type Prisma,
 } from '@law-firm/shared';
+import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { PrismaService } from '../prisma/prisma.service';
 import { BANK_ACCOUNT_SETTING_KEY, DEFAULT_BANK_ACCOUNT } from './bank-account';
@@ -63,7 +64,11 @@ export class SettingsService {
     const parsed = schema.safeParse(row.value);
     if (!parsed.success) {
       this.logger.error(`Setting "${key}" holds an invalid value`);
-      throw new InternalServerErrorException(`${label} буруу хадгалагдсан байна. Админ «Тохиргоо» хуудаснаас дахин хадгална уу.`);
+      throw new InternalServerErrorException(
+        err('settings.invalidStoredValue', `${label} буруу хадгалагдсан байна. Админ «Тохиргоо» хуудаснаас дахин хадгална уу.`, {
+          setting: key,
+        }),
+      );
     }
     return { value: parsed.data, updatedAt: row.updatedAt };
   }

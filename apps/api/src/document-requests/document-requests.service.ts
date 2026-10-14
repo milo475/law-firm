@@ -15,6 +15,7 @@ import {
   type UpdateDocumentRequestInput,
 } from '@law-firm/shared';
 import { CASE_MEMBERSHIP_SELECT, CasesService } from '../cases/cases.service';
+import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
 import { DOCUMENT_SELECT, DocumentsService, type StoredFile, type UploadedFile } from '../documents/documents.service';
@@ -88,7 +89,7 @@ export class DocumentRequestsService {
   /** ADMIN or the assigned LAWYER asks the client for one or more documents at once. */
   async create(caseId: string, input: CreateDocumentRequestInput, user: RequestUser) {
     const record = await this.cases.assertStaffAccessById(caseId, user);
-    if (record.status === 'CLOSED') throw new BadRequestException('Хаагдсан хэрэгт баримт хүсэх боломжгүй');
+    if (record.status === 'CLOSED') throw new BadRequestException(err('documentRequest.caseClosed', 'Хаагдсан хэрэгт баримт хүсэх боломжгүй'));
 
     const include = this.includeFor(user);
     const created = await this.prisma.$transaction(
@@ -120,7 +121,7 @@ export class DocumentRequestsService {
   async update(id: string, input: UpdateDocumentRequestInput, user: RequestUser) {
     const existing = await this.loadForStaff(id, user);
     if (!(DOCUMENT_REQUEST_EDITABLE_STATUSES as readonly DocumentRequestStatus[]).includes(existing.status)) {
-      throw new BadRequestException('Зөвхөн хүлээгдэж буй эсвэл буцаагдсан хүсэлтийг засах боломжтой');
+      throw new BadRequestException(err('documentRequest.editLocked', 'Зөвхөн хүлээгдэж буй эсвэл буцаагдсан хүсэлтийг засах боломжтой'));
     }
     return this.prisma.documentRequest.update({
       where: { id },
@@ -138,7 +139,7 @@ export class DocumentRequestsService {
   async remove(id: string, user: RequestUser): Promise<void> {
     const existing = await this.loadForStaff(id, user);
     if (existing._count.documents > 0) {
-      throw new BadRequestException('Файл хавсаргагдсан хүсэлтийг устгах боломжгүй');
+      throw new BadRequestException(err('documentRequest.deleteHasFiles', 'Файл хавсаргагдсан хүсэлтийг устгах боломжгүй'));
     }
     await this.prisma.documentRequest.delete({ where: { id } });
   }
@@ -150,18 +151,26 @@ export class DocumentRequestsService {
   async submit(id: string, files: UploadedFile[] | undefined, user: RequestUser) {
     const request = await this.load(id);
     if (user.role !== Role.CLIENT || request.case.clientId !== user.id) {
-      throw new ForbiddenException('Энэ баримтын хүсэлтэд хариу илгээх эрх танд байхгүй байна');
+      throw new ForbiddenException(err('documentRequest.submitForbidden', 'Энэ баримтын хүсэлтэд хариу илгээх эрх танд байхгүй байна'));
     }
     if (!canTransitionDocumentRequest(request.status, 'SUBMITTED')) {
       throw new BadRequestException(
-        `«${DOCUMENT_REQUEST_STATUS_LABELS[request.status]}» төлөвтэй хүсэлтэд файл илгээх боломжгүй`,
+        err(
+          'documentRequest.submitLocked',
+          `«${DOCUMENT_REQUEST_STATUS_LABELS[request.status]}» төлөвтэй хүсэлтэд файл илгээх боломжгүй`,
+          { status: request.status },
+        ),
       );
     }
     if (!files || files.length === 0) {
-      throw new BadRequestException('Хамгийн багадаа нэг файл хавсаргана уу (multipart талбар: "files")');
+      throw new BadRequestException(err('documentRequest.fileRequired', 'Хамгийн багадаа нэг файл хавсаргана уу (multipart талбар: "files")'));
     }
     if (files.length > MAX_DOCUMENT_REQUEST_FILES) {
-      throw new BadRequestException(`Нэг удаад ${MAX_DOCUMENT_REQUEST_FILES}-аас ихгүй файл илгээнэ үү`);
+      throw new BadRequestException(
+        err('documentRequest.tooManyFiles', `Нэг удаад ${MAX_DOCUMENT_REQUEST_FILES}-аас ихгүй файл илгээнэ үү`, {
+          max: MAX_DOCUMENT_REQUEST_FILES,
+        }),
+      );
     }
     for (const file of files) this.documents.assertValidFile(file);
 
@@ -175,7 +184,7 @@ export class DocumentRequestsService {
           where: { id, status: request.status },
           data: { status: 'SUBMITTED', rejectionReason: null, reviewedById: null, reviewedAt: null },
         });
-        if (moved.count === 0) throw new ConflictException('Хүсэлтийн төлөв өөрчлөгдсөн байна. Хуудсаа шинэчилнэ үү');
+        if (moved.count === 0) throw new ConflictException(err('documentRequest.statusChanged', 'Хүсэлтийн төлөв өөрчлөгдсөн байна. Хуудсаа шинэчилнэ үү'));
         for (const file of stored) {
           await tx.document.create({
             data: { ...file, caseId: request.caseId, requestId: id, uploadedById: user.id, isVisibleToClient: true },
@@ -203,11 +212,15 @@ export class DocumentRequestsService {
     const request = await this.loadForStaff(id, user);
     const reason = input.rejectionReason?.trim() ?? '';
     if (input.decision === 'REJECTED' && reason.length === 0) {
-      throw new BadRequestException('Буцаах шалтгааныг бичнэ үү');
+      throw new BadRequestException(err('documentRequest.reasonRequired', 'Буцаах шалтгааныг бичнэ үү'));
     }
     if (!canTransitionDocumentRequest(request.status, input.decision)) {
       throw new BadRequestException(
-        `«${DOCUMENT_REQUEST_STATUS_LABELS[request.status]}» төлөвтэй хүсэлтийг «${DOCUMENT_REQUEST_STATUS_LABELS[input.decision]}» болгох боломжгүй`,
+        err(
+          'documentRequest.reviewLocked',
+          `«${DOCUMENT_REQUEST_STATUS_LABELS[request.status]}» төлөвтэй хүсэлтийг «${DOCUMENT_REQUEST_STATUS_LABELS[input.decision]}» болгох боломжгүй`,
+          { from: request.status, to: input.decision },
+        ),
       );
     }
 
@@ -221,7 +234,7 @@ export class DocumentRequestsService {
         rejectionReason: input.decision === 'REJECTED' ? reason : null,
       },
     });
-    if (moved.count === 0) throw new ConflictException('Хүсэлтийн төлөв өөрчлөгдсөн байна. Хуудсаа шинэчилнэ үү');
+    if (moved.count === 0) throw new ConflictException(err('documentRequest.statusChanged', 'Хүсэлтийн төлөв өөрчлөгдсөн байна. Хуудсаа шинэчилнэ үү'));
     const updated = await this.prisma.documentRequest.findUniqueOrThrow({ where: { id }, include: this.includeFor(user) });
 
     if (input.decision !== 'UNDER_REVIEW') {
@@ -256,7 +269,7 @@ export class DocumentRequestsService {
       where: { id },
       include: { case: { select: CASE_REF_SELECT }, _count: { select: { documents: true } } },
     });
-    if (!request) throw new NotFoundException('Баримтын хүсэлт олдсонгүй');
+    if (!request) throw new NotFoundException(err('documentRequest.notFound', 'Баримтын хүсэлт олдсонгүй'));
     return request;
   }
 

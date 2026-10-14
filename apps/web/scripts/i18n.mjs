@@ -186,7 +186,30 @@ async function check() {
     process.exit(1);
   }
   console.log('\nKeys match across mn, en and zh.');
+  errorCodeCheck(flat.mn);
   await formatCheck(flat);
+}
+
+/**
+ * `errors.<code>` is what the reader sees instead of the API's Mongolian message, so the dictionary
+ * and the API's catalogue have to name the same failures. The catalogue is read from its source
+ * (a plain list of string literals) rather than from the build, so this works on a clean checkout.
+ */
+function errorCodeCheck(mn) {
+  const source = path.join(REPO_ROOT, 'packages/shared/src/errors.ts');
+  if (!fs.existsSync(source)) return;
+  const list = fs.readFileSync(source, 'utf8').split('ERROR_CODES = [')[1]?.split('] as const')[0] ?? '';
+  const codes = [...list.matchAll(/'([^']+)'/g)].map((match) => match[1]);
+  // `errors.unknown` is the client's own wording for a failure that never reached the API.
+  const translated = Object.keys(mn).filter((key) => key.startsWith('errors.')).map((key) => key.slice('errors.'.length));
+  const missing = codes.filter((code) => !translated.includes(code));
+  const stale = translated.filter((code) => code !== 'unknown' && !codes.includes(code));
+  if (missing.length || stale.length) {
+    if (missing.length) console.error(`${missing.length} API error code(s) without a message, e.g. ${missing.slice(0, 5).join(', ')}`);
+    if (stale.length) console.error(`${stale.length} errors.* key(s) no longer thrown, e.g. ${stale.slice(0, 5).join(', ')}`);
+    process.exit(1);
+  }
+  console.log(`${codes.length} API error code(s) have a message in all three languages.`);
 }
 
 /** Counts a message's placeholders, and which of them a plural / number clause consumes as a number. */

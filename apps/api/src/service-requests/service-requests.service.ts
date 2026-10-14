@@ -19,6 +19,7 @@ import {
   type ServiceRequestType,
 } from '@law-firm/shared';
 import { CasesService } from '../cases/cases.service';
+import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { isUniqueViolation } from '../common/utils/format';
 import { paginate, skipTake } from '../common/utils/pagination';
@@ -119,9 +120,9 @@ export class ServiceRequestsService {
   /** ADMIN sees any request; a CLIENT only their own. */
   async findOne(id: string, user: RequestUser) {
     const record = await this.prisma.serviceRequest.findUnique({ where: { id }, select: REQUEST_SELECT });
-    if (!record) throw new NotFoundException('Хүсэлт олдсонгүй');
+    if (!record) throw new NotFoundException(err('serviceRequest.notFound', 'Хүсэлт олдсонгүй'));
     if (user.role !== Role.ADMIN && record.requester.id !== user.id) {
-      throw new ForbiddenException('Энэ хүсэлтийг үзэх эрх танд байхгүй байна');
+      throw new ForbiddenException(err('serviceRequest.viewForbidden', 'Энэ хүсэлтийг үзэх эрх танд байхгүй байна'));
     }
     return this.forViewer(record, user);
   }
@@ -160,11 +161,11 @@ export class ServiceRequestsService {
       where: { id },
       select: { id: true, status: true, title: true, description: true, caseType: true, requesterId: true, requester: { select: { isActive: true } } },
     });
-    if (!request) throw new NotFoundException('Хүсэлт олдсонгүй');
+    if (!request) throw new NotFoundException(err('serviceRequest.notFound', 'Хүсэлт олдсонгүй'));
     if (request.status !== ServiceRequestStatus.ACCEPTED) {
       throw new BadRequestException(this.transitionError(request.status, ServiceRequestStatus.CONVERTED));
     }
-    if (!request.requester.isActive) throw new BadRequestException('Хүсэлт гаргасан харилцагчийн хаяг идэвхгүй байна');
+    if (!request.requester.isActive) throw new BadRequestException(err('serviceRequest.clientInactive', 'Хүсэлт гаргасан харилцагчийн хаяг идэвхгүй байна'));
     await this.assertActiveLawyers([team.leadId, ...team.memberIds]);
 
     const caseRef = await this.openCase(request, team, user);
@@ -182,7 +183,7 @@ export class ServiceRequestsService {
   /** ADMIN: active lawyers whose specializations fit the request's case type (every active lawyer when none do), least busy first. */
   async suggestedLawyers(id: string) {
     const request = await this.prisma.serviceRequest.findUnique({ where: { id }, select: { caseType: true } });
-    if (!request) throw new NotFoundException('Хүсэлт олдсонгүй');
+    if (!request) throw new NotFoundException(err('serviceRequest.notFound', 'Хүсэлт олдсонгүй'));
 
     const lawyers = await this.prisma.user.findMany({
       where: { role: Role.LAWYER, isActive: true },
@@ -230,7 +231,7 @@ export class ServiceRequestsService {
             where: { id: request.id, status: ServiceRequestStatus.ACCEPTED },
             data: { status: ServiceRequestStatus.CONVERTED, reviewedById: user.id, reviewedAt: new Date() },
           });
-          if (claimed.count === 0) throw new BadRequestException('Энэ хүсэлтээр хэрэг аль хэдийн нээгдсэн байна');
+          if (claimed.count === 0) throw new BadRequestException(err('serviceRequest.alreadyConverted', 'Энэ хүсэлтээр хэрэг аль хэдийн нээгдсэн байна'));
           const opened = await tx.case.create({
             data: {
               caseNumber,
@@ -265,22 +266,35 @@ export class ServiceRequestsService {
     const { count } = await this.prisma.serviceRequest.updateMany({ where: { id, status: { in: from } }, data: { ...data, status: to } });
     if (count === 1) return;
     const existing = await this.prisma.serviceRequest.findUnique({ where: { id }, select: { status: true } });
-    if (!existing) throw new NotFoundException('Хүсэлт олдсонгүй');
+    if (!existing) throw new NotFoundException(err('serviceRequest.notFound', 'Хүсэлт олдсонгүй'));
     throw new BadRequestException(this.transitionError(existing.status, to));
   }
 
-  private transitionError(from: ServiceRequestStatus, to: ServiceRequestStatus): string {
-    if (from === ServiceRequestStatus.CONVERTED) return 'Энэ хүсэлтээр хэрэг аль хэдийн нээгдсэн байна';
-    if (from === ServiceRequestStatus.REJECTED) return 'Татгалзсан хүсэлтийг өөрчлөх боломжгүй';
-    if (from === to) return `Хүсэлт аль хэдийн «${SERVICE_REQUEST_STATUS_LABELS[from]}» төлөвтэй байна`;
-    if (from === ServiceRequestStatus.NEW && to === ServiceRequestStatus.CONVERTED) return 'Эхлээд хүсэлтийг хүлээж авна уу';
-    return `Хүсэлтийн төлөвийг «${SERVICE_REQUEST_STATUS_LABELS[from]}»-аас «${SERVICE_REQUEST_STATUS_LABELS[to]}» болгох боломжгүй`;
+  /** Each reason a move is refused is its own code, so the client can word it in its own language. */
+  private transitionError(from: ServiceRequestStatus, to: ServiceRequestStatus) {
+    if (from === ServiceRequestStatus.CONVERTED) {
+      return err('serviceRequest.alreadyConverted', 'Энэ хүсэлтээр хэрэг аль хэдийн нээгдсэн байна');
+    }
+    if (from === ServiceRequestStatus.REJECTED) {
+      return err('serviceRequest.rejectedLocked', 'Татгалзсан хүсэлтийг өөрчлөх боломжгүй');
+    }
+    if (from === to) {
+      return err('serviceRequest.alreadyInStatus', `Хүсэлт аль хэдийн «${SERVICE_REQUEST_STATUS_LABELS[from]}» төлөвтэй байна`, { status: from });
+    }
+    if (from === ServiceRequestStatus.NEW && to === ServiceRequestStatus.CONVERTED) {
+      return err('serviceRequest.acceptFirst', 'Эхлээд хүсэлтийг хүлээж авна уу');
+    }
+    return err(
+      'serviceRequest.invalidTransition',
+      `Хүсэлтийн төлөвийг «${SERVICE_REQUEST_STATUS_LABELS[from]}»-аас «${SERVICE_REQUEST_STATUS_LABELS[to]}» болгох боломжгүй`,
+      { from, to },
+    );
   }
 
   private async assertActiveLawyers(ids: string[]): Promise<void> {
     const unique = [...new Set(ids)];
     const found = await this.prisma.user.count({ where: { id: { in: unique }, role: Role.LAWYER, isActive: true } });
-    if (found !== unique.length) throw new BadRequestException('Сонгосон өмгөөлөгч олдсонгүй эсвэл идэвхгүй байна');
+    if (found !== unique.length) throw new BadRequestException(err('serviceRequest.lawyerUnavailable', 'Сонгосон өмгөөлөгч олдсонгүй эсвэл идэвхгүй байна'));
   }
 
   /** Clients never see which admin reviewed their request. */

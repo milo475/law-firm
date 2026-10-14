@@ -12,12 +12,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/toast';
 import { Link } from '@/i18n/navigation';
-import { ApiError, api } from '@/lib/api';
+import { api } from '@/lib/api';
+import { useApiError } from '@/lib/api-error';
 
 const OTP_LENGTH = 6;
 
 export function LoginForm() {
   const t = useTranslations('portal.login');
+  const apiError = useApiError();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [mode, setMode] = useState<'password' | 'otp'>('password');
@@ -36,7 +38,7 @@ export function LoginForm() {
       router.replace(safeNext ?? (isStaff ? '/admin' : '/portal'));
       router.refresh();
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : t('genericError');
+      const message = apiError(error, t('genericError'));
       setError('password', { message });
       toast.danger(t('failedToast'), message);
     }

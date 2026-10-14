@@ -11,7 +11,8 @@ import { Button } from '@/components/ui/button';
 import { Pagination } from '@/components/ui/pagination';
 import { EmptyState, ErrorState, TableSkeleton } from '@/components/ui/states';
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@/components/ui/table';
-import { ApiError, api, type CaseListItem, type Paginated } from '@/lib/api';
+import { api, type CaseListItem, type Paginated } from '@/lib/api';
+import { useApiError } from '@/lib/api-error';
 import { formatDate } from '@/lib/format';
 import { Link } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
@@ -31,6 +32,7 @@ export default function CasesPage() {
 
 function CasesPageContent() {
   const t = useTranslations('portal.cases');
+  const apiError = useApiError();
   const tStatus = useTranslations('enums.caseStatus');
   const tType = useTranslations('enums.caseType');
   const locale = useLocale() as Locale;
@@ -119,7 +121,7 @@ function CasesPageContent() {
       </div>
 
       {query.isError ? (
-        <ErrorState message={query.error instanceof ApiError ? query.error.message : t('loadError')} onRetry={() => void query.refetch()} />
+        <ErrorState message={apiError(query.error, t('loadError'))} onRetry={() => void query.refetch()} />
       ) : query.isLoading || !data ? (
         <TableSkeleton />
       ) : data.items.length === 0 ? (

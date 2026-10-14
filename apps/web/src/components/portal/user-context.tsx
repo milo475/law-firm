@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { createContext, useCallback, useContext, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/states';
 import { ApiError, api, type CurrentUser } from '@/lib/api';
+import { useApiError } from '@/lib/api-error';
 
 interface UserContextValue {
   user: CurrentUser;
@@ -24,6 +25,7 @@ export function useUser(): UserContextValue {
 /** Loads /auth/me (the api client refreshes on 401); redirects to login when the session is gone. */
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const t = useTranslations('portal');
+  const apiError = useApiError();
   const router = useRouter();
   const queryClient = useQueryClient();
   const query = useQuery({
@@ -57,7 +59,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   if (query.isError) {
     return (
       <div className="flex flex-1 items-center justify-center p-8 text-center text-body-sm text-status-danger-fg" role="alert">
-        {query.error instanceof ApiError && query.error.status !== 401 ? query.error.message : t('redirecting')}
+        {query.error instanceof ApiError && query.error.status !== 401 ? apiError(query.error) : t('redirecting')}
       </div>
     );
   }

@@ -10,11 +10,13 @@ import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { CardSkeleton, ErrorState, Skeleton } from '@/components/ui/states';
 import { ApiError, api, type InvoiceItem } from '@/lib/api';
+import { useApiError } from '@/lib/api-error';
 import { Link } from '@/i18n/navigation';
 import { InvoiceDetailPanel, PaymentModal } from '../invoice-panel';
 
 export default function InvoiceDetailPage() {
   const t = useTranslations('portal.invoices');
+  const apiError = useApiError();
   const tNav = useTranslations('portal.nav');
   const tCommon = useTranslations('common');
   const tPortal = useTranslations('portal');
@@ -26,7 +28,7 @@ export default function InvoiceDetailPage() {
     const err = query.error;
     return (
       <div className="flex flex-col gap-4">
-        <ErrorState title={err instanceof ApiError && err.status === 403 ? t('forbidden') : t('notFound')} message={err instanceof ApiError ? err.message : t('loadError')} />
+        <ErrorState title={err instanceof ApiError && err.status === 403 ? t('forbidden') : t('notFound')} message={apiError(err, t('loadError'))} />
         <div><Button asChild variant="secondary" size="sm"><Link href="/portal/invoices">{t('backToList')}</Link></Button></div>
       </div>
     );

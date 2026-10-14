@@ -12,6 +12,7 @@ import {
   type UpdateInvoiceInput,
 } from '@law-firm/shared';
 import { CASE_MEMBERSHIP_SELECT, CasesService } from '../cases/cases.service';
+import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { formatDateMn, formatMoneyMn, isUniqueViolation } from '../common/utils/format';
 import { paginate, skipTake } from '../common/utils/pagination';
@@ -71,7 +72,7 @@ export class InvoicesService {
       where: { id },
       select: { ...INVOICE_SELECT, case: { select: { id: true, caseNumber: true, title: true, clientId: true, lawyerId: true, members: CASE_MEMBERSHIP_SELECT } } },
     });
-    if (!invoice) throw new NotFoundException('Нэхэмжлэх олдсонгүй');
+    if (!invoice) throw new NotFoundException(err('invoice.notFound', 'Нэхэмжлэх олдсонгүй'));
     this.cases.assertAccess(invoice.case, user);
     return this.serialize(invoice);
   }
@@ -118,24 +119,28 @@ export class InvoicesService {
         case: { select: { id: true, caseNumber: true, clientId: true, lawyerId: true, members: CASE_MEMBERSHIP_SELECT } },
       },
     });
-    if (!invoice) throw new NotFoundException('Нэхэмжлэх олдсонгүй');
+    if (!invoice) throw new NotFoundException(err('invoice.notFound', 'Нэхэмжлэх олдсонгүй'));
     this.cases.assertStaffAccess(invoice.case, user);
 
     const nextStatus = input.status ?? invoice.status;
     if (!canTransitionInvoice(invoice.status, nextStatus)) {
       throw new BadRequestException(
-        `Нэхэмжлэхийн төлөвийг «${INVOICE_STATUS_LABELS[invoice.status]}»-аас «${INVOICE_STATUS_LABELS[nextStatus]}» болгох боломжгүй`,
+        err(
+          'invoice.invalidTransition',
+          `Нэхэмжлэхийн төлөвийг «${INVOICE_STATUS_LABELS[invoice.status]}»-аас «${INVOICE_STATUS_LABELS[nextStatus]}» болгох боломжгүй`,
+          { from: invoice.status, to: nextStatus },
+        ),
       );
     }
     if (
       nextStatus !== invoice.status &&
       (nextStatus === InvoiceStatus.AWAITING_CONFIRMATION || invoice.status === InvoiceStatus.AWAITING_CONFIRMATION)
     ) {
-      throw new BadRequestException('Төлбөрийн баталгаажуулалтыг «Төлбөр баталгаажуулах» эсвэл «Татгалзах» үйлдлээр хийнэ');
+      throw new BadRequestException(err('invoice.useConfirmAction', 'Төлбөрийн баталгаажуулалтыг «Төлбөр баталгаажуулах» эсвэл «Татгалзах» үйлдлээр хийнэ'));
     }
     const editsContent = input.amount !== undefined || input.description !== undefined || input.dueDate !== undefined;
     if (editsContent && invoice.status !== InvoiceStatus.DRAFT) {
-      throw new BadRequestException('Зөвхөн ноорог нэхэмжлэхийн дүн, тайлбар, хугацааг засах боломжтой');
+      throw new BadRequestException(err('invoice.draftOnlyEdit', 'Зөвхөн ноорог нэхэмжлэхийн дүн, тайлбар, хугацааг засах боломжтой'));
     }
 
     const statusChanged = nextStatus !== invoice.status;

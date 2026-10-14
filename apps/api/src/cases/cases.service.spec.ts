@@ -58,6 +58,16 @@ describe('CasesService (scope)', () => {
       await expect(service.findOne('case-1', OTHER_CLIENT)).rejects.toBeInstanceOf(ForbiddenException);
     });
 
+    it('a refusal carries the code the client translates, not only Mongolian text', async () => {
+      prisma.case.findUnique.mockResolvedValue(ownCase);
+      const error = await service.findOne('case-1', OTHER_CLIENT).catch((caught: ForbiddenException) => caught);
+      expect((error as ForbiddenException).getStatus()).toBe(403);
+      expect((error as ForbiddenException).getResponse()).toEqual({
+        code: 'case.viewForbidden',
+        message: 'Энэ хэргийг үзэх эрх танд байхгүй байна',
+      });
+    });
+
     it('CLIENT viewing their own case → ok', async () => {
       prisma.case.findUnique.mockResolvedValue(ownCase);
       await expect(service.findOne('case-1', CLIENT_USER)).resolves.toBe(ownCase);

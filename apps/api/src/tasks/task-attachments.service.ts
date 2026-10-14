@@ -17,6 +17,7 @@ import {
   type Prisma,
   type UploadTaskAttachmentInput,
 } from '@law-firm/shared';
+import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
 import type { UploadedFile } from '../documents/documents.service';
@@ -55,14 +56,14 @@ export class TaskAttachmentsService {
   }
 
   async upload(taskId: string, file: UploadedFile | undefined, input: UploadTaskAttachmentInput, user: RequestUser) {
-    if (!file) throw new BadRequestException(TASK_ATTACHMENT_LABELS.missingFile);
-    if (file.size > MAX_TASK_ATTACHMENT_SIZE_BYTES) throw new PayloadTooLargeException(TASK_ATTACHMENT_LABELS.tooLarge);
+    if (!file) throw new BadRequestException(err('taskAttachment.fileRequired', TASK_ATTACHMENT_LABELS.missingFile));
+    if (file.size > MAX_TASK_ATTACHMENT_SIZE_BYTES) throw new PayloadTooLargeException(err('taskAttachment.tooLarge', TASK_ATTACHMENT_LABELS.tooLarge));
     if (!(TASK_ATTACHMENT_MIME_TYPES as readonly string[]).includes(file.mimetype)) {
-      throw new UnsupportedMediaTypeException(TASK_ATTACHMENT_LABELS.unsupported);
+      throw new UnsupportedMediaTypeException(err('taskAttachment.unsupportedType', TASK_ATTACHMENT_LABELS.unsupported));
     }
     // The declared type is only a claim; the first bytes have to agree with it.
     if (!contentMatchesMimeType(file.buffer, file.mimetype)) {
-      throw new UnsupportedMediaTypeException(TASK_ATTACHMENT_LABELS.contentMismatch);
+      throw new UnsupportedMediaTypeException(err('taskAttachment.contentMismatch', TASK_ATTACHMENT_LABELS.contentMismatch));
     }
     await this.tasks.assertVisibleById(taskId, user);
 
@@ -95,7 +96,7 @@ export class TaskAttachmentsService {
     const attachment = await this.load(id);
     await this.tasks.assertVisibleById(attachment.taskId, user);
     if (user.role !== Role.ADMIN && attachment.uploadedById !== user.id) {
-      throw new ForbiddenException(TASK_ATTACHMENT_LABELS.deleteForbidden);
+      throw new ForbiddenException(err('taskAttachment.deleteForbidden', TASK_ATTACHMENT_LABELS.deleteForbidden));
     }
     await this.discard(attachment.storageKey);
     await this.prisma.taskAttachment.delete({ where: { id } });
@@ -106,7 +107,7 @@ export class TaskAttachmentsService {
       where: { id },
       select: { id: true, taskId: true, name: true, mimeType: true, size: true, storageKey: true, uploadedById: true },
     });
-    if (!attachment) throw new NotFoundException(TASK_ATTACHMENT_LABELS.notFound);
+    if (!attachment) throw new NotFoundException(err('taskAttachment.notFound', TASK_ATTACHMENT_LABELS.notFound));
     return attachment;
   }
 

@@ -14,7 +14,8 @@ import { Select } from '@/components/ui/select';
 import { EmptyState, ErrorState, Skeleton, TableSkeleton } from '@/components/ui/states';
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@/components/ui/table';
 import { toast } from '@/components/ui/toast';
-import { ApiError, api, type CaseListItem, type DocumentItem, type Paginated, type PublicUser } from '@/lib/api';
+import { api, type CaseListItem, type DocumentItem, type Paginated, type PublicUser } from '@/lib/api';
+import { useApiError } from '@/lib/api-error';
 import { formatBytes, formatDate, formatSizeLimit } from '@/lib/format';
 import { useLocale, useTranslations } from 'next-intl';
 import type { Locale } from '@/i18n/routing';
@@ -39,6 +40,7 @@ const previewable = (doc: DocumentItem) => doc.mimeType === 'application/pdf' ||
 
 export default function DocumentsPage() {
   const t = useTranslations('portal.documents');
+  const apiError = useApiError();
   const locale = useLocale() as Locale;
   const { user } = useUser();
   const queryClient = useQueryClient();
@@ -72,7 +74,7 @@ export default function DocumentsPage() {
       toast.success(t('uploadedToast'), `${doc.name} хэрэгт нэмэгдлээ.`);
       void queryClient.invalidateQueries({ queryKey: ['case-documents', vars.target] });
     },
-    onError: (error) => toast.danger(t('uploadFailed'), error instanceof ApiError ? error.message : t('tryAgain')),
+    onError: (error) => toast.danger(t('uploadFailed'), apiError(error, t('tryAgain'))),
   });
 
   function handleFiles(files: FileList | File[]) {
@@ -96,7 +98,7 @@ export default function DocumentsPage() {
       const { url } = await api.get<{ url: string }>(`/documents/${doc.id}/download`);
       window.open(url, '_blank', 'noopener');
     } catch (error) {
-      toast.danger(t('downloadFailed'), error instanceof ApiError ? error.message : t('tryAgain'));
+      toast.danger(t('downloadFailed'), apiError(error, t('tryAgain')));
     }
   }
 
@@ -105,7 +107,7 @@ export default function DocumentsPage() {
       const { url } = await api.get<{ url: string }>(`/documents/${doc.id}/download?inline=true`);
       setPreview({ doc, url });
     } catch (error) {
-      toast.danger(t('previewFailed'), error instanceof ApiError ? error.message : t('tryAgain'));
+      toast.danger(t('previewFailed'), apiError(error, t('tryAgain')));
     }
   }
 
@@ -207,7 +209,7 @@ export default function DocumentsPage() {
         </div>
 
         {cases.isError ? (
-          <ErrorState message={cases.error instanceof ApiError ? cases.error.message : t('loadError')} onRetry={() => void cases.refetch()} />
+          <ErrorState message={apiError(cases.error, t('loadError'))} onRetry={() => void cases.refetch()} />
         ) : anyLoading ? (
           <>
             <div className="hidden md:block"><TableSkeleton /></div>

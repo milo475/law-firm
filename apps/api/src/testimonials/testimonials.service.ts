@@ -13,6 +13,7 @@ import {
   type TestimonialQueryInput,
   type UpdateTestimonialInput,
 } from '@law-firm/shared';
+import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { isUniqueViolation } from '../common/utils/format';
 import { paginate, skipTake } from '../common/utils/pagination';
@@ -94,9 +95,9 @@ export class TestimonialsService {
       where: { id: input.caseId },
       select: { id: true, caseNumber: true, status: true, clientId: true, type: true },
     });
-    if (!record) throw new NotFoundException('Хэрэг олдсонгүй');
-    if (record.clientId !== user.id) throw new ForbiddenException('Энэ хэрэгт сэтгэгдэл үлдээх эрх танд байхгүй байна');
-    if (record.status !== CaseStatus.CLOSED) throw new BadRequestException('Хэрэг хаагдсаны дараа сэтгэгдэл үлдээх боломжтой');
+    if (!record) throw new NotFoundException(err('case.notFound', 'Хэрэг олдсонгүй'));
+    if (record.clientId !== user.id) throw new ForbiddenException(err('testimonial.caseForbidden', 'Энэ хэрэгт сэтгэгдэл үлдээх эрх танд байхгүй байна'));
+    if (record.status !== CaseStatus.CLOSED) throw new BadRequestException(err('testimonial.caseNotClosed', 'Хэрэг хаагдсаны дараа сэтгэгдэл үлдээх боломжтой'));
 
     const author = await this.prisma.user.findUniqueOrThrow({ where: { id: user.id }, select: { firstName: true, lastName: true } });
     const now = new Date();
@@ -122,7 +123,7 @@ export class TestimonialsService {
       } satisfies TestimonialCreatedEvent);
       return created;
     } catch (error) {
-      if (isUniqueViolation(error)) throw new ConflictException('Энэ хэрэгт сэтгэгдэл аль хэдийн үлдээсэн байна');
+      if (isUniqueViolation(error)) throw new ConflictException(err('testimonial.alreadyExists', 'Энэ хэрэгт сэтгэгдэл аль хэдийн үлдээсэн байна'));
       throw error;
     }
   }
@@ -142,8 +143,8 @@ export class TestimonialsService {
    */
   async revokeConsent(id: string, user: RequestUser) {
     const record = await this.prisma.testimonial.findUnique({ where: { id }, select: { id: true, authorUserId: true } });
-    if (!record) throw new NotFoundException('Сэтгэгдэл олдсонгүй');
-    if (record.authorUserId !== user.id) throw new ForbiddenException('Энэ сэтгэгдлийг өөрчлөх эрх танд байхгүй байна');
+    if (!record) throw new NotFoundException(err('testimonial.notFound', 'Сэтгэгдэл олдсонгүй'));
+    if (record.authorUserId !== user.id) throw new ForbiddenException(err('testimonial.editForbidden', 'Энэ сэтгэгдлийг өөрчлөх эрх танд байхгүй байна'));
     return this.prisma.testimonial.update({
       where: { id },
       data: {
@@ -180,7 +181,7 @@ export class TestimonialsService {
 
   async findOne(id: string): Promise<AdminRecord> {
     const record = await this.prisma.testimonial.findUnique({ where: { id }, select: ADMIN_SELECT });
-    if (!record) throw new NotFoundException('Сэтгэгдэл олдсонгүй');
+    if (!record) throw new NotFoundException(err('testimonial.notFound', 'Сэтгэгдэл олдсонгүй'));
     return record;
   }
 
@@ -188,7 +189,7 @@ export class TestimonialsService {
   async createManual(input: CreateManualTestimonialInput, user: RequestUser) {
     const consentGiven = input.consentGiven === true;
     if (consentGiven && !input.consentNote) {
-      throw new BadRequestException('Зөвшөөрлийг хэрхэн авсныг тэмдэглэнэ үү');
+      throw new BadRequestException(err('testimonial.consentNoteRequired', 'Зөвшөөрлийг хэрхэн авсныг тэмдэглэнэ үү'));
     }
     return this.prisma.testimonial.create({
       data: {
@@ -222,7 +223,7 @@ export class TestimonialsService {
       where: { id },
       select: { id: true, status: true, consentGiven: true, consentNote: true, authorName: true, authorUserId: true, case: { select: { caseNumber: true } } },
     });
-    if (!current) throw new NotFoundException('Сэтгэгдэл олдсонгүй');
+    if (!current) throw new NotFoundException(err('testimonial.notFound', 'Сэтгэгдэл олдсонгүй'));
 
     const consentGiven = input.consentGiven ?? current.consentGiven;
     const consentNote = input.consentNote !== undefined ? input.consentNote : current.consentNote;
@@ -230,10 +231,10 @@ export class TestimonialsService {
     const publishing = status === TestimonialStatus.PUBLISHED;
 
     if (publishing && !consentGiven) {
-      throw new BadRequestException('Харилцагчийн зөвшөөрөлгүйгээр сэтгэгдлийг нийтлэх боломжгүй');
+      throw new BadRequestException(err('testimonial.consentRequired', 'Харилцагчийн зөвшөөрөлгүйгээр сэтгэгдлийг нийтлэх боломжгүй'));
     }
     if (publishing && !consentNote) {
-      throw new BadRequestException('Зөвшөөрлийг хэрхэн авсныг тэмдэглэнэ үү');
+      throw new BadRequestException(err('testimonial.consentNoteRequired', 'Зөвшөөрлийг хэрхэн авсныг тэмдэглэнэ үү'));
     }
 
     const wasPublished = current.status === TestimonialStatus.PUBLISHED;
@@ -273,7 +274,7 @@ export class TestimonialsService {
 
   async remove(id: string): Promise<{ id: string }> {
     const record = await this.prisma.testimonial.findUnique({ where: { id }, select: { id: true } });
-    if (!record) throw new NotFoundException('Сэтгэгдэл олдсонгүй');
+    if (!record) throw new NotFoundException(err('testimonial.notFound', 'Сэтгэгдэл олдсонгүй'));
     await this.prisma.testimonial.delete({ where: { id } });
     return { id };
   }

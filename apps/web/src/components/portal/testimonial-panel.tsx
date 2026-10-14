@@ -15,8 +15,9 @@ import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/toast';
-import { ApiError, api, type MyTestimonial } from '@/lib/api';
+import { api, type MyTestimonial } from '@/lib/api';
 import { MY_TESTIMONIALS_KEY, useMyTestimonials } from '@/lib/testimonials';
+import { useApiError } from '@/lib/api-error';
 import { cn } from '@/lib/utils';
 
 const FormSchema = CreateTestimonialSchema.omit({ caseId: true });
@@ -50,13 +51,14 @@ function RatingInput({ value, onChange }: { value: number | undefined; onChange:
 function StatusCard({ testimonial }: { testimonial: MyTestimonial }) {
   const t = useTranslations('portal.testimonial');
   const queryClient = useQueryClient();
+  const apiError = useApiError();
   const revoke = useMutation({
     mutationFn: () => api.post<MyTestimonial>(`/testimonials/${testimonial.id}/revoke-consent`, {}),
     onSuccess: async () => {
       toast.success(t('revokedTitle'), t('revokedBody'));
       await queryClient.invalidateQueries({ queryKey: MY_TESTIMONIALS_KEY });
     },
-    onError: (error) => toast.danger(t('revokeFailed'), error instanceof ApiError ? error.message : t('tryAgain')),
+    onError: (error) => toast.danger(t('revokeFailed'), apiError(error, t('tryAgain'))),
   });
 
   const hint =
@@ -94,6 +96,7 @@ function StatusCard({ testimonial }: { testimonial: MyTestimonial }) {
 
 export function TestimonialPanel({ caseId }: { caseId: string }) {
   const t = useTranslations('portal.testimonial');
+  const apiError = useApiError();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const mine = useMyTestimonials();
@@ -114,7 +117,7 @@ export function TestimonialPanel({ caseId }: { caseId: string }) {
       setOpen(false);
       await queryClient.invalidateQueries({ queryKey: MY_TESTIMONIALS_KEY });
     },
-    onError: (error) => toast.danger(t('failed'), error instanceof ApiError ? error.message : t('tryAgain')),
+    onError: (error) => toast.danger(t('failed'), apiError(error, t('tryAgain'))),
   });
 
   if (mine.isLoading) return null;

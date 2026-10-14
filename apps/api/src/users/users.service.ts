@@ -11,6 +11,7 @@ import {
   type UserQueryInput,
 } from '@law-firm/shared';
 import { AuthService } from '../auth/auth.service';
+import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { paginate, skipTake } from '../common/utils/pagination';
 import { SAFE_USER_SELECT } from '../common/utils/safe-user';
@@ -59,9 +60,9 @@ export class UsersService {
 
   async findOne(id: string, actor: RequestUser) {
     const user = await this.prisma.user.findUnique({ where: { id }, select: ADMIN_USER_SELECT });
-    if (!user) throw new NotFoundException('Хэрэглэгч олдсонгүй');
+    if (!user) throw new NotFoundException(err('user.notFound', 'Хэрэглэгч олдсонгүй'));
     if (actor.role === Role.LAWYER && user.role !== Role.CLIENT) {
-      throw new ForbiddenException('Та зөвхөн харилцагчийн мэдээллийг харах боломжтой');
+      throw new ForbiddenException(err('user.clientsOnly', 'Та зөвхөн харилцагчийн мэдээллийг харах боломжтой'));
     }
     return user;
   }
@@ -90,7 +91,7 @@ export class UsersService {
 
   async update(id: string, input: UpdateUserInput) {
     const existing = await this.prisma.user.findUnique({ where: { id }, include: { lawyerProfile: true } });
-    if (!existing) throw new NotFoundException('Хэрэглэгч олдсонгүй');
+    if (!existing) throw new NotFoundException(err('user.notFound', 'Хэрэглэгч олдсонгүй'));
 
     if ((input.email && input.email !== existing.email) || (input.phone && input.phone !== existing.phone)) {
       await this.assertUnique(input.email ?? existing.email, input.phone ?? null, id);
@@ -106,7 +107,7 @@ export class UsersService {
 
     if (lawyerProfile) {
       if (role !== Role.LAWYER) {
-        throw new BadRequestException('Хуульчийн профайл зөвхөн LAWYER эрхтэй хэрэглэгчид байна');
+        throw new BadRequestException(err('user.lawyerRoleOnly', 'Хуульчийн профайл зөвхөн LAWYER эрхтэй хэрэглэгчид байна'));
       }
       data.lawyerProfile = existing.lawyerProfile
         ? { update: lawyerProfile }
@@ -132,9 +133,9 @@ export class UsersService {
 
   /** Soft delete: deactivates the account and kills every session (rows stay for audit/FK integrity). */
   async deactivate(id: string, actingUserId: string): Promise<void> {
-    if (id === actingUserId) throw new BadRequestException('Та өөрийгөө идэвхгүй болгох боломжгүй');
+    if (id === actingUserId) throw new BadRequestException(err('user.cannotDeactivateSelf', 'Та өөрийгөө идэвхгүй болгох боломжгүй'));
     const user = await this.prisma.user.findUnique({ where: { id }, select: { id: true } });
-    if (!user) throw new NotFoundException('Хэрэглэгч олдсонгүй');
+    if (!user) throw new NotFoundException(err('user.notFound', 'Хэрэглэгч олдсонгүй'));
     await this.prisma.user.update({ where: { id }, data: { isActive: false } });
     await this.auth.revokeAllForUser(id);
   }
@@ -147,16 +148,16 @@ export class UsersService {
         where: { phone: input.phone, NOT: { id: userId } },
         select: { id: true },
       });
-      if (taken) throw new ConflictException('Энэ утасны дугаар өөр хэрэглэгч дээр бүртгэлтэй байна');
+      if (taken) throw new ConflictException(err('user.phoneTaken', 'Энэ утасны дугаар өөр хэрэглэгч дээр бүртгэлтэй байна'));
     }
     return this.prisma.user.update({ where: { id: userId }, data: input, select: SAFE_USER_SELECT });
   }
 
   async changePassword(userId: string, input: ChangePasswordInput): Promise<void> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new NotFoundException('Хэрэглэгч олдсонгүй');
+    if (!user) throw new NotFoundException(err('user.notFound', 'Хэрэглэгч олдсонгүй'));
     if (!(await this.auth.verifyPassword(user.passwordHash, input.currentPassword))) {
-      throw new BadRequestException('Одоогийн нууц үг буруу байна');
+      throw new BadRequestException(err('user.currentPasswordWrong', 'Одоогийн нууц үг буруу байна'));
     }
     await this.prisma.user.update({
       where: { id: userId },
@@ -176,7 +177,7 @@ export class UsersService {
       select: { email: true, phone: true },
     });
     if (!clash) return;
-    if (clash.email === email) throw new ConflictException('Энэ и-мэйл хаяг аль хэдийн бүртгэлтэй байна');
-    throw new ConflictException('Энэ утасны дугаар аль хэдийн бүртгэлтэй байна');
+    if (clash.email === email) throw new ConflictException(err('user.emailTaken', 'Энэ и-мэйл хаяг аль хэдийн бүртгэлтэй байна'));
+    throw new ConflictException(err('user.phoneTaken', 'Энэ утасны дугаар аль хэдийн бүртгэлтэй байна'));
   }
 }

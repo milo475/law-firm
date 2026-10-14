@@ -10,8 +10,9 @@ import { Button } from '@/components/ui/button';
 import { EmptyState, ErrorState, Skeleton } from '@/components/ui/states';
 import { toast } from '@/components/ui/toast';
 import type { Locale } from '@/i18n/routing';
-import { ApiError, api, type NotificationItem } from '@/lib/api';
+import { api, type NotificationItem } from '@/lib/api';
 import { formatMonthDay } from '@/lib/format';
+import { useApiError } from '@/lib/api-error';
 import { cn } from '@/lib/utils';
 
 type Data = { items: NotificationItem[]; unreadCount: number };
@@ -26,6 +27,7 @@ const FILTER_TYPES: Record<Exclude<Filter, 'ALL' | 'UNREAD'>, string[]> = {
 
 export default function NotificationsPage() {
   const t = useTranslations('portal.notifications');
+  const apiError = useApiError();
   const locale = useLocale() as Locale;
   const queryClient = useQueryClient();
   const query = useQuery({ queryKey: ['notifications'], queryFn: () => api.get<Data>('/notifications') });
@@ -34,12 +36,12 @@ export default function NotificationsPage() {
   const markRead = useMutation({
     mutationFn: (id: string) => api.patch(`/notifications/${id}/read`),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['notifications'] }),
-    onError: (e) => toast.danger(t('error'), e instanceof ApiError ? e.message : undefined),
+    onError: (e) => toast.danger(t('error'), apiError(e)),
   });
   const markAll = useMutation({
     mutationFn: () => api.patch<{ updated: number }>('/notifications/read-all'),
     onSuccess: (r) => { toast.success(t('allReadToast'), t('allReadBody', { count: r.updated })); void queryClient.invalidateQueries({ queryKey: ['notifications'] }); },
-    onError: (e) => toast.danger(t('error'), e instanceof ApiError ? e.message : undefined),
+    onError: (e) => toast.danger(t('error'), apiError(e)),
   });
 
   const items = query.data?.items ?? [];
@@ -118,7 +120,7 @@ export default function NotificationsPage() {
       </div>
 
       {query.isError ? (
-        <ErrorState message={query.error instanceof ApiError ? query.error.message : t('error')} onRetry={() => void query.refetch()} />
+        <ErrorState message={apiError(query.error, t('error'))} onRetry={() => void query.refetch()} />
       ) : query.isLoading ? (
         <div className="flex flex-col gap-2.5 md:gap-3" aria-busy aria-label={t('loadingLabel')}>
           <Skeleton className="h-[18px] w-20 md:h-[22px]" />

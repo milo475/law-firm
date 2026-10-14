@@ -47,6 +47,7 @@ export type {
 
 // ─── Zod schemas, labels, utils ──────────────────────────────────────────────
 export * from './schemas/index.js';
+export * from './errors.js';
 export * from './labels.js';
 export * from './utils/slug.js';
 export * from './utils/case-number.js';

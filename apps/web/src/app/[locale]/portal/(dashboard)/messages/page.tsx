@@ -8,9 +8,10 @@ import { MessagesIcon } from '@/components/icons';
 import { useUser } from '@/components/portal/user-context';
 import { Avatar } from '@/components/ui/avatar';
 import { EmptyState, ErrorState, Skeleton } from '@/components/ui/states';
-import { ApiError, api, type CaseListItem, type MessageConversation, type Paginated, type PublicUser } from '@/lib/api';
+import { api, type CaseListItem, type MessageConversation, type Paginated, type PublicUser } from '@/lib/api';
 import { formatDate } from '@/lib/format';
 import { MESSAGE_CONVERSATIONS_KEY } from '@/lib/messages';
+import { useApiError } from '@/lib/api-error';
 import { Link } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { cn, initials, shortName } from '@/lib/utils';
@@ -26,6 +27,7 @@ interface InboxRow {
 
 export default function MessagesPage() {
   const t = useTranslations('portal.messages');
+  const apiError = useApiError();
   const locale = useLocale() as Locale;
   const { user } = useUser();
   const conversations = useQuery({
@@ -65,7 +67,7 @@ export default function MessagesPage() {
 
       {error ? (
         <ErrorState
-          message={error instanceof ApiError ? error.message : t('loadError')}
+          message={apiError(error, t('loadError'))}
           onRetry={() => {
             void conversations.refetch();
             void cases.refetch();

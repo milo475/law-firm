@@ -10,13 +10,14 @@ import { CASE_STATUS_BADGE } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CaseCard } from '@/components/ui/card';
 import { CardSkeleton, EmptyState, ErrorState, Skeleton } from '@/components/ui/states';
-import { ApiError, api, type CaseEvent, type CaseListItem, type DocumentRequestSummary, type InvoiceItem, type MessageUnreadSummary, type NotificationItem, type Paginated, type ServiceRequestItem } from '@/lib/api';
+import { api, type CaseEvent, type CaseListItem, type DocumentRequestSummary, type InvoiceItem, type MessageUnreadSummary, type NotificationItem, type Paginated, type ServiceRequestItem } from '@/lib/api';
 import { useDocumentRequestSummary } from '@/lib/document-requests';
 import { useMessageUnreadSummary } from '@/lib/messages';
 import { isOpenServiceRequest, useMyServiceRequests } from '@/lib/service-requests';
 import { Link } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { formatDate, formatDateWithWeekday, formatMonthShort, formatMoney, formatTimeAgo } from '@/lib/format';
+import { useApiError } from '@/lib/api-error';
 import { cn } from '@/lib/utils';
 
 const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
@@ -35,6 +36,7 @@ const NEXT_EVENT_KEYS = ['HEARING', 'MEETING', 'DEADLINE', 'DOCUMENT'] as const;
 
 export default function DashboardPage() {
   const t = useTranslations('portal.dashboard');
+  const apiError = useApiError();
   const tEvent = useTranslations('enums.caseEvent');
   const locale = useLocale() as Locale;
   const { user } = useUser();
@@ -73,7 +75,7 @@ export default function DashboardPage() {
   const recentNotifications = (notifications.data?.items ?? []).slice(0, 4);
 
   const error = [cases, invoices, notifications].find((q) => q.isError)?.error;
-  if (error) return <ErrorState message={error instanceof ApiError ? error.message : t('loadError')} onRetry={() => { void cases.refetch(); void invoices.refetch(); void notifications.refetch(); }} />;
+  if (error) return <ErrorState message={apiError(error, t('loadError'))} onRetry={() => { void cases.refetch(); void invoices.refetch(); void notifications.refetch(); }} />;
 
   return (
     <div className="flex flex-col gap-6 md:gap-8">

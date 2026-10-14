@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type { NotificationListQueryInput, Prisma } from '@law-firm/shared';
+import { err } from '../common/errors/app-error';
 import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -57,7 +58,7 @@ export class NotificationsService {
   /** Someone else's notification is reported as not found, so ids cannot be probed. */
   async markRead(id: string, userId: string) {
     const notification = await this.prisma.notification.findFirst({ where: { id, userId }, select: NOTIFICATION_SELECT });
-    if (!notification) throw new NotFoundException('Мэдэгдэл олдсонгүй');
+    if (!notification) throw new NotFoundException(err('notification.notFound', 'Мэдэгдэл олдсонгүй'));
     if (notification.isRead) return notification;
     return this.prisma.notification.update({ where: { id }, data: { isRead: true }, select: NOTIFICATION_SELECT });
   }

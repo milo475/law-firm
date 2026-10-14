@@ -14,6 +14,10 @@
       "types": "./dist/schemas/index.d.ts",
       "default": "./dist/schemas/index.js"
     },
+    "./errors": {
+      "types": "./dist/errors.d.ts",
+      "default": "./dist/errors.js"
+    },
     "./labels": {
       "types": "./dist/labels.d.ts",
       "default": "./dist/labels.js"

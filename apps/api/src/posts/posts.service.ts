@@ -10,6 +10,7 @@ import {
   type Prisma,
   type UpdatePostInput,
 } from '@law-firm/shared';
+import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { paginate, skipTake } from '../common/utils/pagination';
 import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
@@ -62,7 +63,7 @@ export class PostsService {
       where: { slug, status: PostStatus.PUBLISHED, publishedAt: { lte: new Date() } },
       include: { author: { select: PUBLIC_USER_SELECT } },
     });
-    if (!post) throw new NotFoundException('Нийтлэл олдсонгүй');
+    if (!post) throw new NotFoundException(err('post.notFound', 'Нийтлэл олдсонгүй'));
 
     // Fire-and-forget counter; the response does not wait on it.
     void this.prisma.post
@@ -150,9 +151,9 @@ export class PostsService {
 
   private async findOwnedOrFail(id: string, user: RequestUser) {
     const post = await this.prisma.post.findUnique({ where: { id } });
-    if (!post) throw new NotFoundException('Нийтлэл олдсонгүй');
+    if (!post) throw new NotFoundException(err('post.notFound', 'Нийтлэл олдсонгүй'));
     if (user.role !== Role.ADMIN && post.authorId !== user.id) {
-      throw new ForbiddenException('Та зөвхөн өөрийн нийтлэлийг засах боломжтой');
+      throw new ForbiddenException(err('post.editOwnOnly', 'Та зөвхөн өөрийн нийтлэлийг засах боломжтой'));
     }
     return post;
   }
@@ -184,6 +185,6 @@ export class PostsService {
       const candidate = `${clean}-${i}`;
       if (!used.has(candidate)) return candidate;
     }
-    throw new ConflictException('Slug үүсгэх боломжгүй байна');
+    throw new ConflictException(err('post.slugUnavailable', 'Slug үүсгэх боломжгүй байна'));
   }
 }

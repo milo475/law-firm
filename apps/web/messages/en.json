@@ -984,6 +984,188 @@
       "CLIENT": "Client"
     }
   },
+  "errors": {
+    "http": {
+      "badRequest": "The request was not valid.",
+      "unauthorized": "Please sign in to continue.",
+      "forbidden": "You do not have permission for this action.",
+      "notFound": "That page or record was not found.",
+      "methodNotAllowed": "That request is not allowed.",
+      "conflict": "That record already exists.",
+      "payloadTooLarge": "The file is too large.",
+      "unsupportedMediaType": "That file type is not supported.",
+      "unprocessable": "The data could not be processed.",
+      "tooManyRequests": "Too many requests. Please wait a moment and try again.",
+      "serverError": "Something went wrong on our side. Please try again.",
+      "unavailable": "The service is temporarily unavailable."
+    },
+    "data": {
+      "duplicate": "A record with that value already exists.",
+      "notFound": "That record was not found.",
+      "relatedNotFound": "A related record was not found."
+    },
+    "validation": {
+      "failed": "Please check what you entered.",
+      "invalidType": "Please fill this field in correctly.",
+      "minLength": "Must be at least {min, plural, one {# character} other {# characters}}.",
+      "maxLength": "Must be at most {max, plural, one {# character} other {# characters}}.",
+      "min": "Must not be less than {min}.",
+      "max": "Must not be greater than {max}.",
+      "format": "Please use the right format.",
+      "invalidOption": "Please choose one of the available options."
+    },
+    "auth": {
+      "invalidCredentials": "The e-mail / phone number or password is wrong.",
+      "accountInactive": "Your account has been deactivated. Please contact the firm.",
+      "accountDisabled": "Your account has been deactivated.",
+      "emailTaken": "That e-mail address is already registered.",
+      "phoneTaken": "That phone number is already registered.",
+      "sessionMissing": "Your session was not found. Please sign in again.",
+      "sessionInvalid": "Your session is not valid. Please sign in again.",
+      "sessionRevoked": "Your session was ended for security reasons. Please sign in again.",
+      "sessionExpired": "Your session has expired. Please sign in again.",
+      "userNotFound": "That user was not found.",
+      "forbidden": "You do not have permission for this action."
+    },
+    "user": {
+      "notFound": "That user was not found.",
+      "clientsOnly": "You may only view client records.",
+      "lawyerRoleOnly": "Only a user with the lawyer role can have a lawyer profile.",
+      "cannotDeactivateSelf": "You cannot deactivate your own account.",
+      "emailTaken": "That e-mail address is already registered.",
+      "phoneTaken": "That phone number belongs to another user.",
+      "currentPasswordWrong": "Your current password is wrong."
+    },
+    "case": {
+      "notFound": "That case was not found.",
+      "viewForbidden": "You do not have access to this case.",
+      "manageForbidden": "You do not have permission to manage this case.",
+      "actionForbidden": "You do not have permission for this action.",
+      "leadOrAdminOnly": "Only the lead lawyer on the case or an administrator can do this.",
+      "assigneeRequired": "Please choose the lawyer in charge.",
+      "assigneeSelfOnly": "You can only assign the case to yourself.",
+      "assigneeAdminOnly": "Only an administrator can change the lawyer in charge.",
+      "alreadyClosed": "This case is already closed.",
+      "clientUnavailable": "The chosen client was not found or is inactive.",
+      "lawyerUnavailable": "The chosen lawyer was not found or is inactive."
+    },
+    "caseMember": {
+      "alreadyMember": "That member of staff is already on the team.",
+      "notMember": "That member of staff is not on the case team.",
+      "leadCannotDemote": "The lead lawyer cannot be made an ordinary member. Appoint another lead first.",
+      "leadCannotLeave": "The lead lawyer cannot be removed from the team. Appoint another lead first.",
+      "mustBeActiveStaff": "Only an active lawyer or administrator can join a case team.",
+      "leadMustBeLawyer": "Only a lawyer can be appointed as lead."
+    },
+    "caseEvent": {
+      "notFound": "That event was not found.",
+      "statusChangeLocked": "The type of a status-change entry cannot be edited."
+    },
+    "document": {
+      "notFound": "That document was not found.",
+      "fileRequired": "Please choose a file.",
+      "tooLarge": "The file may not be larger than {size}.",
+      "unsupportedType": "Only PDF, Word, Excel, image and text files can be attached.",
+      "contentMismatch": "The file’s contents do not match its type.",
+      "viewForbidden": "You do not have access to this document.",
+      "deleteOwnOnly": "You can only delete documents you uploaded yourself."
+    },
+    "documentRequest": {
+      "notFound": "That document request was not found.",
+      "caseClosed": "Documents cannot be requested on a closed case.",
+      "editLocked": "Only an awaiting or returned request can be edited.",
+      "deleteHasFiles": "A request with files attached cannot be deleted.",
+      "submitForbidden": "You cannot respond to this document request.",
+      "submitLocked": "Files cannot be sent for this request in its current state.",
+      "fileRequired": "Please attach at least one file.",
+      "tooManyFiles": "No more than {max, plural, one {# file} other {# files}} may be sent at a time.",
+      "reasonRequired": "Please give a reason for returning it.",
+      "reviewLocked": "This request cannot be moved to that state.",
+      "statusChanged": "The request has changed in the meantime. Please refresh the page."
+    },
+    "invoice": {
+      "notFound": "That invoice was not found.",
+      "invalidTransition": "The invoice cannot be moved to that state.",
+      "useConfirmAction": "Use the confirm or reject action for a payment.",
+      "draftOnlyEdit": "Only a draft invoice’s amount, description and due date can be edited.",
+      "statusChanged": "The invoice has changed in the meantime. Please refresh the page."
+    },
+    "payment": {
+      "markForbidden": "You cannot report a payment for this invoice.",
+      "alreadyMarked": "The payment has already been reported and is awaiting confirmation.",
+      "statusLocked": "This invoice cannot be marked as paid.",
+      "reviewLocked": "Only a payment awaiting confirmation can be reviewed."
+    },
+    "lawyer": {
+      "notFound": "That lawyer was not found.",
+      "profileMissing": "No profile yet — create one first.",
+      "profileExists": "This lawyer already has a profile.",
+      "roleRequired": "Only a user with the lawyer role can have a profile.",
+      "ownProfileOnly": "You can only manage your own profile."
+    },
+    "post": {
+      "notFound": "That article was not found.",
+      "editOwnOnly": "You can only edit your own articles.",
+      "slugUnavailable": "A web address could not be generated for this title.",
+      "imageRequired": "Please choose an image.",
+      "imageTooLarge": "The image may not be larger than 5MB.",
+      "imageUnsupported": "Only JPG, PNG and WEBP images can be uploaded.",
+      "imageContentMismatch": "The file’s contents are not an image."
+    },
+    "serviceRequest": {
+      "notFound": "That request was not found.",
+      "viewForbidden": "You do not have access to this request.",
+      "alreadyConverted": "A case has already been opened from this request.",
+      "rejectedLocked": "A rejected request cannot be changed.",
+      "alreadyInStatus": "The request is already in that state.",
+      "acceptFirst": "Accept the request first.",
+      "invalidTransition": "The request cannot be moved to that state.",
+      "clientInactive": "The client who sent the request has an inactive account.",
+      "lawyerUnavailable": "The chosen lawyer was not found or is inactive."
+    },
+    "testimonial": {
+      "notFound": "That testimonial was not found.",
+      "caseForbidden": "You cannot leave a testimonial on this case.",
+      "caseNotClosed": "A testimonial can be left once the case is closed.",
+      "alreadyExists": "You have already left a testimonial on this case.",
+      "editForbidden": "You cannot change this testimonial.",
+      "consentRequired": "A testimonial cannot be published without the client’s consent.",
+      "consentNoteRequired": "Please record how consent was obtained."
+    },
+    "task": {
+      "notFound": "That task was not found.",
+      "staffOnly": "Tasks are visible to staff only.",
+      "viewForbidden": "You do not have access to this task.",
+      "editForbidden": "Only the person who created the task or an administrator can edit it.",
+      "deleteForbidden": "Only the person who created the task or an administrator can delete it.",
+      "statusForbidden": "Only the assignee, the creator or an administrator can change the status.",
+      "invalidTransition": "The task cannot be moved to that state.",
+      "standaloneSelfOnly": "A task not tied to a case can only be created for yourself.",
+      "standaloneAssignSelfOnly": "A task not tied to a case can only be assigned to yourself.",
+      "assigneeMustBeStaff": "The assignee must be an active lawyer or administrator.",
+      "assigneeMustBeMember": "The assignee must be on this case’s team."
+    },
+    "taskAttachment": {
+      "notFound": "That attachment was not found.",
+      "fileRequired": "Please choose a file.",
+      "tooLarge": "The file may not be larger than 20MB.",
+      "unsupportedType": "Only PDF, Word, Excel, image and text files can be attached.",
+      "contentMismatch": "The file’s contents do not match its type.",
+      "deleteForbidden": "Only the person who attached the file or an administrator can delete it."
+    },
+    "notification": {
+      "notFound": "That notification was not found."
+    },
+    "performance": {
+      "staffOnly": "Performance figures are visible to staff only.",
+      "userNotFound": "That member of staff was not found.",
+      "viewForbidden": "You cannot view this person’s performance."
+    },
+    "settings": {
+      "invalidStoredValue": "A setting is stored in an invalid form. An administrator should save it again."
+    },
+    "unknown": "Something went wrong. Please try again."
+  },
   "portal": {
     "login": {
       "title": "Sign in",

@@ -6,7 +6,8 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useState, useSyncExternalStore } from 'react';
 import { Button } from '@/components/ui/button';
 import { CardSkeleton, EmptyState, ErrorState, Skeleton } from '@/components/ui/states';
-import { ApiError, api, type InvoiceItem, type Paginated } from '@/lib/api';
+import { api, type InvoiceItem, type Paginated } from '@/lib/api';
+import { useApiError } from '@/lib/api-error';
 import { formatDate, formatMoney } from '@/lib/format';
 import { Link } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
@@ -39,6 +40,7 @@ function sortInvoices(items: InvoiceItem[]) {
 
 export default function InvoicesPage() {
   const t = useTranslations('portal.invoices');
+  const apiError = useApiError();
   const tStatus = useTranslations('portal.invoices.status');
   const isWide = useIsWide();
   const [status, setStatus] = useState('ALL');
@@ -116,7 +118,7 @@ export default function InvoicesPage() {
           </div>
 
           {query.isError ? (
-            <ErrorState message={query.error instanceof ApiError ? query.error.message : t('loadError')} onRetry={() => void query.refetch()} />
+            <ErrorState message={apiError(query.error, t('loadError'))} onRetry={() => void query.refetch()} />
           ) : query.isLoading ? (
             <div className="flex flex-col gap-3.5 md:gap-4"><CardSkeleton /><CardSkeleton /><CardSkeleton /></div>
           ) : items.length === 0 ? (

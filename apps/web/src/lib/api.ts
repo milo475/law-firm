@@ -7,10 +7,15 @@
  *    (also for GET /auth/me: a failed refresh clears the session cookies, so the login redirect cannot loop)
  */
 
+/**
+ * A failed response. `message` is the API's Mongolian wording; `code` is the stable identity of the
+ * failure, which `useApiError()` turns into a sentence in the reader's language (see lib/api-error).
+ */
 export class ApiError extends Error {
   constructor(
     public readonly status: number,
     message: string,
+    public readonly code?: string,
     public readonly details?: unknown,
     public readonly path?: string,
   ) {
@@ -44,6 +49,7 @@ export function getApiBaseUrl(): string {
 
 interface ErrorBody {
   statusCode?: number;
+  code?: string;
   message?: string;
   error?: string;
   details?: unknown;
@@ -122,6 +128,7 @@ export async function apiFetch<T = unknown>(path: string, options: ApiRequestOpt
     throw new ApiError(
       response.status,
       err.message ?? 'Серверийн алдаа гарлаа. Дахин оролдоно уу',
+      err.code,
       err.details,
       err.path ?? path,
     );

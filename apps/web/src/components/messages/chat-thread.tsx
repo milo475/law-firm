@@ -60,6 +60,9 @@ export interface ChatLabels {
   yesterday: string;
 }
 
+/** The admin panel reads Mongolian, so the API's own message is the right text there. */
+const defaultFormatError = (error: unknown, fallback: string) => (error instanceof ApiError ? error.message : fallback);
+
 const DEFAULT_LABELS: ChatLabels = {
   section: 'Мессеж',
   loadError: 'Мессеж ачаалахад алдаа гарлаа',
@@ -82,7 +85,7 @@ const DEFAULT_LABELS: ChatLabels = {
 };
 
 /** Case chat used by both the admin case page and the client portal case page. */
-export function ChatThread({ caseId, viewer, active, counterpart, emptyDescription, className, labels, locale = 'mn', roleLabel = (role: string) => ROLE_LABELS[role] ?? role }: {
+export function ChatThread({ caseId, viewer, active, counterpart, emptyDescription, className, labels, locale = 'mn', roleLabel = (role: string) => ROLE_LABELS[role] ?? role, formatError = defaultFormatError }: {
   caseId: string;
   viewer: ChatViewer;
   /** True while the tab is visible: enables polling and marking messages read. */
@@ -93,6 +96,8 @@ export function ChatThread({ caseId, viewer, active, counterpart, emptyDescripti
   labels?: Partial<ChatLabels>;
   locale?: Locale;
   roleLabel?: (role: string) => string;
+  /** The portal passes `useApiError()` so a failure is worded in the reader's language. */
+  formatError?: (error: unknown, fallback: string) => string;
 }) {
   const l = { ...DEFAULT_LABELS, ...labels };
   const queryClient = useQueryClient();
@@ -162,7 +167,7 @@ export function ChatThread({ caseId, viewer, active, counterpart, emptyDescripti
       await queryClient.invalidateQueries({ queryKey: caseMessagesKey(caseId) });
       void queryClient.invalidateQueries({ queryKey: MESSAGE_CONVERSATIONS_KEY });
     },
-    onError: (error) => toast.danger(l.sendFailed, error instanceof ApiError ? error.message : l.tryAgain),
+    onError: (error) => toast.danger(l.sendFailed, formatError(error, l.tryAgain)),
   });
   const submit = handleSubmit((values) => send.mutate(values));
 
@@ -186,7 +191,7 @@ export function ChatThread({ caseId, viewer, active, counterpart, emptyDescripti
 
       <div ref={scroller} className="flex flex-1 flex-col overflow-y-auto bg-bg-page px-4 py-4 md:px-6" aria-busy={thread.isLoading}>
         {thread.isError ? (
-          <ErrorState className="my-auto" message={thread.error instanceof ApiError ? thread.error.message : l.loadError} onRetry={() => void thread.refetch()} />
+          <ErrorState className="my-auto" message={formatError(thread.error, l.loadError)} onRetry={() => void thread.refetch()} />
         ) : thread.isLoading ? (
           <div className="flex flex-col gap-4" aria-label={l.loading}>
             <Skeleton className="h-14 w-2/3" />

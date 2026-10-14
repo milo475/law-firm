@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Pagination } from '@/components/ui/pagination';
 import { CardSkeleton, EmptyState, ErrorState } from '@/components/ui/states';
-import { ApiError, type ServiceRequestItem } from '@/lib/api';
+import { type ServiceRequestItem } from '@/lib/api';
+import { useApiError } from '@/lib/api-error';
 import { formatDate } from '@/lib/format';
 import { useMyServiceRequests } from '@/lib/service-requests';
 import { Link } from '@/i18n/navigation';
@@ -16,6 +17,7 @@ import type { Locale } from '@/i18n/routing';
 
 export default function MyServiceRequestsPage() {
   const t = useTranslations('portal.requests');
+  const apiError = useApiError();
   const [page, setPage] = useState(1);
   const requests = useMyServiceRequests(page);
   const data = requests.data;
@@ -33,7 +35,7 @@ export default function MyServiceRequestsPage() {
       </div>
 
       {requests.isError ? (
-        <ErrorState message={requests.error instanceof ApiError ? requests.error.message : t('loadError')} onRetry={() => void requests.refetch()} />
+        <ErrorState message={apiError(requests.error, t('loadError'))} onRetry={() => void requests.refetch()} />
       ) : !data ? (
         <div className="flex flex-col gap-4"><CardSkeleton /><CardSkeleton /></div>
       ) : data.items.length === 0 ? (

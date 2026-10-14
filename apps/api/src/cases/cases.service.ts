@@ -13,6 +13,7 @@ import {
   type Prisma,
   type UpdateCaseInput,
 } from '@law-firm/shared';
+import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { isUniqueViolation } from '../common/utils/format';
 import { paginate, skipTake } from '../common/utils/pagination';
@@ -129,7 +130,7 @@ export class CasesService {
 
   async findOne(id: string, user: RequestUser) {
     const record = await this.prisma.case.findUnique({ where: { id }, include: CASE_DETAIL_INCLUDE });
-    if (!record) throw new NotFoundException('Хэрэг олдсонгүй');
+    if (!record) throw new NotFoundException(err('case.notFound', 'Хэрэг олдсонгүй'));
     this.assertAccess(record, user);
     // The staff team is internal: clients get the case without it.
     return user.role === Role.CLIENT && record.members ? { ...record, members: undefined } : record;
@@ -157,20 +158,20 @@ export class CasesService {
   async create(input: CreateCaseInput, user: RequestUser) {
     let lawyerId: string;
     if (user.role === Role.ADMIN) {
-      if (!input.lawyerId) throw new BadRequestException('Хариуцах хуульчийг сонгоно уу');
+      if (!input.lawyerId) throw new BadRequestException(err('case.assigneeRequired', 'Хариуцах хуульчийг сонгоно уу'));
       lawyerId = input.lawyerId;
     } else if (user.role === Role.LAWYER) {
       if (input.lawyerId && input.lawyerId !== user.id) {
-        throw new ForbiddenException('Та зөвхөн өөрийгөө хариуцах хуульчаар тохируулах боломжтой');
+        throw new ForbiddenException(err('case.assigneeSelfOnly', 'Та зөвхөн өөрийгөө хариуцах хуульчаар тохируулах боломжтой'));
       }
       lawyerId = user.id;
     } else {
-      throw new ForbiddenException('Энэ үйлдлийг хийх эрх танд байхгүй байна');
+      throw new ForbiddenException(err('case.actionForbidden', 'Энэ үйлдлийг хийх эрх танд байхгүй байна'));
     }
 
-    await this.assertUserWithRole(input.clientId, Role.CLIENT, 'Сонгосон харилцагч олдсонгүй эсвэл идэвхгүй байна');
+    await this.assertUserWithRole(input.clientId, Role.CLIENT, err('case.clientUnavailable', 'Сонгосон харилцагч олдсонгүй эсвэл идэвхгүй байна'));
     if (lawyerId !== user.id) {
-      await this.assertUserWithRole(lawyerId, Role.LAWYER, 'Сонгосон хуульч олдсонгүй эсвэл идэвхгүй байна');
+      await this.assertUserWithRole(lawyerId, Role.LAWYER, err('case.lawyerUnavailable', 'Сонгосон хуульч олдсонгүй эсвэл идэвхгүй байна'));
     }
 
     for (let attempt = 1; ; attempt += 1) {
@@ -205,9 +206,9 @@ export class CasesService {
 
     if (input.lawyerId && input.lawyerId !== existing.lawyerId) {
       if (user.role !== Role.ADMIN) {
-        throw new ForbiddenException('Хариуцах хуульчийг зөвхөн админ солих боломжтой');
+        throw new ForbiddenException(err('case.assigneeAdminOnly', 'Хариуцах хуульчийг зөвхөн админ солих боломжтой'));
       }
-      await this.assertUserWithRole(input.lawyerId, Role.LAWYER, 'Сонгосон хуульч олдсонгүй эсвэл идэвхгүй байна');
+      await this.assertUserWithRole(input.lawyerId, Role.LAWYER, err('case.lawyerUnavailable', 'Сонгосон хуульч олдсонгүй эсвэл идэвхгүй байна'));
     }
 
     const statusChanged = input.status !== undefined && input.status !== existing.status;
@@ -249,7 +250,7 @@ export class CasesService {
   async close(id: string, input: CloseCaseInput, user: RequestUser) {
     const existing = await this.assertLeadAccessById(id, user);
     if (existing.status === CaseStatus.CLOSED) {
-      throw new BadRequestException('Хэрэг аль хэдийн хаагдсан байна');
+      throw new BadRequestException(err('case.alreadyClosed', 'Хэрэг аль хэдийн хаагдсан байна'));
     }
     return this.prisma.$transaction(async (tx) => {
       const updated = await tx.case.update({
@@ -269,7 +270,7 @@ export class CasesService {
   /** Loads the case (minimal) and throws 404/403 for read access. */
   async assertAccessById(caseId: string, user: RequestUser): Promise<CaseAccessRecord> {
     const record = await this.prisma.case.findUnique({ where: { id: caseId }, select: CASE_ACCESS_SELECT });
-    if (!record) throw new NotFoundException('Хэрэг олдсонгүй');
+    if (!record) throw new NotFoundException(err('case.notFound', 'Хэрэг олдсонгүй'));
     this.assertAccess(record, user);
     return record;
   }
@@ -277,7 +278,7 @@ export class CasesService {
   /** Loads the case (minimal) and throws 404/403 for management (write) access. */
   async assertStaffAccessById(caseId: string, user: RequestUser): Promise<CaseAccessRecord> {
     const record = await this.prisma.case.findUnique({ where: { id: caseId }, select: CASE_ACCESS_SELECT });
-    if (!record) throw new NotFoundException('Хэрэг олдсонгүй');
+    if (!record) throw new NotFoundException(err('case.notFound', 'Хэрэг олдсонгүй'));
     this.assertStaffAccess(record, user);
     return record;
   }
@@ -285,7 +286,7 @@ export class CasesService {
   /** Loads the case (minimal) and throws 404/403 unless the user is ADMIN or the case LEAD. */
   async assertLeadAccessById(caseId: string, user: RequestUser): Promise<CaseAccessRecord> {
     const record = await this.prisma.case.findUnique({ where: { id: caseId }, select: CASE_ACCESS_SELECT });
-    if (!record) throw new NotFoundException('Хэрэг олдсонгүй');
+    if (!record) throw new NotFoundException(err('case.notFound', 'Хэрэг олдсонгүй'));
     this.assertLeadAccess(record, user);
     return record;
   }
@@ -295,21 +296,21 @@ export class CasesService {
     if (user.role === Role.ADMIN) return;
     if (user.role === Role.LAWYER && this.isMember(record, user.id)) return;
     if (user.role === Role.CLIENT && record.clientId === user.id) return;
-    throw new ForbiddenException('Энэ хэргийг үзэх эрх танд байхгүй байна');
+    throw new ForbiddenException(err('case.viewForbidden', 'Энэ хэргийг үзэх эрх танд байхгүй байна'));
   }
 
   /** Working on the case (events, documents, invoices, requests…): ADMIN or any LAWYER on the team. */
   assertStaffAccess(record: CaseScopeRecord, user: RequestUser): void {
     if (user.role === Role.ADMIN) return;
     if (user.role === Role.LAWYER && this.isMember(record, user.id)) return;
-    throw new ForbiddenException('Энэ хэргийг удирдах эрх танд байхгүй байна');
+    throw new ForbiddenException(err('case.manageForbidden', 'Энэ хэргийг удирдах эрх танд байхгүй байна'));
   }
 
   /** Team management and core case data: ADMIN or the case LEAD. */
   assertLeadAccess(record: CaseScopeRecord, user: RequestUser): void {
     if (user.role === Role.ADMIN) return;
     if (user.role === Role.LAWYER && this.isLead(record, user.id)) return;
-    throw new ForbiddenException('Энэ үйлдлийг зөвхөн хэргийн ахлах хуульч эсвэл админ хийнэ');
+    throw new ForbiddenException(err('case.leadOrAdminOnly', 'Энэ үйлдлийг зөвхөн хэргийн ахлах хуульч эсвэл админ хийнэ'));
   }
 
   /** The lead lawyer (lawyerId) always counts, even for records loaded without the team. */
@@ -337,12 +338,12 @@ export class CasesService {
     return nextSequenceNumber(CASE_NUMBER_PREFIX, year, last?.caseNumber ?? null);
   }
 
-  private async assertUserWithRole(userId: string, role: Role, message: string): Promise<void> {
+  private async assertUserWithRole(userId: string, role: Role, failure: ReturnType<typeof err>): Promise<void> {
     const found = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, role: true, isActive: true },
     });
-    if (!found || found.role !== role || !found.isActive) throw new BadRequestException(message);
+    if (!found || found.role !== role || !found.isActive) throw new BadRequestException(failure);
   }
 
   private statusChangeEvent(

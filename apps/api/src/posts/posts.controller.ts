@@ -20,6 +20,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Role } from '@law-firm/shared';
+import { err } from '../common/errors/app-error';
 import type { UploadedFile as UploadedFileShape } from '../documents/documents.service';
 import { StorageService } from '../storage/storage.service';
 import { contentMatchesMimeType } from '../common/utils/file-signature';
@@ -70,14 +71,14 @@ export class PostsController {
   @ApiBody({ schema: { type: 'object', properties: { file: { type: 'string', format: 'binary' } } } })
   @ApiOperation({ summary: 'Нийтлэлийн нүүр зураг оруулах (JPG/PNG/WEBP, 5MB) → нийтэд нээлттэй URL' })
   async uploadCover(@UploadedFile() file: UploadedFileShape | undefined) {
-    if (!file) throw new BadRequestException('Зураг сонгоно уу (multipart талбар: "file")');
+    if (!file) throw new BadRequestException(err('post.imageRequired', 'Зураг сонгоно уу (multipart талбар: "file")'));
     if (!COVER_MIME_TYPES.includes(file.mimetype)) {
-      throw new UnsupportedMediaTypeException('Зөвхөн JPG, PNG, WEBP зураг оруулах боломжтой');
+      throw new UnsupportedMediaTypeException(err('post.imageUnsupported', 'Зөвхөн JPG, PNG, WEBP зураг оруулах боломжтой'));
     }
-    if (file.size > MAX_COVER_BYTES) throw new PayloadTooLargeException('Зургийн хэмжээ 5MB-аас хэтэрч болохгүй');
+    if (file.size > MAX_COVER_BYTES) throw new PayloadTooLargeException(err('post.imageTooLarge', 'Зургийн хэмжээ 5MB-аас хэтэрч болохгүй'));
     // The browser's Content-Type is a claim; check the image signature before it reaches the bucket.
     if (!contentMatchesMimeType(file.buffer, file.mimetype)) {
-      throw new UnsupportedMediaTypeException('Файлын агуулга нь зураг биш байна');
+      throw new UnsupportedMediaTypeException(err('post.imageContentMismatch', 'Файлын агуулга нь зураг биш байна'));
     }
     const ext = extname(Buffer.from(file.originalname, 'latin1').toString('utf8')).toLowerCase() || '.jpg';
     const url = await this.storage.uploadPublic({ key: `posts/${randomUUID()}${ext}`, body: file.buffer, mimeType: file.mimetype, size: file.size });

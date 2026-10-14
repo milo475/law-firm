@@ -1,6 +1,7 @@
-import { Logger, NotFoundException, type ArgumentsHost } from '@nestjs/common';
-import { LoginSchema } from '@law-firm/shared';
+import { ForbiddenException, Logger, NotFoundException, type ArgumentsHost } from '@nestjs/common';
+import { LoginSchema, RegisterSchema } from '@law-firm/shared';
 import { ZodValidationException } from 'nestjs-zod';
+import { err } from '../errors/app-error';
 import { AllExceptionsFilter } from './http-exception.filter';
 
 describe('AllExceptionsFilter', () => {
@@ -40,15 +41,36 @@ describe('AllExceptionsFilter', () => {
     expect(body.message).toBe('Хэрэг олдсонгүй');
   });
 
-  it('formats zod validation errors as 400 with field details', () => {
+  it('formats zod validation errors as 400 with the failing field', () => {
     const parsed = LoginSchema.safeParse({ identifier: '', password: '' });
     const { status, body } = run(new ZodValidationException(parsed.error as never));
     expect(status).toBe(400);
     expect(body.error).toBe('Validation Error');
-    expect(body.details).toEqual(
-      expect.arrayContaining([expect.objectContaining({ field: 'identifier' }), expect.objectContaining({ field: 'password' })]),
-    );
+    expect(body.code).toBe('validation.minLength');
+    expect(body.details).toEqual({ field: 'identifier', min: 1 });
     expect(body.message).toBe('И-мэйл эсвэл утасны дугаараа оруулна уу');
+  });
+
+  it('names the rule and the limit a zod issue broke, so the client can word it itself', () => {
+    const parsed = RegisterSchema.safeParse({ email: 'a@b.mn', password: 'short1', firstName: 'Болд', lastName: 'Бат' });
+    const { body } = run(new ZodValidationException(parsed.error as never));
+    expect(body.code).toBe('validation.minLength');
+    expect(body.details).toEqual({ field: 'password', min: 8 });
+  });
+
+  it('keeps the code and the translation values of a thrown app error', () => {
+    const { status, body } = run(
+      new ForbiddenException(err('documentRequest.tooManyFiles', 'Нэг удаад 20-аас ихгүй файл илгээнэ үү', { max: 20 })),
+    );
+    expect(status).toBe(403);
+    expect(body.code).toBe('documentRequest.tooManyFiles');
+    expect(body.message).toBe('Нэг удаад 20-аас ихгүй файл илгээнэ үү');
+    expect(body.details).toEqual({ max: 20 });
+  });
+
+  it('falls back to the code for the status when an exception carries none', () => {
+    expect(run(new NotFoundException()).body.code).toBe('http.notFound');
+    expect(run(new ForbiddenException('Энэ хэргийг үзэх эрх танд байхгүй байна')).body.code).toBe('http.forbidden');
   });
 
   it('maps Prisma unique-constraint errors to 409', () => {
@@ -60,12 +82,14 @@ describe('AllExceptionsFilter', () => {
     const { status, body } = run(prismaError);
     expect(status).toBe(409);
     expect(body.error).toBe('Conflict');
-    expect(body.details).toEqual(['email']);
+    expect(body.code).toBe('data.duplicate');
+    expect(body.details).toEqual({ field: 'email' });
   });
 
   it('hides internals of unexpected errors behind a generic 500', () => {
     const { status, body } = run(new Error('secret stack info'));
     expect(status).toBe(500);
+    expect(body.code).toBe('http.serverError');
     expect(body.message).not.toContain('secret');
   });
 });

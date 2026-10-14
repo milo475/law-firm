@@ -11,9 +11,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/toast';
 import { ApiError, api } from '@/lib/api';
+import { useApiError } from '@/lib/api-error';
 
 export function RegisterForm() {
   const t = useTranslations('portal.register');
+  const apiError = useApiError();
   const router = useRouter();
   const [agreed, setAgreed] = useState(false);
   const { register, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm<RegisterInput>({
@@ -28,7 +30,7 @@ export function RegisterForm() {
       router.replace('/portal');
       router.refresh();
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : t('genericError');
+      const message = apiError(error, t('genericError'));
       if (error instanceof ApiError && error.status === 409) setError('email', { message });
       toast.danger(t('failedToast'), message);
     }

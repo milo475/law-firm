@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { FileChip } from '@/components/ui/file-chip';
 import { toast } from '@/components/ui/toast';
-import { ApiError, api, type DocumentItem, type DocumentRequestItem, type DocumentRequestStatus } from '@/lib/api';
+import { api, type DocumentItem, type DocumentRequestItem, type DocumentRequestStatus } from '@/lib/api';
 import {
   DOCUMENT_REQUEST_SUMMARY_KEY,
   MAX_REQUEST_FILES,
@@ -21,6 +21,7 @@ import {
   validateRequestFiles,
 } from '@/lib/document-requests';
 import { formatBytes, formatDate, formatSizeLimit } from '@/lib/format';
+import { useApiError } from '@/lib/api-error';
 import type { Locale } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
 
@@ -75,6 +76,7 @@ export function DocumentRequestsPanel({ caseId, requests, onDownload }: {
 function RequestItem({ caseId, request, onDownload }: { caseId: string; request: DocumentRequestItem; onDownload: (doc: DocumentItem) => void }) {
   const t = useTranslations('portal.documentRequests');
   const tStatus = useTranslations('enums.documentRequestStatus');
+  const apiError = useApiError();
   const locale = useLocale() as Locale;
   const queryClient = useQueryClient();
   const fileInput = useRef<HTMLInputElement>(null);
@@ -98,7 +100,7 @@ function RequestItem({ caseId, request, onDownload }: { caseId: string; request:
         queryClient.invalidateQueries({ queryKey: DOCUMENT_REQUEST_SUMMARY_KEY }),
       ]);
     },
-    onError: (error) => toast.danger(t('submitFailed'), error instanceof ApiError ? error.message : t('tryAgain')),
+    onError: (error) => toast.danger(t('submitFailed'), apiError(error, t('tryAgain'))),
   });
 
   function addFiles(list: FileList | File[]) {

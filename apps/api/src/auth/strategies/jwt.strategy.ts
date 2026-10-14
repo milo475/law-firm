@@ -4,6 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import type { AccessTokenPayload } from '@law-firm/shared';
 import type { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { err } from '../../common/errors/app-error';
 import type { RequestUser } from '../../common/types/request-user';
 import type { Env } from '../../config/env';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -34,7 +35,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       select: { id: true, email: true, role: true, isActive: true },
     });
     if (!user || !user.isActive) {
-      throw new UnauthorizedException('Хэрэглэгчийн эрх идэвхгүй байна');
+      throw new UnauthorizedException(err('auth.accountDisabled', 'Хэрэглэгчийн эрх идэвхгүй байна'));
     }
     return { id: user.id, email: user.email, role: user.role };
   }

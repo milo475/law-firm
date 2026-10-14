@@ -15,6 +15,7 @@ import {
   type PerformanceUserDetail,
   type Prisma,
 } from '@law-firm/shared';
+import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { PrismaService } from '../prisma/prisma.service';
 import { TasksService } from '../tasks/tasks.service';
@@ -206,7 +207,7 @@ export class PerformanceService {
       });
       where.id = { in: [...new Set([viewer.id, ...teammates.map((member) => member.userId)])] };
     } else if (viewer.role !== Role.ADMIN) {
-      throw new ForbiddenException('Гүйцэтгэлийн мэдээлэл зөвхөн ажилтанд харагдана');
+      throw new ForbiddenException(err('performance.staffOnly', 'Гүйцэтгэлийн мэдээлэл зөвхөн ажилтанд харагдана'));
     }
     const people = await this.prisma.user.findMany({ where, select: STAFF_SELECT, orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }] });
     return people as PerformancePerson[];
@@ -218,8 +219,8 @@ export class PerformanceService {
   private async assertVisible(viewer: RequestUser, userId: string): Promise<PerformancePerson> {
     const person = (await this.visibleStaff(viewer)).find((item) => item.id === userId);
     if (person) return person;
-    if (viewer.role === Role.ADMIN) throw new NotFoundException('Ажилтан олдсонгүй');
-    throw new ForbiddenException('Энэ ажилтны гүйцэтгэлийг харах эрх танд байхгүй байна');
+    if (viewer.role === Role.ADMIN) throw new NotFoundException(err('performance.userNotFound', 'Ажилтан олдсонгүй'));
+    throw new ForbiddenException(err('performance.viewForbidden', 'Энэ ажилтны гүйцэтгэлийг харах эрх танд байхгүй байна'));
   }
 
   /** Five grouped queries for any number of people: active, overdue, completed, completed with a due date, completed on time. */

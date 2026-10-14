@@ -5,6 +5,7 @@ import {
   type CreateCaseEventInput,
   type UpdateCaseEventInput,
 } from '@law-firm/shared';
+import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { formatDateTimeMn } from '../common/utils/format';
 import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
@@ -58,7 +59,7 @@ export class CaseEventsService {
   async update(eventId: string, input: UpdateCaseEventInput, user: RequestUser) {
     const existing = await this.loadWithAccess(eventId, user);
     if (existing.type === 'STATUS_CHANGE' && input.type !== undefined) {
-      throw new BadRequestException('Төлөвийн өөрчлөлтийн бичлэгийн төрлийг солих боломжгүй');
+      throw new BadRequestException(err('caseEvent.statusChangeLocked', 'Төлөвийн өөрчлөлтийн бичлэгийн төрлийг солих боломжгүй'));
     }
     return this.prisma.caseEvent.update({
       where: { id: eventId },
@@ -83,7 +84,7 @@ export class CaseEventsService {
       where: { id: eventId },
       include: { case: { select: { lawyerId: true, clientId: true, members: CASE_MEMBERSHIP_SELECT } } },
     });
-    if (!event) throw new NotFoundException('Үйл явдал олдсонгүй');
+    if (!event) throw new NotFoundException(err('caseEvent.notFound', 'Үйл явдал олдсонгүй'));
     this.cases.assertStaffAccess(event.case, user);
     return event;
   }

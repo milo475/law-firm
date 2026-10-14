@@ -17,10 +17,11 @@ import { Modal, ModalContent } from '@/components/ui/modal';
 import { ErrorState, Skeleton } from '@/components/ui/states';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/toast';
-import { ApiError, api, type InvoiceItem } from '@/lib/api';
+import { api, type InvoiceItem } from '@/lib/api';
 import { formatDate, formatMoney } from '@/lib/format';
 import { firmIssuerLine } from '@/lib/firm';
 import { INVOICE_PAYMENT_SUMMARY_KEY, formatAccountNumber, isAwaitingConfirmation, isPayable, useBankAccount } from '@/lib/invoices';
+import { useApiError } from '@/lib/api-error';
 import { useFirmSettings } from '@/lib/settings';
 import { Link } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
@@ -161,6 +162,7 @@ export function PaymentModal({
 }) {
   const t = useTranslations('portal.invoices.payment');
   const tCommon = useTranslations('common');
+  const apiError = useApiError();
   const locale = useLocale() as Locale;
   const queryClient = useQueryClient();
   const bank = useBankAccount(open);
@@ -185,7 +187,7 @@ export function PaymentModal({
         queryClient.invalidateQueries({ queryKey: INVOICE_PAYMENT_SUMMARY_KEY }),
       ]);
     },
-    onError: (error) => toast.danger(t('markFailed'), error instanceof ApiError ? error.message : t('tryAgain')),
+    onError: (error) => toast.danger(t('markFailed'), apiError(error, t('tryAgain'))),
   });
 
   async function copy(text: string, label: string) {

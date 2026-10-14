@@ -984,6 +984,188 @@
       "CLIENT": "客户"
     }
   },
+  "errors": {
+    "http": {
+      "badRequest": "请求无效。",
+      "unauthorized": "请先登录。",
+      "forbidden": "您没有执行此操作的权限。",
+      "notFound": "未找到该页面或数据。",
+      "methodNotAllowed": "该请求不被允许。",
+      "conflict": "数据已存在。",
+      "payloadTooLarge": "文件过大。",
+      "unsupportedMediaType": "不支持该文件类型。",
+      "unprocessable": "无法处理该数据。",
+      "tooManyRequests": "请求过于频繁，请稍后再试。",
+      "serverError": "服务器出错，请重试。",
+      "unavailable": "服务暂时不可用。"
+    },
+    "data": {
+      "duplicate": "该内容已存在记录。",
+      "notFound": "未找到该数据。",
+      "relatedNotFound": "未找到相关数据。"
+    },
+    "validation": {
+      "failed": "请检查您填写的内容。",
+      "invalidType": "请正确填写此栏。",
+      "minLength": "至少需要 {min, plural, other {# 个字符}}。",
+      "maxLength": "最多 {max, plural, other {# 个字符}}。",
+      "min": "不能小于 {min}。",
+      "max": "不能大于 {max}。",
+      "format": "请使用正确的格式。",
+      "invalidOption": "请从可选项中选择。"
+    },
+    "auth": {
+      "invalidCredentials": "邮箱／手机号或密码有误。",
+      "accountInactive": "您的账户已停用，请联系律所。",
+      "accountDisabled": "您的账户已停用。",
+      "emailTaken": "该邮箱已被注册。",
+      "phoneTaken": "该手机号已被注册。",
+      "sessionMissing": "未找到会话，请重新登录。",
+      "sessionInvalid": "会话无效，请重新登录。",
+      "sessionRevoked": "出于安全原因，您的会话已结束，请重新登录。",
+      "sessionExpired": "会话已过期，请重新登录。",
+      "userNotFound": "未找到该用户。",
+      "forbidden": "您没有执行此操作的权限。"
+    },
+    "user": {
+      "notFound": "未找到该用户。",
+      "clientsOnly": "您只能查看客户信息。",
+      "lawyerRoleOnly": "只有律师角色的用户才能拥有律师资料。",
+      "cannotDeactivateSelf": "您无法停用自己的账户。",
+      "emailTaken": "该邮箱已被注册。",
+      "phoneTaken": "该手机号已属于其他用户。",
+      "currentPasswordWrong": "当前密码不正确。"
+    },
+    "case": {
+      "notFound": "未找到该案件。",
+      "viewForbidden": "您无权查看此案件。",
+      "manageForbidden": "您无权管理此案件。",
+      "actionForbidden": "您没有执行此操作的权限。",
+      "leadOrAdminOnly": "只有案件主办律师或管理员可执行此操作。",
+      "assigneeRequired": "请选择负责律师。",
+      "assigneeSelfOnly": "您只能将案件指派给自己。",
+      "assigneeAdminOnly": "只有管理员才能更换负责律师。",
+      "alreadyClosed": "该案件已结案。",
+      "clientUnavailable": "所选客户不存在或已停用。",
+      "lawyerUnavailable": "所选律师不存在或已停用。"
+    },
+    "caseMember": {
+      "alreadyMember": "该员工已在团队中。",
+      "notMember": "该员工不在案件团队中。",
+      "leadCannotDemote": "无法直接将主办律师改为普通成员，请先任命其他主办律师。",
+      "leadCannotLeave": "无法将主办律师移出团队，请先任命其他主办律师。",
+      "mustBeActiveStaff": "只有在职律师或管理员才能加入案件团队。",
+      "leadMustBeLawyer": "只有律师可被任命为主办人。"
+    },
+    "caseEvent": {
+      "notFound": "未找到该事件。",
+      "statusChangeLocked": "状态变更记录的类型无法修改。"
+    },
+    "document": {
+      "notFound": "未找到该文件。",
+      "fileRequired": "请选择文件。",
+      "tooLarge": "文件不得超过 {size}。",
+      "unsupportedType": "仅支持 PDF、Word、Excel、图片和文本文件。",
+      "contentMismatch": "文件内容与其类型不符。",
+      "viewForbidden": "您无权查看此文件。",
+      "deleteOwnOnly": "您只能删除自己上传的文件。"
+    },
+    "documentRequest": {
+      "notFound": "未找到该文件申请。",
+      "caseClosed": "已结案的案件无法索取文件。",
+      "editLocked": "仅可修改待提交或已退回的申请。",
+      "deleteHasFiles": "已附文件的申请无法删除。",
+      "submitForbidden": "您无权回复此文件申请。",
+      "submitLocked": "该申请当前状态不允许提交文件。",
+      "fileRequired": "请至少附上一个文件。",
+      "tooManyFiles": "每次最多提交 {max, plural, other {# 个文件}}。",
+      "reasonRequired": "请填写退回原因。",
+      "reviewLocked": "该申请无法变更为此状态。",
+      "statusChanged": "申请状态已变更，请刷新页面。"
+    },
+    "invoice": {
+      "notFound": "未找到该账单。",
+      "invalidTransition": "账单无法变更为此状态。",
+      "useConfirmAction": "请使用“确认付款”或“拒绝”操作。",
+      "draftOnlyEdit": "仅可修改草稿账单的金额、说明和期限。",
+      "statusChanged": "账单状态已变更，请刷新页面。"
+    },
+    "payment": {
+      "markForbidden": "您无权标记此账单的付款。",
+      "alreadyMarked": "付款已标记，正在等待确认。",
+      "statusLocked": "此账单无法标记为已付款。",
+      "reviewLocked": "仅可处理“待确认”状态的付款。"
+    },
+    "lawyer": {
+      "notFound": "未找到该律师。",
+      "profileMissing": "尚无资料，请先创建。",
+      "profileExists": "该律师的资料已存在。",
+      "roleRequired": "只有律师角色的用户才能创建资料。",
+      "ownProfileOnly": "您只能管理自己的资料。"
+    },
+    "post": {
+      "notFound": "未找到该文章。",
+      "editOwnOnly": "您只能编辑自己的文章。",
+      "slugUnavailable": "无法为该标题生成网址。",
+      "imageRequired": "请选择图片。",
+      "imageTooLarge": "图片不得超过 5MB。",
+      "imageUnsupported": "仅支持 JPG、PNG、WEBP 图片。",
+      "imageContentMismatch": "文件内容不是图片。"
+    },
+    "serviceRequest": {
+      "notFound": "未找到该申请。",
+      "viewForbidden": "您无权查看此申请。",
+      "alreadyConverted": "该申请已开立案件。",
+      "rejectedLocked": "已拒绝的申请无法更改。",
+      "alreadyInStatus": "该申请已处于此状态。",
+      "acceptFirst": "请先受理该申请。",
+      "invalidTransition": "该申请无法变更为此状态。",
+      "clientInactive": "提交申请的客户账户已停用。",
+      "lawyerUnavailable": "所选律师不存在或已停用。"
+    },
+    "testimonial": {
+      "notFound": "未找到该评价。",
+      "caseForbidden": "您无权对此案件发表评价。",
+      "caseNotClosed": "案件结案后方可发表评价。",
+      "alreadyExists": "您已对此案件发表过评价。",
+      "editForbidden": "您无权修改此评价。",
+      "consentRequired": "未经客户同意不得发布评价。",
+      "consentNoteRequired": "请记录取得同意的方式。"
+    },
+    "task": {
+      "notFound": "未找到该任务。",
+      "staffOnly": "任务仅对员工可见。",
+      "viewForbidden": "您无权查看此任务。",
+      "editForbidden": "只有任务创建者或管理员可编辑。",
+      "deleteForbidden": "只有任务创建者或管理员可删除。",
+      "statusForbidden": "只有执行人、创建者或管理员可更改状态。",
+      "invalidTransition": "任务无法变更为此状态。",
+      "standaloneSelfOnly": "未关联案件的任务只能为自己创建。",
+      "standaloneAssignSelfOnly": "未关联案件的任务只能指派给自己。",
+      "assigneeMustBeStaff": "执行人必须是在职律师或管理员。",
+      "assigneeMustBeMember": "执行人必须是该案件团队成员。"
+    },
+    "taskAttachment": {
+      "notFound": "未找到该附件。",
+      "fileRequired": "请选择文件。",
+      "tooLarge": "文件不得超过 20MB。",
+      "unsupportedType": "仅支持 PDF、Word、Excel、图片和文本文件。",
+      "contentMismatch": "文件内容与其类型不符。",
+      "deleteForbidden": "只有上传者或管理员可删除附件。"
+    },
+    "notification": {
+      "notFound": "未找到该通知。"
+    },
+    "performance": {
+      "staffOnly": "绩效数据仅对员工可见。",
+      "userNotFound": "未找到该员工。",
+      "viewForbidden": "您无权查看该员工的绩效。"
+    },
+    "settings": {
+      "invalidStoredValue": "某项设置保存有误，请管理员重新保存。"
+    },
+    "unknown": "出错了，请重试。"
+  },
   "portal": {
     "login": {
       "title": "登录",

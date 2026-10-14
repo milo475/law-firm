@@ -14,8 +14,9 @@ import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/toast';
-import { ApiError, api, type CaseListItem, type CurrentUser, type Paginated } from '@/lib/api';
+import { api, type CaseListItem, type CurrentUser, type Paginated } from '@/lib/api';
 import { formatDate } from '@/lib/format';
+import { useApiError } from '@/lib/api-error';
 import type { Locale } from '@/i18n/routing';
 import { cn, initials, shortName } from '@/lib/utils';
 
@@ -47,6 +48,7 @@ const formatDateTime = (iso: string | null | undefined, locale: Locale) => (iso 
 export default function ProfilePage() {
   const t = useTranslations('portal.profile');
   const tRole = useTranslations('enums.role');
+  const apiError = useApiError();
   const locale = useLocale() as Locale;
   const { user, refresh, logout } = useUser();
   // /auth/me returns the full SafeUser (incl. createdAt) even though CurrentUser doesn't declare it
@@ -72,7 +74,7 @@ export default function ProfilePage() {
       profile.reset(values);
       toast.success(t('savedToast'));
     } catch (error) {
-      toast.danger(t('saveFailed'), error instanceof ApiError ? error.message : undefined);
+      toast.danger(t('saveFailed'), apiError(error));
     }
   }
 
@@ -82,7 +84,7 @@ export default function ProfilePage() {
       password.reset();
       toast.success(t('passwordChanged'), t('passwordChangedBody'));
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : t('error');
+      const message = apiError(error, t('error'));
       password.setError('currentPassword', { message });
       toast.danger(t('passwordFailed'), message);
     }

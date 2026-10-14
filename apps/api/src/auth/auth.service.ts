@@ -17,6 +17,7 @@ import {
   type User,
 } from '@law-firm/shared';
 import argon2 from 'argon2';
+import { err } from '../common/errors/app-error';
 import { toSafeUser } from '../common/utils/safe-user';
 import type { Env } from '../config/env';
 import { PrismaService } from '../prisma/prisma.service';
@@ -61,10 +62,10 @@ export class AuthService {
 
     // Same error for unknown user and wrong password — never leak which one failed.
     if (!user || !(await this.verifyPassword(user.passwordHash, input.password))) {
-      throw new UnauthorizedException('И-мэйл/утас эсвэл нууц үг буруу байна');
+      throw new UnauthorizedException(err('auth.invalidCredentials', 'И-мэйл/утас эсвэл нууц үг буруу байна'));
     }
     if (!user.isActive) {
-      throw new ForbiddenException('Таны хаяг идэвхгүй болсон байна. Админтай холбогдоно уу');
+      throw new ForbiddenException(err('auth.accountInactive', 'Таны хаяг идэвхгүй болсон байна. Админтай холбогдоно уу'));
     }
 
     await this.prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
@@ -80,8 +81,8 @@ export class AuthService {
         ? this.prisma.user.findUnique({ where: { phone: input.phone }, select: { id: true } })
         : Promise.resolve(null),
     ]);
-    if (emailTaken) throw new ConflictException('Энэ и-мэйл хаяг аль хэдийн бүртгэлтэй байна');
-    if (phoneTaken) throw new ConflictException('Энэ утасны дугаар аль хэдийн бүртгэлтэй байна');
+    if (emailTaken) throw new ConflictException(err('auth.emailTaken', 'Энэ и-мэйл хаяг аль хэдийн бүртгэлтэй байна'));
+    if (phoneTaken) throw new ConflictException(err('auth.phoneTaken', 'Энэ утасны дугаар аль хэдийн бүртгэлтэй байна'));
 
     const user = await this.prisma.user.create({
       data: {
@@ -105,24 +106,24 @@ export class AuthService {
    * retried request racing the first refresh, so it gets its own pair instead of logging the user out everywhere.
    */
   async refresh(rawToken: string | undefined): Promise<AuthResult> {
-    if (!rawToken) throw new UnauthorizedException('Сесс олдсонгүй. Дахин нэвтэрнэ үү');
+    if (!rawToken) throw new UnauthorizedException(err('auth.sessionMissing', 'Сесс олдсонгүй. Дахин нэвтэрнэ үү'));
 
     const stored = await this.prisma.refreshToken.findUnique({
       where: { tokenHash: this.hashToken(rawToken) },
       include: { user: true },
     });
-    if (!stored) throw new UnauthorizedException('Сесс хүчингүй байна. Дахин нэвтэрнэ үү');
+    if (!stored) throw new UnauthorizedException(err('auth.sessionInvalid', 'Сесс хүчингүй байна. Дахин нэвтэрнэ үү'));
 
     if (stored.revokedAt && !(await this.isConcurrentRefresh(stored))) {
       this.logger.warn(`Refresh token reuse detected for user ${stored.userId}; revoking all sessions`);
       await this.revokeAllForUser(stored.userId);
-      throw new UnauthorizedException('Сесс хүчингүй болсон. Аюулгүй байдлын үүднээс дахин нэвтэрнэ үү');
+      throw new UnauthorizedException(err('auth.sessionRevoked', 'Сесс хүчингүй болсон. Аюулгүй байдлын үүднээс дахин нэвтэрнэ үү'));
     }
     if (stored.expiresAt.getTime() <= Date.now()) {
-      throw new UnauthorizedException('Сессийн хугацаа дууссан. Дахин нэвтэрнэ үү');
+      throw new UnauthorizedException(err('auth.sessionExpired', 'Сессийн хугацаа дууссан. Дахин нэвтэрнэ үү'));
     }
     if (!stored.user.isActive) {
-      throw new ForbiddenException('Таны хаяг идэвхгүй болсон байна');
+      throw new ForbiddenException(err('auth.accountDisabled', 'Таны хаяг идэвхгүй болсон байна'));
     }
 
     if (stored.revokedAt) {
@@ -145,7 +146,7 @@ export class AuthService {
 
   async me(userId: string): Promise<SafeUser> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new UnauthorizedException('Хэрэглэгч олдсонгүй');
+    if (!user) throw new UnauthorizedException(err('auth.userNotFound', 'Хэрэглэгч олдсонгүй'));
     return toSafeUser(user);
   }
 

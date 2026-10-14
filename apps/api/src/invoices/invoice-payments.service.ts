@@ -11,6 +11,7 @@ import {
   type RejectPaymentInput,
 } from '@law-firm/shared';
 import { CASE_MEMBERSHIP_SELECT, CasesService } from '../cases/cases.service';
+import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -60,13 +61,17 @@ export class InvoicePaymentsService {
   async markPaid(id: string, input: MarkPaymentInput, user: RequestUser) {
     const invoice = await this.load(id);
     if (user.role !== Role.CLIENT || invoice.case.clientId !== user.id) {
-      throw new ForbiddenException('Энэ нэхэмжлэхийн төлбөрийг тэмдэглэх эрх танд байхгүй байна');
+      throw new ForbiddenException(err('payment.markForbidden', 'Энэ нэхэмжлэхийн төлбөрийг тэмдэглэх эрх танд байхгүй байна'));
     }
     if (!(CLIENT_PAYABLE_INVOICE_STATUSES as readonly InvoiceStatus[]).includes(invoice.status)) {
       throw new BadRequestException(
         invoice.status === InvoiceStatus.AWAITING_CONFIRMATION
-          ? 'Төлбөрийг аль хэдийн тэмдэглэсэн, баталгаажуулалт хүлээгдэж байна'
-          : `«${INVOICE_STATUS_LABELS[invoice.status]}» төлөвтэй нэхэмжлэхийг төлсөн гэж тэмдэглэх боломжгүй`,
+          ? err('payment.alreadyMarked', 'Төлбөрийг аль хэдийн тэмдэглэсэн, баталгаажуулалт хүлээгдэж байна')
+          : err(
+              'payment.statusLocked',
+              `«${INVOICE_STATUS_LABELS[invoice.status]}» төлөвтэй нэхэмжлэхийг төлсөн гэж тэмдэглэх боломжгүй`,
+              { status: invoice.status },
+            ),
       );
     }
 
@@ -149,7 +154,7 @@ export class InvoicePaymentsService {
 
   private async load(id: string): Promise<LoadedInvoice> {
     const invoice = await this.prisma.invoice.findUnique({ where: { id }, select: PAYMENT_LOAD_SELECT });
-    if (!invoice) throw new NotFoundException('Нэхэмжлэх олдсонгүй');
+    if (!invoice) throw new NotFoundException(err('invoice.notFound', 'Нэхэмжлэх олдсонгүй'));
     return invoice;
   }
 
@@ -162,7 +167,11 @@ export class InvoicePaymentsService {
   private assertAwaiting(invoice: LoadedInvoice, action: string): void {
     if (invoice.status !== InvoiceStatus.AWAITING_CONFIRMATION) {
       throw new BadRequestException(
-        `«${INVOICE_STATUS_LABELS[invoice.status]}» төлөвтэй нэхэмжлэхийн төлбөрийг ${action} боломжгүй. Зөвхөн «Баталгаажуулж буй» нэхэмжлэх`,
+        err(
+          'payment.reviewLocked',
+          `«${INVOICE_STATUS_LABELS[invoice.status]}» төлөвтэй нэхэмжлэхийн төлбөрийг ${action} боломжгүй. Зөвхөн «Баталгаажуулж буй» нэхэмжлэх`,
+          { status: invoice.status },
+        ),
       );
     }
   }
@@ -170,7 +179,7 @@ export class InvoicePaymentsService {
   /** Status-guarded write so a concurrent confirm/reject cannot be overwritten. */
   private async move(id: string, from: InvoiceStatus, data: Prisma.InvoiceUncheckedUpdateManyInput): Promise<void> {
     const result = await this.prisma.invoice.updateMany({ where: { id, status: from }, data });
-    if (result.count === 0) throw new ConflictException('Нэхэмжлэхийн төлөв өөрчлөгдсөн байна. Хуудсаа шинэчилнэ үү');
+    if (result.count === 0) throw new ConflictException(err('invoice.statusChanged', 'Нэхэмжлэхийн төлөв өөрчлөгдсөн байна. Хуудсаа шинэчилнэ үү'));
   }
 
   private async fetch(id: string) {

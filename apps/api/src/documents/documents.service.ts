@@ -16,11 +16,15 @@ import {
   type UploadDocumentInput,
 } from '@law-firm/shared';
 import { CASE_MEMBERSHIP_SELECT, CasesService } from '../cases/cases.service';
+import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
 import { contentMatchesMimeType, sanitizeFileName } from '../common/utils/file-signature';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
+
+/** "20MB" — the ceiling as the message states it and as the client's own wording receives it. */
+const MAX_DOCUMENT_SIZE_LABEL = `${MAX_DOCUMENT_SIZE_BYTES / (1024 * 1024)}MB`;
 
 export interface UploadedFile {
   originalname: string;
@@ -68,7 +72,7 @@ export class DocumentsService {
   }
 
   async upload(caseId: string, file: UploadedFile | undefined, input: UploadDocumentInput, user: RequestUser) {
-    if (!file) throw new BadRequestException('Файл сонгоно уу (multipart талбар: "file")');
+    if (!file) throw new BadRequestException(err('document.fileRequired', 'Файл сонгоно уу (multipart талбар: "file")'));
     // Access first: someone with no business on this case gets 403, not a verdict about their file.
     const record = await this.cases.assertAccessById(caseId, user);
     this.assertValidFile(file);
@@ -93,13 +97,15 @@ export class DocumentsService {
    */
   assertValidFile(file: UploadedFile): void {
     if (file.size > MAX_DOCUMENT_SIZE_BYTES) {
-      throw new PayloadTooLargeException('Файлын хэмжээ 20MB-аас хэтэрч болохгүй');
+      throw new PayloadTooLargeException(
+        err('document.tooLarge', `Файлын хэмжээ ${MAX_DOCUMENT_SIZE_LABEL}-аас хэтэрч болохгүй`, { size: MAX_DOCUMENT_SIZE_LABEL }),
+      );
     }
     if (!(ALLOWED_DOCUMENT_MIME_TYPES as readonly string[]).includes(file.mimetype)) {
-      throw new UnsupportedMediaTypeException('Зөвхөн PDF, Word, Excel, зураг, текст файл хавсаргах боломжтой');
+      throw new UnsupportedMediaTypeException(err('document.unsupportedType', 'Зөвхөн PDF, Word, Excel, зураг, текст файл хавсаргах боломжтой'));
     }
     if (!contentMatchesMimeType(file.buffer, file.mimetype)) {
-      throw new UnsupportedMediaTypeException('Файлын агуулга нь заасан төрөлтэй тохирохгүй байна');
+      throw new UnsupportedMediaTypeException(err('document.contentMismatch', 'Файлын агуулга нь заасан төрөлтэй тохирохгүй байна'));
     }
   }
 
@@ -129,10 +135,10 @@ export class DocumentsService {
       where: { id: documentId },
       include: { case: { select: { clientId: true, lawyerId: true, members: CASE_MEMBERSHIP_SELECT } } },
     });
-    if (!document) throw new NotFoundException('Баримт олдсонгүй');
+    if (!document) throw new NotFoundException(err('document.notFound', 'Баримт олдсонгүй'));
     this.cases.assertAccess(document.case, user);
     if (user.role === Role.CLIENT && !document.isVisibleToClient) {
-      throw new ForbiddenException('Энэ баримтыг үзэх эрх танд байхгүй байна');
+      throw new ForbiddenException(err('document.viewForbidden', 'Энэ баримтыг үзэх эрх танд байхгүй байна'));
     }
 
     const expiresInSeconds = 300;
@@ -150,11 +156,11 @@ export class DocumentsService {
       where: { id: documentId },
       include: { case: { select: { clientId: true, lawyerId: true, members: CASE_MEMBERSHIP_SELECT } } },
     });
-    if (!document) throw new NotFoundException('Баримт олдсонгүй');
+    if (!document) throw new NotFoundException(err('document.notFound', 'Баримт олдсонгүй'));
 
     if (user.role !== Role.ADMIN) {
       if (user.role !== Role.LAWYER || document.uploadedById !== user.id) {
-        throw new ForbiddenException('Зөвхөн өөрийн оруулсан баримтыг устгах боломжтой');
+        throw new ForbiddenException(err('document.deleteOwnOnly', 'Зөвхөн өөрийн оруулсан баримтыг устгах боломжтой'));
       }
       this.cases.assertStaffAccess(document.case, user);
     }

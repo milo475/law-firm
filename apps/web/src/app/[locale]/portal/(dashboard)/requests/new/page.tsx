@@ -15,9 +15,10 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/toast';
-import { ApiError, api, type ServiceRequestItem, type ServiceRequestType } from '@/lib/api';
+import { api, type ServiceRequestItem, type ServiceRequestType } from '@/lib/api';
 import { CASE_TYPE_LABELS } from '@/lib/format';
 import { SERVICE_REQUESTS_KEY } from '@/lib/service-requests';
+import { useApiError } from '@/lib/api-error';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 
@@ -33,6 +34,7 @@ export default function NewServiceRequestPage() {
 
 function NewServiceRequestForm() {
   const t = useTranslations('portal.requests.new');
+  const apiError = useApiError();
   const tPortal = useTranslations('portal');
   const tRequests = useTranslations('portal.requests');
   const tCommon = useTranslations('common');
@@ -56,7 +58,7 @@ function NewServiceRequestForm() {
       toast.success(t('createdTitle'), t('createdBody', { title: created.title }));
       router.push('/portal/requests');
     },
-    onError: (error) => toast.danger(t('failed'), error instanceof ApiError ? error.message : t('tryAgain')),
+    onError: (error) => toast.danger(t('failed'), apiError(error, t('tryAgain'))),
   });
 
   return (

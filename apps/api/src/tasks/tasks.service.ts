@@ -15,6 +15,7 @@ import {
   type UpdateTaskInput,
 } from '@law-firm/shared';
 import { CASE_MEMBERSHIP_SELECT, CasesService, type CaseScopeRecord } from '../cases/cases.service';
+import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { paginate, skipTake } from '../common/utils/pagination';
 import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
@@ -86,7 +87,7 @@ export class TasksService {
     if (user.role === Role.LAWYER) {
       return { OR: [{ assigneeId: user.id }, { createdById: user.id }, { case: { members: { some: { userId: user.id } } } }] };
     }
-    throw new ForbiddenException('Даалгавар зөвхөн ажилтанд харагдана');
+    throw new ForbiddenException(err('task.staffOnly', 'Даалгавар зөвхөн ажилтанд харагдана'));
   }
 
   async findAll(query: TaskQueryInput, user: RequestUser): Promise<Paginated<unknown>> {
@@ -122,7 +123,7 @@ export class TasksService {
         comments: { select: { id: true, body: true, createdAt: true, author: { select: PUBLIC_USER_SELECT } }, orderBy: { createdAt: 'asc' } },
       },
     });
-    if (!task) throw new NotFoundException('Даалгавар олдсонгүй');
+    if (!task) throw new NotFoundException(err('task.notFound', 'Даалгавар олдсонгүй'));
     this.assertCanView(task, user);
     const { case: caseInfo, ...rest } = task;
     return {
@@ -138,7 +139,7 @@ export class TasksService {
       // The creator has to work on the case (ADMIN always does).
       caseRecord = await this.cases.assertStaffAccessById(input.caseId, user);
     } else if (user.role !== Role.ADMIN && input.assigneeId !== user.id) {
-      throw new ForbiddenException('Хэрэгт холбоогүй даалгаврыг зөвхөн өөртөө үүсгэнэ');
+      throw new ForbiddenException(err('task.standaloneSelfOnly', 'Хэрэгт холбоогүй даалгаврыг зөвхөн өөртөө үүсгэнэ'));
     }
     await this.assertAssignable(input.assigneeId, caseRecord, user);
 
@@ -166,14 +167,18 @@ export class TasksService {
 
     const editsDetails =
       input.title !== undefined || input.description !== undefined || input.priority !== undefined || input.dueDate !== undefined || input.assigneeId !== undefined;
-    if (editsDetails && !canEdit) throw new ForbiddenException('Даалгаврыг зөвхөн үүсгэсэн хүн эсвэл админ засна');
+    if (editsDetails && !canEdit) throw new ForbiddenException(err('task.editForbidden', 'Даалгаврыг зөвхөн үүсгэсэн хүн эсвэл админ засна'));
 
     const statusChanged = input.status !== undefined && input.status !== task.status;
     if (statusChanged) {
-      if (!canChangeStatus) throw new ForbiddenException('Төлвийг гүйцэтгэгч, үүсгэсэн хүн эсвэл админ өөрчилнө');
+      if (!canChangeStatus) throw new ForbiddenException(err('task.statusForbidden', 'Төлвийг гүйцэтгэгч, үүсгэсэн хүн эсвэл админ өөрчилнө'));
       if (!canTransitionTask(task.status, input.status as TaskStatus)) {
         throw new BadRequestException(
-          `Даалгаврыг «${TASK_STATUS_LABELS[task.status]}»-аас «${TASK_STATUS_LABELS[input.status as TaskStatus]}» болгох боломжгүй`,
+          err(
+            'task.invalidTransition',
+            `Даалгаврыг «${TASK_STATUS_LABELS[task.status]}»-аас «${TASK_STATUS_LABELS[input.status as TaskStatus]}» болгох боломжгүй`,
+            { from: task.status, to: input.status as TaskStatus },
+          ),
         );
       }
     }
@@ -209,7 +214,7 @@ export class TasksService {
     const task = await this.loadAccess(id);
     this.assertCanView(task, user);
     if (!this.permissionsFor(task, user).canDelete) {
-      throw new ForbiddenException('Даалгаврыг зөвхөн үүсгэсэн хүн эсвэл админ устгана');
+      throw new ForbiddenException(err('task.deleteForbidden', 'Даалгаврыг зөвхөн үүсгэсэн хүн эсвэл админ устгана'));
     }
     const attachments = this.storage ? await this.prisma.taskAttachment.findMany({ where: { taskId: id }, select: { storageKey: true } }) : [];
     await this.prisma.task.delete({ where: { id } });
@@ -252,7 +257,7 @@ export class TasksService {
 
   private async loadAccess(id: string): Promise<TaskAccess> {
     const task = await this.prisma.task.findUnique({ where: { id }, select: TASK_ACCESS_SELECT });
-    if (!task) throw new NotFoundException('Даалгавар олдсонгүй');
+    if (!task) throw new NotFoundException(err('task.notFound', 'Даалгавар олдсонгүй'));
     return task;
   }
 
@@ -272,7 +277,7 @@ export class TasksService {
     ) {
       return;
     }
-    throw new ForbiddenException('Энэ даалгаврыг үзэх эрх танд байхгүй байна');
+    throw new ForbiddenException(err('task.viewForbidden', 'Энэ даалгаврыг үзэх эрх танд байхгүй байна'));
   }
 
   private permissionsFor(task: { assigneeId: string; createdById: string }, user: RequestUser) {
@@ -292,15 +297,15 @@ export class TasksService {
   private async assertAssignable(assigneeId: string, caseRecord: CaseScopeRecord | null, user: RequestUser): Promise<void> {
     const assignee = await this.prisma.user.findUnique({ where: { id: assigneeId }, select: { id: true, role: true, isActive: true } });
     if (!assignee || !assignee.isActive || (assignee.role !== Role.LAWYER && assignee.role !== Role.ADMIN)) {
-      throw new BadRequestException('Гүйцэтгэгч идэвхтэй хуульч эсвэл админ байх ёстой');
+      throw new BadRequestException(err('task.assigneeMustBeStaff', 'Гүйцэтгэгч идэвхтэй хуульч эсвэл админ байх ёстой'));
     }
     if (user.role === Role.ADMIN) return;
     if (caseRecord) {
       if (!this.cases.isMember(caseRecord, assigneeId)) {
-        throw new BadRequestException('Гүйцэтгэгч энэ хэргийн багийн гишүүн байх ёстой');
+        throw new BadRequestException(err('task.assigneeMustBeMember', 'Гүйцэтгэгч энэ хэргийн багийн гишүүн байх ёстой'));
       }
     } else if (assigneeId !== user.id) {
-      throw new ForbiddenException('Хэрэгт холбоогүй даалгаврыг зөвхөн өөртөө оноох боломжтой');
+      throw new ForbiddenException(err('task.standaloneAssignSelfOnly', 'Хэрэгт холбоогүй даалгаврыг зөвхөн өөртөө оноох боломжтой'));
     }
   }
 }

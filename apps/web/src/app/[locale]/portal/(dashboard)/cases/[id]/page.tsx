@@ -25,6 +25,7 @@ import { ApiError, api, type CaseDetail, type CaseEvent, type DocumentItem, type
 import { isRequestOverdue, needsClientAction } from '@/lib/document-requests';
 import { useCaseUnreadCount } from '@/lib/messages';
 import { formatBytes, formatDate, formatMonthShort, formatMoney, formatSizeLimit } from '@/lib/format';
+import { useApiError } from '@/lib/api-error';
 import { Link } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { cn, initials, shortName } from '@/lib/utils';
@@ -65,6 +66,7 @@ const timeOf = (iso: string, locale: Locale) => formatDate(iso, locale, true).sp
 export default function CaseDetailPage() {
   const t = useTranslations('portal.caseDetail');
   const tCaseStatus = useTranslations('enums.caseStatus');
+  const apiError = useApiError();
   const tCommon = useTranslations('common');
   const tCaseType = useTranslations('enums.caseType');
   const tInvoiceStatus = useTranslations('portal.invoices.status');
@@ -98,7 +100,7 @@ export default function CaseDetailPage() {
   const upload = useMutation({
     mutationFn: (file: File) => { const form = new FormData(); form.append('file', file); return api.post<DocumentItem>(`/cases/${id}/documents`, form); },
     onSuccess: (doc) => { toast.success(t('uploadedTitle'), t('uploadedBody', { name: doc.name })); void queryClient.invalidateQueries({ queryKey: ['case-documents', id] }); },
-    onError: (error) => toast.danger(t('uploadFailed'), error instanceof ApiError ? error.message : t('tryAgain')),
+    onError: (error) => toast.danger(t('uploadFailed'), apiError(error, t('tryAgain'))),
   });
 
   async function download(doc: DocumentItem) {
@@ -106,7 +108,7 @@ export default function CaseDetailPage() {
       const { url } = await api.get<{ url: string }>(`/documents/${doc.id}/download`);
       window.open(url, '_blank', 'noopener');
     } catch (error) {
-      toast.danger(t('downloadFailed'), error instanceof ApiError ? error.message : t('tryAgain'));
+      toast.danger(t('downloadFailed'), apiError(error, t('tryAgain')));
     }
   }
 
@@ -116,7 +118,7 @@ export default function CaseDetailPage() {
     return (
       <div className="flex flex-col gap-4">
         <Breadcrumb label={tCommon('breadcrumb')} items={[{ label: t('cases'), href: '/portal/cases' }, { label: forbidden ? t('forbiddenCrumb') : t('notFoundCrumb') }]} />
-        <ErrorState title={forbidden ? t('forbiddenTitle') : t('notFoundTitle')} message={err instanceof ApiError ? err.message : t('loadError')} />
+        <ErrorState title={forbidden ? t('forbiddenTitle') : t('notFoundTitle')} message={apiError(err, t('loadError'))} />
         <div><Button asChild variant="secondary" size="sm"><Link href="/portal/cases">{t('backToCases')}</Link></Button></div>
       </div>
     );
@@ -255,7 +257,7 @@ export default function CaseDetailPage() {
 
         <TabsContent value="requests" className="pt-5 md:pt-6">
           {requests.isError ? (
-            <ErrorState message={requests.error instanceof ApiError ? requests.error.message : t('loadError')} onRetry={() => void requests.refetch()} />
+            <ErrorState message={apiError(requests.error, t('loadError'))} onRetry={() => void requests.refetch()} />
           ) : requests.isLoading ? (
             <Skeleton className="h-40" />
           ) : (requests.data?.length ?? 0) === 0 ? (
@@ -300,6 +302,7 @@ export default function CaseDetailPage() {
             emptyDescription={t('chatEmpty')}
             locale={locale}
             roleLabel={(role) => tRole(role)}
+            formatError={apiError}
             labels={{
               section: tChat('section'),
               loadError: tChat('loadError'),

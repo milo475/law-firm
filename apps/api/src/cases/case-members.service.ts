@@ -7,6 +7,7 @@ import {
   type Prisma,
   type UpdateCaseMemberInput,
 } from '@law-firm/shared';
+import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
 import { PrismaService } from '../prisma/prisma.service';
@@ -59,7 +60,7 @@ export class CaseMembersService {
     const record = await this.cases.assertLeadAccessById(caseId, user);
     await this.assertStaffUser(input.userId, input.role);
     const existing = await this.prisma.caseMember.findUnique({ where: { caseId_userId: { caseId, userId: input.userId } } });
-    if (existing) throw new ConflictException('Энэ ажилтан аль хэдийн багт байна');
+    if (existing) throw new ConflictException(err('caseMember.alreadyMember', 'Энэ ажилтан аль хэдийн багт байна'));
 
     const member =
       input.role === CaseMemberRole.LEAD
@@ -93,7 +94,7 @@ export class CaseMembersService {
     const member = await this.findMember(caseId, userId);
     if (member.role === input.role) return member;
     if (input.role === CaseMemberRole.MEMBER) {
-      throw new BadRequestException('Ахлах хуульчийг шууд гишүүн болгох боломжгүй. Эхлээд өөр хуульчийг ахлахаар томилно уу');
+      throw new BadRequestException(err('caseMember.leadCannotDemote', 'Ахлах хуульчийг шууд гишүүн болгох боломжгүй. Эхлээд өөр хуульчийг ахлахаар томилно уу'));
     }
 
     await this.assertStaffUser(userId, CaseMemberRole.LEAD);
@@ -114,7 +115,7 @@ export class CaseMembersService {
     await this.cases.assertLeadAccessById(caseId, user);
     const member = await this.findMember(caseId, userId);
     if (member.role === CaseMemberRole.LEAD) {
-      throw new BadRequestException('Ахлах хуульчийг багаас хасах боломжгүй. Эхлээд өөр хуульчийг ахлахаар томилно уу');
+      throw new BadRequestException(err('caseMember.leadCannotLeave', 'Ахлах хуульчийг багаас хасах боломжгүй. Эхлээд өөр хуульчийг ахлахаар томилно уу'));
     }
     await this.prisma.caseMember.delete({ where: { caseId_userId: { caseId, userId } } });
   }
@@ -123,17 +124,17 @@ export class CaseMembersService {
 
   private async findMember(caseId: string, userId: string) {
     const member = await this.prisma.caseMember.findUnique({ where: { caseId_userId: { caseId, userId } }, select: MEMBER_SELECT });
-    if (!member) throw new NotFoundException('Энэ ажилтан хэргийн багт байхгүй байна');
+    if (!member) throw new NotFoundException(err('caseMember.notMember', 'Энэ ажилтан хэргийн багт байхгүй байна'));
     return member;
   }
 
   private async assertStaffUser(userId: string, role: CaseMemberRole): Promise<void> {
     const target = await this.prisma.user.findUnique({ where: { id: userId }, select: { id: true, role: true, isActive: true } });
     if (!target || !target.isActive || (target.role !== Role.LAWYER && target.role !== Role.ADMIN)) {
-      throw new BadRequestException('Хэргийн багт зөвхөн идэвхтэй хуульч эсвэл админ нэмнэ');
+      throw new BadRequestException(err('caseMember.mustBeActiveStaff', 'Хэргийн багт зөвхөн идэвхтэй хуульч эсвэл админ нэмнэ'));
     }
     if (role === CaseMemberRole.LEAD && target.role !== Role.LAWYER) {
-      throw new BadRequestException('Ахлахаар зөвхөн хуульч томилно');
+      throw new BadRequestException(err('caseMember.leadMustBeLawyer', 'Ахлахаар зөвхөн хуульч томилно'));
     }
   }
 

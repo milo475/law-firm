@@ -214,11 +214,14 @@ law-firm/
 ### Алдааны формат
 
 ```json
-{ "statusCode": 403, "message": "Энэ хэргийг үзэх эрх танд байхгүй байна", "error": "Forbidden",
-  "timestamp": "2026-09-14T14:30:38.427Z", "path": "/cases/…", "details": [] }
+{ "statusCode": 403, "code": "case.viewForbidden", "message": "Энэ хэргийг үзэх эрх танд байхгүй байна",
+  "error": "Forbidden", "timestamp": "2026-09-14T14:30:38.427Z", "path": "/cases/…" }
 ```
 
-Zod validation → 400 + `details[{field,message}]`, Prisma P2002 → 409, P2025 → 404, бусад → 500 (stack нуугдана).
+`code` нь тогтвортой түлхүүр — клиент үүгээр өөрийн хэлээр бичвэрээ сонгоно (§15 «Серверийн алдааны
+мессеж»); `message` нь монгол fallback; `details` нь зөвхөн орчуулгад орлуулах утга (`{ "max": 20 }`).
+Zod validation → 400 + `validation.*` код ба `{ field, min }`, Prisma P2002 → 409 `data.duplicate`,
+P2025 → 404 `data.notFound`, бусад → 500 `http.serverError` (stack нуугдана).
 
 ---
 
@@ -923,18 +926,76 @@ LAWYER хүсэлтийг удирдахгүй (403): хуваарилагдса
 ```bash
 pnpm i18n:export [файл]   # mn.json → CSV (key, mn, en, zh, context) — дуудсан хавтсанд бичнэ
 pnpm i18n:import [файл]   # бөглөсөн CSV → en.json / zh.json (хоосон нүд хоосон хэвээр)
-pnpm i18n:check           # түлхүүрийн таарц + үлдсэн орчуулгын тоо + бүх мессеж эвхэгдэж байгаа эсэх
+pnpm i18n:check           # түлхүүрийн таарц + үлдсэн орчуулга + алдааны кодууд + бүх мессеж эвхэгдэх эсэх
 ```
 
 Файлын нэрийг `INIT_CWD` → `process.cwd()` → repo root → `apps/web` дарааллаар хайна, тул repo root-оос ч,
 `apps/web`-ээс ч ажиллана. Одоогийн CSV: `i18n-translations.csv` (repo root).
 
-### Нийтлэл ба серверийн мессеж
+### Нийтлэл
 
 Нийтлэлүүд (Post) зөвхөн монголоор; `/en`, `/zh` дээр жагсаалтын дээр «Эдгээр нийтлэл монгол хэл дээр байна.»
-гэсэн тэмдэглэл гарна. API-аас ирдэг алдааны мессеж болон zod-ын шалгалтын мессеж **одоогоор монголоор**
-(жишээ: «Нэхэмжлэх олдсонгүй», «Гарчиг хамгийн багадаа 5 тэмдэгт байна») — эдгээрийг орчуулах төлөвлөгөө
-README-д биш, тусдаа шийдвэрээр хийнэ.
+гэсэн тэмдэглэл гарна.
+
+### Серверийн алдааны мессеж (алдааны код)
+
+API монголоор хариулдаг. Англи, хятад уншигчид монгол алдаа харахгүйн тулд **алдаа бүр тогтвортой
+код зөөдөг**, бичвэрийг нь клиент өөрийн хэлээр сонгоно. API нь `Accept-Language` задлахгүй, орчуулга
+нэг газар (`messages/*.json`) төвлөрнө, мобайл эсвэл өөр клиент нэмэгдэхэд мөн ажиллана.
+
+```json
+{
+  "statusCode": 403,
+  "code": "case.viewForbidden",
+  "message": "Энэ хэргийг үзэх эрх танд байхгүй байна",
+  "error": "Forbidden",
+  "timestamp": "2026-10-14T09:12:44.901Z",
+  "path": "/cases/9f1c…"
+}
+```
+
+| Хэсэг | Хаана |
+| --- | --- |
+| Кодын жагсаалт (137) | `packages/shared/src/errors.ts` — `ERROR_CODES`, `ErrorCode`, `isErrorCode` |
+| Шидэх туслах | `apps/api/src/common/errors/app-error.ts` — `err(code, message, details?)` |
+| Хэлбэржүүлэлт | `apps/api/src/common/filters/http-exception.filter.ts` (цорын ганц гарц) |
+| Орчуулга | `messages/{mn,en,zh}.json` → `errors.<модуль>.<шалтгаан>` |
+| Клиент тал | `apps/web/src/lib/api-error.ts` — `useApiError()` / `translateApiError()` |
+
+Код нь `<модуль>.<шалтгаан>`: `auth.invalidCredentials`, `document.tooLarge`, `testimonial.consentRequired`.
+`err()` нь зөвхөн `ERROR_CODES` дотор байгаа кодыг хүлээж авдаг тул үсгийн алдаа typecheck дээр унана.
+
+```ts
+throw new ForbiddenException(err('case.viewForbidden', 'Энэ хэргийг үзэх эрх танд байхгүй байна'));
+throw new BadRequestException(err('documentRequest.tooManyFiles', `Нэг удаад ${max}…`, { max }));
+```
+
+**`message`** нь монгол fallback — кодыг мэдэхгүй клиент ч утгатай бичвэр харна.
+**`details`** нь зөвхөн орчуулгад орлуулах утга: тоо, хязгаар, enum утга. **Нэр, и-мэйл, утас, баримтын нэр
+энд хэзээ ч орохгүй** (эдгээр нь браузерын консол болон алдааны тайланд хүрнэ).
+
+Zod-ын шалгалтын алдаа мөн кодтой: дүрмийн төрөл + талбар, жишээ нь
+`validation.minLength` + `{ "field": "password", "min": 8 }`. Клиент нь илгээхийн өмнө яг тэр schema-гаар
+шалгадаг тул 400 буцахад эхний буруу талбарыг мэдээлнэ.
+
+Клиент тал:
+
+```tsx
+const apiError = useApiError();
+onError: (error) => toast.danger(t('failed'), apiError(error, t('tryAgain')))
+```
+
+`errors.<code>` олдвол тухайн хэлний бичвэр, олдохгүй бол **серверийн монгол мессеж** (хуудас хоосон
+болохгүй), dev горимд консол дээр `[i18n] no errors.<code> message` гэж нэг удаа сануулна.
+`pnpm i18n:check` нь `ERROR_CODES` ба `errors.*` хоёрыг тулгаж, дутуу эсвэл хуучирсан түлхүүрт унана.
+
+**Админ самбар орчуулагдахгүй** тул `/admin` дэх `catch` блокууд серверийн монгол `message`-ийг хэвээр
+харуулна. Портал, нийтийн сайт `useApiError()` ашиглана; хуваалцсан `ChatThread` нь `formatError` prop-оор
+авдаг (админ анхдагчаараа монгол).
+
+Төлөв заасан цөөн алдаанд (`documentRequest.submitLocked`, `invoice.invalidTransition`, …) серверийн
+монгол мессеж төлвийн нэрийг дотроо агуулдаг бол орчуулга нь төлвийг нэрлэхгүй ерөнхий өгүүлбэр —
+төлөв нь дэлгэц дээр хажууд нь badge-ээр харагддаг.
 
 ---
 

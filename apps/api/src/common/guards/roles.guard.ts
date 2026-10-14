@@ -2,6 +2,7 @@ import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@
 import { Reflector } from '@nestjs/core';
 import type { Role } from '@law-firm/shared';
 import { ROLES_KEY } from '../decorators/roles.decorator';
+import { err } from '../errors/app-error';
 import type { RequestWithUser } from '../types/request-user';
 
 @Injectable()
@@ -17,10 +18,10 @@ export class RolesGuard implements CanActivate {
 
     const { user } = context.switchToHttp().getRequest<RequestWithUser>();
     if (!user) {
-      throw new ForbiddenException('Энэ үйлдлийг хийх эрх танд байхгүй байна');
+      throw new ForbiddenException(err('auth.forbidden', 'Энэ үйлдлийг хийх эрх танд байхгүй байна'));
     }
     if (!required.includes(user.role)) {
-      throw new ForbiddenException('Энэ үйлдлийг хийх эрх танд байхгүй байна');
+      throw new ForbiddenException(err('auth.forbidden', 'Энэ үйлдлийг хийх эрх танд байхгүй байна'));
     }
     return true;
   }
