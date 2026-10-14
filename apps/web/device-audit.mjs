@@ -10,7 +10,6 @@
 import { chromium } from '@playwright/test';
 
 const BASE = process.env.AUDIT_URL ?? 'http://localhost:3001';
-const API = process.env.AUDIT_API ?? 'http://localhost:4000';
 
 /** Real device widths: the smallest phone still in use, through to a wide desktop. */
 const WIDTHS = [

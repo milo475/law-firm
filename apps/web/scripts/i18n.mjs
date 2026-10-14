@@ -4,7 +4,8 @@
  *
  *   pnpm i18n:export [file]   messages/mn.json → CSV for the firm to fill in (key, mn, en, zh, context)
  *   pnpm i18n:import [file]   the filled CSV → en.json / zh.json (empty cells stay empty)
- *   pnpm i18n:check           key parity between the three files + how much is still untranslated
+ *   pnpm i18n:check           key parity between the three files, how much is still untranslated,
+ *                             and that every message compiles — plurals rendered at 0, 1, 2, 11, 21
  *
  * Empty values are intentional: the site falls back to the Mongolian string until a translation
  * arrives (see src/i18n/request.ts), so a half-filled file is safe to ship.
@@ -166,7 +167,7 @@ function importCsv(file) {
   if (unknown.length) console.warn(`Skipped ${unknown.length} key(s) that are not in mn.json, e.g. ${unknown.slice(0, 3).join(', ')}`);
 }
 
-function check() {
+async function check() {
   const flat = Object.fromEntries(LOCALES.map((locale) => [locale, flatten(read(locale))]));
   const mnKeys = Object.keys(flat.mn);
   let failed = false;
@@ -185,13 +186,69 @@ function check() {
     process.exit(1);
   }
   console.log('\nKeys match across mn, en and zh.');
+  await formatCheck(flat);
+}
+
+/** Counts a message's placeholders, and which of them a plural / number clause consumes as a number. */
+function placeholders(message) {
+  const names = new Set([...message.matchAll(/\{\s*(\w+)/g)].map((match) => match[1]));
+  const values = {};
+  for (const name of names) {
+    const numeric = new RegExp(`\\{\\s*${name}\\s*,\\s*(plural|selectordinal|number)`).test(message);
+    values[name] = numeric ? 2 : 'x';
+  }
+  return values;
+}
+
+/**
+ * Every message is run through the app's own formatter, so a broken ICU clause fails here instead
+ * of at the reader's screen. Plurals are rendered at the counts that tell the categories apart
+ * (English needs `one` at 1; Mongolian has the same two categories; Chinese only has `other`).
+ */
+async function formatCheck(flat) {
+  const { createTranslator } = await import('next-intl');
+  const COUNTS = [0, 1, 2, 11, 21];
+  let broken = 0;
+  let plurals = 0;
+  for (const locale of LOCALES) {
+    for (const [key, message] of Object.entries(flat[locale])) {
+      if (!message) continue;
+      const values = placeholders(message);
+      const isPlural = /\{\s*\w+\s*,\s*plural\s*,/.test(message);
+      if (isPlural && locale === 'mn') plurals += 1;
+      const counts = isPlural ? COUNTS : [null];
+      let reported = false;
+      for (const count of counts) {
+        const numbers = count === null ? {} : Object.fromEntries(
+          Object.entries(values).filter(([, value]) => typeof value === 'number').map(([name]) => [name, count]),
+        );
+        // A dotted key would be read as a path, so the message is handed over under a flat one.
+        const translate = createTranslator({
+          locale,
+          messages: { message },
+          onError: (error) => {
+            if (reported) return;
+            reported = true;
+            broken += 1;
+            console.error(`  ${locale} ${key}: ${String(error.message).split('\n')[0]}`);
+          },
+        });
+        translate('message', { ...values, ...numbers });
+      }
+    }
+  }
+  if (broken) {
+    console.error(`\n${broken} message(s) failed to format.`);
+    process.exit(1);
+  }
+  console.log(`Every message formats; ${plurals} plural message(s) rendered at ${COUNTS.join(', ')}.`);
 }
 
 const [command, file] = process.argv.slice(2);
 try {
   if (command === 'export') exportCsv(file);
   else if (command === 'import') importCsv(file);
-  else if (command === 'check') check();
+  else if (command === 'check') await check();
   else {
     console.error('Usage: i18n.mjs export|import|check [file]');
     process.exit(1);

@@ -36,7 +36,7 @@ test.describe('Баримтын хүсэлт', () => {
     const client = await clientPage(browser, testInfo.project.use.baseURL);
     await client.goto(`/portal/cases/${created.id}?tab=requests`);
     const clientItem = client.getByRole('listitem', { name: title });
-    await expect(clientItem.getByText('Илгээгээгүй')).toBeVisible();
+    await expect(clientItem.getByText('Хүлээгдэж буй', { exact: true })).toBeVisible();
     await clientItem.getByLabel(/файл сонгох$/).setInputFiles(pdf('unemleh.pdf'));
     await clientItem.getByRole('button', { name: 'Илгээх (1)' }).click();
     await expect(clientItem.getByText('Хянагдаж байна — хуульч')).toBeVisible();
@@ -46,7 +46,7 @@ test.describe('Баримтын хүсэлт', () => {
     await expect(lawyerCard.getByText('Илгээсэн', { exact: true })).toBeVisible();
     await expect(lawyerCard.getByText('unemleh.pdf')).toBeVisible();
     await lawyerCard.getByRole('button', { name: 'Батлах' }).click();
-    await expect(lawyerCard.getByText('Батлагдсан')).toBeVisible();
+    await expect(lawyerCard.getByText('Хүлээн авсан', { exact: true })).toBeVisible();
 
     // Client sees the approval.
     await client.reload();

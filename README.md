@@ -877,17 +877,53 @@ LAWYER хүсэлтийг удирдахгүй (403): хуваарилагдса
 `validateRequestFiles`) орчуулгыг **дуудагчаас** prop-оор авдаг: портал орчуулсан утга дамжуулна,
 админ анхдагч монгол утгыг хэвээр хэрэглэнэ.
 
-### Огноо, мөнгө
+### Тоо ба ганц/олон тоо (ICU plural)
+
+Тоо агуулсан бичвэр **ICU plural**-аар бичигдэнэ, тоог бичвэрт шууд залгахгүй:
+
+```json
+"portal.cases.totalCount": "Нийт {count, plural, one {# хэрэг} other {# хэрэг}}"
+```
+
+| Хэл | Ангилал | Тэмдэглэл |
+| --- | --- | --- |
+| mn | `one`, `other` | Монголд тооны дараах нэр үг хувирахгүй тул хоёр салаа **ижил бичвэртэй** байж болно — бүтэц нь зөв байх нь чухал |
+| en | `one`, `other` | `1 case` / `2 cases`; үйл үг зөрвөл салаанд нь оруулна (`# request is` / `# requests are`) |
+| zh | `other` | Хятадад plural ангилал байхгүй тул нэг салаа хангалттай |
+
+`#` нь тоог тухайн хэлний форматаар хэвлэнэ. Өөрчлөлт хийсний дараа `pnpm i18n:check` бүх мессежийг
+апп-ын өөрийн форматлагчаар (`next-intl`) эвхэж, plural мессежүүдийг **0, 1, 2, 11, 21** дээр гаргаж
+үзнэ — эвдэрсэн ICU бол тэнд унана, уншигчийн дэлгэц дээр биш.
+
+### Огноо, мөнгө, хэмжээ
 
 `src/lib/format.ts`: `formatDate`, `formatDateLong`, `formatDateWithWeekday`, `formatTimeAgo`,
-`formatMonthShort`, `formatMoney` — бүгд `locale` авна (`Intl`). Мөнгө бүх хэлэнд **₮**-өөр харагдана.
+`formatMonthShort`, `formatMonthDay`, `formatSizeLimit`, `formatMoney` — бүгд `locale` авна (`Intl`).
+Мөнгө бүх хэлэнд **₮**-өөр харагдана.
+
+**Сарын нэрийг гараар бүү угсар.** `{month} сарын {day}` маягийн загвар англи дээр «9 14» гэж уншигдана,
+`Intl`-ийн mn-MN тоон сар бол ром тоо (`IX`). Сар орсон бүх шошго `formatMonthShort` / `formatMonthDay`-ээр
+гарна: `9-р сар` · `Sep` · `9月`, `9-р сарын 10` · `Sep 10` · `9月10日`.
+
+### Хязгаарыг хоёр дахин бичихгүй
+
+Формын тайлбар дахь тоо (нууц үгийн урт, тэмдэгтийн доод хязгаар, файлын дээд хэмжээ) нь schema-гаас
+орлуулагчаар дамжина — бичвэр ба шалгалт хоёр зөрөх боломжгүй:
+
+| Тогтмол (`@law-firm/shared`) | Хаана харагдах |
+| --- | --- |
+| `PASSWORD_MIN_LENGTH` (8) | `portal.register.passwordHelper`, `portal.profile.newPasswordHelper` |
+| `SERVICE_REQUEST_DESCRIPTION_MIN` (30) | `portal.requests.new.descriptionHelper` |
+| `TESTIMONIAL_BODY_MIN` / `_MAX` (30 / 1000) | `portal.testimonial.bodyHelper` |
+| `MAX_DOCUMENT_SIZE_BYTES` (20MB) | `portal.documents.dropzoneHint*`, `portal.caseDetail.documentsHint`, `portal.documentRequests.fileHint` / `fileSizeError` |
+| `MAX_DOCUMENT_REQUEST_FILES` | `portal.documentRequests.fileHint`, `fileCountError` |
 
 ### Орчуулгын ажлын урсгал (CSV)
 
 ```bash
 pnpm i18n:export [файл]   # mn.json → CSV (key, mn, en, zh, context) — дуудсан хавтсанд бичнэ
 pnpm i18n:import [файл]   # бөглөсөн CSV → en.json / zh.json (хоосон нүд хоосон хэвээр)
-pnpm i18n:check           # гурван файлын түлхүүр таарч буй эсэх + үлдсэн орчуулгын тоо
+pnpm i18n:check           # түлхүүрийн таарц + үлдсэн орчуулгын тоо + бүх мессеж эвхэгдэж байгаа эсэх
 ```
 
 Файлын нэрийг `INIT_CWD` → `process.cwd()` → repo root → `apps/web` дарааллаар хайна, тул repo root-оос ч,

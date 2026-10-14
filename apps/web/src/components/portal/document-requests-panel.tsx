@@ -1,10 +1,11 @@
 'use client';
 
+import { MAX_DOCUMENT_SIZE_BYTES } from '@law-firm/shared/schemas';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRef, useState, type DragEvent } from 'react';
 import { CheckIcon, CloseIcon, DownloadIcon, UploadCircleIcon } from '@/components/icons';
-import { Badge, CLIENT_DOCUMENT_REQUEST_BADGE, StatusBadge } from '@/components/ui/badge';
+import { Badge, DOCUMENT_REQUEST_STATUS_BADGE, StatusBadge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { FileChip } from '@/components/ui/file-chip';
@@ -19,7 +20,7 @@ import {
   needsClientAction,
   validateRequestFiles,
 } from '@/lib/document-requests';
-import { formatBytes, formatDate } from '@/lib/format';
+import { formatBytes, formatDate, formatSizeLimit } from '@/lib/format';
 import type { Locale } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
 
@@ -73,7 +74,7 @@ export function DocumentRequestsPanel({ caseId, requests, onDownload }: {
 
 function RequestItem({ caseId, request, onDownload }: { caseId: string; request: DocumentRequestItem; onDownload: (doc: DocumentItem) => void }) {
   const t = useTranslations('portal.documentRequests');
-  const tStatus = useTranslations('portal.documentRequests.status');
+  const tStatus = useTranslations('enums.documentRequestStatus');
   const locale = useLocale() as Locale;
   const queryClient = useQueryClient();
   const fileInput = useRef<HTMLInputElement>(null);
@@ -103,7 +104,7 @@ function RequestItem({ caseId, request, onDownload }: { caseId: string; request:
   function addFiles(list: FileList | File[]) {
     const { accepted, errors } = validateRequestFiles(Array.from(list), files.length, {
       type: (name) => t('fileTypeError', { name }),
-      size: (name) => t('fileSizeError', { name }),
+      size: (name) => t('fileSizeError', { name, size: formatSizeLimit(MAX_DOCUMENT_SIZE_BYTES) }),
       count: (max) => t('fileCountError', { max }),
     });
     for (const message of errors) toast.warning(t('fileRejected'), message);
@@ -136,7 +137,7 @@ function RequestItem({ caseId, request, onDownload }: { caseId: string; request:
           </div>
           {request.description && <p className="text-body-sm text-text-secondary">{request.description}</p>}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <StatusBadge map={CLIENT_DOCUMENT_REQUEST_BADGE} status={request.status} label={tStatus(request.status)} />
+            <StatusBadge map={DOCUMENT_REQUEST_STATUS_BADGE} status={request.status} label={tStatus(request.status)} />
             {request.dueDate && (
               <span className={cn('text-caption', overdue ? 'text-body-sm-medium text-status-danger-fg' : 'text-text-muted')}>
                 {overdue ? `${t('overdue')} ` : `${t('due')} `}
@@ -222,7 +223,7 @@ function RequestItem({ caseId, request, onDownload }: { caseId: string; request:
               <span className="md:hidden">{t('pickFile')}</span>
               <span className="hidden md:inline">{t('dropZone')}</span>
             </p>
-            <p className="text-caption text-text-secondary">{t('fileHint', { max: MAX_REQUEST_FILES })}</p>
+            <p className="text-caption text-text-secondary">{t('fileHint', { max: MAX_REQUEST_FILES, size: formatSizeLimit(MAX_DOCUMENT_SIZE_BYTES) })}</p>
           </div>
           {files.length > 0 && (
             <ul aria-label={t('filesToSend')} className="grid grid-cols-1 gap-2 md:grid-cols-2">

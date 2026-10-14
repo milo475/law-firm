@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { EmptyState, ErrorState, Skeleton } from '@/components/ui/states';
 import { ApiError, api, type CaseListItem, type Paginated, type ServiceRequestItem } from '@/lib/api';
-import { CASE_EVENT_LABELS, SERVICE_REQUEST_TYPE_LABELS, formatDate, formatMoney } from '@/lib/format';
+import { CASE_EVENT_LABELS, SERVICE_REQUEST_TYPE_LABELS, formatDate, formatMonthShort, formatMoney } from '@/lib/format';
 import { formatRate, usePerformanceOverview } from '@/lib/performance';
 import { useServiceRequestSummary } from '@/lib/service-requests';
 import { useTaskSummary } from '@/lib/tasks';
@@ -146,7 +146,7 @@ export default function AdminDashboardPage() {
                 <li key={event.id} className="flex items-start gap-4 py-3 first:pt-0 last:pb-0">
                   <div className="flex w-14 shrink-0 flex-col items-center rounded-md bg-bg-brand-soft py-2 text-text-brand">
                     <span className="font-serif text-h4">{new Date(event.eventDate).getDate()}</span>
-                    <span className="text-caption">{new Date(event.eventDate).getMonth() + 1}-р сар</span>
+                    <span className="text-caption">{formatMonthShort(event.eventDate)}</span>
                   </div>
                   <div className="flex min-w-0 flex-col gap-0.5">
                     <p className="text-caption text-text-accent">{CASE_EVENT_LABELS[event.type] ?? event.type} · {formatDate(event.eventDate, 'mn', true)}</p>

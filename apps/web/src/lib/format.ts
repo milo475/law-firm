@@ -46,11 +46,26 @@ export function formatTimeAgo(value: string | Date, locale: Locale = 'mn'): stri
   return formatDate(date, locale);
 }
 
-/** "9 сар" / "Sep" / "9月" — the small month label on the portal's event tiles. */
+/**
+ * "9-р сар" / "Sep" / "9月" — the small month label on the portal's event tiles.
+ * The month name comes from the locale data; a number pasted into a template reads as "IX" in
+ * Mongolian (ICU writes mn numeric months in Roman numerals) and as a bare digit in English.
+ */
 export function formatMonthShort(value: string | Date, locale: Locale = 'mn'): string {
   const date = typeof value === 'string' ? new Date(value) : value;
   if (Number.isNaN(date.getTime())) return '—';
-  return new Intl.DateTimeFormat(BCP47[locale], { month: locale === 'en' ? 'short' : 'numeric' }).format(date) + (locale === 'mn' ? ' сар' : '');
+  return new Intl.DateTimeFormat(BCP47[locale], { month: 'short' }).format(date);
+}
+
+/** "9-р сарын 10" / "Sep 10" / "9月10日" — day headings in the notification list; `withYear` adds the year. */
+export function formatMonthDay(value: string | Date, locale: Locale = 'mn', withYear = false): string {
+  const date = typeof value === 'string' ? new Date(value) : value;
+  if (Number.isNaN(date.getTime())) return '—';
+  return new Intl.DateTimeFormat(BCP47[locale], {
+    ...(withYear ? { year: 'numeric' as const } : {}),
+    month: 'short',
+    day: 'numeric',
+  }).format(date);
 }
 
 /** 1500000 → "1 500 000₮" (space thousands separator, as in the Figma portal frames). ₮ in every language. */
@@ -71,6 +86,11 @@ export function formatPhone(value: string): string {
 /** tel: link for a Mongolian number, with the country code. */
 export function phoneHref(value: string): string {
   return `tel:+976${value.replace(/\D/g, '').replace(/^976(?=\d{8}$)/, '')}`;
+}
+
+/** "20MB" — the upload ceiling as the hints quote it, taken from the constant that enforces it. */
+export function formatSizeLimit(bytes: number): string {
+  return `${Math.round(bytes / (1024 * 1024))}MB`;
 }
 
 export function formatBytes(bytes: number): string {

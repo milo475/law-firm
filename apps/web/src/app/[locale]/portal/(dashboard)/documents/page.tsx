@@ -1,6 +1,7 @@
 // Figma: 02 Client Portal / Portal / 06 Documents / Desktop (31:577) + Mobile (36:1181); preview modal: 06b Document Preview / Desktop (32:517)
 'use client';
 
+import { MAX_DOCUMENT_SIZE_BYTES } from '@law-firm/shared/schemas';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
@@ -14,13 +15,14 @@ import { EmptyState, ErrorState, Skeleton, TableSkeleton } from '@/components/ui
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@/components/ui/table';
 import { toast } from '@/components/ui/toast';
 import { ApiError, api, type CaseListItem, type DocumentItem, type Paginated, type PublicUser } from '@/lib/api';
-import { formatBytes, formatDate } from '@/lib/format';
+import { formatBytes, formatDate, formatSizeLimit } from '@/lib/format';
 import { useLocale, useTranslations } from 'next-intl';
 import type { Locale } from '@/i18n/routing';
 import { cn, shortName } from '@/lib/utils';
 
 const ACCEPT = '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt';
-const MAX_BYTES = 20 * 1024 * 1024;
+const MAX_BYTES = MAX_DOCUMENT_SIZE_BYTES;
+const SIZE_LIMIT = formatSizeLimit(MAX_DOCUMENT_SIZE_BYTES);
 
 type Kind = ReturnType<typeof fileKind>;
 /** Same colours as FileChip's extension tile (not exported) — used for the 36px table / preview tiles. */
@@ -165,8 +167,8 @@ export default function DocumentsPage() {
             <span className="hidden md:inline">{t('dropzoneTitle')}</span>
           </p>
           <p className="text-caption text-text-secondary md:text-body-sm">
-            <span className="md:hidden">{t('dropzoneHintShort')}</span>
-            <span className="hidden md:inline">{t('dropzoneHint')}</span>
+            <span className="md:hidden">{t('dropzoneHintShort', { size: SIZE_LIMIT })}</span>
+            <span className="hidden md:inline">{t('dropzoneHint', { size: SIZE_LIMIT })}</span>
           </p>
           {upload.isPending && <p role="status" className="text-caption text-text-brand">{t('uploading')}</p>}
         </div>

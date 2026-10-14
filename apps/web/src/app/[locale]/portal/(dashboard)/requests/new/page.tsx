@@ -2,7 +2,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CreateServiceRequestSchema, type CreateServiceRequestInput } from '@law-firm/shared/schemas';
+import { CreateServiceRequestSchema, SERVICE_REQUEST_DESCRIPTION_MIN, type CreateServiceRequestInput } from '@law-firm/shared/schemas';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -122,7 +122,7 @@ function NewServiceRequestForm() {
             rows={7}
             maxLength={5000}
             placeholder={t('descriptionPlaceholder')}
-            helper={t('descriptionHelper')}
+            helper={t('descriptionHelper', { min: SERVICE_REQUEST_DESCRIPTION_MIN })}
             error={errors.description?.message}
             {...register('description')}
           />

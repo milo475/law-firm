@@ -2,7 +2,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CreateTestimonialSchema, TESTIMONIAL_BODY_MAX } from '@law-firm/shared/schemas';
+import { CreateTestimonialSchema, TESTIMONIAL_BODY_MAX, TESTIMONIAL_BODY_MIN } from '@law-firm/shared/schemas';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -142,7 +142,7 @@ export function TestimonialPanel({ caseId }: { caseId: string }) {
           rows={6}
           maxLength={TESTIMONIAL_BODY_MAX}
           placeholder={t('bodyPlaceholder')}
-          helper={t('bodyHelper')}
+          helper={t('bodyHelper', { min: TESTIMONIAL_BODY_MIN, max: TESTIMONIAL_BODY_MAX })}
           error={errors.body?.message}
           {...register('body')}
         />

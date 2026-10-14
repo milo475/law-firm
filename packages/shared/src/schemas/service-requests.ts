@@ -6,6 +6,9 @@ export const ServiceRequestTypeSchema = z.enum(ServiceRequestType, { message: '�
 export const ServiceRequestStatusSchema = z.enum(ServiceRequestStatus, { message: 'Хүсэлтийн төлөв буруу байна' });
 const RequestCaseTypeSchema = z.enum(CaseType, { message: 'Асуудлын чиглэлээ сонгоно уу' });
 
+/** Quoted by the portal's request form, so the hint cannot drift from the rule. */
+export const SERVICE_REQUEST_DESCRIPTION_MIN = 30;
+
 /** POST /service-requests (CLIENT) — the title and description become the case title and description when it is assigned. */
 export const CreateServiceRequestSchema = z.object({
   type: ServiceRequestTypeSchema,
@@ -18,7 +21,7 @@ export const CreateServiceRequestSchema = z.object({
   description: z
     .string({ message: 'Юу болсныг тайлбарлана уу' })
     .trim()
-    .min(30, 'Юу болсон, юу хийснээ дор хаяж 30 тэмдэгтээр тайлбарлана уу')
+    .min(SERVICE_REQUEST_DESCRIPTION_MIN, `Юу болсон, юу хийснээ дор хаяж ${SERVICE_REQUEST_DESCRIPTION_MIN} тэмдэгтээр тайлбарлана уу`)
     .max(5000, 'Тайлбар 5000 тэмдэгтээс хэтрэхгүй байна'),
 });
 export type CreateServiceRequestInput = z.infer<typeof CreateServiceRequestSchema>;

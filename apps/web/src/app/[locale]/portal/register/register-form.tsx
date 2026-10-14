@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { RegisterSchema, type RegisterInput } from '@law-firm/shared/schemas';
+import { PASSWORD_MIN_LENGTH, RegisterSchema, type RegisterInput } from '@law-firm/shared/schemas';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -43,7 +43,7 @@ export function RegisterForm() {
       </div>
       <Input label={t('phone')} placeholder="9911-2233" inputMode="tel" autoComplete="tel" helper={t('phoneHelper')} error={errors.phone?.message} {...register('phone', { setValueAs: (v: string) => (v?.trim() ? v.trim() : undefined) })} />
       <Input label={t('email')} type="email" placeholder="batbayar@example.mn" autoComplete="email" required error={errors.email?.message} {...register('email')} />
-      <Input label={t('password')} type="password" placeholder="••••••••" autoComplete="new-password" required helper={t('passwordHelper')} error={errors.password?.message} {...register('password')} />
+      <Input label={t('password')} type="password" placeholder="••••••••" autoComplete="new-password" required helper={t('passwordHelper', { min: PASSWORD_MIN_LENGTH })} error={errors.password?.message} {...register('password')} />
       <Checkbox
         label={
           <>

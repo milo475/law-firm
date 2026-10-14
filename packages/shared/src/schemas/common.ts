@@ -29,10 +29,14 @@ export const EmailSchema = z
   .toLowerCase()
   .max(254, 'И-мэйл хаяг хэт урт байна');
 
+/** The password rule, in one place: the schema enforces it and the sign-up / profile forms quote it. */
+export const PASSWORD_MIN_LENGTH = 8;
+export const PASSWORD_MAX_LENGTH = 128;
+
 export const PasswordSchema = z
   .string()
-  .min(8, 'Нууц үг хамгийн багадаа 8 тэмдэгт байна')
-  .max(128, 'Нууц үг хэт урт байна')
+  .min(PASSWORD_MIN_LENGTH, `Нууц үг хамгийн багадаа ${PASSWORD_MIN_LENGTH} тэмдэгт байна`)
+  .max(PASSWORD_MAX_LENGTH, 'Нууц үг хэт урт байна')
   .regex(/[A-Za-z]/, 'Нууц үг дор хаяж нэг үсэг агуулсан байх ёстой')
   .regex(/[0-9]/, 'Нууц үг дор хаяж нэг тоо агуулсан байх ёстой');
 

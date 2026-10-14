@@ -1,4 +1,5 @@
 // Figma: Design System / Badge (7:56) — Status pill: dot + label, colour + text (never colour only)
+import { DOCUMENT_REQUEST_STATUS_LABELS } from '@law-firm/shared/labels';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
@@ -89,22 +90,22 @@ export const TASK_PRIORITY_BADGE: Record<string, { tone: BadgeTone; label: strin
   URGENT: { tone: 'danger', label: 'Яаралтай' },
 };
 
-export const DOCUMENT_REQUEST_STATUS_BADGE: Record<string, { tone: BadgeTone; label: string }> = {
-  PENDING: { tone: 'pending', label: 'Хүлээгдэж буй' },
-  SUBMITTED: { tone: 'new', label: 'Илгээсэн' },
-  UNDER_REVIEW: { tone: 'new', label: 'Хянагдаж буй' },
-  APPROVED: { tone: 'progress', label: 'Батлагдсан' },
-  REJECTED: { tone: 'danger', label: 'Буцаагдсан' },
+/**
+ * Both surfaces name the status the same way: the badge says where the request stands, the button
+ * says what to do about it. The Mongolian wording is the shared label map, so the admin panel, the
+ * API's messages and `enums.documentRequestStatus` cannot drift apart.
+ */
+const DOCUMENT_REQUEST_TONES: Record<string, BadgeTone> = {
+  PENDING: 'pending',
+  SUBMITTED: 'new',
+  UNDER_REVIEW: 'new',
+  APPROVED: 'progress',
+  REJECTED: 'danger',
 };
 
-/** Client wording: what the client has to do next. */
-export const CLIENT_DOCUMENT_REQUEST_BADGE: Record<string, { tone: BadgeTone; label: string }> = {
-  PENDING: { tone: 'pending', label: 'Илгээгээгүй' },
-  SUBMITTED: { tone: 'new', label: 'Хянагдаж байна' },
-  UNDER_REVIEW: { tone: 'new', label: 'Хянагдаж байна' },
-  APPROVED: { tone: 'progress', label: 'Хүлээн авсан' },
-  REJECTED: { tone: 'danger', label: 'Дахин илгээх' },
-};
+export const DOCUMENT_REQUEST_STATUS_BADGE: Record<string, { tone: BadgeTone; label: string }> = Object.fromEntries(
+  Object.entries(DOCUMENT_REQUEST_STATUS_LABELS).map(([status, label]) => [status, { tone: DOCUMENT_REQUEST_TONES[status], label }]),
+);
 
 /** `label` overrides the map copy — localized surfaces (the portal) pass a translated label, the admin panel keeps the map. */
 export const TESTIMONIAL_STATUS_BADGE: Record<string, { tone: BadgeTone; label: string }> = {

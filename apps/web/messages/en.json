@@ -522,12 +522,12 @@
     "back": "Back",
     "breadcrumb": "Breadcrumb",
     "getAdvice": "Request advice",
-    "yearsOfExperience": "{years} years of experience",
+    "yearsOfExperience": "{years, plural, one {# year of experience} other {# years of experience}}",
     "lawyersUnavailable": "Lawyer profiles could not be loaded.",
     "lawyersComingSoon": "Lawyer profiles will be added soon.",
     "postsUnavailable": "Articles could not be loaded.",
     "postsComingSoon": "Articles will be published soon.",
-    "views": "{count} views",
+    "views": "{count, plural, one {# view} other {# views}}",
     "close": ""
   },
   "servicesPage": {
@@ -720,7 +720,7 @@
     "metaDescription": "Choose the lawyer who fits your matter from our specialists in each practice area.",
     "title": "Our lawyers",
     "description": "Choose the lawyer who fits your matter from our specialists in each practice area.",
-    "descriptionCounted": "Choose the lawyer who fits your matter from our {count} specialists across the practice areas.",
+    "descriptionCounted": "Choose the lawyer who fits your matter from our {count, plural, one {# specialist} other {# specialists}} across the practice areas.",
     "crumb": "Lawyers",
     "filterLabel": "Filter by practice area",
     "failedTitle": "Lawyer profiles could not be loaded",
@@ -750,7 +750,7 @@
     "featured": "Featured",
     "search": "Search articles",
     "searchSubmit": "Search",
-    "searchResult": "Results for «{query}»: {count} articles",
+    "searchResult": "Results for «{query}»: {count, plural, one {# article} other {# articles}}",
     "clearSearch": "Clear",
     "failedTitle": "The news could not be loaded",
     "failedDescription": "Check that the API is running and try again.",
@@ -971,6 +971,13 @@
       "OVERDUE": "Overdue",
       "CANCELLED": "Cancelled"
     },
+    "documentRequestStatus": {
+      "PENDING": "Awaiting",
+      "SUBMITTED": "Submitted",
+      "UNDER_REVIEW": "Under review",
+      "APPROVED": "Accepted",
+      "REJECTED": "Returned"
+    },
     "role": {
       "ADMIN": "Administrator",
       "LAWYER": "Lawyer",
@@ -1014,7 +1021,7 @@
       "phoneHelper": "The number registered on your agreement",
       "email": "Email address",
       "password": "Password",
-      "passwordHelper": "At least 8 characters, including a number",
+      "passwordHelper": "At least {min, plural, one {# character} other {# characters}}, including a letter and a number",
       "agree": "I accept the terms of service and the privacy policy",
       "agreeShort": "I accept the terms of service",
       "submit": "Create an account",
@@ -1059,7 +1066,7 @@
       "loadError": "An error occurred while loading the data",
       "greeting": "Hello, {name}",
       "casesLoading": "Loading case information",
-      "activeCasesCount": "You have {count} active cases",
+      "activeCasesCount": "You have {count, plural, one {# active case} other {# active cases}}",
       "myCases": "My cases",
       "noCasesTitle": "No cases registered",
       "noCasesDescription": "Cases registered in your name will appear here.",
@@ -1072,18 +1079,18 @@
       "unpaidShort": "Unpaid invoice",
       "dueDate": "Payment due date",
       "dueDateShort": "Due date",
-      "invoiceTotal": "{count} invoices in total",
+      "invoiceTotal": "{count, plural, one {# invoice} other {# invoices}} in total",
       "details": "Details",
       "payCta": "Make a payment",
       "confirmingTitle": "Confirming payment",
       "confirmingText": "we are verifying the payment you recorded.",
       "seeAll": "See all →",
       "seeAllShort": "All →",
-      "documentRequests": "You have {count} document requests",
+      "documentRequests": "You have {count, plural, one {# document request} other {# document requests}}",
       "sendDocuments": "Send documents",
-      "unreadMessages": "You have {count} unread messages",
+      "unreadMessages": "You have {count, plural, one {# unread message} other {# unread messages}}",
       "readMessages": "Read messages",
-      "openRequests": "{count} requests are being processed",
+      "openRequests": "{count, plural, one {# request is} other {# requests are}} being processed",
       "viewRequests": "View your requests",
       "stats": {
         "activeCases": "Active cases",
@@ -1099,8 +1106,8 @@
       },
       "updatedAt": "Updated: {date}",
       "unreadLabel": "unread",
-      "documentsCount": "{count} documents",
-      "messagesCount": "{count} messages"
+      "documentsCount": "{count, plural, one {# document} other {# documents}}",
+      "messagesCount": "{count, plural, one {# message} other {# messages}}"
     },
     "error": {
       "title": "An error occurred",
@@ -1112,7 +1119,7 @@
     "cases": {
       "title": "Case list",
       "loading": "Loading…",
-      "summary": "{total} cases in total · {active} active, {waiting} pending, {closed} closed",
+      "summary": "{total, plural, one {# case} other {# cases}} in total · {active} active, {waiting} pending, {closed} closed",
       "newRequest": "Submit a new request",
       "searchLabel": "Search by case number or name",
       "filterByStatus": "Filter by status",
@@ -1121,7 +1128,7 @@
       "noneTitle": "No cases found",
       "noneDescription": "No cases are registered in your name.",
       "noneFiltered": "No cases match this filter.",
-      "totalCount": "{count} cases in total",
+      "totalCount": "{count, plural, one {# case} other {# cases}} in total",
       "columns": {
         "number": "Number",
         "title": "Case name",
@@ -1130,7 +1137,7 @@
         "status": "Status",
         "updated": "Updated"
       },
-      "range": "Showing {from}–{to} of {total} cases"
+      "range": "Showing {from}–{to} of {total, plural, one {# case} other {# cases}}"
     },
     "documents": {
       "uploadedToast": "Attached successfully",
@@ -1153,7 +1160,7 @@
       "pickFile": "Select a file",
       "dropzoneLabel": "Drag your file here, or click to select it from your computer",
       "dropzoneTitle": "Drag your file here",
-      "dropzoneHint": "or click to select it from your computer · PDF, DOCX, JPG, PNG · up to 20MB",
+      "dropzoneHint": "or click to select it from your computer · PDF, DOCX, JPG, PNG · up to {size}",
       "allFiles": "All files",
       "filterByCase": "Filter by case",
       "loadError": "Something went wrong",
@@ -1181,9 +1188,9 @@
       "you": "You",
       "uploaderYou": "{name} (you)",
       "uploaderLawyer": "{name} (lawyer)",
-      "dropzoneHintShort": "PDF, DOCX, JPG · up to 20MB",
-      "filesSummary": "{count} files · {size}",
-      "documentsCount": "{count} documents"
+      "dropzoneHintShort": "PDF, DOCX, JPG · up to {size}",
+      "filesSummary": "{count, plural, one {# file} other {# files}} · {size}",
+      "documentsCount": "{count, plural, one {# document} other {# documents}}"
     },
     "invoices": {
       "title": "Invoices and payments",
@@ -1300,7 +1307,7 @@
       "emptyDescription": "Once a case is registered in your name, you can correspond with your assigned lawyer here.",
       "conversations": "Conversations",
       "loading": "Loading…",
-      "unreadSummary": "You have {count} unread messages",
+      "unreadSummary": "You have {count, plural, one {# unread message} other {# unread messages}}",
       "noUnread": "No unread messages",
       "you": "You",
       "preview": "{sender}: {body}",
@@ -1336,7 +1343,7 @@
         "titlePlaceholder": "Example: Lease agreement terminated early",
         "descriptionLabel": "What happened?",
         "descriptionPlaceholder": "Briefly describe when and what happened, and what you have done so far (contracts, notices, court proceedings, or approaches to any authority).",
-        "descriptionHelper": "At least 30 characters",
+        "descriptionHelper": "At least {min, plural, one {# character} other {# characters}}",
         "cancel": "Cancel",
         "submitting": "Sending…",
         "submit": "Send request",
@@ -1361,16 +1368,14 @@
       "loadingLabel": "Loading",
       "title": "Notifications",
       "loading": "Loading…",
-      "unreadSummary": "You have {count} unread notifications",
+      "unreadSummary": "You have {count, plural, one {# unread notification} other {# unread notifications}}",
       "noUnread": "No unread notifications",
       "unreadShort": "{count} unread",
       "error": "Something went wrong",
       "allReadToast": "All marked as read",
-      "allReadBody": "{count} notifications",
+      "allReadBody": "{count, plural, one {# notification} other {# notifications}}",
       "today": "Today",
       "yesterday": "Yesterday",
-      "monthDay": "{month} {day}",
-      "monthDayYear": "{month} {day}, {year}",
       "unreadLabel": "unread",
       "markRead": "Mark as read",
       "filters": {
@@ -1415,7 +1420,7 @@
       "uploadFailed": "Could not upload the file",
       "downloadFailed": "Could not download",
       "tryAgain": "Please try again.",
-      "documentsHint": "PDF, Word, Excel, images, text — up to 20MB.",
+      "documentsHint": "PDF, Word, Excel, images, text — up to {size}.",
       "noDocumentsTitle": "No documents attached",
       "firstDocument": "Attach your first document",
       "noRequestsTitle": "No document requests",
@@ -1433,7 +1438,7 @@
       "download": "Download",
       "downloadNamed": "Download: {name}",
       "requestsAlert": {
-        "title": "{count} documents have been requested from you",
+        "title": "{count, plural, one {# document has} other {# documents have}} been requested from you",
         "overdue": "The deadline for some documents has passed.",
         "body": "Please attach and send the documents your lawyer has requested.",
         "cta": "Send documents"
@@ -1444,7 +1449,7 @@
         "caseType": "Case type",
         "opened": "Opened",
         "documents": "Attached documents",
-        "documentsCount": "{count} files",
+        "documentsCount": "{count, plural, one {# file} other {# files}}",
         "closed": "Closed",
         "invoices": "Invoices"
       },
@@ -1455,7 +1460,6 @@
       "nextEvent": {
         "title": "Next case event",
         "empty": "No case events scheduled.",
-        "month": "{month}",
         "hearingNote": "Please arrive 15 minutes before the hearing and remember to bring your identity card."
       },
       "lawyer": {
@@ -1501,9 +1505,9 @@
     },
     "documentRequests": {
       "title": "Requests from your lawyer",
-      "waiting": "{count} documents are awaited from you. Please attach your files and send them.",
+      "waiting": "{count, plural, one {# document is} other {# documents are}} awaited from you. Please attach your files and send them.",
       "allSubmitted": "All requested documents have been sent. Your lawyer will review them and let you know.",
-      "accepted": "{approved}/{total} documents accepted",
+      "accepted": "{approved}/{total, plural, one {# document} other {# documents}} accepted",
       "acceptedLabel": "Accepted documents",
       "listLabel": "Document requests",
       "optional": "Optional",
@@ -1520,7 +1524,7 @@
       "pickFileFor": "“{title}” — select a file",
       "dropZone": "Drag your file here, or click to select it",
       "dropZoneFor": "“{title}” — drag your file here, or click to select it",
-      "fileHint": "PDF, DOCX, XLSX, JPG, PNG · up to 20MB · {max} files at a time",
+      "fileHint": "PDF, DOCX, XLSX, JPG, PNG · up to {size} · {max, plural, one {# file} other {# files}} at a time",
       "filesToSend": "Files to send",
       "remove": "Remove",
       "removeNamed": "Remove: {name}",
@@ -1534,22 +1538,15 @@
       "tryAgain": "Please try again.",
       "fileRejected": "The file was not added",
       "fileTypeError": "{name} — only PDF, Word, Excel, JPG, PNG and TXT files may be sent.",
-      "fileSizeError": "{name} — exceeds 20MB.",
-      "fileCountError": "No more than {max} files may be sent at a time.",
-      "status": {
-        "PENDING": "Not sent",
-        "SUBMITTED": "Under review",
-        "UNDER_REVIEW": "Under review",
-        "APPROVED": "Accepted",
-        "REJECTED": "Send again"
-      }
+      "fileSizeError": "{name} — exceeds {size}.",
+      "fileCountError": "No more than {max, plural, one {# file} other {# files}} may be sent at a time."
     },
     "profile": {
       "title": "Profile and settings",
       "description": "Manage your personal details, login password and notification preferences here.",
       "soon": "Coming soon",
       "soonLower": "coming soon",
-      "activeCases": "{count} active cases",
+      "activeCases": "{count, plural, one {# active case} other {# active cases}}",
       "changePhoto": "Change photo",
       "removePhoto": "Remove",
       "personal": "Personal details",
@@ -1572,7 +1569,7 @@
       "changePassword": "Change password",
       "currentPassword": "Current password",
       "newPassword": "New password",
-      "newPasswordHelper": "More than 8 characters, containing letters and digits",
+      "newPasswordHelper": "At least {min, plural, one {# character} other {# characters}}, including a letter and a number",
       "repeatPassword": "Repeat new password",
       "updatePassword": "Update password",
       "passwordChanged": "Password changed",
@@ -1626,9 +1623,9 @@
       "description": "Tell us briefly how the service helped you. It is published on the site after review.",
       "bodyLabel": "Your testimonial",
       "bodyPlaceholder": "Describe the issue you came to us with, how it was resolved and how you found the service.",
-      "bodyHelper": "30–1000 characters",
+      "bodyHelper": "{min}–{max} characters",
       "ratingLabel": "Rating (optional)",
-      "ratingValue": "{rating} stars",
+      "ratingValue": "{rating, plural, one {# star} other {# stars}}",
       "consent": "I consent to my name being published on the website",
       "consentHelper": "Without your consent your name is never published anywhere. You can withdraw it at any time.",
       "submit": "Send testimonial",
@@ -1676,6 +1673,6 @@
     "failedDescription": "Please try again in a moment.",
     "ratingLabel": "{rating} out of 5 stars",
     "inOriginalLanguage": "Testimonials are shown in the language they were written in.",
-    "count": "{count} testimonials"
+    "count": "{count, plural, one {# testimonial} other {# testimonials}}"
   }
 }

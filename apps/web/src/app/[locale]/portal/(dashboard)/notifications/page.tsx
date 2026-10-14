@@ -2,14 +2,16 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 import { EmptySearchGlyph } from '@/components/icons';
 import { NotificationRow, groupByDay } from '@/components/notifications/notification-row';
 import { Button } from '@/components/ui/button';
 import { EmptyState, ErrorState, Skeleton } from '@/components/ui/states';
 import { toast } from '@/components/ui/toast';
+import type { Locale } from '@/i18n/routing';
 import { ApiError, api, type NotificationItem } from '@/lib/api';
+import { formatMonthDay } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
 type Data = { items: NotificationItem[]; unreadCount: number };
@@ -24,6 +26,7 @@ const FILTER_TYPES: Record<Exclude<Filter, 'ALL' | 'UNREAD'>, string[]> = {
 
 export default function NotificationsPage() {
   const t = useTranslations('portal.notifications');
+  const locale = useLocale() as Locale;
   const queryClient = useQueryClient();
   const query = useQuery({ queryKey: ['notifications'], queryFn: () => api.get<Data>('/notifications') });
   const [filter, setFilter] = useState<Filter>('ALL');
@@ -52,10 +55,9 @@ export default function NotificationsPage() {
       const same = (a: Date, b: Date) => a.toDateString() === b.toDateString();
       if (same(d, today)) return t('today');
       if (same(d, yesterday)) return t('yesterday');
-      const parts = { month: d.getMonth() + 1, day: d.getDate(), year: d.getFullYear() };
-      return d.getFullYear() === today.getFullYear() ? t('monthDay', parts) : t('monthDayYear', parts);
+      return formatMonthDay(d, locale, d.getFullYear() !== today.getFullYear());
     },
-    [t],
+    [t, locale],
   );
   const groups = groupByDay(visible, formatDay);
 

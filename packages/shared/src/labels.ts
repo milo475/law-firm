@@ -67,7 +67,7 @@ export const DOCUMENT_REQUEST_STATUS_LABELS: Record<DocumentRequestStatus, strin
   PENDING: 'Хүлээгдэж буй',
   SUBMITTED: 'Илгээсэн',
   UNDER_REVIEW: 'Хянагдаж буй',
-  APPROVED: 'Батлагдсан',
+  APPROVED: 'Хүлээн авсан',
   REJECTED: 'Буцаагдсан',
 };
 

@@ -522,12 +522,12 @@
     "back": "Буцах",
     "breadcrumb": "Замын заалт",
     "getAdvice": "Зөвлөгөө авах",
-    "yearsOfExperience": "{years} жилийн туршлага",
+    "yearsOfExperience": "{years, plural, one {# жилийн туршлага} other {# жилийн туршлага}}",
     "lawyersUnavailable": "Хуульчдын мэдээлэл түр ачаалагдсангүй.",
     "lawyersComingSoon": "Хуульчдын мэдээлэл удахгүй нэмэгдэнэ.",
     "postsUnavailable": "Нийтлэл түр ачаалагдсангүй.",
     "postsComingSoon": "Нийтлэл удахгүй нийтлэгдэнэ.",
-    "views": "{count} үзсэн",
+    "views": "{count, plural, one {# үзсэн} other {# үзсэн}}",
     "close": "Хаах"
   },
   "servicesPage": {
@@ -720,7 +720,7 @@
     "metaDescription": "Чиглэл тус бүрээр мэргэшсэн хуульчдаас танд тохирохыг нь сонгоно уу.",
     "title": "Хуульчдын баг",
     "description": "Чиглэл тус бүрээр мэргэшсэн хуульчдаас танд тохирохыг нь сонгоно уу.",
-    "descriptionCounted": "Чиглэл тус бүрээр мэргэшсэн {count} хуульчаас танд тохирохыг нь сонгоно уу.",
+    "descriptionCounted": "Чиглэл тус бүрээр мэргэшсэн {count, plural, one {# хуульчаас} other {# хуульчаас}} танд тохирохыг нь сонгоно уу.",
     "crumb": "Хуульчид",
     "filterLabel": "Мэргэшлийн чиглэлээр шүүх",
     "failedTitle": "Хуульчдын мэдээлэл ачаалагдсангүй",
@@ -750,7 +750,7 @@
     "featured": "Онцлох",
     "search": "Нийтлэл хайх",
     "searchSubmit": "Хайх",
-    "searchResult": "«{query}» хайлтын үр дүн: {count} нийтлэл",
+    "searchResult": "«{query}» хайлтын үр дүн: {count, plural, one {# нийтлэл} other {# нийтлэл}}",
     "clearSearch": "Цэвэрлэх",
     "failedTitle": "Мэдээ ачаалахад алдаа гарлаа",
     "failedDescription": "API ажиллаж байгаа эсэхийг шалгаад дахин оролдоно уу.",
@@ -971,6 +971,13 @@
       "OVERDUE": "Хугацаа хэтэрсэн",
       "CANCELLED": "Цуцалсан"
     },
+    "documentRequestStatus": {
+      "PENDING": "Хүлээгдэж буй",
+      "SUBMITTED": "Илгээсэн",
+      "UNDER_REVIEW": "Хянагдаж буй",
+      "APPROVED": "Хүлээн авсан",
+      "REJECTED": "Буцаагдсан"
+    },
     "role": {
       "ADMIN": "Админ",
       "LAWYER": "Хуульч",
@@ -1014,7 +1021,7 @@
       "phoneHelper": "Гэрээнд бүртгүүлсэн дугаар",
       "email": "Имэйл хаяг",
       "password": "Нууц үг",
-      "passwordHelper": "8-аас дээш тэмдэгт, тоо агуулсан байх",
+      "passwordHelper": "Хамгийн багадаа {min, plural, one {# тэмдэгт} other {# тэмдэгт}}, үсэг ба тоо агуулсан байх",
       "agree": "Үйлчилгээний нөхцөл, нууцлалын бодлогыг зөвшөөрч байна",
       "agreeShort": "Үйлчилгээний нөхцөлийг зөвшөөрч байна",
       "submit": "Бүртгэл үүсгэх",
@@ -1059,7 +1066,7 @@
       "loadError": "Өгөгдөл ачаалахад алдаа гарлаа",
       "greeting": "Сайн байна уу, {name}",
       "casesLoading": "Хэргийн мэдээлэл ачааллаж байна",
-      "activeCasesCount": "Танд {count} идэвхтэй хэрэг байна",
+      "activeCasesCount": "Танд {count, plural, one {# идэвхтэй хэрэг} other {# идэвхтэй хэрэг}} байна",
       "myCases": "Миний хэргүүд",
       "noCasesTitle": "Хэрэг бүртгэгдээгүй байна",
       "noCasesDescription": "Таны нэр дээр хэрэг бүртгэгдмэгц энд харагдана.",
@@ -1072,18 +1079,18 @@
       "unpaidShort": "Төлөгдөөгүй нэхэмжлэх",
       "dueDate": "Төлөх эцсийн хугацаа",
       "dueDateShort": "Эцсийн хугацаа",
-      "invoiceTotal": "нийт {count} нэхэмжлэх",
+      "invoiceTotal": "нийт {count, plural, one {# нэхэмжлэх} other {# нэхэмжлэх}}",
       "details": "Дэлгэрэнгүй",
       "payCta": "Төлбөр төлөх",
       "confirmingTitle": "Төлбөр баталгаажуулж байна",
       "confirmingText": "таны тэмдэглэсэн төлбөрийг шалгаж байна.",
       "seeAll": "Бүгдийг харах →",
       "seeAllShort": "Бүгд →",
-      "documentRequests": "Танаас {count} баримт хүсэлттэй байна",
+      "documentRequests": "Танаас {count, plural, one {# баримт} other {# баримт}} хүсэлттэй байна",
       "sendDocuments": "Баримт илгээх",
-      "unreadMessages": "Уншаагүй {count} мессеж байна",
+      "unreadMessages": "Уншаагүй {count, plural, one {# мессеж} other {# мессеж}} байна",
       "readMessages": "Мессеж унших",
-      "openRequests": "{count} хүсэлт шийдвэрлэгдэж байна",
+      "openRequests": "{count, plural, one {# хүсэлт} other {# хүсэлт}} шийдвэрлэгдэж байна",
       "viewRequests": "Хүсэлтүүдээ харах",
       "stats": {
         "activeCases": "Идэвхтэй хэрэг",
@@ -1099,8 +1106,8 @@
       },
       "updatedAt": "Шинэчлэгдсэн: {date}",
       "unreadLabel": "уншаагүй",
-      "documentsCount": "{count} баримт",
-      "messagesCount": "{count} мессеж"
+      "documentsCount": "{count, plural, one {# баримт} other {# баримт}}",
+      "messagesCount": "{count, plural, one {# мессеж} other {# мессеж}}"
     },
     "error": {
       "title": "Алдаа гарлаа",
@@ -1112,7 +1119,7 @@
     "cases": {
       "title": "Хэргийн жагсаалт",
       "loading": "Ачааллаж байна…",
-      "summary": "Нийт {total} хэрэг · {active} идэвхтэй, {waiting} хүлээгдэж буй, {closed} хаагдсан",
+      "summary": "Нийт {total, plural, one {# хэрэг} other {# хэрэг}} · {active} идэвхтэй, {waiting} хүлээгдэж буй, {closed} хаагдсан",
       "newRequest": "Шинэ хүсэлт илгээх",
       "searchLabel": "Хэргийн дугаар, нэрээр хайх",
       "filterByStatus": "Төлөвөөр шүүх",
@@ -1121,7 +1128,7 @@
       "noneTitle": "Хэрэг олдсонгүй",
       "noneDescription": "Таны нэр дээр хэрэг бүртгэгдээгүй байна.",
       "noneFiltered": "Энэ шүүлтүүрт тохирох хэрэг байхгүй.",
-      "totalCount": "Нийт {count} хэрэг",
+      "totalCount": "Нийт {count, plural, one {# хэрэг} other {# хэрэг}}",
       "columns": {
         "number": "Дугаар",
         "title": "Хэргийн нэр",
@@ -1130,7 +1137,7 @@
         "status": "Статус",
         "updated": "Шинэчлэгдсэн"
       },
-      "range": "{total} хэргээс {from}–{to} харуулж байна"
+      "range": "{total, plural, one {# хэргээс} other {# хэргээс}} {from}–{to} харуулж байна"
     },
     "documents": {
       "uploadedToast": "Амжилттай хавсаргалаа",
@@ -1153,7 +1160,7 @@
       "pickFile": "Файл сонгох",
       "dropzoneLabel": "Файлаа энд чирж оруулна уу, эсвэл товшиж компьютерээсээ сонгоно уу",
       "dropzoneTitle": "Файлаа энд чирж оруулна уу",
-      "dropzoneHint": "эсвэл товшиж компьютерээсээ сонгоно уу · PDF, DOCX, JPG, PNG · 20MB хүртэл",
+      "dropzoneHint": "эсвэл товшиж компьютерээсээ сонгоно уу · PDF, DOCX, JPG, PNG · {size} хүртэл",
       "allFiles": "Бүх файл",
       "filterByCase": "Хэргээр шүүх",
       "loadError": "Алдаа гарлаа",
@@ -1181,9 +1188,9 @@
       "you": "Та",
       "uploaderYou": "{name} (та)",
       "uploaderLawyer": "{name} (хуульч)",
-      "dropzoneHintShort": "PDF, DOCX, JPG · 20MB хүртэл",
-      "filesSummary": "{count} файл · {size}",
-      "documentsCount": "{count} баримт"
+      "dropzoneHintShort": "PDF, DOCX, JPG · {size} хүртэл",
+      "filesSummary": "{count, plural, one {# файл} other {# файл}} · {size}",
+      "documentsCount": "{count, plural, one {# баримт} other {# баримт}}"
     },
     "invoices": {
       "title": "Нэхэмжлэх ба төлбөр",
@@ -1300,7 +1307,7 @@
       "emptyDescription": "Таны нэр дээр хэрэг бүртгэгдмэгц хариуцсан хуульчтайгаа энд харилцана.",
       "conversations": "Харилцан яриа",
       "loading": "Ачааллаж байна…",
-      "unreadSummary": "{count} уншаагүй мессеж байна",
+      "unreadSummary": "{count, plural, one {# уншаагүй мессеж} other {# уншаагүй мессеж}} байна",
       "noUnread": "Уншаагүй мессеж байхгүй",
       "you": "Та",
       "preview": "{sender}: {body}",
@@ -1336,7 +1343,7 @@
         "titlePlaceholder": "Жишээ: Түрээсийн гэрээ хугацаанаас өмнө цуцлагдсан",
         "descriptionLabel": "Юу болсон бэ?",
         "descriptionPlaceholder": "Хэзээ, юу болсон, одоо хүртэл юу хийснээ (гэрээ, мэдэгдэл, шүүх, байгууллагад хандсан эсэх) товч бичнэ үү.",
-        "descriptionHelper": "Дор хаяж 30 тэмдэгт",
+        "descriptionHelper": "Дор хаяж {min, plural, one {# тэмдэгт} other {# тэмдэгт}}",
         "cancel": "Болих",
         "submitting": "Илгээж байна…",
         "submit": "Хүсэлт илгээх",
@@ -1361,16 +1368,14 @@
       "loadingLabel": "Ачааллаж байна",
       "title": "Мэдэгдэл",
       "loading": "Ачааллаж байна…",
-      "unreadSummary": "{count} уншаагүй мэдэгдэл байна",
+      "unreadSummary": "{count, plural, one {# уншаагүй мэдэгдэл} other {# уншаагүй мэдэгдэл}} байна",
       "noUnread": "Уншаагүй мэдэгдэл байхгүй",
       "unreadShort": "{count} уншаагүй",
       "error": "Алдаа гарлаа",
       "allReadToast": "Бүгдийг уншсан болголоо",
-      "allReadBody": "{count} мэдэгдэл",
+      "allReadBody": "{count, plural, one {# мэдэгдэл} other {# мэдэгдэл}}",
       "today": "Өнөөдөр",
       "yesterday": "Өчигдөр",
-      "monthDay": "{month} сарын {day}",
-      "monthDayYear": "{year} оны {month} сарын {day}",
       "unreadLabel": "уншаагүй",
       "markRead": "Уншсан болгох",
       "filters": {
@@ -1415,7 +1420,7 @@
       "uploadFailed": "Файл хуулж чадсангүй",
       "downloadFailed": "Татаж чадсангүй",
       "tryAgain": "Дахин оролдоно уу.",
-      "documentsHint": "PDF, Word, Excel, зураг, текст — 20MB хүртэл.",
+      "documentsHint": "PDF, Word, Excel, зураг, текст — {size} хүртэл.",
       "noDocumentsTitle": "Баримт хавсаргаагүй байна",
       "firstDocument": "Эхний баримтаа хавсаргах",
       "noRequestsTitle": "Баримтын хүсэлт алга",
@@ -1433,7 +1438,7 @@
       "download": "Татах",
       "downloadNamed": "Татах: {name}",
       "requestsAlert": {
-        "title": "Танаас {count} баримт хүсэлттэй байна",
+        "title": "Танаас {count, plural, one {# баримт} other {# баримт}} хүсэлттэй байна",
         "overdue": "Зарим баримтын эцсийн хугацаа хэтэрсэн байна.",
         "body": "Хуульчийн хүссэн баримтуудыг хавсаргаж илгээнэ үү.",
         "cta": "Баримт илгээх"
@@ -1444,7 +1449,7 @@
         "caseType": "Хэргийн төрөл",
         "opened": "Нээгдсэн",
         "documents": "Хавсаргасан баримт",
-        "documentsCount": "{count} файл",
+        "documentsCount": "{count, plural, one {# файл} other {# файл}}",
         "closed": "Хаагдсан",
         "invoices": "Нэхэмжлэх"
       },
@@ -1455,7 +1460,6 @@
       "nextEvent": {
         "title": "Дараагийн үйл явдал",
         "empty": "Товлогдсон үйл явдал байхгүй.",
-        "month": "{month} сар",
         "hearingNote": "Хуралдаанд 15 минутын өмнө ирж, иргэний үнэмлэхээ авчрахаа мартуузай."
       },
       "lawyer": {
@@ -1501,9 +1505,9 @@
     },
     "documentRequests": {
       "title": "Хуульчаас ирсэн хүсэлт",
-      "waiting": "Танаас {count} баримт хүлээгдэж байна. Файлаа хавсаргаад илгээнэ үү.",
+      "waiting": "Танаас {count, plural, one {# баримт} other {# баримт}} хүлээгдэж байна. Файлаа хавсаргаад илгээнэ үү.",
       "allSubmitted": "Хүссэн бүх баримтыг илгээсэн байна. Хуульч хянаад мэдэгдэнэ.",
-      "accepted": "{approved}/{total} баримт хүлээн авсан",
+      "accepted": "{approved}/{total, plural, one {# баримт} other {# баримт}} хүлээн авсан",
       "acceptedLabel": "Хүлээн авсан баримт",
       "listLabel": "Баримтын хүсэлтүүд",
       "optional": "Заавал биш",
@@ -1520,7 +1524,7 @@
       "pickFileFor": "«{title}» — файл сонгох",
       "dropZone": "Файлаа энд чирж оруулна уу, эсвэл товшиж сонгоно уу",
       "dropZoneFor": "«{title}» — файлаа энд чирж оруулна уу, эсвэл товшиж сонгоно уу",
-      "fileHint": "PDF, DOCX, XLSX, JPG, PNG · 20MB хүртэл · нэг удаад {max} файл",
+      "fileHint": "PDF, DOCX, XLSX, JPG, PNG · {size} хүртэл · нэг удаад {max, plural, one {# файл} other {# файл}}",
       "filesToSend": "Илгээх файл",
       "remove": "Хасах",
       "removeNamed": "Хасах: {name}",
@@ -1534,22 +1538,15 @@
       "tryAgain": "Дахин оролдоно уу.",
       "fileRejected": "Файл нэмэгдсэнгүй",
       "fileTypeError": "{name} — зөвхөн PDF, Word, Excel, JPG, PNG, TXT файл илгээнэ.",
-      "fileSizeError": "{name} — 20MB-аас хэтэрсэн.",
-      "fileCountError": "Нэг удаад {max}-аас ихгүй файл илгээнэ.",
-      "status": {
-        "PENDING": "Илгээгээгүй",
-        "SUBMITTED": "Хянагдаж байна",
-        "UNDER_REVIEW": "Хянагдаж байна",
-        "APPROVED": "Хүлээн авсан",
-        "REJECTED": "Дахин илгээх"
-      }
+      "fileSizeError": "{name} — {size}-аас хэтэрсэн.",
+      "fileCountError": "Нэг удаад {max, plural, one {# файлаас} other {# файлаас}} ихгүй илгээнэ."
     },
     "profile": {
       "title": "Профайл ба тохиргоо",
       "description": "Хувийн мэдээлэл, нэвтрэх нууц үг, мэдэгдлийн сонголтоо эндээс удирдана.",
       "soon": "Тун удахгүй",
       "soonLower": "тун удахгүй",
-      "activeCases": "{count} идэвхтэй хэрэг",
+      "activeCases": "{count, plural, one {# идэвхтэй хэрэг} other {# идэвхтэй хэрэг}}",
       "changePhoto": "Зураг солих",
       "removePhoto": "Устгах",
       "personal": "Хувийн мэдээлэл",
@@ -1572,7 +1569,7 @@
       "changePassword": "Нууц үг солих",
       "currentPassword": "Одоогийн нууц үг",
       "newPassword": "Шинэ нууц үг",
-      "newPasswordHelper": "8-аас дээш тэмдэгт, үсэг ба тоо агуулсан",
+      "newPasswordHelper": "Хамгийн багадаа {min, plural, one {# тэмдэгт} other {# тэмдэгт}}, үсэг ба тоо агуулсан",
       "repeatPassword": "Шинэ нууц үг давтах",
       "updatePassword": "Нууц үг шинэчлэх",
       "passwordChanged": "Нууц үг солигдлоо",
@@ -1626,9 +1623,9 @@
       "description": "Хуульчийн үйлчилгээ танд хэрхэн тусалсныг богинохон бичнэ үү. Хянасны дараа сайтад нийтлэгдэнэ.",
       "bodyLabel": "Таны сэтгэгдэл",
       "bodyPlaceholder": "Ямар асуудалтай хандсан, хэрхэн шийдэгдсэн, үйлчилгээ ямар байсныг бичнэ үү.",
-      "bodyHelper": "30–1000 тэмдэгт",
+      "bodyHelper": "{min}–{max} тэмдэгт",
       "ratingLabel": "Үнэлгээ (заавал биш)",
-      "ratingValue": "{rating} од",
+      "ratingValue": "{rating, plural, one {# од} other {# од}}",
       "consent": "Миний нэрийг сайт дээр нийтлэхийг зөвшөөрч байна",
       "consentHelper": "Зөвшөөрөлгүйгээр нэр тань хаана ч нийтлэгдэхгүй. Дараа нь хүссэн үедээ цуцалж болно.",
       "submit": "Сэтгэгдэл илгээх",
@@ -1676,6 +1673,6 @@
     "failedDescription": "Хэсэг хугацааны дараа дахин оролдоно уу.",
     "ratingLabel": "5-аас {rating} од",
     "inOriginalLanguage": "Сэтгэгдлүүд эх хэлээрээ байна.",
-    "count": "{count} сэтгэгдэл"
+    "count": "{count, plural, one {# сэтгэгдэл} other {# сэтгэгдэл}}"
   }
 }

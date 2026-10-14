@@ -522,12 +522,12 @@
     "back": "返回",
     "breadcrumb": "路径导航",
     "getAdvice": "咨询申请",
-    "yearsOfExperience": "{years} 年执业经验",
+    "yearsOfExperience": "{years, plural, other {# 年执业经验}}",
     "lawyersUnavailable": "律师信息暂时无法加载。",
     "lawyersComingSoon": "律师信息即将上线。",
     "postsUnavailable": "文章暂时无法加载。",
     "postsComingSoon": "文章即将发布。",
-    "views": "{count} 次浏览",
+    "views": "{count, plural, other {# 次浏览}}",
     "close": ""
   },
   "servicesPage": {
@@ -720,7 +720,7 @@
     "metaDescription": "从各业务领域的专业律师中选择适合您的一位。",
     "title": "律师团队",
     "description": "从各业务领域的专业律师中选择适合您的一位。",
-    "descriptionCounted": "从各业务领域的 {count} 位专业律师中选择适合您的一位。",
+    "descriptionCounted": "从各业务领域的 {count, plural, other {# 位}}专业律师中选择适合您的一位。",
     "crumb": "律师团队",
     "filterLabel": "按业务领域筛选",
     "failedTitle": "律师信息加载失败",
@@ -750,7 +750,7 @@
     "featured": "精选",
     "search": "搜索文章",
     "searchSubmit": "搜索",
-    "searchResult": "“{query}”的搜索结果：{count} 篇文章",
+    "searchResult": "“{query}”的搜索结果：{count, plural, other {# 篇文章}}",
     "clearSearch": "清除",
     "failedTitle": "资讯加载失败",
     "failedDescription": "请确认接口是否正常运行后重试。",
@@ -971,6 +971,13 @@
       "OVERDUE": "逾期",
       "CANCELLED": "已取消"
     },
+    "documentRequestStatus": {
+      "PENDING": "待提交",
+      "SUBMITTED": "已提交",
+      "UNDER_REVIEW": "审阅中",
+      "APPROVED": "已接收",
+      "REJECTED": "已退回"
+    },
     "role": {
       "ADMIN": "管理员",
       "LAWYER": "律师",
@@ -1014,7 +1021,7 @@
       "phoneHelper": "合同中登记的号码",
       "email": "电子邮箱",
       "password": "密码",
-      "passwordHelper": "不少于 8 个字符，且须包含数字",
+      "passwordHelper": "至少 {min, plural, other {# 个字符}}，须包含字母和数字",
       "agree": "我同意服务条款和隐私政策",
       "agreeShort": "我同意服务条款",
       "submit": "创建账户",
@@ -1059,7 +1066,7 @@
       "loadError": "加载数据时发生错误",
       "greeting": "您好，{name}",
       "casesLoading": "正在加载案件信息",
-      "activeCasesCount": "您有 {count} 件进行中的案件",
+      "activeCasesCount": "您有 {count, plural, other {# 件进行中的案件}}",
       "myCases": "我的案件",
       "noCasesTitle": "暂无登记的案件",
       "noCasesDescription": "以您名义登记的案件将显示在此处。",
@@ -1072,18 +1079,18 @@
       "unpaidShort": "未支付账单",
       "dueDate": "付款截止日期",
       "dueDateShort": "截止日期",
-      "invoiceTotal": "共 {count} 份账单",
+      "invoiceTotal": "共 {count, plural, other {# 份账单}}",
       "details": "详情",
       "payCta": "支付款项",
       "confirmingTitle": "正在确认付款",
       "confirmingText": "正在核实您标记的付款。",
       "seeAll": "查看全部 →",
       "seeAllShort": "全部 →",
-      "documentRequests": "有 {count} 项文件向您提出申请",
+      "documentRequests": "有 {count, plural, other {# 项文件}}向您提出申请",
       "sendDocuments": "发送文件",
-      "unreadMessages": "您有 {count} 条未读消息",
+      "unreadMessages": "您有 {count, plural, other {# 条未读消息}}",
       "readMessages": "查看消息",
-      "openRequests": "{count} 项申请正在处理中",
+      "openRequests": "{count, plural, other {# 项申请}}正在处理中",
       "viewRequests": "查看我的申请",
       "stats": {
         "activeCases": "进行中的案件",
@@ -1099,8 +1106,8 @@
       },
       "updatedAt": "更新时间：{date}",
       "unreadLabel": "未读",
-      "documentsCount": "{count} 份文件",
-      "messagesCount": "{count} 条消息"
+      "documentsCount": "{count, plural, other {# 份文件}}",
+      "messagesCount": "{count, plural, other {# 条消息}}"
     },
     "error": {
       "title": "发生错误",
@@ -1112,7 +1119,7 @@
     "cases": {
       "title": "案件列表",
       "loading": "加载中…",
-      "summary": "共 {total} 件案件 · {active} 件进行中、{waiting} 件待处理、{closed} 件已结案",
+      "summary": "共 {total, plural, other {# 件案件}} · {active} 件进行中、{waiting} 件待处理、{closed} 件已结案",
       "newRequest": "提交新请求",
       "searchLabel": "按案件编号或名称搜索",
       "filterByStatus": "按状态筛选",
@@ -1121,7 +1128,7 @@
       "noneTitle": "未找到案件",
       "noneDescription": "您名下暂无登记的案件。",
       "noneFiltered": "没有符合该筛选条件的案件。",
-      "totalCount": "共 {count} 件案件",
+      "totalCount": "共 {count, plural, other {# 件案件}}",
       "columns": {
         "number": "编号",
         "title": "案件名称",
@@ -1130,7 +1137,7 @@
         "status": "状态",
         "updated": "更新时间"
       },
-      "range": "正在显示第 {from}–{to} 件，共 {total} 件案件"
+      "range": "正在显示第 {from}–{to} 件，共 {total, plural, other {# 件案件}}"
     },
     "documents": {
       "uploadedToast": "上传成功",
@@ -1153,7 +1160,7 @@
       "pickFile": "选择文件",
       "dropzoneLabel": "请将文件拖拽至此，或点击从电脑中选择",
       "dropzoneTitle": "请将文件拖拽至此",
-      "dropzoneHint": "或点击从电脑中选择 · PDF、DOCX、JPG、PNG · 最大 20MB",
+      "dropzoneHint": "或点击从电脑中选择 · PDF、DOCX、JPG、PNG · 最大 {size}",
       "allFiles": "全部文件",
       "filterByCase": "按案件筛选",
       "loadError": "加载出错",
@@ -1181,9 +1188,9 @@
       "you": "您",
       "uploaderYou": "{name}（您）",
       "uploaderLawyer": "{name}（律师）",
-      "dropzoneHintShort": "PDF、DOCX、JPG · 最大 20MB",
-      "filesSummary": "{count} 个文件 · {size}",
-      "documentsCount": "{count} 份文件"
+      "dropzoneHintShort": "PDF、DOCX、JPG · 最大 {size}",
+      "filesSummary": "{count, plural, other {# 个文件}} · {size}",
+      "documentsCount": "{count, plural, other {# 份文件}}"
     },
     "invoices": {
       "title": "账单与付款",
@@ -1300,7 +1307,7 @@
       "emptyDescription": "以您名义登记案件后，您可在此与承办律师沟通。",
       "conversations": "会话",
       "loading": "正在加载……",
-      "unreadSummary": "您有 {count} 条未读消息",
+      "unreadSummary": "您有 {count, plural, other {# 条未读消息}}",
       "noUnread": "没有未读消息",
       "you": "您",
       "preview": "{sender}：{body}",
@@ -1336,7 +1343,7 @@
         "titlePlaceholder": "例如：租赁合同被提前解除",
         "descriptionLabel": "发生了什么？",
         "descriptionPlaceholder": "请简要说明事情何时发生、发生了什么，以及您至今采取的措施（合同、通知、诉讼、是否已向有关机构提出请求）。",
-        "descriptionHelper": "至少 30 个字符",
+        "descriptionHelper": "至少 {min, plural, other {# 个字符}}",
         "cancel": "取消",
         "submitting": "提交中…",
         "submit": "提交申请",
@@ -1361,16 +1368,14 @@
       "loadingLabel": "加载中",
       "title": "通知",
       "loading": "加载中…",
-      "unreadSummary": "您有 {count} 条未读通知",
+      "unreadSummary": "您有 {count, plural, other {# 条未读通知}}",
       "noUnread": "没有未读通知",
       "unreadShort": "{count} 条未读",
       "error": "出现错误",
       "allReadToast": "已全部标为已读",
-      "allReadBody": "{count} 条通知",
+      "allReadBody": "{count, plural, other {# 条通知}}",
       "today": "今天",
       "yesterday": "昨天",
-      "monthDay": "{month} 月 {day} 日",
-      "monthDayYear": "{year} 年 {month} 月 {day} 日",
       "unreadLabel": "未读",
       "markRead": "标为已读",
       "filters": {
@@ -1415,7 +1420,7 @@
       "uploadFailed": "文件上传失败",
       "downloadFailed": "下载失败",
       "tryAgain": "请重试。",
-      "documentsHint": "PDF、Word、Excel、图片、文本——单个文件不超过 20MB。",
+      "documentsHint": "PDF、Word、Excel、图片、文本——单个文件不超过 {size}。",
       "noDocumentsTitle": "尚未附上文件",
       "firstDocument": "上传第一份文件",
       "noRequestsTitle": "暂无文件请求",
@@ -1433,7 +1438,7 @@
       "download": "下载",
       "downloadNamed": "下载：{name}",
       "requestsAlert": {
-        "title": "律师向您索取 {count} 份文件",
+        "title": "律师向您索取 {count, plural, other {# 份文件}}",
         "overdue": "部分文件已超过期限。",
         "body": "请上传并发送律师所需的文件。",
         "cta": "发送文件"
@@ -1444,7 +1449,7 @@
         "caseType": "案件类型",
         "opened": "立案",
         "documents": "已附文件",
-        "documentsCount": "{count} 个文件",
+        "documentsCount": "{count, plural, other {# 个文件}}",
         "closed": "已结案",
         "invoices": "账单"
       },
@@ -1455,7 +1460,6 @@
       "nextEvent": {
         "title": "下一项案件事项",
         "empty": "暂无已安排的案件事项。",
-        "month": "{month}月",
         "hearingNote": "请于开庭前 15 分钟到场，并记得携带本人身份证件。"
       },
       "lawyer": {
@@ -1501,9 +1505,9 @@
     },
     "documentRequests": {
       "title": "律师发来的请求",
-      "waiting": "律师正在等待您提交 {count} 份文件。请上传文件并发送。",
+      "waiting": "律师正在等待您提交 {count, plural, other {# 份文件}}。请上传文件并发送。",
       "allSubmitted": "所需文件已全部提交。律师审阅后将另行通知。",
-      "accepted": "已接收 {approved}/{total} 份文件",
+      "accepted": "已接收 {approved}/{total, plural, other {# 份文件}}",
       "acceptedLabel": "已接收的文件",
       "listLabel": "文件请求",
       "optional": "非必需",
@@ -1520,7 +1524,7 @@
       "pickFileFor": "“{title}”——选择文件",
       "dropZone": "请将文件拖拽至此，或点击选择",
       "dropZoneFor": "“{title}”——请将文件拖拽至此，或点击选择",
-      "fileHint": "PDF、DOCX、XLSX、JPG、PNG · 最大 20MB · 每次最多 {max} 个文件",
+      "fileHint": "PDF、DOCX、XLSX、JPG、PNG · 最大 {size} · 每次最多 {max, plural, other {# 个文件}}",
       "filesToSend": "待发送的文件",
       "remove": "移除",
       "removeNamed": "移除：{name}",
@@ -1534,22 +1538,15 @@
       "tryAgain": "请重试。",
       "fileRejected": "文件未添加",
       "fileTypeError": "{name}——仅可提交 PDF、Word、Excel、JPG、PNG、TXT 文件。",
-      "fileSizeError": "{name}——超过 20MB。",
-      "fileCountError": "每次最多提交 {max} 个文件。",
-      "status": {
-        "PENDING": "未提交",
-        "SUBMITTED": "审阅中",
-        "UNDER_REVIEW": "审阅中",
-        "APPROVED": "已接收",
-        "REJECTED": "重新提交"
-      }
+      "fileSizeError": "{name}——超过 {size}。",
+      "fileCountError": "每次最多提交 {max, plural, other {# 个文件}}。"
     },
     "profile": {
       "title": "个人资料与设置",
       "description": "在此管理您的个人信息、登录密码及通知偏好。",
       "soon": "即将推出",
       "soonLower": "即将推出",
-      "activeCases": "{count} 个进行中的案件",
+      "activeCases": "{count, plural, other {# 个进行中的案件}}",
       "changePhoto": "更换照片",
       "removePhoto": "删除",
       "personal": "个人信息",
@@ -1572,7 +1569,7 @@
       "changePassword": "修改密码",
       "currentPassword": "当前密码",
       "newPassword": "新密码",
-      "newPasswordHelper": "8 个字符以上，包含字母和数字",
+      "newPasswordHelper": "至少 {min, plural, other {# 个字符}}，须包含字母和数字",
       "repeatPassword": "重复输入新密码",
       "updatePassword": "更新密码",
       "passwordChanged": "密码已修改",
@@ -1626,9 +1623,9 @@
       "description": "请简要说明本次法律服务对您的帮助。经审核后将发布在网站上。",
       "bodyLabel": "您的评价",
       "bodyPlaceholder": "请写明您遇到的问题、处理结果以及对服务的感受。",
-      "bodyHelper": "30–1000 个字符",
+      "bodyHelper": "{min}–{max} 个字符",
       "ratingLabel": "评分（非必填）",
-      "ratingValue": "{rating} 星",
+      "ratingValue": "{rating, plural, other {# 星}}",
       "consent": "我同意在网站上公开我的姓名",
       "consentHelper": "未经您同意，您的姓名不会在任何地方公开。您可随时撤回同意。",
       "submit": "提交评价",
@@ -1676,6 +1673,6 @@
     "failedDescription": "请稍后重试。",
     "ratingLabel": "5 星中的 {rating} 星",
     "inOriginalLanguage": "评价以其撰写时的原文显示。",
-    "count": "{count} 条评价"
+    "count": "{count, plural, other {# 条评价}}"
   }
 }

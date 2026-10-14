@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { NotifCaseIcon, NotifClockIcon, NotifDocumentIcon, NotifGenericIcon, NotifInvoiceIcon, NotifMessageIcon, NotifRequestIcon } from '@/components/icons';
 import type { NotificationItem } from '@/lib/api';
+import { formatMonthDay } from '@/lib/format';
 import { cn, shortName } from '@/lib/utils';
 
 // Figma notification "Icon" per type
@@ -22,15 +23,14 @@ const NOTIFICATION_TYPE_ICONS: Record<string, typeof NotifCaseIcon> = {
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const dayKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-/** Group label: "Өнөөдөр" · "Өчигдөр" · "9 сарын 10" (year prefixed when not the current year) */
+/** Group label: "Өнөөдөр" · "Өчигдөр" · "9-р сарын 10" (year added when not the current year) */
 function dayLabel(d: Date): string {
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
   if (dayKey(d) === dayKey(today)) return 'Өнөөдөр';
   if (dayKey(d) === dayKey(yesterday)) return 'Өчигдөр';
-  const label = `${d.getMonth() + 1} сарын ${d.getDate()}`;
-  return d.getFullYear() === today.getFullYear() ? label : `${d.getFullYear()} оны ${label}`;
+  return formatMonthDay(d, 'mn', d.getFullYear() !== today.getFullYear());
 }
 
 /**

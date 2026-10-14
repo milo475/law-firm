@@ -1,11 +1,12 @@
 'use client';
 
-import { MAX_DOCUMENT_REQUEST_FILES } from '@law-firm/shared/schemas';
+import { MAX_DOCUMENT_REQUEST_FILES, MAX_DOCUMENT_SIZE_BYTES } from '@law-firm/shared/schemas';
 import { useQuery } from '@tanstack/react-query';
 import { api, type DocumentRequestItem, type DocumentRequestStatus, type DocumentRequestSummary } from './api';
+import { formatSizeLimit } from './format';
 
 export const REQUEST_FILE_ACCEPT = '.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt';
-const MAX_REQUEST_FILE_BYTES = 20 * 1024 * 1024;
+const MAX_REQUEST_FILE_BYTES = MAX_DOCUMENT_SIZE_BYTES;
 export const MAX_REQUEST_FILES = MAX_DOCUMENT_REQUEST_FILES;
 const ALLOWED_EXTENSIONS = new Set(['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'txt']);
 
@@ -32,7 +33,7 @@ export interface FileValidationMessages {
 
 const DEFAULT_FILE_MESSAGES: FileValidationMessages = {
   type: (name) => `${name} — зөвхөн PDF, Word, Excel, JPG, PNG, TXT файл илгээнэ.`,
-  size: (name) => `${name} — 20MB-аас хэтэрсэн.`,
+  size: (name) => `${name} — ${formatSizeLimit(MAX_DOCUMENT_SIZE_BYTES)}-аас хэтэрсэн.`,
   count: (max) => `Нэг удаад ${max}-аас ихгүй файл илгээнэ.`,
 };
 

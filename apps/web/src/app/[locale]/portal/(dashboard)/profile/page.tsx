@@ -2,7 +2,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ChangePasswordSchema, PhoneSchema, type ChangePasswordInput } from '@law-firm/shared/schemas';
+import { ChangePasswordSchema, PASSWORD_MIN_LENGTH, PhoneSchema, type ChangePasswordInput } from '@law-firm/shared/schemas';
 import { useQuery } from '@tanstack/react-query';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -155,7 +155,7 @@ export default function ProfilePage() {
             <form onSubmit={password.handleSubmit(changePassword)} noValidate className="flex flex-col gap-5">
               <div className="grid gap-4 md:grid-cols-2 md:gap-5">
                 <Input label={t('currentPassword')} type="password" autoComplete="current-password" required error={password.formState.errors.currentPassword?.message} {...password.register('currentPassword')} />
-                <Input label={t('newPassword')} type="password" autoComplete="new-password" required helper={t('newPasswordHelper')} error={password.formState.errors.newPassword?.message} {...password.register('newPassword')} />
+                <Input label={t('newPassword')} type="password" autoComplete="new-password" required helper={t('newPasswordHelper', { min: PASSWORD_MIN_LENGTH })} error={password.formState.errors.newPassword?.message} {...password.register('newPassword')} />
                 <Input label={t('repeatPassword')} type="password" autoComplete="new-password" required error={password.formState.errors.confirmPassword?.message} {...password.register('confirmPassword')} />
               </div>
               <div><Button type="submit" size="md" className="w-full md:w-auto" disabled={password.formState.isSubmitting}>{t('updatePassword')}</Button></div>

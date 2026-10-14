@@ -2,6 +2,7 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { MAX_DOCUMENT_SIZE_BYTES } from '@law-firm/shared/schemas';
 import { useLocale, useTranslations } from 'next-intl';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -23,7 +24,7 @@ import { toast } from '@/components/ui/toast';
 import { ApiError, api, type CaseDetail, type CaseEvent, type DocumentItem, type DocumentRequestItem, type InvoiceItem, type Paginated, type PublicUser } from '@/lib/api';
 import { isRequestOverdue, needsClientAction } from '@/lib/document-requests';
 import { useCaseUnreadCount } from '@/lib/messages';
-import { formatBytes, formatDate, formatMoney } from '@/lib/format';
+import { formatBytes, formatDate, formatMonthShort, formatMoney, formatSizeLimit } from '@/lib/format';
 import { Link } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { cn, initials, shortName } from '@/lib/utils';
@@ -237,7 +238,7 @@ export default function CaseDetailPage() {
         <TabsContent value="documents" className="pt-5 md:pt-6">
           <div className="flex flex-col gap-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-body-sm text-text-secondary">{t('documentsHint')}</p>
+              <p className="text-body-sm text-text-secondary">{t('documentsHint', { size: formatSizeLimit(MAX_DOCUMENT_SIZE_BYTES) })}</p>
               <Button size="sm" onClick={pickFile} disabled={upload.isPending}>{upload.isPending ? t('uploading') : t('addDocument')}</Button>
             </div>
             {documents.isLoading ? <Skeleton className="h-32" /> : docs.length === 0 ? (
@@ -428,7 +429,7 @@ function NextEventCard({ event, loading }: { event?: CaseEvent; loading: boolean
           <div className="flex items-center gap-3.5">
             <div aria-hidden className="flex size-14 shrink-0 flex-col items-center justify-center rounded-md bg-bg-inverse md:size-[60px]">
               <span className="font-serif text-[20px] font-semibold leading-7 text-accent-default md:text-h4">{String(d.getDate()).padStart(2, '0')}</span>
-              <span className="text-caption text-text-on-inverse-muted">{t('month', { month: d.getMonth() + 1 })}</span>
+              <span className="text-caption text-text-on-inverse-muted">{formatMonthShort(d, locale)}</span>
             </div>
             <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
               <p className="text-body-sm-medium text-text-primary"><span className="sr-only">{formatDate(event.eventDate, locale)}, </span>{event.title}</p>
