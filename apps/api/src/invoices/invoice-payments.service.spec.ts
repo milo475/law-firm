@@ -7,10 +7,12 @@ import {
   LAWYER_USER,
   OTHER_CLIENT,
   OTHER_LAWYER,
+  createMailMock,
   createPrismaMock,
   type PrismaMock,
 } from '../common/testing/mocks';
 import { NotificationsService } from '../notifications/notifications.service';
+import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { INVOICE_PAYMENT_EVENTS } from './invoice-payment.events';
 import { InvoicePaymentsService } from './invoice-payments.service';
@@ -161,6 +163,7 @@ describe('InvoicePaymentsService', () => {
       prisma as unknown as PrismaService,
       new CasesService(prisma as unknown as PrismaService),
       { createMany: jest.fn() } as unknown as NotificationsService,
+      createMailMock() as unknown as MailService,
     );
     const row = (status: string) => ({ id: 'inv-1', invoiceNumber: 'INV-2026-0002', status, dueDate: new Date(), amount: '800000.00', case: invoiceRow(status).case });
 

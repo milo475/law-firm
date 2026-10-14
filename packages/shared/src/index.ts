@@ -22,12 +22,16 @@ export {
   TaskPriority,
   TestimonialStatus,
   TestimonialSource,
+  AuthTokenPurpose,
+  EmailStatus,
 } from './generated/prisma/enums.js';
 
 // ─── Model types ─────────────────────────────────────────────────────────────
 export type {
   User,
   RefreshToken,
+  AuthToken,
+  EmailLog,
   LawyerProfile,
   Post,
   Case,
@@ -64,6 +68,9 @@ export type SafeUser = {
   role: 'ADMIN' | 'LAWYER' | 'CLIENT';
   avatarUrl: string | null;
   isActive: boolean;
+  /** 'mn' | 'en' | 'zh' — the language this person reads and is written to in. */
+  preferredLocale: string;
+  emailNotifications: boolean;
   lastLoginAt: Date | string | null;
   createdAt: Date | string;
   updatedAt: Date | string;

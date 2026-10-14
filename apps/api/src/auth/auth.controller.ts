@@ -15,7 +15,7 @@ import {
   sessionHintCookieOptions,
 } from './auth.constants';
 import { AuthService, type AuthResult } from './auth.service';
-import { LoginDto, RegisterDto } from './dto/auth.dto';
+import { ForgotPasswordDto, LoginDto, RegisterDto, ResetPasswordDto } from './dto/auth.dto';
 
 type RequestWithCookies = Request & { cookies?: Record<string, string> };
 
@@ -30,6 +30,13 @@ const LOGIN_SHARE = 1 / 12;
 const REGISTER_SHARE = 1 / 24;
 const REFRESH_SHARE = 1 / 4;
 const authThrottle = (share: number) => ({ default: { ttl: 60_000, limit: Math.max(1, Math.ceil(GLOBAL_LIMIT * share)) } });
+
+/**
+ * Asking for a reset link sends an e-mail to somebody else's address, so it gets its own, much
+ * tighter window: three in a quarter of an hour at the default limit (raised with THROTTLE_LIMIT).
+ */
+const FORGOT_WINDOW_MS = 15 * 60_000;
+const forgotThrottle = { default: { ttl: FORGOT_WINDOW_MS, limit: Math.max(3, Math.ceil(GLOBAL_LIMIT / 40)) } };
 
 @ApiTags('auth')
 @Controller('auth')
@@ -82,6 +89,37 @@ export class AuthController {
   async logout(@Req() req: RequestWithCookies, @Res({ passthrough: true }) res: Response): Promise<void> {
     await this.auth.logout(req.cookies?.[REFRESH_COOKIE]);
     this.clearCookies(res);
+  }
+
+  @Public()
+  @Throttle(forgotThrottle)
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Нууц үг сэргээх холбоос илгээх (хаяг бүртгэлтэй эсэхээс үл хамааран ижил хариу)' })
+  async forgotPassword(@Body() dto: ForgotPasswordDto): Promise<{ ok: true }> {
+    await this.auth.requestPasswordReset(dto);
+    // Deliberately the same answer either way: a different one would say who banks with this firm.
+    return { ok: true };
+  }
+
+  @Public()
+  @Throttle(authThrottle(REGISTER_SHARE))
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Сэргээх холбоосоор шинэ нууц үг тохируулах (бүх сесс хаагдана)' })
+  async resetPassword(@Body() dto: ResetPasswordDto): Promise<{ ok: true }> {
+    await this.auth.resetPassword(dto);
+    return { ok: true };
+  }
+
+  @Public()
+  @Throttle(authThrottle(REGISTER_SHARE))
+  @Post('accept-invite')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Урилгын холбоосоор нууц үгээ тохируулж бүртгэлээ дуусгах' })
+  async acceptInvite(@Body() dto: ResetPasswordDto): Promise<{ ok: true }> {
+    await this.auth.acceptInvite(dto);
+    return { ok: true };
   }
 
   @Get('me')

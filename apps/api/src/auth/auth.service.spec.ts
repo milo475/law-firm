@@ -1,7 +1,8 @@
-import { ConflictException, ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import argon2 from 'argon2';
-import { createConfigMock, createPrismaMock, TEST_ENV, type PrismaMock } from '../common/testing/mocks';
+import { createConfigMock, createMailMock, createPrismaMock, TEST_ENV, type MailMock, type PrismaMock } from '../common/testing/mocks';
+import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from './auth.service';
 
@@ -9,6 +10,7 @@ describe('AuthService', () => {
   let service: AuthService;
   let prisma: PrismaMock;
   let jwt: JwtService;
+  let mail: MailMock;
   let passwordHash: string;
 
   const baseUser = () => ({
@@ -22,6 +24,8 @@ describe('AuthService', () => {
     avatarUrl: null,
     isActive: true,
     lastLoginAt: null,
+    preferredLocale: 'mn',
+    emailNotifications: true,
     createdAt: new Date(),
     updatedAt: new Date(),
   });
@@ -33,7 +37,8 @@ describe('AuthService', () => {
   beforeEach(() => {
     prisma = createPrismaMock();
     jwt = new JwtService({ secret: TEST_ENV.JWT_ACCESS_SECRET, signOptions: { expiresIn: '15m' } });
-    service = new AuthService(prisma as unknown as PrismaService, jwt, createConfigMock());
+    mail = createMailMock();
+    service = new AuthService(prisma as unknown as PrismaService, jwt, createConfigMock(), mail as unknown as MailService);
     prisma.refreshToken.create.mockImplementation(async ({ data }: any) => ({ id: 'rt-1', revokedAt: null, ...data }));
     prisma.user.update.mockResolvedValue(baseUser());
   });
@@ -226,7 +231,7 @@ describe('AuthService', () => {
     });
 
     it('REFRESH_REUSE_GRACE_SECONDS=0 turns the window off', async () => {
-      service = new AuthService(prisma as unknown as PrismaService, jwt, createConfigMock({ REFRESH_REUSE_GRACE_SECONDS: 0 }));
+      service = new AuthService(prisma as unknown as PrismaService, jwt, createConfigMock({ REFRESH_REUSE_GRACE_SECONDS: 0 }), mail as unknown as MailService);
       prisma.refreshToken.findUnique.mockResolvedValue(storedToken({ revokedAt: secondsAgo(1), rotatedAt: secondsAgo(1) }));
       prisma.refreshToken.updateMany.mockResolvedValue({ count: 1 });
 
@@ -262,6 +267,99 @@ describe('AuthService', () => {
     it('is a no-op without a token', async () => {
       await service.logout(undefined);
       expect(prisma.refreshToken.updateMany).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('password reset', () => {
+    const storedResetToken = (overrides: Record<string, unknown> = {}) => ({
+      id: 'tok-1',
+      userId: 'user-1',
+      purpose: 'PASSWORD_RESET',
+      expiresAt: new Date(Date.now() + 30 * 60_000),
+      usedAt: null,
+      user: baseUser(),
+      ...overrides,
+    });
+
+    it('an unknown address is answered the same way, with nothing sent and nothing stored', async () => {
+      prisma.user.findUnique.mockResolvedValue(null);
+
+      await expect(service.requestPasswordReset({ identifier: 'nobody@example.mn' })).resolves.toBeUndefined();
+
+      expect(prisma.authToken.create).not.toHaveBeenCalled();
+      expect(mail.enqueue).not.toHaveBeenCalled();
+    });
+
+    it('stores only the hash of a fresh token, valid for an hour, and mails the raw one', async () => {
+      prisma.user.findUnique.mockResolvedValue(baseUser());
+      prisma.authToken.deleteMany.mockResolvedValue({ count: 1 });
+      prisma.authToken.create.mockImplementation(async ({ data }: any) => ({ id: 'tok-1', ...data }));
+
+      await service.requestPasswordReset({ identifier: 'client1@example.mn' });
+
+      // Any earlier link stops working the moment a new one is asked for.
+      expect(prisma.authToken.deleteMany).toHaveBeenCalledWith({ where: { userId: 'user-1', purpose: 'PASSWORD_RESET' } });
+      const stored = prisma.authToken.create.mock.calls[0][0].data;
+      expect(stored.tokenHash).toMatch(/^[a-f0-9]{64}$/);
+      const ttlMinutes = Math.round((stored.expiresAt.getTime() - Date.now()) / 60_000);
+      expect(ttlMinutes).toBe(60);
+
+      const [message] = mail.enqueue.mock.calls[0];
+      expect(message.template).toBe('passwordReset');
+      expect(message.to).toBe('client1@example.mn');
+      const raw = new URL(message.url ?? message.data.url).searchParams.get('token') as string;
+      // What travels by e-mail is not what the database holds.
+      expect(raw.length).toBeGreaterThan(20);
+      expect(stored.tokenHash).not.toContain(raw);
+    });
+
+    it('a link works once: the password changes, every session ends and the token is gone', async () => {
+      prisma.authToken.findUnique.mockResolvedValue(storedResetToken());
+      prisma.authToken.deleteMany.mockResolvedValue({ count: 1 });
+      prisma.refreshToken.updateMany.mockResolvedValue({ count: 2 });
+
+      await service.resetPassword({ token: 'raw-token-value-0123456789', password: 'NewPass123' });
+
+      expect(prisma.user.update.mock.calls[0][0].data.passwordHash).toMatch(/^\$argon2/);
+      expect(prisma.refreshToken.updateMany).toHaveBeenCalled();
+      expect(prisma.authToken.deleteMany).toHaveBeenCalledWith({ where: { userId: 'user-1', purpose: 'PASSWORD_RESET' } });
+      expect(mail.enqueue.mock.calls[0][0].template).toBe('passwordChanged');
+    });
+
+    it('an expired link is refused', async () => {
+      prisma.authToken.findUnique.mockResolvedValue(storedResetToken({ expiresAt: new Date(Date.now() - 1_000) }));
+
+      await expect(service.resetPassword({ token: 'raw-token-value-0123456789', password: 'NewPass123' })).rejects.toBeInstanceOf(
+        BadRequestException,
+      );
+      expect(prisma.user.update).not.toHaveBeenCalled();
+    });
+
+    it('a used link, an unknown one and an invitation link are all refused the same way', async () => {
+      const refused = [
+        storedResetToken({ usedAt: new Date() }),
+        null,
+        storedResetToken({ purpose: 'INVITE' }),
+      ];
+      for (const stored of refused) {
+        prisma.authToken.findUnique.mockResolvedValue(stored);
+        await expect(service.resetPassword({ token: 'raw-token-value-0123456789', password: 'NewPass123' })).rejects.toBeInstanceOf(
+          BadRequestException,
+        );
+      }
+      expect(prisma.user.update).not.toHaveBeenCalled();
+    });
+
+    it('an invitation link sets the password and is refused the second time', async () => {
+      prisma.authToken.findUnique.mockResolvedValueOnce(storedResetToken({ purpose: 'INVITE' })).mockResolvedValueOnce(null);
+      prisma.authToken.deleteMany.mockResolvedValue({ count: 1 });
+
+      await service.acceptInvite({ token: 'raw-token-value-0123456789', password: 'NewPass123' });
+      expect(prisma.user.update).toHaveBeenCalledTimes(1);
+
+      await expect(service.acceptInvite({ token: 'raw-token-value-0123456789', password: 'NewPass123' })).rejects.toBeInstanceOf(
+        BadRequestException,
+      );
     });
   });
 });

@@ -1,5 +1,6 @@
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { createConfigMock } from '../common/testing/mocks';
+import { createConfigMock, createMailMock, type MailMock } from '../common/testing/mocks';
+import type { MailService } from '../mail/mail.service';
 import type { NotificationsService } from '../notifications/notifications.service';
 import type { PrismaService } from '../prisma/prisma.service';
 import { DAILY_REMINDERS_JOB, RemindersScheduler } from './reminders.scheduler';
@@ -72,19 +73,29 @@ function createDb() {
       return { count: hit.length };
     }),
   });
-  return { rows: { tasks, invoices, requests }, prisma: { task: delegate(tasks), invoice: delegate(invoices), documentRequest: delegate(requests) } };
+  /** Who gets the morning digest: the staff among the people this run notified. */
+  const staff = [{ id: 'lawyer-a', role: 'LAWYER', isActive: true }, { id: 'lawyer-b', role: 'LAWYER', isActive: true }];
+  const user = {
+    findMany: jest.fn(async ({ where }: Row) => staff.filter((row) => (where.id.in as string[]).includes(row.id)).map((row) => ({ id: row.id }))),
+  };
+  return {
+    rows: { tasks, invoices, requests },
+    prisma: { task: delegate(tasks), invoice: delegate(invoices), documentRequest: delegate(requests), user },
+  };
 }
 
 describe('RemindersService.runDaily', () => {
   let db: ReturnType<typeof createDb>;
   let notifications: { createMany: jest.Mock };
+  let mail: MailMock;
   let service: RemindersService;
   const sent = () => notifications.createMany.mock.calls.flatMap(([inputs]) => inputs);
 
   beforeEach(() => {
     db = createDb();
     notifications = { createMany: jest.fn().mockResolvedValue({ count: 1 }) };
-    service = new RemindersService(db.prisma as unknown as PrismaService, notifications as unknown as NotificationsService);
+    mail = createMailMock();
+    service = new RemindersService(db.prisma as unknown as PrismaService, notifications as unknown as NotificationsService, mail as unknown as MailService);
   });
 
   it('an overdue active task notifies its assignee with a link to the task', async () => {
@@ -178,9 +189,30 @@ describe('RemindersService.runDaily', () => {
     });
   });
 
+  it('staff get one morning digest of counts; nobody is written to on a quiet day', async () => {
+    await service.runDaily(NOW);
+
+    const digests = mail.notify.mock.calls.filter(([, template]) => template === 'dailyDigest');
+    // Two lawyers were reminded of something; the client who was reminded of an invoice is not staff.
+    expect(digests.map(([userId]) => userId).sort()).toEqual(['lawyer-a', 'lawyer-b']);
+    const [, , path, counts] = digests[0];
+    expect(path).toBe('/admin');
+    // Counts only — a digest never carries a case number, a client name or an amount.
+    expect(Object.keys(counts as object).sort()).toEqual(['documentRequests', 'invoices', 'tasks']);
+    expect(Object.values(counts as object).every((value) => typeof value === 'number')).toBe(true);
+
+    mail.notify.mockClear();
+    await service.runDaily(NOW);
+    expect(mail.notify).not.toHaveBeenCalled();
+  });
+
   it('nothing due → no notification insert at all', async () => {
     const empty = { findMany: jest.fn().mockResolvedValue([]), updateMany: jest.fn() };
-    const quiet = new RemindersService({ task: empty, invoice: empty, documentRequest: empty } as unknown as PrismaService, notifications as unknown as NotificationsService);
+    const quiet = new RemindersService(
+      { task: empty, invoice: empty, documentRequest: empty } as unknown as PrismaService,
+      notifications as unknown as NotificationsService,
+      createMailMock() as unknown as MailService,
+    );
     await expect(quiet.runDaily(NOW)).resolves.toMatchObject({ notifications: 0 });
     expect(notifications.createMany).not.toHaveBeenCalled();
     expect(empty.updateMany).not.toHaveBeenCalled();

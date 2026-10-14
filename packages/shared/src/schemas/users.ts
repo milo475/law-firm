@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { Role } from '../generated/prisma/enums.js';
+import { UserLocaleSchema } from './auth.js';
 import { EmailSchema, ImageUrlSchema, PaginationSchema, PasswordSchema, PhoneSchema } from './common.js';
 
 export const RoleSchema = z.enum(Role, { message: 'Хэрэглэгчийн эрх буруу байна' });
@@ -10,6 +11,10 @@ export const UpdateMeSchema = z
     lastName: z.string().trim().min(2, 'Овог хамгийн багадаа 2 тэмдэгт байна').max(64),
     phone: PhoneSchema.nullable(),
     avatarUrl: ImageUrlSchema.nullable(),
+    /** Language of the portal and of every e-mail this person receives. */
+    preferredLocale: UserLocaleSchema,
+    /** Notification e-mails only; a password reset or an invitation is sent regardless. */
+    emailNotifications: z.boolean(),
   })
   .partial();
 export type UpdateMeInput = z.infer<typeof UpdateMeSchema>;

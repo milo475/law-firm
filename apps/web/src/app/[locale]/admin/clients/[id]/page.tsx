@@ -17,6 +17,7 @@ import { CardSkeleton, EmptyState, ErrorState, Skeleton } from '@/components/ui/
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@/components/ui/table';
 import { toast } from '@/components/ui/toast';
 import { ApiError, api, type CaseListItem, type Paginated } from '@/lib/api';
+import { InviteRow } from '@/components/admin/invite-row';
 import type { AdminUser } from '@/lib/admin';
 import { CASE_TYPE_LABELS, formatDate } from '@/lib/format';
 import { initials, shortName } from '@/lib/utils';
@@ -84,6 +85,7 @@ export default function AdminClientDetailPage() {
               {c.phone ? <> · <a href={`tel:${c.phone}`} className="focus-ring rounded-sm">{c.phone}</a></> : null}
             </p>
             <p className="text-caption text-text-muted">Бүртгүүлсэн {formatDate(c.createdAt)} · сүүлд нэвтэрсэн {formatDate(c.lastLoginAt, 'mn', true)}</p>
+            {isAdmin && c.invite && <InviteRow userId={c.id} invite={c.invite} />}
           </div>
         </div>
         <div className="flex flex-wrap gap-3">

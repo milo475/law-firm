@@ -1,7 +1,8 @@
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { CasesService } from '../cases/cases.service';
-import { ADMIN_USER, CLIENT_USER, LAWYER_USER, createPrismaMock, type PrismaMock } from '../common/testing/mocks';
+import { ADMIN_USER, CLIENT_USER, LAWYER_USER, createMailMock, createPrismaMock, type PrismaMock } from '../common/testing/mocks';
+import { MailService } from '../mail/mail.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { MessageNotificationsListener } from './message-notifications.listener';
@@ -29,6 +30,7 @@ describe('message.sent → notifications (EventEmitter2 wiring, dedup)', () => {
         CasesService,
         NotificationsService,
         { provide: PrismaService, useValue: prisma },
+        { provide: MailService, useValue: createMailMock() },
       ],
     }).compile();
     await moduleRef.init();

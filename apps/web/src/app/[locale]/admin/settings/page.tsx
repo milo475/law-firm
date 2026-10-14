@@ -1,6 +1,7 @@
 'use client';
 
 import { AdminPageTitle } from '@/components/admin/admin-page-title';
+import { EmailLogCard } from '@/components/admin/email-log-card';
 import { BankAccountSettingsCard, FirmSettingsCard } from '@/components/admin/settings-cards';
 import { useUser } from '@/components/portal/user-context';
 import { ErrorState } from '@/components/ui/states';
@@ -23,6 +24,7 @@ export default function AdminSettingsPage() {
       <AdminPageTitle title="Тохиргоо" description="Фирмийн хэмжээний тохиргоо. Өөрчлөлт бүр аудитын бүртгэлд бичигдэнэ." />
       <BankAccountSettingsCard />
       <FirmSettingsCard />
+      <EmailLogCard />
     </div>
   );
 }

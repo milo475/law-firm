@@ -1,9 +1,10 @@
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { CasesService } from '../cases/cases.service';
-import { CLIENT_USER, LAWYER_USER, createPrismaMock, type PrismaMock } from '../common/testing/mocks';
+import { CLIENT_USER, LAWYER_USER, createPrismaMock, type PrismaMock, createMailMock } from '../common/testing/mocks';
 import { DocumentsService } from '../documents/documents.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { DocumentRequestNotificationsListener } from './document-request-notifications.listener';
@@ -39,6 +40,7 @@ describe('Document request events → notifications (EventEmitter2 wiring)', () 
         CasesService,
         DocumentsService,
         { provide: PrismaService, useValue: prisma },
+        { provide: MailService, useValue: createMailMock() },
         { provide: StorageService, useValue: { upload: jest.fn(), delete: jest.fn() } },
         { provide: NotificationsService, useValue: notifications },
       ],

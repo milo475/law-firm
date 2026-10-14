@@ -7,6 +7,9 @@ import type { RequestUser } from '../common/types/request-user';
 import { CreateUserDto, UpdateMeDto, UpdateUserDto, UserQueryDto } from './dto/users.dto';
 import { UsersService } from './users.service';
 
+/** The admin panel is Mongolian, but a new client may read English or Chinese; ?locale says which. */
+const parseLocale = (value?: string) => (value === 'en' || value === 'zh' ? value : undefined);
+
 @ApiTags('users')
 @ApiBearerAuth()
 @Controller('users')
@@ -44,9 +47,17 @@ export class UsersController {
 
   @Roles(Role.ADMIN)
   @Post()
-  @ApiOperation({ summary: '[ADMIN] Хуульч эсвэл харилцагч үүсгэх (нууц үг өгөөгүй бол түр нууц үг буцаана)' })
-  create(@Body() dto: CreateUserDto) {
-    return this.users.create(dto);
+  @ApiOperation({ summary: '[ADMIN] Хуульч эсвэл харилцагч үүсгэх (урилгын и-мэйл; и-мэйл унтарсан бол түр нууц үг)' })
+  create(@Body() dto: CreateUserDto, @Query('locale') locale?: string) {
+    return this.users.create(dto, parseLocale(locale));
+  }
+
+  @Roles(Role.ADMIN)
+  @Post(':id/invite')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '[ADMIN] Урилгын и-мэйлийг дахин илгээх (шинэ холбоос, хуучин нь хүчингүй болно)' })
+  resendInvite(@Param('id') id: string) {
+    return this.users.resendInvite(id);
   }
 
   @Roles(Role.ADMIN)

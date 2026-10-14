@@ -5,6 +5,11 @@ import { routing, type Locale } from '@/i18n/routing';
 
 const LOGIN_PATH = '/portal/login';
 const PUBLIC_PORTAL_PATHS = ['/portal/login', '/portal/register', '/portal/forgot-password'];
+/**
+ * The end of a one-time link. Open to everyone, and — unlike the pages above — not bounced away
+ * from someone who happens to be signed in: a reset link is followed by whoever got the e-mail.
+ */
+const ONE_TIME_LINK_PATHS = ['/portal/reset-password', '/portal/accept-invite'];
 const STAFF_ROLES = new Set(['ADMIN', 'LAWYER']);
 
 const intlMiddleware = createIntlMiddleware(routing);
@@ -83,6 +88,8 @@ export function middleware(request: NextRequest) {
   const role = roleFromAccessToken(request.cookies.get('access_token')?.value);
   const isStaff = role !== null && STAFF_ROLES.has(role);
   const to = (target: string) => NextResponse.redirect(new URL(`${prefix}${target}`, request.url));
+
+  if (ONE_TIME_LINK_PATHS.some((p) => route.startsWith(p))) return intlMiddleware(request);
 
   if (PUBLIC_PORTAL_PATHS.some((p) => route.startsWith(p))) {
     return hasSession ? to(isStaff ? '/admin' : '/portal') : intlMiddleware(request);

@@ -1,8 +1,9 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { INVOICE_STATUS_TRANSITIONS, canTransitionInvoice } from '@law-firm/shared';
 import { CasesService } from '../cases/cases.service';
-import { ADMIN_USER, LAWYER_USER, OTHER_LAWYER, createPrismaMock, type PrismaMock } from '../common/testing/mocks';
+import { ADMIN_USER, LAWYER_USER, OTHER_LAWYER, createMailMock, createPrismaMock, type PrismaMock } from '../common/testing/mocks';
 import { NotificationsService } from '../notifications/notifications.service';
+import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { InvoicesService } from './invoices.service';
 
@@ -30,6 +31,7 @@ describe('InvoicesService (staff)', () => {
       prisma as unknown as PrismaService,
       new CasesService(prisma as unknown as PrismaService),
       notifications as unknown as NotificationsService,
+      createMailMock() as unknown as MailService,
     );
     prisma.case.findUnique.mockResolvedValue({ ...caseRef, title: 'Маргаан', status: 'IN_PROGRESS' });
     prisma.invoice.findFirst.mockResolvedValue({ invoiceNumber: `INV-${YEAR}-0004` });

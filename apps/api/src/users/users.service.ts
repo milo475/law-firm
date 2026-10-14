@@ -6,6 +6,7 @@ import {
   type Paginated,
   type Prisma,
   type SafeUser,
+  type UserLocale,
   type UpdateMeInput,
   type UpdateUserInput,
   type UserQueryInput,
@@ -15,6 +16,7 @@ import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { paginate, skipTake } from '../common/utils/pagination';
 import { SAFE_USER_SELECT } from '../common/utils/safe-user';
+import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { generateTemporaryPassword } from './temporary-password';
 
@@ -25,6 +27,7 @@ export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly auth: AuthService,
+    private readonly mail: MailService,
   ) {}
 
   // ─── Admin CRUD ────────────────────────────────────────────────────────────
@@ -64,29 +67,53 @@ export class UsersService {
     if (actor.role === Role.LAWYER && user.role !== Role.CLIENT) {
       throw new ForbiddenException(err('user.clientsOnly', 'Та зөвхөн харилцагчийн мэдээллийг харах боломжтой'));
     }
-    return user;
+    // So the panel can say whether the invitation is still waiting, and offer to send it again.
+    return { ...user, invite: await this.auth.inviteStatus(id) };
   }
 
   /**
-   * Creates a LAWYER or CLIENT. Without a password a temporary one is generated and returned
-   * exactly once so the admin can hand it over; it is never stored in plain text.
+   * Creates a LAWYER or CLIENT.
+   *
+   * Nobody should have to be told a password over the phone, so by default the new account gets an
+   * invitation e-mail and chooses its own. Two exceptions keep the panel usable: an admin who typed
+   * a password gets exactly that, and when e-mail is switched off (local development, or SMTP not
+   * configured yet) the old temporary password is generated and shown once, since otherwise there
+   * would be no way in at all.
    */
-  async create(input: AdminCreateUserInput): Promise<{ user: unknown; temporaryPassword: string | null }> {
+  async create(input: AdminCreateUserInput, locale?: UserLocale): Promise<{
+    user: unknown;
+    temporaryPassword: string | null;
+    invite: { expiresAt: Date } | null;
+  }> {
     await this.assertUnique(input.email, input.phone ?? null);
-    const temporaryPassword = input.password ? null : generateTemporaryPassword();
+    const invited = !input.password && this.mail.enabled;
+    // An invited account still needs a password column; this one is random and never shown to anyone.
+    const temporaryPassword = input.password || invited ? null : generateTemporaryPassword();
+    const initialPassword = input.password ?? temporaryPassword ?? generateTemporaryPassword();
+
     const user = await this.prisma.user.create({
       data: {
         email: input.email,
         phone: input.phone ?? null,
-        passwordHash: await this.auth.hashPassword(input.password ?? (temporaryPassword as string)),
+        passwordHash: await this.auth.hashPassword(initialPassword),
         firstName: input.firstName,
         lastName: input.lastName,
         role: input.role,
         isActive: input.isActive,
+        preferredLocale: locale ?? 'mn',
       },
       select: ADMIN_USER_SELECT,
     });
-    return { user, temporaryPassword };
+
+    const invite = invited ? await this.auth.sendInvite((user as { id: string }).id, locale) : null;
+    return { user, temporaryPassword, invite };
+  }
+
+  /** Sends the invitation again — the link the person was given has expired, or never arrived. */
+  async resendInvite(id: string): Promise<{ expiresAt: Date }> {
+    const user = await this.prisma.user.findUnique({ where: { id }, select: { id: true, isActive: true } });
+    if (!user) throw new NotFoundException(err('user.notFound', 'Хэрэглэгч олдсонгүй'));
+    return this.auth.sendInvite(id);
   }
 
   async update(id: string, input: UpdateUserInput) {

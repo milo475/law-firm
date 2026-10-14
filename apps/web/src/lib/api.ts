@@ -210,6 +210,10 @@ export interface CurrentUser {
   avatarUrl: string | null;
   lastLoginAt: string | null;
   createdAt?: string;
+  /** 'mn' | 'en' | 'zh' — the language this person is written to in. */
+  preferredLocale: string;
+  /** Notification e-mails; a password reset or an invitation arrives either way. */
+  emailNotifications: boolean;
 }
 
 export interface CaseListItem {

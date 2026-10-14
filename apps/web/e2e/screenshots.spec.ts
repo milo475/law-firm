@@ -22,6 +22,9 @@ const PUBLIC_PAGES: [string, string][] = [
   ['portal-login', '/portal/login'],
   ['portal-register', '/portal/register'],
   ['portal-forgot', '/portal/forgot-password'],
+  // The end of a one-time link; the token is rejected on submit, the page itself renders for anyone.
+  ['portal-reset-password', '/portal/reset-password?token=screenshot'],
+  ['portal-accept-invite', '/portal/accept-invite?token=screenshot'],
 ];
 
 const PORTAL_PAGES: [string, string][] = [

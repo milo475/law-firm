@@ -15,6 +15,8 @@ export const SAFE_USER_SELECT = {
   role: true,
   avatarUrl: true,
   isActive: true,
+  preferredLocale: true,
+  emailNotifications: true,
   lastLoginAt: true,
   createdAt: true,
   updatedAt: true,

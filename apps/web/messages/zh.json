@@ -1025,7 +1025,9 @@
       "sessionRevoked": "出于安全原因，您的会话已结束，请重新登录。",
       "sessionExpired": "会话已过期，请重新登录。",
       "userNotFound": "未找到该用户。",
-      "forbidden": "您没有执行此操作的权限。"
+      "forbidden": "您没有执行此操作的权限。",
+      "linkInvalid": "该重置链接已失效，请重新申请。",
+      "inviteInvalid": "该邀请链接已失效，请向您的律师索取新邀请。"
     },
     "user": {
       "notFound": "未找到该用户。",
@@ -1216,18 +1218,20 @@
     "forgotPassword": {
       "title": "找回密码",
       "back": "返回登录",
-      "description": "输入已登记的手机号或邮箱，我们将向您发送找回说明。",
+      "description": "请输入您注册时使用的手机号或邮箱，我们将发送重置链接。",
       "identifier": "手机号或邮箱",
       "identifierHelper": "请输入合同中登记的联系方式",
       "submit": "发送重置链接",
       "soon": "即将推出",
       "soonToast": "密码找回服务即将上线。",
       "soonToastWithPhone": "密码找回服务即将上线。目前请拨打 {phone}。",
-      "linkValidity": "链接有效期为 30 分钟",
-      "sent": "密码找回服务即将上线。",
-      "sentWithPhone": "密码找回服务即将上线。在此期间请联系 {phone}。",
+      "linkValidity": "链接 1 小时内有效",
+      "sent": "若该地址存在账户，重置链接已发送，请查收邮件。",
+      "sentWithPhone": "若该地址存在账户，重置链接已发送。如未收到，请拨打 {phone}。",
       "checkSpam": "如未收到邮件，请查看垃圾邮件文件夹。",
-      "checkSpamWithPhone": "如未收到邮件，请查看垃圾邮件文件夹。如问题持续，请联系 {phone}。"
+      "checkSpamWithPhone": "如未收到邮件，请查看垃圾邮件文件夹。如问题持续，请联系 {phone}。",
+      "sentTitle": "已发送",
+      "failed": "发送失败"
     },
     "authPanel": {
       "panelTitle": "客户门户",
@@ -1795,7 +1799,13 @@
       "devicesHint": "已登录设备列表即将上线。修改密码后，其他设备上的会话将被结束。",
       "logoutAll": "退出所有设备",
       "twoFactor": "双重身份验证",
-      "twoFactorHint": "每次登录时将通过短信发送验证码。· {soon}"
+      "twoFactorHint": "每次登录时将通过短信发送验证码。· {soon}",
+      "emailNotificationsLabel": "通过邮件接收通知",
+      "emailNotificationsHint": "当有新消息、材料申请或账单时，我们会发送邮件。密码重置与安全提醒始终发送。",
+      "languageLabel": "邮件语言",
+      "languageHint": "发送给您的邮件将使用此语言。",
+      "preferencesSaved": "设置已保存",
+      "preferencesFailed": "保存失败"
     },
     "redirecting": "正在跳转至登录页面……",
     "testimonial": {
@@ -1834,7 +1844,35 @@
       "consentRevoked": "已撤回公开同意"
     },
     "menuLabel": "",
-    "tabBarLabel": ""
+    "tabBarLabel": "",
+    "resetPassword": {
+      "title": "设置新密码",
+      "description": "请设置新密码后重新登录。",
+      "password": "新密码",
+      "confirm": "再次输入密码",
+      "mismatch": "两次输入的密码不一致",
+      "submit": "设置密码",
+      "submitting": "正在保存…",
+      "doneTitle": "密码已更新",
+      "doneBody": "请使用新密码登录。",
+      "toLogin": "登录",
+      "missingToken": "链接不完整，请完整打开邮件中的链接。",
+      "failed": "保存失败"
+    },
+    "acceptInvite": {
+      "title": "完成账户设置",
+      "description": "请设置您的密码并登录门户。",
+      "password": "新密码",
+      "confirm": "再次输入密码",
+      "mismatch": "两次输入的密码不一致",
+      "submit": "设置密码",
+      "submitting": "正在保存…",
+      "doneTitle": "账户已就绪",
+      "doneBody": "请使用新密码登录。",
+      "toLogin": "登录",
+      "missingToken": "链接不完整，请完整打开邮件中的链接。",
+      "failed": "保存失败"
+    }
   },
   "reviews": {
     "metaTitle": "客户评价",

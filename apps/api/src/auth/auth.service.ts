@@ -1,5 +1,6 @@
 import { createHmac, randomBytes, randomUUID } from 'node:crypto';
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -9,18 +10,29 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
+  AuthTokenPurpose,
+  MN_PHONE_REGEX,
   Role,
   type AccessTokenPayload,
+  type ForgotPasswordInput,
   type LoginInput,
   type RegisterInput,
+  type ResetPasswordInput,
   type SafeUser,
   type User,
+  type UserLocale,
 } from '@law-firm/shared';
 import argon2 from 'argon2';
 import { err } from '../common/errors/app-error';
 import { toSafeUser } from '../common/utils/safe-user';
 import type { Env } from '../config/env';
+import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
+
+/** How long a reset link lives; long enough to find the e-mail, short enough to matter. */
+const RESET_TTL_HOURS = 1;
+/** An invitation has to survive a weekend and a holiday. */
+const INVITE_TTL_DAYS = 7;
 
 interface AuthTokens {
   accessToken: string;
@@ -40,6 +52,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService<Env, true>,
+    private readonly mail: MailService,
   ) {}
 
   // ─── Password helpers ──────────────────────────────────────────────────────
@@ -92,6 +105,7 @@ export class AuthService {
         firstName: input.firstName,
         lastName: input.lastName,
         role: Role.CLIENT,
+        preferredLocale: input.locale ?? 'mn',
         lastLoginAt: new Date(),
       },
     });
@@ -157,7 +171,149 @@ export class AuthService {
     });
   }
 
+  // ─── One-time links: password reset and invitations ────────────────────────
+
+  /**
+   * Starts a reset. Whether or not the address belongs to an account, the caller is told the same
+   * thing — a different answer would turn this endpoint into a way to find out who is a client here.
+   * Any earlier reset link for the same person stops working.
+   */
+  async requestPasswordReset(input: ForgotPasswordInput): Promise<void> {
+    const identifier = input.identifier.trim();
+    const user = identifier.includes('@')
+      ? await this.prisma.user.findUnique({ where: { email: identifier.toLowerCase() } })
+      : MN_PHONE_REGEX.test(identifier)
+        ? await this.prisma.user.findUnique({ where: { phone: identifier.replace(/^\+976/, '') } })
+        : null;
+    if (!user || !user.isActive) {
+      this.logger.log('Password reset requested for an address with no active account');
+      return;
+    }
+
+    const { token, expiresAt } = await this.issueAuthToken(user.id, AuthTokenPurpose.PASSWORD_RESET, RESET_TTL_HOURS * 3_600_000);
+    const locale = this.localeOf(user, input.locale);
+    this.mail.enqueue({
+      to: user.email,
+      template: 'passwordReset',
+      locale,
+      userId: user.id,
+      data: {
+        name: user.firstName,
+        url: this.linkUrl('/portal/reset-password', token, locale),
+        hours: RESET_TTL_HOURS,
+      },
+    });
+    this.logger.log(`Password reset link issued for user ${user.id}, valid until ${expiresAt.toISOString()}`);
+  }
+
+  /**
+   * Finishes a reset: the link works once, every session of that account ends (a stolen password is
+   * no longer enough), and the owner is told it happened — the one way a silent takeover is noticed.
+   */
+  async resetPassword(input: ResetPasswordInput): Promise<void> {
+    const user = await this.consumeAuthToken(
+      input.token,
+      AuthTokenPurpose.PASSWORD_RESET,
+      err('auth.linkInvalid', 'Сэргээх холбоос хүчингүй эсвэл хугацаа нь дууссан байна'),
+    );
+    await this.prisma.user.update({ where: { id: user.id }, data: { passwordHash: await this.hashPassword(input.password) } });
+    await this.revokeAllForUser(user.id);
+    const locale = this.localeOf(user);
+    this.mail.enqueue({
+      to: user.email,
+      template: 'passwordChanged',
+      locale,
+      userId: user.id,
+      data: { name: user.firstName, url: this.linkUrl('/portal/login', null, locale) },
+    });
+  }
+
+  /** A new account finishes the same way a reset does, with the password the person chooses. */
+  async acceptInvite(input: ResetPasswordInput): Promise<void> {
+    const user = await this.consumeAuthToken(
+      input.token,
+      AuthTokenPurpose.INVITE,
+      err('auth.inviteInvalid', 'Урилгын холбоос хүчингүй эсвэл хугацаа нь дууссан байна'),
+    );
+    await this.prisma.user.update({ where: { id: user.id }, data: { passwordHash: await this.hashPassword(input.password) } });
+    await this.revokeAllForUser(user.id);
+  }
+
+  /**
+   * Creates (or replaces) an invitation and sends it. Used when an account is opened for someone and
+   * when an admin sends the invitation again; returns when it expires so the panel can show it.
+   */
+  async sendInvite(userId: string, locale?: UserLocale): Promise<{ expiresAt: Date }> {
+    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+    const { token, expiresAt } = await this.issueAuthToken(user.id, AuthTokenPurpose.INVITE, INVITE_TTL_DAYS * 86_400_000);
+    const language = this.localeOf(user, locale);
+    this.mail.enqueue({
+      to: user.email,
+      template: 'clientInvite',
+      locale: language,
+      userId: user.id,
+      data: {
+        name: user.firstName,
+        url: this.linkUrl('/portal/accept-invite', token, language),
+        days: INVITE_TTL_DAYS,
+      },
+    });
+    return { expiresAt };
+  }
+
+  /** The state the admin panel shows next to an account: invited, expired, or already finished. */
+  async inviteStatus(userId: string): Promise<{ state: 'NONE' | 'PENDING' | 'EXPIRED' | 'ACCEPTED'; expiresAt: Date | null }> {
+    const latest = await this.prisma.authToken.findFirst({
+      where: { userId, purpose: AuthTokenPurpose.INVITE },
+      orderBy: { createdAt: 'desc' },
+      select: { expiresAt: true, usedAt: true },
+    });
+    if (!latest) return { state: 'NONE', expiresAt: null };
+    if (latest.usedAt) return { state: 'ACCEPTED', expiresAt: latest.expiresAt };
+    return { state: latest.expiresAt.getTime() > Date.now() ? 'PENDING' : 'EXPIRED', expiresAt: latest.expiresAt };
+  }
+
   // ─── Token internals ───────────────────────────────────────────────────────
+
+  /** 32 random bytes; the database keeps only the hash, so the link cannot be rebuilt from a backup. */
+  private async issueAuthToken(userId: string, purpose: AuthTokenPurpose, ttlMs: number): Promise<{ token: string; expiresAt: Date }> {
+    // A new link invalidates the previous one of the same kind — two live reset links is one too many.
+    await this.prisma.authToken.deleteMany({ where: { userId, purpose } });
+    const token = randomBytes(32).toString('base64url');
+    const expiresAt = new Date(Date.now() + ttlMs);
+    await this.prisma.authToken.create({ data: { userId, purpose, tokenHash: this.hashToken(token), expiresAt } });
+    return { token, expiresAt };
+  }
+
+  /** Checks a presented link and burns it. Unknown, used and expired all answer the same way. */
+  private async consumeAuthToken(token: string, purpose: AuthTokenPurpose, failure: ReturnType<typeof err>): Promise<User> {
+    const stored = await this.prisma.authToken.findUnique({
+      where: { tokenHash: this.hashToken(token) },
+      include: { user: true },
+    });
+    if (!stored || stored.purpose !== purpose || stored.usedAt || stored.expiresAt.getTime() <= Date.now()) {
+      throw new BadRequestException(failure);
+    }
+    if (!stored.user.isActive) throw new BadRequestException(failure);
+    // Marked used and then removed: the row is gone, and a second request finds nothing either way.
+    await this.prisma.authToken.deleteMany({ where: { userId: stored.userId, purpose } });
+    return stored.user;
+  }
+
+  /** What language to write in: the account's own setting, or the one the browser was using. */
+  private localeOf(user: { preferredLocale: string }, requested?: UserLocale): UserLocale {
+    const stored = user.preferredLocale;
+    if (stored === 'en' || stored === 'zh') return stored;
+    return requested ?? 'mn';
+  }
+
+  /** Absolute link into the portal, in the reader's language. */
+  private linkUrl(path: string, token: string | null, locale: UserLocale): string {
+    const prefix = locale === 'mn' ? '' : `/${locale}`;
+    const query = token ? `?token=${encodeURIComponent(token)}` : '';
+    return `${this.mail.appUrl()}${prefix}${path}${query}`;
+  }
+
 
   /** Rotated moments ago by another request, while its login session still has a live token (not logged out, no revoke-all). */
   private async isConcurrentRefresh(stored: { familyId: string; rotatedAt: Date | null }): Promise<boolean> {

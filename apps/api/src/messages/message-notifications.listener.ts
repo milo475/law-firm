@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
+import { MailService } from '../mail/mail.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { MESSAGE_EVENTS, type MessageSentEvent } from './message.events';
 
@@ -13,7 +14,10 @@ const MESSAGE_NOTIFICATION_TYPE = 'MESSAGE';
 export class MessageNotificationsListener {
   private readonly logger = new Logger(MessageNotificationsListener.name);
 
-  constructor(private readonly notifications: NotificationsService) {}
+  constructor(
+    private readonly notifications: NotificationsService,
+    private readonly mail: MailService,
+  ) {}
 
   @OnEvent(MESSAGE_EVENTS.sent)
   async onSent(event: MessageSentEvent): Promise<void> {
@@ -32,6 +36,8 @@ export class MessageNotificationsListener {
           actorId: sender.id,
         },
       ]);
+      // The e-mail says only that a message arrived; the text of it stays in the portal.
+      await this.mail.notify(recipientId, 'newMessage', link);
     } catch (error) {
       this.logger.error(`Could not notify ${recipientId} about message ${message.id}: ${(error as Error).message}`);
     }

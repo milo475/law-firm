@@ -16,6 +16,7 @@ import { err } from '../common/errors/app-error';
 import type { RequestUser } from '../common/types/request-user';
 import { formatDateMn, formatMoneyMn, isUniqueViolation } from '../common/utils/format';
 import { paginate, skipTake } from '../common/utils/pagination';
+import { MailService } from '../mail/mail.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
 import { PrismaService } from '../prisma/prisma.service';
@@ -46,6 +47,7 @@ export class InvoicesService {
     private readonly prisma: PrismaService,
     private readonly cases: CasesService,
     private readonly notifications: NotificationsService,
+    private readonly mail: MailService,
   ) {}
 
   /** Invoices are scoped through their case (client / assigned lawyer / admin). */
@@ -167,6 +169,8 @@ export class InvoicesService {
           actorId: user.id,
         },
       ]);
+      // Amount and due date stay in the portal; the e-mail says an invoice is waiting.
+      await this.mail.notify(invoice.case.clientId, 'invoiceIssued', `/portal/invoices/${id}`);
     }
 
     return this.serialize(updated);

@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PASSWORD_MIN_LENGTH, RegisterSchema, type RegisterInput } from '@law-firm/shared/schemas';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -10,11 +10,13 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/toast';
+import type { Locale } from '@/i18n/routing';
 import { ApiError, api } from '@/lib/api';
 import { useApiError } from '@/lib/api-error';
 
 export function RegisterForm() {
   const t = useTranslations('portal.register');
+  const locale = useLocale() as Locale;
   const apiError = useApiError();
   const router = useRouter();
   const [agreed, setAgreed] = useState(false);
@@ -25,7 +27,8 @@ export function RegisterForm() {
 
   async function onSubmit(values: RegisterInput) {
     try {
-      await api.post('/auth/register', { ...values, phone: values.phone?.trim() ? values.phone.trim() : undefined });
+      // The account keeps the language the person signed up in; every e-mail is written in it.
+      await api.post('/auth/register', { ...values, locale, phone: values.phone?.trim() ? values.phone.trim() : undefined });
       toast.success(t('successToast'), t('successToastBody'));
       router.replace('/portal');
       router.refresh();

@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { DocumentRequestStatus, InvoiceStatus, TaskStatus, type Prisma } from '@law-firm/shared';
+import { DocumentRequestStatus, InvoiceStatus, Role, TaskStatus, type Prisma } from '@law-firm/shared';
 import { formatDateMn, formatMoneyMn } from '../common/utils/format';
+import { MailService } from '../mail/mail.service';
 import { NotificationsService, type CreateNotificationInput } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -31,6 +32,7 @@ export class RemindersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
+    private readonly mail: MailService,
   ) {}
 
   async runDaily(now = new Date()): Promise<ReminderSummary> {
@@ -44,9 +46,37 @@ export class RemindersService {
     inputs.push(...(await this.documentRequestReminders(now, today, summary)));
 
     if (inputs.length > 0) await this.notifications.createMany(inputs);
+    await this.sendDigests(inputs);
     summary.notifications = inputs.length;
     this.logger.log(`Daily reminders: ${JSON.stringify(summary)}`);
     return summary;
+  }
+
+  /**
+   * One morning e-mail per member of staff, with the counts of what this run flagged — numbers only,
+   * no case numbers or client names. Nobody is written to on a day with nothing to do.
+   */
+  private async sendDigests(inputs: CreateNotificationInput[]): Promise<void> {
+    if (inputs.length === 0) return;
+    const perUser = new Map<string, { tasks: number; invoices: number; documentRequests: number }>();
+    for (const input of inputs) {
+      const counts = perUser.get(input.userId) ?? { tasks: 0, invoices: 0, documentRequests: 0 };
+      if (input.type === 'TASK') counts.tasks += 1;
+      else if (input.type === 'INVOICE') counts.invoices += 1;
+      else if (input.type === 'DOCUMENT_REQUEST') counts.documentRequests += 1;
+      perUser.set(input.userId, counts);
+    }
+
+    // The digest is a staff view of the day; clients hear about their own invoice or document directly.
+    const staff = await this.prisma.user.findMany({
+      where: { id: { in: [...perUser.keys()] }, role: { in: [Role.ADMIN, Role.LAWYER] }, isActive: true },
+      select: { id: true },
+    });
+    for (const member of staff) {
+      const counts = perUser.get(member.id);
+      if (!counts) continue;
+      await this.mail.notify(member.id, 'dailyDigest', '/admin', counts);
+    }
   }
 
   private notRemindedToday(today: Date) {

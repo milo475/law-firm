@@ -74,6 +74,23 @@ enum ContactStatus {
   CLOSED
 }
 
+/**
+ * Why a one-time link exists: resetting a forgotten password, or finishing a new account.
+ */
+enum AuthTokenPurpose {
+  PASSWORD_RESET
+  INVITE
+}
+
+/**
+ * Outcome of one attempt to deliver an e-mail. SKIPPED = SMTP is not configured.
+ */
+enum EmailStatus {
+  SENT
+  FAILED
+  SKIPPED
+}
+
 enum DocumentRequestStatus {
   PENDING
   SUBMITTED
@@ -131,20 +148,26 @@ enum TaskPriority {
 // ─── Users & auth ────────────────────────────────────────────────────────────
 
 model User {
-  id           String    @id @default(uuid()) @db.Uuid
-  email        String    @unique
-  phone        String?   @unique
-  passwordHash String
-  firstName    String
-  lastName     String
-  role         Role      @default(CLIENT)
-  avatarUrl    String?
-  isActive     Boolean   @default(true)
-  lastLoginAt  DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id                 String    @id @default(uuid()) @db.Uuid
+  email              String    @unique
+  phone              String?   @unique
+  passwordHash       String
+  firstName          String
+  lastName           String
+  role               Role      @default(CLIENT)
+  avatarUrl          String?
+  isActive           Boolean   @default(true)
+  /// Language this person reads: the portal remembers it and e-mails are written in it (mn | en | zh).
+  preferredLocale    String    @default("mn")
+  /// Opt-out for notification e-mails. Password resets, invitations and security notices ignore it.
+  emailNotifications Boolean   @default(true)
+  lastLoginAt        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   refreshTokens            RefreshToken[]
+  authTokens               AuthToken[]
+  emailLogs                EmailLog[]        @relation("EmailLogUser")
   lawyerProfile            LawyerProfile?
   posts                    Post[]
   clientCases              Case[]            @relation("CaseClient")
@@ -188,6 +211,45 @@ model RefreshToken {
 
   @@index([userId])
   @@index([familyId])
+}
+
+/**
+ * One-time link for a password reset or an invitation. Only the hash is stored, exactly as with
+ * refresh tokens: whoever reads the database cannot use the links it contains.
+ */
+model AuthToken {
+  id        String           @id @default(uuid()) @db.Uuid
+  userId    String           @db.Uuid
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose   AuthTokenPurpose
+  tokenHash String           @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([userId, purpose])
+}
+
+/**
+ * What was sent, never what it said. A row records the recipient, which template and whether it
+ * arrived — the body is not stored, because the bodies carry nothing worth storing in the first place.
+ */
+model EmailLog {
+  id            String      @id @default(uuid()) @db.Uuid
+  to            String
+  template      String
+  locale        String
+  status        EmailStatus
+  /// Delivery failure as the SMTP server reported it; no message content.
+  error         String?
+  attempts      Int         @default(0)
+  relatedUserId String?     @db.Uuid
+  relatedUser   User?       @relation("EmailLogUser", fields: [relatedUserId], references: [id], onDelete: SetNull)
+  createdAt     DateTime    @default(now())
+  sentAt        DateTime?
+
+  @@index([createdAt])
+  @@index([relatedUserId])
 }
 
 model LawyerProfile {

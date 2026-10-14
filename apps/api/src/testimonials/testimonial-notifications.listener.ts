@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { Role } from '@law-firm/shared';
+import { MailService } from '../mail/mail.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { TESTIMONIAL_EVENTS, type TestimonialCreatedEvent, type TestimonialRef, type TestimonialReviewedEvent } from './testimonial.events';
@@ -15,6 +16,7 @@ export class TestimonialNotificationsListener {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
+    private readonly mail: MailService,
   ) {}
 
   @OnEvent(TESTIMONIAL_EVENTS.created)
@@ -34,6 +36,7 @@ export class TestimonialNotificationsListener {
           actorId: testimonial.authorUserId,
         })),
       );
+      for (const member of staff) await this.mail.notify(member.id, 'testimonialPending', '/admin/testimonials');
     });
   }
 

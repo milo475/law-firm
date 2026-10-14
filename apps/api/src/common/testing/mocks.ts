@@ -26,6 +26,15 @@ export const TEST_ENV: Env = {
   TRUST_PROXY_HOPS: 1,
   SENTRY_DSN: '',
   RAILWAY_GIT_COMMIT_SHA: '',
+  APP_URL: 'http://localhost:3001',
+  // Mail off by default: a test that wants to send provides its own transport.
+  SMTP_HOST: '',
+  SMTP_PORT: 587,
+  SMTP_SECURE: false,
+  SMTP_USER: '',
+  SMTP_PASS: '',
+  MAIL_FROM: '',
+  MAIL_REPLY_TO: '',
 };
 
 export function createConfigMock(overrides: Partial<Env> = {}): ConfigService<Env, true> {
@@ -64,6 +73,8 @@ export function createPrismaMock() {
     testimonial: delegate('findMany', 'findFirst', 'findUnique', 'count', 'create', 'update', 'delete'),
     auditLog: delegate('create'),
     setting: delegate('findUnique', 'upsert'),
+    authToken: delegate('findUnique', 'findFirst', 'create', 'deleteMany'),
+    emailLog: delegate('findMany', 'create'),
     $queryRaw: jest.fn(),
     /** Interactive transactions run the callback against the same mock. */
     $transaction: jest.fn(),
@@ -75,6 +86,21 @@ export function createPrismaMock() {
 }
 
 export type PrismaMock = ReturnType<typeof createPrismaMock>;
+
+/** A MailService stand-in: nothing leaves, and a test can read what would have been sent. */
+export function createMailMock() {
+  return {
+    enabled: false,
+    enqueue: jest.fn(),
+    notify: jest.fn().mockResolvedValue(undefined),
+    url: jest.fn((path: string) => `http://localhost:3001${path}`),
+    send: jest.fn().mockResolvedValue({ status: 'SKIPPED', attempts: 0 }),
+    appUrl: jest.fn(() => 'http://localhost:3001'),
+    recentLog: jest.fn().mockResolvedValue([]),
+  };
+}
+
+export type MailMock = ReturnType<typeof createMailMock>;
 
 export const ADMIN_USER: RequestUser = { id: 'admin-id', email: 'admin@lawfirm.mn', role: 'ADMIN' };
 export const LAWYER_USER: RequestUser = { id: 'lawyer-id', email: 'lawyer@lawfirm.mn', role: 'LAWYER' };

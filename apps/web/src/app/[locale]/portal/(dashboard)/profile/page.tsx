@@ -13,11 +13,12 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
 import { toast } from '@/components/ui/toast';
 import { api, type CaseListItem, type CurrentUser, type Paginated } from '@/lib/api';
 import { formatDate } from '@/lib/format';
 import { useApiError } from '@/lib/api-error';
-import type { Locale } from '@/i18n/routing';
+import { LOCALE_LABELS, routing, type Locale } from '@/i18n/routing';
 import { cn, initials, shortName } from '@/lib/utils';
 
 const ProfileSchema = z.object({
@@ -164,6 +165,9 @@ export default function ProfilePage() {
             </form>
           </Card>
 
+          {/* What the API actually honours: the e-mail switch and the language e-mails are written in. */}
+          <MailPreferences />
+
           {/* Notification settings (33:898 / 37:1335) — not supported by the API yet */}
           <section aria-labelledby="notif-settings-title" className="order-1 flex flex-col gap-4 md:order-none md:gap-[18px] md:rounded-lg md:border md:border-border-default md:bg-bg-surface md:p-6">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -224,6 +228,67 @@ export default function ProfilePage() {
         </aside>
       </div>
     </div>
+  );
+}
+
+/**
+ * The two preferences the API honours today: whether notification e-mails are sent at all, and the
+ * language they are written in. A password reset or an invitation is sent whatever the switch says —
+ * the hint under it states that, so nobody switches off the one e-mail they will need.
+ */
+function MailPreferences() {
+  const t = useTranslations('portal.profile');
+  const apiError = useApiError();
+  const { user, refresh } = useUser();
+  const [busy, setBusy] = useState(false);
+
+  async function save(patch: { emailNotifications?: boolean; preferredLocale?: Locale }) {
+    setBusy(true);
+    try {
+      await api.patch('/users/me', patch);
+      await refresh();
+      toast.success(t('preferencesSaved'));
+    } catch (error) {
+      toast.danger(t('preferencesFailed'), apiError(error));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section aria-labelledby="mail-prefs-title" className="order-1 flex flex-col gap-4 rounded-lg border border-border-default bg-bg-surface p-[18px] md:order-none md:gap-[18px] md:p-6">
+      <h3 id="mail-prefs-title" className="font-serif text-[20px] font-semibold leading-7 md:text-h4">{t('emailNotificationsLabel')}</h3>
+      <div className="flex items-start gap-4 md:gap-5">
+        <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
+          <p className="text-body-sm-medium text-text-primary md:text-body-medium">{t('emailNotificationsLabel')}</p>
+          <p className="text-body-sm text-text-secondary">{t('emailNotificationsHint')}</p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={user.emailNotifications}
+          aria-label={t('emailNotificationsLabel')}
+          disabled={busy}
+          onClick={() => void save({ emailNotifications: !user.emailNotifications })}
+          className={cn(
+            'focus-ring relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors disabled:opacity-60',
+            user.emailNotifications ? 'bg-brand-primary' : 'bg-border-strong',
+          )}
+        >
+          <span aria-hidden className={cn('absolute top-[3px] size-[22px] rounded-full bg-bg-surface transition-[left]', user.emailNotifications ? 'left-[23px]' : 'left-[3px]')} />
+        </button>
+      </div>
+      <div className="flex flex-col gap-[3px]">
+        <Select
+          label={t('languageLabel')}
+          helper={t('languageHint')}
+          value={user.preferredLocale}
+          disabled={busy}
+          onValueChange={(value) => void save({ preferredLocale: value as Locale })}
+          options={routing.locales.map((value) => ({ value, label: LOCALE_LABELS[value].name }))}
+        />
+      </div>
+    </section>
   );
 }
 

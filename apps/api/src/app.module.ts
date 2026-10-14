@@ -18,6 +18,7 @@ import { DocumentRequestsModule } from './document-requests/document-requests.mo
 import { DocumentsModule } from './documents/documents.module';
 import { InvoicesModule } from './invoices/invoices.module';
 import { LawyersModule } from './lawyers/lawyers.module';
+import { MailModule } from './mail/mail.module';
 import { MessagesModule } from './messages/messages.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PerformanceModule } from './performance/performance.module';
@@ -50,6 +51,7 @@ import { UsersModule } from './users/users.module';
     EventEmitterModule.forRoot(),
     PrismaModule,
     StorageModule,
+    MailModule,
     AuditModule,
     AuthModule,
     UsersModule,

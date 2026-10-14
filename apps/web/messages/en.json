@@ -1025,7 +1025,9 @@
       "sessionRevoked": "Your session was ended for security reasons. Please sign in again.",
       "sessionExpired": "Your session has expired. Please sign in again.",
       "userNotFound": "That user was not found.",
-      "forbidden": "You do not have permission for this action."
+      "forbidden": "You do not have permission for this action.",
+      "linkInvalid": "This reset link is no longer valid. Please ask for a new one.",
+      "inviteInvalid": "This invitation link is no longer valid. Please ask your lawyer for a new one."
     },
     "user": {
       "notFound": "That user was not found.",
@@ -1216,18 +1218,20 @@
     "forgotPassword": {
       "title": "Reset your password",
       "back": "Back to sign in",
-      "description": "Enter your registered phone number or email address and we will send you reset instructions.",
+      "description": "Enter your registered phone number or e-mail and we will send you a reset link.",
       "identifier": "Phone or email",
       "identifierHelper": "Please enter the details registered on your agreement",
       "submit": "Send a reset link",
       "soon": "Coming soon",
       "soonToast": "The password reset service will be available shortly.",
       "soonToastWithPhone": "The password reset service will be available shortly. For now, please call {phone}.",
-      "linkValidity": "The link is valid for 30 minutes",
-      "sent": "The password reset service will be available shortly.",
-      "sentWithPhone": "The password reset service will be available shortly. In the meantime, please contact {phone}.",
+      "linkValidity": "The link is valid for 1 hour",
+      "sent": "If an account exists for that address, a reset link is on its way. Please check your inbox.",
+      "sentWithPhone": "If an account exists for that address, a reset link is on its way. If nothing arrives, please call {phone}.",
       "checkSpam": "If the email has not arrived, please check your spam folder.",
-      "checkSpamWithPhone": "If the email has not arrived, please check your spam folder. If the problem persists, please contact {phone}."
+      "checkSpamWithPhone": "If the email has not arrived, please check your spam folder. If the problem persists, please contact {phone}.",
+      "sentTitle": "Sent",
+      "failed": "Could not send it"
     },
     "authPanel": {
       "panelTitle": "Client portal",
@@ -1795,7 +1799,13 @@
       "devicesHint": "A list of signed-in devices will be added soon. Changing your password ends sessions on all other devices.",
       "logoutAll": "Log out of all devices",
       "twoFactor": "Two-factor authentication",
-      "twoFactorHint": "A code will be sent by SMS each time you log in. · {soon}"
+      "twoFactorHint": "A code will be sent by SMS each time you log in. · {soon}",
+      "emailNotificationsLabel": "Notifications by e-mail",
+      "emailNotificationsHint": "We will e-mail you about new messages, document requests and invoices. Password resets and security notices are always sent.",
+      "languageLabel": "Language for e-mails",
+      "languageHint": "Your e-mails are written in this language.",
+      "preferencesSaved": "Your preferences were saved",
+      "preferencesFailed": "Could not save it"
     },
     "redirecting": "Redirecting to the sign-in page…",
     "testimonial": {
@@ -1834,7 +1844,35 @@
       "consentRevoked": "Consent to publication withdrawn"
     },
     "menuLabel": "",
-    "tabBarLabel": ""
+    "tabBarLabel": "",
+    "resetPassword": {
+      "title": "New password",
+      "description": "Choose a new password and sign in again.",
+      "password": "New password",
+      "confirm": "Repeat the password",
+      "mismatch": "The passwords do not match",
+      "submit": "Set password",
+      "submitting": "Saving…",
+      "doneTitle": "Your password has been changed",
+      "doneBody": "Please sign in with your new password.",
+      "toLogin": "Sign in",
+      "missingToken": "This link is incomplete. Please open the link from the e-mail in full.",
+      "failed": "Could not save it"
+    },
+    "acceptInvite": {
+      "title": "Finish setting up your account",
+      "description": "Choose your password and sign in to the portal.",
+      "password": "New password",
+      "confirm": "Repeat the password",
+      "mismatch": "The passwords do not match",
+      "submit": "Set password",
+      "submitting": "Saving…",
+      "doneTitle": "Your account is ready",
+      "doneBody": "Please sign in with your new password.",
+      "toLogin": "Sign in",
+      "missingToken": "This link is incomplete. Please open the link from the e-mail in full.",
+      "failed": "Could not save it"
+    }
   },
   "reviews": {
     "metaTitle": "Client testimonials",

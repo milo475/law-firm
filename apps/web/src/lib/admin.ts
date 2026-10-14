@@ -22,6 +22,12 @@ export interface LawyerProfileRecord {
   sortOrder: number;
 }
 
+/** Where a new account's invitation stands; `GET /users/:id` carries it. */
+export interface InviteState {
+  state: 'NONE' | 'PENDING' | 'EXPIRED' | 'ACCEPTED';
+  expiresAt: string | null;
+}
+
 export interface AdminUser {
   id: string;
   email: string;
@@ -35,6 +41,8 @@ export interface AdminUser {
   createdAt: string;
   updatedAt: string;
   lawyerProfile: LawyerProfileRecord | null;
+  /** Only on the detail route, not in the list. */
+  invite?: InviteState;
 }
 
 export interface StaffLawyer {

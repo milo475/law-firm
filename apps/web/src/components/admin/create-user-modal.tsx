@@ -12,6 +12,7 @@ import { Modal, ModalContent } from '@/components/ui/modal';
 import { toast } from '@/components/ui/toast';
 import { ApiError, api } from '@/lib/api';
 import type { AdminUser } from '@/lib/admin';
+import { formatDate } from '@/lib/format';
 import { shortName } from '@/lib/utils';
 
 const CreateUserFormSchema = AdminCreateUserSchema.omit({ role: true, isActive: true }).extend({
@@ -29,7 +30,7 @@ export function CreateUserModal({ open, onOpenChange, role, onCreated }: {
   role: 'CLIENT' | 'LAWYER';
   onCreated?: (user: AdminUser) => void;
 }) {
-  const [result, setResult] = useState<{ user: AdminUser; temporaryPassword: string | null } | null>(null);
+  const [result, setResult] = useState<{ user: AdminUser; temporaryPassword: string | null; invite: { expiresAt: string } | null } | null>(null);
   const form = useForm<CreateUserFormValues>({ resolver: zodResolver(CreateUserFormSchema), defaultValues: EMPTY });
   const { register, handleSubmit, reset, formState: { errors } } = form;
   const noun = role === 'LAWYER' ? 'хуульч' : 'харилцагч';
@@ -43,7 +44,7 @@ export function CreateUserModal({ open, onOpenChange, role, onCreated }: {
 
   const create = useMutation({
     mutationFn: (values: CreateUserFormValues) =>
-      api.post<{ user: AdminUser; temporaryPassword: string | null }>('/users', {
+      api.post<{ user: AdminUser; temporaryPassword: string | null; invite: { expiresAt: string } | null }>('/users', {
         email: values.email,
         firstName: values.firstName,
         lastName: values.lastName,
@@ -89,7 +90,16 @@ export function CreateUserModal({ open, onOpenChange, role, onCreated }: {
             <p className="text-body text-text-secondary">
               {shortName(result.user.firstName, result.user.lastName)} ({result.user.email}) амжилттай бүртгэгдлээ.
             </p>
-            {result.temporaryPassword ? (
+            {result.invite ? (
+              <div className="flex flex-col gap-2 rounded-md border border-border-default bg-bg-brand-soft p-4">
+                <p className="text-body-sm-medium text-text-primary">Урилгын и-мэйл илгээлээ</p>
+                <p className="text-body-sm text-text-secondary">
+                  {result.user.email} хаяг руу нэг удаагийн холбоос явлаа. Хэрэглэгч өөрөө нууц үгээ тохируулна.
+                  Холбоос {formatDate(result.invite.expiresAt)} хүртэл хүчинтэй.
+                </p>
+                <p className="text-caption text-text-muted">Имэйл ирээгүй бол харилцагчийн хуудаснаас дахин илгээж болно.</p>
+              </div>
+            ) : result.temporaryPassword ? (
               <div className="flex flex-col gap-3 rounded-md border border-border-default bg-bg-accent-soft p-4">
                 <p className="text-body-sm-medium text-text-primary">Түр нууц үг</p>
                 <div className="flex flex-wrap items-center gap-3">
@@ -97,6 +107,7 @@ export function CreateUserModal({ open, onOpenChange, role, onCreated }: {
                   <Button variant="secondary" size="sm" onClick={() => void copyPassword(result.temporaryPassword!)}>Хуулах</Button>
                 </div>
                 <p className="text-caption text-text-accent">Энэ нууц үг зөвхөн одоо харагдана. Хэрэглэгч анх нэвтэрсний дараа профайлаасаа сольно.</p>
+                <p className="text-caption text-text-muted">И-мэйл тохируулаагүй тул урилга илгээгдсэнгүй.</p>
               </div>
             ) : (
               <p className="text-body-sm text-text-secondary">Таны оруулсан нууц үгээр нэвтэрнэ.</p>
@@ -110,7 +121,7 @@ export function CreateUserModal({ open, onOpenChange, role, onCreated }: {
             </div>
             <Input label="И-мэйл" type="email" autoComplete="off" required error={errors.email?.message} {...register('email')} />
             <Input label="Утасны дугаар" inputMode="tel" placeholder="99112233" helper="Заавал биш" error={errors.phone?.message} {...register('phone')} />
-            <Input label="Нууц үг" type="password" autoComplete="new-password" helper="Хоосон орхивол түр нууц үг автоматаар үүснэ" error={errors.password?.message} {...register('password')} />
+            <Input label="Нууц үг" type="password" autoComplete="new-password" helper="Хоосон орхивол урилгын и-мэйл явна (и-мэйл унтраалттай бол түр нууц үг үүснэ)" error={errors.password?.message} {...register('password')} />
           </form>
         )}
       </ModalContent>

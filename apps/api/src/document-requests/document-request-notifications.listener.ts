@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { formatDateMn } from '../common/utils/format';
+import { MailService } from '../mail/mail.service';
 import { NotificationsService, type CreateNotificationInput } from '../notifications/notifications.service';
 import {
   DOCUMENT_REQUEST_EVENTS,
@@ -19,7 +20,10 @@ const staffLink = (caseId: string) => `/admin/cases/${caseId}?tab=requests`;
 export class DocumentRequestNotificationsListener {
   private readonly logger = new Logger(DocumentRequestNotificationsListener.name);
 
-  constructor(private readonly notifications: NotificationsService) {}
+  constructor(
+    private readonly notifications: NotificationsService,
+    private readonly mail: MailService,
+  ) {}
 
   @OnEvent(DOCUMENT_REQUEST_EVENTS.created)
   async onCreated(event: DocumentRequestCreatedEvent): Promise<void> {
@@ -41,6 +45,8 @@ export class DocumentRequestNotificationsListener {
       link: clientLink(caseRef.id),
       actorId: event.actorId,
     });
+    // Which documents were asked for is on the case page; the e-mail only points at it.
+    await this.mail.notify(caseRef.clientId, 'documentRequested', clientLink(caseRef.id));
   }
 
   @OnEvent(DOCUMENT_REQUEST_EVENTS.submitted)

@@ -53,6 +53,8 @@ export const ERROR_CODES = [
   'auth.sessionExpired',
   'auth.userNotFound',
   'auth.forbidden',
+  'auth.linkInvalid',
+  'auth.inviteInvalid',
 
   // ── Users ───────────────────────────────────────────────────────────────────
   'user.notFound',

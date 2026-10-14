@@ -63,6 +63,25 @@ const EnvSchema = z.object({
     .default('')
     .transform((value) => value.trim().replace(/\/+$/, ''))
     .refine((value) => value === '' || value.startsWith('/'), 'COOKIE_PATH_PREFIX must start with /'),
+  /**
+   * Browser-facing base URL of the web app — the address e-mail links point at. Falls back to the
+   * first CORS origin, which is the same host in every setup we run.
+   */
+  APP_URL: z.string().default('').transform((value) => value.trim().replace(/\/+$/, '')),
+
+  // ─── Outgoing e-mail (SMTP) ────────────────────────────────────────────────
+  /** Leaving SMTP_HOST or SMTP_USER empty switches e-mail off: nothing is sent, every send is logged as SKIPPED. */
+  SMTP_HOST: z.string().default('').transform((value) => value.trim()),
+  SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),
+  /** True for implicit TLS (port 465); false for STARTTLS (587), which is what Gmail uses. */
+  SMTP_SECURE: booleanFromString.default(false),
+  SMTP_USER: z.string().default('').transform((value) => value.trim()),
+  SMTP_PASS: z.string().default(''),
+  /** Envelope sender, e.g. «Strategy Law Firm <info@lawfirm.mn>». Defaults to SMTP_USER. */
+  MAIL_FROM: z.string().default('').transform((value) => value.trim()),
+  /** Optional Reply-To, when replies should go somewhere other than the sending mailbox. */
+  MAIL_REPLY_TO: z.string().default('').transform((value) => value.trim()),
+
   /** Sentry DSN; empty turns error reporting off entirely (local development, tests). */
   SENTRY_DSN: z.string().default('').transform((value) => value.trim()),
   /** Release name for Sentry; Railway injects the commit SHA. */

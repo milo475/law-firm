@@ -1,7 +1,8 @@
 import { ConflictException, ForbiddenException } from '@nestjs/common';
 import { PasswordSchema } from '@law-firm/shared';
 import { AuthService } from '../auth/auth.service';
-import { ADMIN_USER, LAWYER_USER, createPrismaMock, type PrismaMock } from '../common/testing/mocks';
+import { ADMIN_USER, LAWYER_USER, createMailMock, createPrismaMock, type MailMock, type PrismaMock } from '../common/testing/mocks';
+import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { generateTemporaryPassword } from './temporary-password';
 import { UsersService } from './users.service';
@@ -9,14 +10,22 @@ import { UsersService } from './users.service';
 describe('UsersService (admin panel)', () => {
   let service: UsersService;
   let prisma: PrismaMock;
-  let auth: { hashPassword: jest.Mock; revokeAllForUser: jest.Mock; verifyPassword: jest.Mock };
+  let auth: { hashPassword: jest.Mock; revokeAllForUser: jest.Mock; verifyPassword: jest.Mock; sendInvite: jest.Mock; inviteStatus: jest.Mock };
+  let mail: MailMock;
 
   const input = { email: 'new.client@example.mn', firstName: 'Болд', lastName: 'Бат', role: 'CLIENT' as const, isActive: true };
 
   beforeEach(() => {
     prisma = createPrismaMock();
-    auth = { hashPassword: jest.fn(async (p: string) => `hashed:${p}`), revokeAllForUser: jest.fn(), verifyPassword: jest.fn() };
-    service = new UsersService(prisma as unknown as PrismaService, auth as unknown as AuthService);
+    auth = {
+      hashPassword: jest.fn(async (p: string) => `hashed:${p}`),
+      revokeAllForUser: jest.fn(),
+      verifyPassword: jest.fn(),
+      sendInvite: jest.fn().mockResolvedValue({ expiresAt: new Date('2026-10-21T00:00:00Z') }),
+      inviteStatus: jest.fn().mockResolvedValue({ state: 'NONE', expiresAt: null }),
+    };
+    mail = createMailMock();
+    service = new UsersService(prisma as unknown as PrismaService, auth as unknown as AuthService, mail as unknown as MailService);
     prisma.user.findMany.mockResolvedValue([]);
     prisma.user.count.mockResolvedValue(0);
     prisma.user.findFirst.mockResolvedValue(null);
