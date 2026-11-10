@@ -23,17 +23,30 @@ type CreateUserFormValues = z.infer<typeof CreateUserFormSchema>;
 
 const EMPTY: CreateUserFormValues = { email: '', firstName: '', lastName: '', phone: '', password: '' };
 
-/** ADMIN creates a CLIENT or LAWYER. If no password is typed the API returns a one-time temporary password. */
+type CreatableRole = 'CLIENT' | 'LAWYER' | 'EDITOR';
+
+const ROLE_COPY: Record<CreatableRole, { noun: string; title: string; description: string }> = {
+  CLIENT: { noun: 'харилцагч', title: 'Харилцагч', description: 'Харилцагч порталд нэвтэрч хэргийн явцаа харах боломжтой болно.' },
+  LAWYER: { noun: 'хуульч', title: 'Хуульч', description: 'Хуульч бүртгэсний дараа нийтийн сайтад харагдах профайлыг бөглөнө.' },
+  EDITOR: {
+    noun: 'редактор',
+    title: 'Редактор',
+    description: 'Редактор нийтлэл бичиж, нийтэлнэ. Хэрэг, харилцагч, баримт, нэхэмжлэхэд хандахгүй.',
+  },
+};
+
+/** ADMIN creates a CLIENT, LAWYER or EDITOR. Without a typed password the API sends an invitation. */
 export function CreateUserModal({ open, onOpenChange, role, onCreated }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  role: 'CLIENT' | 'LAWYER';
+  role: CreatableRole;
   onCreated?: (user: AdminUser) => void;
 }) {
   const [result, setResult] = useState<{ user: AdminUser; temporaryPassword: string | null; invite: { expiresAt: string } | null } | null>(null);
   const form = useForm<CreateUserFormValues>({ resolver: zodResolver(CreateUserFormSchema), defaultValues: EMPTY });
   const { register, handleSubmit, reset, formState: { errors } } = form;
-  const noun = role === 'LAWYER' ? 'хуульч' : 'харилцагч';
+  const copy = ROLE_COPY[role];
+  const noun = copy.noun;
 
   useEffect(() => {
     if (open) {
@@ -72,8 +85,8 @@ export function CreateUserModal({ open, onOpenChange, role, onCreated }: {
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent
-        title={result ? `${role === 'LAWYER' ? 'Хуульч' : 'Харилцагч'} бүртгэгдлээ` : `Шинэ ${noun}`}
-        description={result ? undefined : role === 'LAWYER' ? 'Хуульч бүртгэсний дараа нийтийн сайтад харагдах профайлыг бөглөнө.' : 'Харилцагч порталд нэвтэрч хэргийн явцаа харах боломжтой болно.'}
+        title={result ? `${copy.title} бүртгэгдлээ` : `Шинэ ${noun}`}
+        description={result ? undefined : copy.description}
         footer={
           result ? (
             <Button size="md" onClick={() => onOpenChange(false)}>Хаах</Button>

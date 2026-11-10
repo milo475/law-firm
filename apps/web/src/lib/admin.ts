@@ -82,7 +82,10 @@ export interface ManagedPost {
   viewCount: number;
   createdAt: string;
   updatedAt: string;
-  author: PublicUser;
+  /** The byline: a lawyer, or nobody. Who typed it is `createdBy`. */
+  author: PublicUser | null;
+  createdBy?: PublicUser | null;
+  updatedBy?: PublicUser | null;
 }
 
 export const CASE_STATUSES: CaseStatus[] = ['NEW', 'IN_PROGRESS', 'WAITING', 'CLOSED'];
@@ -90,7 +93,16 @@ export const CASE_TYPES: CaseType[] = ['CIVIL', 'CRIMINAL', 'FAMILY', 'BUSINESS'
 export const MANUAL_EVENT_TYPES: CaseEventType[] = ['NOTE', 'HEARING', 'MEETING', 'DEADLINE', 'DOCUMENT'];
 export const INVOICE_STATUSES: InvoiceStatus[] = ['DRAFT', 'SENT', 'AWAITING_CONFIRMATION', 'PAID', 'OVERDUE', 'CANCELLED'];
 
-export function isStaff(role: Role | string | undefined): boolean {
+/** Who may open /admin at all. An editor works there too — on the posts and nothing else. */
+export function canOpenAdmin(role: Role | string | undefined): boolean {
+  return role === 'ADMIN' || role === 'LAWYER' || role === 'EDITOR';
+}
+
+/**
+ * Who may see anything belonging to a client — cases, documents, invoices, messages, tasks.
+ * Mirrors CLIENT_DATA_ROLES in the API, which is what actually enforces it.
+ */
+export function handlesClientData(role: Role | string | undefined): boolean {
   return role === 'ADMIN' || role === 'LAWYER';
 }
 

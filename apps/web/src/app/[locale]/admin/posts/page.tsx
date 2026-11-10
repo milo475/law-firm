@@ -125,7 +125,7 @@ export default function AdminPostsPage() {
                   </TableCell>
                   <TableCell className="whitespace-nowrap">{CATEGORY_LABELS[post.category]}</TableCell>
                   <TableCell className="whitespace-nowrap"><StatusBadge map={POST_STATUS_BADGE} status={post.status} /></TableCell>
-                  <TableCell className="whitespace-nowrap">{shortName(post.author.firstName, post.author.lastName)}</TableCell>
+                  <TableCell className="whitespace-nowrap">{post.author ? shortName(post.author.firstName, post.author.lastName) : <span className="text-text-muted">Нэргүй</span>}</TableCell>
                   <TableCell className="whitespace-nowrap">{formatDate(post.publishedAt)}</TableCell>
                   <TableCell className="text-right">{post.viewCount}</TableCell>
                   <TableCell className="py-2 text-right">
@@ -148,7 +148,7 @@ export default function AdminPostsPage() {
                   <StatusBadge map={POST_STATUS_BADGE} status={post.status} />
                 </div>
                 <Link href={`/admin/posts/${post.id}/edit`} className="focus-ring -my-1 inline-flex min-h-10 items-center rounded-sm py-1 text-body-medium text-text-primary">{post.title}</Link>
-                <p className="text-caption text-text-muted">{shortName(post.author.firstName, post.author.lastName)} · {formatDate(post.publishedAt)} · {post.viewCount} үзсэн</p>
+                <p className="text-caption text-text-muted">{post.author ? `${shortName(post.author.firstName, post.author.lastName)} · ` : 'Нэргүй · '}{formatDate(post.publishedAt)} · {post.viewCount} үзсэн</p>
                 <div className="flex justify-end gap-1">
                   <Button asChild variant="ghost" size="sm"><Link href={`/admin/posts/${post.id}/edit`}>Засах</Link></Button>
                   <Button variant="ghost" size="sm" onClick={() => setToDelete(post)}>Устгах</Button>

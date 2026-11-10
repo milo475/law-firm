@@ -10,7 +10,13 @@ const PUBLIC_PORTAL_PATHS = ['/portal/login', '/portal/register', '/portal/forgo
  * from someone who happens to be signed in: a reset link is followed by whoever got the e-mail.
  */
 const ONE_TIME_LINK_PATHS = ['/portal/reset-password', '/portal/accept-invite'];
-const STAFF_ROLES = new Set(['ADMIN', 'LAWYER']);
+const STAFF_ROLES = new Set(['ADMIN', 'LAWYER', 'EDITOR']);
+/**
+ * Everything an EDITOR may open. The API answers 403 everywhere else, but the panel should not
+ * offer a screen that loads into an error — and a typed URL should land somewhere useful.
+ */
+const EDITOR_PATHS = ['/admin/posts', '/admin/profile', '/admin/notifications'];
+const EDITOR_HOME = '/admin/posts';
 
 const intlMiddleware = createIntlMiddleware(routing);
 
@@ -48,7 +54,8 @@ function splitLocale(pathname: string): { locale: Locale; prefix: string; route:
 /**
  * /portal/* and /admin/* need a session (`access_token`, or the long-lived `lf_session`
  * marker so an expired access token can still refresh on the client) in every language.
- * /admin/* is for ADMIN and LAWYER only: a CLIENT is redirected to /portal.
+ * /admin/* is for staff only: a CLIENT is redirected to /portal, and an EDITOR is kept to the
+ * posts screens — the rest of the panel is client work they have no part in.
  * Everything else only picks the locale; /api/* never reaches this file (see the matcher).
  */
 export function middleware(request: NextRequest) {
@@ -104,6 +111,13 @@ export function middleware(request: NextRequest) {
   if (route.startsWith('/admin') && role === 'CLIENT') return to('/portal');
   // Staff have no client dashboard; send them to the admin panel.
   if (route === '/portal' && isStaff) return to('/admin');
+
+  if (role === 'EDITOR') {
+    // No client portal at all, and nothing in the panel beyond the posts and their own account.
+    if (route.startsWith('/portal')) return to(EDITOR_HOME);
+    const allowed = EDITOR_PATHS.some((path) => route === path || route.startsWith(`${path}/`));
+    if (!allowed) return to(EDITOR_HOME);
+  }
 
   return intlMiddleware(request);
 }

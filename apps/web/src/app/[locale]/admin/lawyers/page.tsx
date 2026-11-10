@@ -16,6 +16,7 @@ import { EmptyState, ErrorState, TableSkeleton } from '@/components/ui/states';
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@/components/ui/table';
 import { ApiError, api, type Paginated } from '@/lib/api';
 import type { AdminUser } from '@/lib/admin';
+import { ROLE_LABELS } from '@/lib/format';
 import { shortName } from '@/lib/utils';
 
 export default function AdminLawyersPage() {
@@ -27,6 +28,7 @@ export default function AdminLawyersPage() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [createOpen, setCreateOpen] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => { setSearch(searchInput.trim()); setPage(1); }, 350);
@@ -39,6 +41,14 @@ export default function AdminLawyersPage() {
     queryKey: ['admin', 'users', { role: 'LAWYER', search, page }],
     queryFn: () => api.get<Paginated<AdminUser>>(`/users?${params.toString()}`),
     placeholderData: keepPreviousData,
+    enabled: isAdmin,
+  });
+
+  // The firm's editors: they write the articles and reach nothing a client owns, so they are kept
+  // beside the lawyers rather than among the clients.
+  const editors = useQuery({
+    queryKey: ['admin', 'users', { role: 'EDITOR' }],
+    queryFn: () => api.get<Paginated<AdminUser>>('/users?role=EDITOR&page=1&limit=50'),
     enabled: isAdmin,
   });
 
@@ -102,7 +112,46 @@ export default function AdminLawyersPage() {
         </>
       )}
 
+      <section className="flex flex-col gap-4 border-t border-border-default pt-6">
+        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-h4">Редакторууд</h2>
+            <p className="text-body-sm text-text-secondary">Нийтлэл бичиж, нийтэлнэ. Хэрэг, харилцагч, баримт, нэхэмжлэхэд хандахгүй.</p>
+          </div>
+          <Button variant="secondary" size="md" onClick={() => setEditorOpen(true)}><PlusIcon size={18} />Шинэ редактор</Button>
+        </div>
+        {editors.isError ? (
+          <ErrorState message={editors.error instanceof ApiError ? editors.error.message : 'Редактор ачаалахад алдаа гарлаа'} onRetry={() => void editors.refetch()} />
+        ) : !editors.data ? (
+          <TableSkeleton rows={2} />
+        ) : editors.data.items.length === 0 ? (
+          <EmptyState title="Редактор бүртгэгдээгүй" description="Нийтлэл хариуцах хүнийг энд бүртгэнэ." />
+        ) : (
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeaderCell>Нэр</TableHeaderCell>
+                <TableHeaderCell>И-мэйл</TableHeaderCell>
+                <TableHeaderCell>Дүр</TableHeaderCell>
+                <TableHeaderCell>Бүртгэл</TableHeaderCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {editors.data.items.map((editor) => (
+                <TableRow key={editor.id}>
+                  <TableCell className="whitespace-nowrap text-body-sm-medium text-text-primary">{shortName(editor.firstName, editor.lastName)}</TableCell>
+                  <TableCell>{editor.email}</TableCell>
+                  <TableCell><Badge tone="new">{ROLE_LABELS[editor.role]}</Badge></TableCell>
+                  <TableCell>{editor.isActive ? <Badge tone="progress">Идэвхтэй</Badge> : <Badge tone="closed">Идэвхгүй</Badge>}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </section>
+
       <CreateUserModal open={createOpen} onOpenChange={setCreateOpen} role="LAWYER" onCreated={(created) => router.push(`/admin/lawyers/${created.id}`)} />
+      <CreateUserModal open={editorOpen} onOpenChange={setEditorOpen} role="EDITOR" onCreated={() => void editors.refetch()} />
     </div>
   );
 }

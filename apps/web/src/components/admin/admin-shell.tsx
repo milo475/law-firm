@@ -25,7 +25,7 @@ import { useUser } from '@/components/portal/user-context';
 import { BottomTabBar } from '@/components/ui/bottom-tab-bar';
 import { PortalHeader } from '@/components/ui/portal-header';
 import { Sidebar } from '@/components/ui/sidebar';
-import { isStaff } from '@/lib/admin';
+import { canOpenAdmin, handlesClientData } from '@/lib/admin';
 import { useDocumentRequestSummary } from '@/lib/document-requests';
 import { useInvoicePaymentSummary } from '@/lib/invoices';
 import { useMessageUnreadSummary } from '@/lib/messages';
@@ -38,6 +38,8 @@ interface NavEntry {
   label: string;
   icon: React.ReactNode;
   adminOnly?: boolean;
+  /** Shown to an EDITOR. Everything else in the panel is client work they have no part in. */
+  editor?: boolean;
 }
 
 const NAV: NavEntry[] = [
@@ -47,12 +49,12 @@ const NAV: NavEntry[] = [
   { href: '/admin/performance', label: 'Гүйцэтгэл', icon: <PerformanceIcon /> },
   { href: '/admin/clients', label: 'Харилцагчид', icon: <UsersIcon /> },
   { href: '/admin/lawyers', label: 'Хуульчид', icon: <BriefcaseIcon />, adminOnly: true },
-  { href: '/admin/posts', label: 'Нийтлэл', icon: <DocumentsIcon /> },
+  { href: '/admin/posts', label: 'Нийтлэл', icon: <DocumentsIcon />, editor: true },
   { href: '/admin/invoices', label: 'Нэхэмжлэх', icon: <InvoicesIcon /> },
   { href: '/admin/testimonials', label: 'Сэтгэгдэл', icon: <StarIcon /> },
   { href: '/admin/requests', label: 'Хүсэлтүүд', icon: <InboxIcon />, adminOnly: true },
   { href: '/admin/settings', label: 'Тохиргоо', icon: <SettingsIcon />, adminOnly: true },
-  { href: '/admin/profile', label: 'Профайл', icon: <ProfileIcon /> },
+  { href: '/admin/profile', label: 'Профайл', icon: <ProfileIcon />, editor: true },
 ];
 
 const TITLES: { match: (p: string) => boolean; title: string; back?: string }[] = [
@@ -84,12 +86,14 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useUser();
-  const allowed = isStaff(user.role);
+  const allowed = canOpenAdmin(user.role);
+  // An editor is staff, but none of these counters are theirs to fetch — the API answers 403.
+  const onCases = handlesClientData(user.role);
   // Submissions waiting for review, shown on the "Хэргүүд" menu item.
-  const requestSummary = useDocumentRequestSummary(allowed);
-  const messageSummary = useMessageUnreadSummary(allowed);
-  const paymentSummary = useInvoicePaymentSummary(allowed);
-  const taskSummary = useTaskSummary(allowed);
+  const requestSummary = useDocumentRequestSummary(onCases);
+  const messageSummary = useMessageUnreadSummary(onCases);
+  const paymentSummary = useInvoicePaymentSummary(onCases);
+  const taskSummary = useTaskSummary(onCases);
   // New service requests wait for an ADMIN decision; lawyers never see the list.
   const serviceRequestSummary = useServiceRequestSummary(allowed && user.role === 'ADMIN');
 
@@ -101,11 +105,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   if (!allowed) return null;
 
   const isAdmin = user.role === 'ADMIN';
+  const isEditor = user.role === 'EDITOR';
   const current = TITLES.find((t) => t.match(pathname)) ?? TITLES[0];
   const active = (href: string) => (href === '/admin' ? pathname === href : pathname === href || pathname.startsWith(`${href}/`));
   // Work waiting on cases: submissions to review + unread client messages.
   const pendingOnCases = (requestSummary.data?.total ?? 0) + (messageSummary.data?.total ?? 0);
-  const items = NAV.filter((item) => isAdmin || !item.adminOnly).map((item) => ({
+  const items = NAV.filter((item) => (isEditor ? item.editor : isAdmin || !item.adminOnly)).map((item) => ({
     ...item,
     active: active(item.href),
     ...(item.href === '/admin/cases' ? { count: pendingOnCases, countLabel: 'хянах баримт, уншаагүй мессеж' } : {}),

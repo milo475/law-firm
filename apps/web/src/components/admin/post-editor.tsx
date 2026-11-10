@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreatePostSchema, SlugSchema } from '@law-firm/shared/schemas';
 import { slugify } from '@law-firm/shared/utils';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
@@ -20,14 +20,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/toast';
 import { ApiError, api } from '@/lib/api';
+import type { PublicUser } from '@/lib/api';
 import type { ManagedPost, PostStatus } from '@/lib/admin';
 import { CATEGORY_LABELS, formatDate } from '@/lib/format';
+import { shortName } from '@/lib/utils';
 import { revalidateNews } from './revalidate';
 
 // Shared CreatePostSchema; slug may be left empty (derived from the title) and the cover is a plain URL string.
-const PostFormSchema = CreatePostSchema.omit({ status: true, publishedAt: true }).extend({
+const PostFormSchema = CreatePostSchema.omit({ status: true, publishedAt: true, authorId: true }).extend({
   slug: z.union([SlugSchema, z.literal('')]),
   coverImageUrl: z.string(),
+  // '' is a real answer: the post goes out without a name under it.
+  authorId: z.string(),
 });
 type PostFormValues = z.infer<typeof PostFormSchema>;
 
@@ -48,8 +52,21 @@ export function PostEditor({ post }: { post?: ManagedPost }) {
       content: post?.content ?? '',
       category: post?.category ?? 'NEWS',
       coverImageUrl: post?.coverImageUrl ?? '',
+      authorId: post?.author?.id ?? '',
     },
   });
+
+  // The byline can only be a lawyer — an editor signs the firm's work with the person who answers
+  // for it, and their own name never reaches the site.
+  const authors = useQuery({
+    queryKey: ['admin', 'post-authors'],
+    queryFn: () => api.get<PublicUser[]>('/posts/authors'),
+    staleTime: 5 * 60 * 1000,
+  });
+  const authorOptions = [
+    { value: '', label: 'Нэр харуулахгүй' },
+    ...(authors.data ?? []).map((lawyer) => ({ value: lawyer.id, label: shortName(lawyer.firstName, lawyer.lastName) })),
+  ];
   const content = watch('content');
   const coverImageUrl = watch('coverImageUrl');
   const titleField = register('title', {
@@ -79,6 +96,7 @@ export function PostEditor({ post }: { post?: ManagedPost }) {
         content: values.content,
         category: values.category,
         coverImageUrl: values.coverImageUrl || null,
+        authorId: values.authorId || null,
         status,
         ...(values.slug ? { slug: values.slug } : {}),
       };
@@ -140,6 +158,12 @@ export function PostEditor({ post }: { post?: ManagedPost }) {
             {post && <StatusBadge map={POST_STATUS_BADGE} status={post.status} />}
           </div>
           {post?.publishedAt && <p className="text-caption text-text-muted">Нийтэлсэн {formatDate(post.publishedAt, 'mn', true)} · {post.viewCount} үзсэн</p>}
+          {post?.createdBy && (
+            <p className="text-caption text-text-muted">
+              Бичсэн: {shortName(post.createdBy.firstName, post.createdBy.lastName)}
+              {post.updatedBy && post.updatedBy.id !== post.createdBy.id ? ` · Сүүлд зассан: ${shortName(post.updatedBy.firstName, post.updatedBy.lastName)}` : ''}
+            </p>
+          )}
           <Button size="md" disabled={save.isPending || uploadCover.isPending} onClick={submit('PUBLISHED')}>{isPublished ? 'Шинэчилж нийтлэх' : 'Нийтлэх'}</Button>
           <Button variant="secondary" size="md" disabled={save.isPending || uploadCover.isPending} onClick={submit('DRAFT')}>{isPublished ? 'Ноорог болгох' : 'Ноорог хадгалах'}</Button>
           {post && post.status !== 'ARCHIVED' && <Button variant="ghost" size="md" disabled={save.isPending} onClick={submit('ARCHIVED')}>Архивлах</Button>}
@@ -149,6 +173,16 @@ export function PostEditor({ post }: { post?: ManagedPost }) {
         <Card className="flex flex-col gap-5 p-6">
           <Controller control={control} name="category" render={({ field }) => (
             <Select label="Ангилал" required options={CATEGORY_OPTIONS} value={field.value} onValueChange={field.onChange} error={errors.category?.message} />
+          )} />
+          <Controller control={control} name="authorId" render={({ field }) => (
+            <Select
+              label="Зохиогчоор харуулах"
+              options={authorOptions}
+              value={field.value}
+              onValueChange={field.onChange}
+              helper="Сайт дээр энэ хуульчийн нэрээр гарна. Сонгохгүй бол нэр харагдахгүй."
+              error={errors.authorId?.message}
+            />
           )} />
           <Input
             label="Slug (URL)"

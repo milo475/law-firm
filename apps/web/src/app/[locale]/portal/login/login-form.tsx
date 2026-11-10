@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { canOpenAdmin } from '@/lib/admin';
 import { LoginSchema, type LoginInput } from '@law-firm/shared/schemas';
 import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -33,9 +34,11 @@ export function LoginForm() {
     try {
       const { user } = await api.post<{ user: { role: string } }>('/auth/login', values);
       const next = searchParams.get('next');
-      const isStaff = user.role === 'ADMIN' || user.role === 'LAWYER';
-      const safeNext = next && (next.startsWith('/portal') || (isStaff && next.startsWith('/admin'))) ? next : null;
-      router.replace(safeNext ?? (isStaff ? '/admin' : '/portal'));
+      // An editor has no dashboard and no portal: their work starts on the posts list. Where a
+      // `next` may lead is settled by the middleware, which redirects what this role cannot open.
+      const home = user.role === 'EDITOR' ? '/admin/posts' : canOpenAdmin(user.role) ? '/admin' : '/portal';
+      const safeNext = next && (next.startsWith('/portal') || (canOpenAdmin(user.role) && next.startsWith('/admin'))) ? next : null;
+      router.replace(safeNext ?? home);
       router.refresh();
     } catch (error) {
       const message = apiError(error, t('genericError'));
