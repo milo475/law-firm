@@ -46,7 +46,7 @@ async function FeaturedPost({ post, locale }: { post: PostListItem; locale: Loca
           <Link href={href} className="focus-ring rounded-sm hover:text-text-brand">{post.title}</Link>
         </h2>
         <p className="max-w-[560px] text-body text-text-secondary">{post.excerpt}</p>
-        <p className="text-caption text-text-muted">{shortName(post.author.firstName, post.author.lastName)} · {postMeta(post, locale, (count) => tCommon('views', { count }))}</p>
+        <p className="text-caption text-text-muted">{post.author ? `${shortName(post.author.firstName, post.author.lastName)} · ` : ''}{postMeta(post, locale, (count) => tCommon('views', { count }))}</p>
       </div>
     </article>
   );

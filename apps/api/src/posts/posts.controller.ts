@@ -19,12 +19,12 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Role } from '@law-firm/shared';
 import { err } from '../common/errors/app-error';
 import type { UploadedFile as UploadedFileShape } from '../documents/documents.service';
 import { StorageService } from '../storage/storage.service';
 import { contentMatchesMimeType } from '../common/utils/file-signature';
 import { CurrentUser, Public, Roles } from '../common/decorators';
+import { POST_MANAGER_ROLES } from '../common/permissions';
 import type { RequestUser } from '../common/types/request-user';
 import { CreatePostDto, PostManageQueryDto, PostQueryDto, UpdatePostDto } from './dto/posts.dto';
 import { PostsService } from './posts.service';
@@ -47,15 +47,15 @@ export class PostsController {
     return this.posts.findPublished(query);
   }
 
-  @Roles(Role.ADMIN, Role.LAWYER)
+  @Roles(...POST_MANAGER_ROLES)
   @Get('manage')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Удирдлагын жагсаалт — ноорог, архив орно (LAWYER → өөрийн л)' })
+  @ApiOperation({ summary: 'Удирдлагын жагсаалт — ноорог, архив орно (LAWYER → өөрийн л; ADMIN, EDITOR → бүгд)' })
   findForManagement(@Query() query: PostManageQueryDto, @CurrentUser() user: RequestUser) {
     return this.posts.findForManagement(query, user);
   }
 
-  @Roles(Role.ADMIN, Role.LAWYER)
+  @Roles(...POST_MANAGER_ROLES)
   @Get('manage/:id')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Засварлах нийтлэл (ямар ч төлөв; LAWYER → өөрийн л)' })
@@ -63,7 +63,7 @@ export class PostsController {
     return this.posts.findForManagementById(id, user);
   }
 
-  @Roles(Role.ADMIN, Role.LAWYER)
+  @Roles(...POST_MANAGER_ROLES)
   @Post('cover')
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('file', { limits: { fileSize: MAX_COVER_BYTES } }))
@@ -85,6 +85,14 @@ export class PostsController {
     return { url };
   }
 
+  @Roles(...POST_MANAGER_ROLES)
+  @Get('authors')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Зохиогчоор сонгож болох хуульчид (нийтлэлийн гарын үсэг)' })
+  authors() {
+    return this.posts.authors();
+  }
+
   @Public()
   @Get(':slug')
   @ApiOperation({ summary: 'Нийтлэлийн дэлгэрэнгүй (slug) — viewCount нэмэгдэнэ' })
@@ -92,7 +100,7 @@ export class PostsController {
     return this.posts.findPublishedBySlug(slug);
   }
 
-  @Roles(Role.ADMIN, Role.LAWYER)
+  @Roles(...POST_MANAGER_ROLES)
   @Post()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Нийтлэл үүсгэх' })
@@ -100,15 +108,15 @@ export class PostsController {
     return this.posts.create(dto, user);
   }
 
-  @Roles(Role.ADMIN, Role.LAWYER)
+  @Roles(...POST_MANAGER_ROLES)
   @Patch(':id')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Нийтлэл засах (LAWYER → зөвхөн өөрийнх)' })
+  @ApiOperation({ summary: 'Нийтлэл засах (LAWYER → зөвхөн өөрийнх; ADMIN, EDITOR → бүгд)' })
   update(@Param('id') id: string, @Body() dto: UpdatePostDto, @CurrentUser() user: RequestUser) {
     return this.posts.update(id, dto, user);
   }
 
-  @Roles(Role.ADMIN, Role.LAWYER)
+  @Roles(...POST_MANAGER_ROLES)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth()

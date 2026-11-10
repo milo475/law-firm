@@ -6,6 +6,7 @@
  *  - on 401 it calls POST /auth/refresh once and retries the original request
  *    (also for GET /auth/me: a failed refresh clears the session cookies, so the login redirect cannot loop)
  */
+import type { Role } from '@law-firm/shared';
 
 /**
  * A failed response. `message` is the API's Mongolian wording; `code` is the stable identity of the
@@ -170,7 +171,7 @@ export interface PublicUser {
   firstName: string;
   lastName: string;
   avatarUrl: string | null;
-  role: 'ADMIN' | 'LAWYER' | 'CLIENT';
+  role: Role;
 }
 
 export interface PostListItem {
@@ -183,7 +184,8 @@ export interface PostListItem {
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
   publishedAt: string | null;
   viewCount: number;
-  author: PublicUser;
+  /** The byline: a lawyer, or nobody when the post was published without a name. */
+  author: PublicUser | null;
 }
 
 export interface PostDetail extends PostListItem {
@@ -206,7 +208,7 @@ export interface CurrentUser {
   phone: string | null;
   firstName: string;
   lastName: string;
-  role: 'ADMIN' | 'LAWYER' | 'CLIENT';
+  role: Role;
   avatarUrl: string | null;
   lastLoginAt: string | null;
   createdAt?: string;

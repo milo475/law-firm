@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Role } from '@law-firm/shared';
 import { CurrentUser, Roles } from '../common/decorators';
+import { CASE_PARTICIPANT_ROLES } from '../common/permissions';
 import type { RequestUser } from '../common/types/request-user';
 import { CaseEventsService } from './case-events.service';
 import { CasesService } from './cases.service';
@@ -23,6 +24,7 @@ export class CasesController {
     private readonly events: CaseEventsService,
   ) {}
 
+  @Roles(...CASE_PARTICIPANT_ROLES)
   @Get()
   @ApiOperation({ summary: 'Хэргүүд (CLIENT → өөрийн, LAWYER → багийн гишүүн хэргүүд, ADMIN → бүгд)' })
   findAll(@Query() query: CaseQueryDto, @CurrentUser() user: RequestUser) {
@@ -36,6 +38,7 @@ export class CasesController {
     return this.cases.create(dto, user);
   }
 
+  @Roles(...CASE_PARTICIPANT_ROLES)
   @Get(':id')
   @ApiOperation({ summary: 'Хэргийн дэлгэрэнгүй (scope шалгана)' })
   findOne(@Param('id') id: string, @CurrentUser() user: RequestUser) {
@@ -56,6 +59,7 @@ export class CasesController {
     return this.cases.close(id, dto, user);
   }
 
+  @Roles(...CASE_PARTICIPANT_ROLES)
   @Get(':id/events')
   @ApiOperation({ summary: 'Хэргийн явцын түүх (CLIENT → зөвхөн харагдах event)' })
   findEvents(@Param('id') id: string, @CurrentUser() user: RequestUser) {

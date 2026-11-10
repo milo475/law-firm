@@ -1108,6 +1108,7 @@
     "post": {
       "notFound": "未找到该文章。",
       "editOwnOnly": "您只能编辑自己的文章。",
+      "authorNotLawyer": "只能选择在职律师作为作者。",
       "slugUnavailable": "无法为该标题生成网址。",
       "imageRequired": "请选择图片。",
       "imageTooLarge": "图片不得超过 5MB。",

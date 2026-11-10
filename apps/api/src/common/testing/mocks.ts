@@ -104,6 +104,7 @@ export type MailMock = ReturnType<typeof createMailMock>;
 
 export const ADMIN_USER: RequestUser = { id: 'admin-id', email: 'admin@lawfirm.mn', role: 'ADMIN' };
 export const LAWYER_USER: RequestUser = { id: 'lawyer-id', email: 'lawyer@lawfirm.mn', role: 'LAWYER' };
+export const EDITOR_USER: RequestUser = { id: 'editor-id', email: 'editor@lawfirm.mn', role: 'EDITOR' };
 export const CLIENT_USER: RequestUser = { id: 'client-id', email: 'client@example.mn', role: 'CLIENT' };
 export const OTHER_CLIENT: RequestUser = { id: 'other-client-id', email: 'other@example.mn', role: 'CLIENT' };
 

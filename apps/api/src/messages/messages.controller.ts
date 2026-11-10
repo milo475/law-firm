@@ -1,12 +1,14 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CurrentUser } from '../common/decorators';
+import { CurrentUser, Roles } from '../common/decorators';
+import { CASE_PARTICIPANT_ROLES } from '../common/permissions';
 import type { RequestUser } from '../common/types/request-user';
 import { MessageListQueryDto, SendMessageDto } from './dto/messages.dto';
 import { MessagesService } from './messages.service';
 
 @ApiTags('messages')
 @ApiBearerAuth()
+@Roles(...CASE_PARTICIPANT_ROLES)
 @Controller()
 export class MessagesController {
   constructor(private readonly messages: MessagesService) {}

@@ -131,6 +131,7 @@ export const ERROR_CODES = [
   // ── Articles ────────────────────────────────────────────────────────────────
   'post.notFound',
   'post.editOwnOnly',
+  'post.authorNotLawyer',
   'post.slugUnavailable',
   'post.imageRequired',
   'post.imageTooLarge',

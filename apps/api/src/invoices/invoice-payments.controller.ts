@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestj
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Role } from '@law-firm/shared';
 import { CurrentUser, Roles } from '../common/decorators';
+import { CASE_PARTICIPANT_ROLES } from '../common/permissions';
 import type { RequestUser } from '../common/types/request-user';
 import { MarkPaymentDto, RejectPaymentDto } from './dto/invoices.dto';
 import { InvoicePaymentsService } from './invoice-payments.service';
@@ -13,6 +14,7 @@ import { InvoicePaymentsService } from './invoice-payments.service';
 export class InvoicePaymentsController {
   constructor(private readonly payments: InvoicePaymentsService) {}
 
+  @Roles(...CASE_PARTICIPANT_ROLES)
   @Get('payment-summary')
   @ApiOperation({ summary: 'Баталгаажуулалт хүлээж буй төлбөрүүд (хэргийн scope-оор)' })
   summary(@CurrentUser() user: RequestUser) {

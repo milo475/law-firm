@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { Role } from '../generated/prisma/enums.js';
 import { EmailSchema, MN_PHONE_REGEX, PasswordSchema, PhoneSchema } from './common.js';
 
 /** The languages a person can be written to in; mirrors the web app's routing locales. */
@@ -70,7 +71,7 @@ export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
 export interface AccessTokenPayload {
   sub: string;
   email: string;
-  role: 'ADMIN' | 'LAWYER' | 'CLIENT';
+  role: Role;
   iat?: number;
   exp?: number;
 }

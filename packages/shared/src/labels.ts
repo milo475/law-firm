@@ -22,6 +22,7 @@ import type {
 export const ROLE_LABELS: Record<Role, string> = {
   ADMIN: 'Админ',
   LAWYER: 'Хуульч',
+  EDITOR: 'Редактор',
   CLIENT: 'Харилцагч',
 };
 

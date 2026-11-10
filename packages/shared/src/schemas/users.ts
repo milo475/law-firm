@@ -69,7 +69,7 @@ export const CreateUserSchema = z.object({
 });
 
 /** Roles an admin can create from the admin panel (admins are provisioned separately). */
-export const StaffCreatableRoleSchema = z.enum(['LAWYER', 'CLIENT'], { message: 'Зөвхөн хуульч эсвэл харилцагч үүсгэх боломжтой' });
+export const StaffCreatableRoleSchema = z.enum(['LAWYER', 'EDITOR', 'CLIENT'], { message: 'Зөвхөн хуульч, редактор эсвэл харилцагч үүсгэх боломжтой' });
 
 /** POST /users (ADMIN) — when `password` is omitted the API generates a temporary one and returns it once. */
 export const AdminCreateUserSchema = z.object({

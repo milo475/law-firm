@@ -58,6 +58,8 @@ export * from './utils/case-number.js';
 export * from './utils/test-data.js';
 export * from './utils/sentry-scrub.js';
 
+import type { Role } from './generated/prisma/enums.js';
+
 /** A User with secrets stripped — the shape returned by the API. */
 export type SafeUser = {
   id: string;
@@ -65,7 +67,7 @@ export type SafeUser = {
   phone: string | null;
   firstName: string;
   lastName: string;
-  role: 'ADMIN' | 'LAWYER' | 'CLIENT';
+  role: Role;
   avatarUrl: string | null;
   isActive: boolean;
   /** 'mn' | 'en' | 'zh' — the language this person reads and is written to in. */

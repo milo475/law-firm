@@ -16,6 +16,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MAX_DOCUMENT_REQUEST_FILES, MAX_DOCUMENT_SIZE_BYTES, Role } from '@law-firm/shared';
 import { CurrentUser, Roles } from '../common/decorators';
+import { CASE_PARTICIPANT_ROLES } from '../common/permissions';
 import type { RequestUser } from '../common/types/request-user';
 import type { UploadedFile } from '../documents/documents.service';
 import { DocumentRequestsService } from './document-requests.service';
@@ -32,6 +33,7 @@ import {
 export class DocumentRequestsController {
   constructor(private readonly requests: DocumentRequestsService) {}
 
+  @Roles(...CASE_PARTICIPANT_ROLES)
   @Get('cases/:caseId/document-requests')
   @ApiOperation({ summary: 'Хэргийн баримтын хүсэлтүүд, хавсаргасан файлтай нь (role бүр өөрийн scope-оор)' })
   findByCase(@Param('caseId') caseId: string, @Query() query: DocumentRequestQueryDto, @CurrentUser() user: RequestUser) {
@@ -45,6 +47,7 @@ export class DocumentRequestsController {
     return this.requests.create(caseId, dto, user);
   }
 
+  @Roles(...CASE_PARTICIPANT_ROLES)
   @Get('document-requests/summary')
   @ApiOperation({ summary: 'Хүлээгдэж буй хүсэлтийн тоо хэргээр (CLIENT → PENDING+REJECTED, ажилтан → SUBMITTED+UNDER_REVIEW)' })
   summary(@CurrentUser() user: RequestUser) {

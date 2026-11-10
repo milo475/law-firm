@@ -1108,6 +1108,7 @@
     "post": {
       "notFound": "That article was not found.",
       "editOwnOnly": "You can only edit your own articles.",
+      "authorNotLawyer": "Only an active lawyer can be named as the author.",
       "slugUnavailable": "A web address could not be generated for this title.",
       "imageRequired": "Please choose an image.",
       "imageTooLarge": "The image may not be larger than 5MB.",

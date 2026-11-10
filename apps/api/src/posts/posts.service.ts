@@ -1,7 +1,6 @@
-import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import {
   PostStatus,
-  Role,
   slugify,
   type CreatePostInput,
   type Paginated,
@@ -11,6 +10,7 @@ import {
   type UpdatePostInput,
 } from '@law-firm/shared';
 import { err } from '../common/errors/app-error';
+import { BYLINE_ROLE, managesEveryPost } from '../common/permissions';
 import type { RequestUser } from '../common/types/request-user';
 import { paginate, skipTake } from '../common/utils/pagination';
 import { PUBLIC_USER_SELECT } from '../common/utils/safe-user';
@@ -30,6 +30,13 @@ const POST_LIST_SELECT = {
   updatedAt: true,
   author: { select: PUBLIC_USER_SELECT },
 } satisfies Prisma.PostSelect;
+
+/** The editor's view of one post: the byline plus who actually typed and last saved it. */
+const POST_MANAGE_INCLUDE = {
+  author: { select: PUBLIC_USER_SELECT },
+  createdBy: { select: PUBLIC_USER_SELECT },
+  updatedBy: { select: PUBLIC_USER_SELECT },
+} satisfies Prisma.PostInclude;
 
 @Injectable()
 export class PostsService {
@@ -73,11 +80,11 @@ export class PostsService {
     return { ...post, viewCount: post.viewCount + 1 };
   }
 
-  // ─── Management (ADMIN / LAWYER) ───────────────────────────────────────────
+  // ─── Management (ADMIN / EDITOR / LAWYER) ──────────────────────────────────
 
   async findForManagement(query: PostManageQueryInput, user: RequestUser): Promise<Paginated<unknown>> {
     const where: Prisma.PostWhereInput = {
-      ...(user.role === Role.LAWYER ? { authorId: user.id } : {}),
+      ...(managesEveryPost(user.role) ? {} : this.ownPostsClause(user.id)),
       ...(query.status ? { status: query.status } : {}),
       ...(query.category ? { category: query.category } : {}),
       ...(query.search ? this.searchClause(query.search) : {}),
@@ -106,9 +113,11 @@ export class PostsService {
         category: input.category,
         status: input.status,
         publishedAt: this.resolvePublishedAt(input.status, input.publishedAt ?? null),
-        authorId: user.id,
+        authorId: await this.resolveByline(input.authorId, user),
+        createdById: user.id,
+        updatedById: user.id,
       },
-      include: { author: { select: PUBLIC_USER_SELECT } },
+      include: POST_MANAGE_INCLUDE,
     });
   }
 
@@ -128,18 +137,32 @@ export class PostsService {
     if (input.slug && input.slug !== existing.slug) {
       data.slug = await this.uniqueSlug(input.slug);
     }
+    if (input.authorId !== undefined) {
+      const authorId = await this.resolveByline(input.authorId, user);
+      data.author = authorId ? { connect: { id: authorId } } : { disconnect: true };
+    }
+    data.updatedBy = { connect: { id: user.id } };
 
     return this.prisma.post.update({
       where: { id },
       data,
-      include: { author: { select: PUBLIC_USER_SELECT } },
+      include: POST_MANAGE_INCLUDE,
     });
   }
 
   /** Full post (any status) for the editor; LAWYER only their own. */
   async findForManagementById(id: string, user: RequestUser) {
     await this.findOwnedOrFail(id, user);
-    return this.prisma.post.findUnique({ where: { id }, include: { author: { select: PUBLIC_USER_SELECT } } });
+    return this.prisma.post.findUnique({ where: { id }, include: POST_MANAGE_INCLUDE });
+  }
+
+  /** The people a post may be signed with: the firm's active lawyers, nobody else. */
+  authors() {
+    return this.prisma.user.findMany({
+      where: { role: BYLINE_ROLE, isActive: true },
+      select: PUBLIC_USER_SELECT,
+      orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
+    });
   }
 
   async remove(id: string, user: RequestUser): Promise<void> {
@@ -152,10 +175,30 @@ export class PostsService {
   private async findOwnedOrFail(id: string, user: RequestUser) {
     const post = await this.prisma.post.findUnique({ where: { id } });
     if (!post) throw new NotFoundException(err('post.notFound', 'Нийтлэл олдсонгүй'));
-    if (user.role !== Role.ADMIN && post.authorId !== user.id) {
+    if (!managesEveryPost(user.role) && post.authorId !== user.id && post.createdById !== user.id) {
       throw new ForbiddenException(err('post.editOwnOnly', 'Та зөвхөн өөрийн нийтлэлийг засах боломжтой'));
     }
     return post;
+  }
+
+  /** A lawyer's own posts: the ones signed with their name and the ones they typed. */
+  private ownPostsClause(userId: string): Prisma.PostWhereInput {
+    return { OR: [{ authorId: userId }, { createdById: userId }] };
+  }
+
+  /**
+   * The byline the caller asked for. Left out entirely it falls back to the writer, but only when
+   * the writer is a lawyer — an editor who says nothing publishes a post with no name under it
+   * rather than their own.
+   */
+  private async resolveByline(authorId: string | null | undefined, user: RequestUser): Promise<string | null> {
+    if (authorId === undefined) return user.role === BYLINE_ROLE ? user.id : null;
+    if (authorId === null) return null;
+    const author = await this.prisma.user.findUnique({ where: { id: authorId }, select: { role: true, isActive: true } });
+    if (!author || !author.isActive || author.role !== BYLINE_ROLE) {
+      throw new BadRequestException(err('post.authorNotLawyer', 'Зохиогчоор зөвхөн идэвхтэй хуульчийг сонгоно'));
+    }
+    return authorId;
   }
 
   private searchClause(search: string): Prisma.PostWhereInput {

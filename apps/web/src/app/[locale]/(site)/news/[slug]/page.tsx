@@ -100,7 +100,8 @@ export default async function PostPage({ params }: Params) {
   if (!post) notFound();
   const related = await loadRelated(post.category, slug);
 
-  const author = shortName(post.author.firstName, post.author.lastName);
+  // A post may carry no byline: an editor writes under a lawyer's name or under none at all.
+  const author = post.author ? shortName(post.author.firstName, post.author.lastName) : null;
   const minutes = readingMinutes(post.content);
   const categoryLabel = tCategory(post.category);
   const tag = `#${categoryLabel.toLowerCase().replace(/\s+/g, '_')}`;
@@ -114,11 +115,13 @@ export default async function PostPage({ params }: Params) {
           <p className="text-overline text-text-accent">{categoryLabel}</p>
           <h1 className="text-h2 text-text-brand md:text-h1">{post.title}</h1>
           <div className="flex items-center gap-3 pt-1 md:gap-4 md:pt-2">
-            <Avatar size="md" initials={initials(post.author.firstName, post.author.lastName)} src={post.author.avatarUrl} className="size-10 text-caption md:size-12 md:text-body-medium" />
+            {post.author ? (
+              <Avatar size="md" initials={initials(post.author.firstName, post.author.lastName)} src={post.author.avatarUrl} className="size-10 text-caption md:size-12 md:text-body-medium" />
+            ) : null}
             <div className="flex flex-col gap-0.5">
-              <p className="text-body-sm-medium text-text-primary md:text-body-medium">{author}</p>
+              {author ? <p className="text-body-sm-medium text-text-primary md:text-body-medium">{author}</p> : null}
               <p className="text-caption text-text-muted md:text-body-sm md:font-normal">
-                <span className="hidden md:inline">{ROLE_LABELS[post.author.role]} · {formatDateLong(post.publishedAt, locale as Locale)}</span>
+                <span className="hidden md:inline">{post.author ? `${ROLE_LABELS[post.author.role]} · ` : ''}{formatDateLong(post.publishedAt, locale as Locale)}</span>
                 <span className="md:hidden">{formatDate(post.publishedAt, locale as Locale)}</span>
                 {' · '}{t('readingTime', { minutes })}
               </p>

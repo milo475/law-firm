@@ -2,6 +2,7 @@ import { Body, Controller, Get, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Role, type BankAccountSettingsResponse, type FirmSettingsResponse } from '@law-firm/shared';
 import { CurrentUser, Public, Roles } from '../common/decorators';
+import { CASE_PARTICIPANT_ROLES } from '../common/permissions';
 import type { RequestUser } from '../common/types/request-user';
 import { UpdateBankAccountDto, UpdateFirmDto } from './dto/settings.dto';
 import { SettingsService } from './settings.service';
@@ -12,6 +13,7 @@ import { SettingsService } from './settings.service';
 export class SettingsController {
   constructor(private readonly settings: SettingsService) {}
 
+  @Roles(...CASE_PARTICIPANT_ROLES)
   @Get('bank-account')
   @ApiOperation({ summary: 'Нэхэмжлэхийн төлбөр шилжүүлэх данс (нэвтэрсэн бүх хэрэглэгч)' })
   bankAccount(): Promise<BankAccountSettingsResponse> {

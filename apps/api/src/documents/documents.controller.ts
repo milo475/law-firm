@@ -15,6 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { MAX_DOCUMENT_SIZE_BYTES, Role } from '@law-firm/shared';
 import { CurrentUser, Roles } from '../common/decorators';
+import { CASE_PARTICIPANT_ROLES } from '../common/permissions';
 import type { RequestUser } from '../common/types/request-user';
 import { DocumentsService, type UploadedFile as UploadedFileShape } from './documents.service';
 import { UploadDocumentDto } from './dto/documents.dto';
@@ -25,12 +26,14 @@ import { UploadDocumentDto } from './dto/documents.dto';
 export class DocumentsController {
   constructor(private readonly documents: DocumentsService) {}
 
+  @Roles(...CASE_PARTICIPANT_ROLES)
   @Get('cases/:id/documents')
   @ApiOperation({ summary: 'Хэргийн баримтууд (CLIENT → зөвхөн харагдах баримт)' })
   findByCase(@Param('id') caseId: string, @CurrentUser() user: RequestUser) {
     return this.documents.findByCase(caseId, user);
   }
 
+  @Roles(...CASE_PARTICIPANT_ROLES)
   @Post('cases/:id/documents')
   @UseInterceptors(FileInterceptor('file', { limits: { fileSize: MAX_DOCUMENT_SIZE_BYTES } }))
   @ApiConsumes('multipart/form-data')
@@ -54,6 +57,7 @@ export class DocumentsController {
     return this.documents.upload(caseId, file, dto, user);
   }
 
+  @Roles(...CASE_PARTICIPANT_ROLES)
   @Get('documents/:id/download')
   @ApiOperation({ summary: 'Баримт татах presigned URL (5 мин хүчинтэй); ?inline=true → урьдчилан харах' })
   @ApiQuery({ name: 'inline', required: false, type: Boolean })

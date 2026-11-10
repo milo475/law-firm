@@ -21,6 +21,9 @@ export const CreatePostSchema = z.object({
   category: PostCategorySchema,
   status: PostStatusSchema.default('DRAFT'),
   publishedAt: DateInputSchema.optional(),
+  /// The lawyer shown as the author on the public site. Null prints no byline — an editor's own
+  /// name never appears there, so leaving this empty is a valid answer, not a missing field.
+  authorId: z.uuid('Зохиогч буруу байна').nullable().optional(),
 });
 export type CreatePostInput = z.infer<typeof CreatePostSchema>;
 

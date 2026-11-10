@@ -1,7 +1,8 @@
 // Types and helpers for the staff admin panel (/admin). Response shapes mirror apps/api.
+import type { Role } from '@law-firm/shared';
 import type { PublicUser } from './api';
 
-export type Role = 'ADMIN' | 'LAWYER' | 'CLIENT';
+export type { Role };
 export type CaseStatus = 'NEW' | 'IN_PROGRESS' | 'WAITING' | 'CLOSED';
 export type CaseType = 'CIVIL' | 'CRIMINAL' | 'FAMILY' | 'BUSINESS' | 'LABOR' | 'REAL_ESTATE' | 'OTHER';
 export type CaseEventType = 'NOTE' | 'HEARING' | 'MEETING' | 'DEADLINE' | 'STATUS_CHANGE' | 'DOCUMENT';

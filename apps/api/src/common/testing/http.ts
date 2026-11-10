@@ -1,6 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable, type INestApplication, type ModuleMetadata } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
+import { Role } from '@law-firm/shared';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { AllExceptionsFilter } from '../filters/http-exception.filter';
 import { RolesGuard } from '../guards/roles.guard';
@@ -14,8 +15,9 @@ class HeaderAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<RequestWithUser>();
     const role = request.header(TEST_ROLE_HEADER);
-    if (role === 'ADMIN' || role === 'LAWYER' || role === 'CLIENT') {
-      request.user = { id: `${role.toLowerCase()}-id`, email: `${role.toLowerCase()}@test.mn`, role };
+    if (role && role in Role) {
+      const named = role as Role;
+      request.user = { id: `${named.toLowerCase()}-id`, email: `${named.toLowerCase()}@test.mn`, role: named };
     }
     return true;
   }

@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Role } from '@law-firm/shared';
 import { CurrentUser, Roles } from '../common/decorators';
+import { CASE_PARTICIPANT_ROLES } from '../common/permissions';
 import type { RequestUser } from '../common/types/request-user';
 import { CreateInvoiceDto, InvoiceQueryDto, UpdateInvoiceDto } from './dto/invoices.dto';
 import { InvoicesService } from './invoices.service';
@@ -12,6 +13,7 @@ import { InvoicesService } from './invoices.service';
 export class InvoicesController {
   constructor(private readonly invoices: InvoicesService) {}
 
+  @Roles(...CASE_PARTICIPANT_ROLES)
   @Get()
   @ApiOperation({ summary: 'Нэхэмжлэхүүд (хэргийн scope-оор)' })
   findAll(@Query() query: InvoiceQueryDto, @CurrentUser() user: RequestUser) {
@@ -25,6 +27,7 @@ export class InvoicesController {
     return this.invoices.create(dto, user);
   }
 
+  @Roles(...CASE_PARTICIPANT_ROLES)
   @Get(':id')
   @ApiOperation({ summary: 'Нэхэмжлэхийн дэлгэрэнгүй' })
   findOne(@Param('id') id: string, @CurrentUser() user: RequestUser) {
