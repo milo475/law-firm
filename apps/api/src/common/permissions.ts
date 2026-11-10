@@ -24,9 +24,6 @@ export const CLIENT_DATA_ROLES: readonly Role[] = [Role.ADMIN, Role.LAWYER];
  */
 export const CASE_PARTICIPANT_ROLES = [Role.ADMIN, Role.LAWYER, Role.CLIENT] as const;
 
-/** Who may open the admin panel at all (the portal is for clients). */
-export const STAFF_ROLES: readonly Role[] = [Role.ADMIN, Role.LAWYER, Role.EDITOR];
-
 /** Who may write, publish and delete posts. For an EDITOR this is the whole job. */
 export const POST_MANAGER_ROLES = [Role.ADMIN, Role.LAWYER, Role.EDITOR] as const;
 

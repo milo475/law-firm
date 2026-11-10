@@ -2,8 +2,8 @@
  * Captures desktop (1440) + mobile (390) screenshots of every page into screenshots/.
  * Run: pnpm --filter @law-firm/web e2e:screenshots
  */
-import { test } from '@playwright/test';
-import { ADMIN, API_URL, login } from './fixtures';
+import { expect, test } from '@playwright/test';
+import { ADMIN, API_URL, apiAs, login } from './fixtures';
 
 const PUBLIC_PAGES: [string, string][] = [
   ['home', '/'],
@@ -176,5 +176,24 @@ test.describe('screenshots', () => {
       await page.screenshot({ path: `screenshots/admin-request-assign.${suffix}.png` });
       await page.keyboard.press('Escape');
     }
+  });
+
+  /** The same panel seen by an editor: two menu entries, the posts work and nothing else. */
+  test('editor pages', async ({ page }, testInfo) => {
+    const suffix = testInfo.project.name;
+    const admin = await apiAs(ADMIN);
+    const editor = { identifier: `e2e.editor.shot.${Date.now().toString(36)}@lawfirm.mn`, password: 'Editor123!' };
+    const created = await admin.post('/users', {
+      data: { email: editor.identifier, firstName: 'Сараа', lastName: 'Болд', role: 'EDITOR', password: editor.password },
+    });
+    expect(created.status()).toBe(201);
+
+    await login(page, editor, /\/admin\/posts$/);
+    await page.waitForTimeout(1200);
+    await page.screenshot({ path: `screenshots/editor-posts.${suffix}.png`, fullPage: true });
+
+    await page.goto('/admin/posts/new', { waitUntil: 'load' });
+    await page.waitForTimeout(1200);
+    await page.screenshot({ path: `screenshots/editor-post-new.${suffix}.png`, fullPage: true });
   });
 });

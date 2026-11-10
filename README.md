@@ -1,6 +1,6 @@
 # Strategy Law Firm — вэб сайт, харилцагчийн портал, админ самбар
 
-Монголын хуулийн фирмийн нийтийн вэб сайт, харилцагчийн портал болон ажилтны (ADMIN / LAWYER) самбарын monorepo.
+Монголын хуулийн фирмийн нийтийн вэб сайт, харилцагчийн портал болон ажилтны (ADMIN / LAWYER / EDITOR) самбарын monorepo.
 UI-ийн бүх текст монгол хэлээр, код болон comment англиар.
 
 | Хэсэг | Технологи | Порт |
@@ -29,7 +29,7 @@ pnpm dev                        # web :3001 + api :4000 хамт асна (3000-
 
 - Вэб сайт: <http://localhost:3001>
 - Портал: <http://localhost:3001/portal>
-- Админ самбар: <http://localhost:3001/admin> (ADMIN, LAWYER-ээр нэвтэрнэ)
+- Админ самбар: <http://localhost:3001/admin> (ADMIN, LAWYER, EDITOR-ээр нэвтэрнэ)
 - API: <http://localhost:4000>, Swagger: <http://localhost:4000/docs> (зөвхөн dev)
 - MinIO console: <http://localhost:9001> (minioadmin / minioadmin)
 
@@ -139,7 +139,7 @@ law-firm/
 │   │   └── src/
 │   │       ├── auth/            login / register / refresh (rotation) / logout / me, JWT strategy
 │   │       ├── users/           staff жагсаалт/шүүлт, ADMIN үүсгэх (түр нууц үг)/засах, PATCH /users/me, /users/me/password
-│   │       ├── posts/           public list + slug (viewCount++), admin/lawyer CRUD, /posts/manage
+│   │       ├── posts/           public list + slug (viewCount++), ADMIN/EDITOR/LAWYER CRUD, /posts/manage, /posts/authors
 │   │       ├── lawyers/         public хуульчдын профайл + /lawyers/:userId/profile удирдлага
 │   │       ├── cases/           scope: CLIENT→өөрийн, LAWYER→хариуцсан, ADMIN→бүгд; staff CRUD, events, STATUS_CHANGE
 │   │       ├── documents/       multipart upload → R2/MinIO, presigned download (scope + visibility), DELETE
@@ -175,7 +175,7 @@ law-firm/
 │           ├── content/         services.ts (CaseType-тэй уялдана), faq.ts, testimonials.ts
 │           ├── lib/api.ts       fetch wrapper (cookie credentials, 401 → refresh → retry)
 │           ├── lib/api.server.ts  SSR-д cookie дамжуулдаг хувилбар
-│           └── middleware.ts    /portal/*, /admin/* хамгаалалт; CLIENT → /portal, ADMIN/LAWYER → /admin
+│           └── middleware.ts    /portal/*, /admin/* хамгаалалт; CLIENT → /portal, ADMIN/LAWYER → /admin, EDITOR → /admin/posts
 └── packages/shared/
     ├── prisma/schema.prisma     бүх модель, enum, index
     ├── prisma/seed.ts           argon2 hash-тай seed (идемпотент)
@@ -227,19 +227,54 @@ P2025 → 404 `data.notFound`, бусад → 500 `http.serverError` (stack ну
 
 ## 4. Админ самбар (`/admin`)
 
-ADMIN болон LAWYER портал login-оор нэвтэрмэгц `/admin` руу орно. CLIENT `/admin/*` руу орвол `/portal` руу,
-нэвтрээгүй хэрэглэгч `/portal/login?next=…` руу шилжинэ. Middleware нь `access_token`-ийн role claim-ийг
-зөвхөн чиглүүлэхэд ашигладаг; эрхийн жинхэнэ шалгалт API дээр явагдана.
+ADMIN болон LAWYER портал login-оор нэвтэрмэгц `/admin` руу, EDITOR `/admin/posts` руу орно. CLIENT `/admin/*`
+руу орвол `/portal` руу, нэвтрээгүй хэрэглэгч `/portal/login?next=…` руу шилжинэ. Middleware нь
+`access_token`-ийн role claim-ийг зөвхөн чиглүүлэхэд ашигладаг; эрхийн жинхэнэ шалгалт API дээр явагдана.
 
 ### Эрхийн дүрэм
 
 - **ADMIN** бүх хэрэг, харилцагч, хуульч, нийтлэл, нэхэмжлэх, хүсэлтийг удирдана.
+- **EDITOR** (редактор) зөвхөн нийтлэл дээр ажиллана: хэн бичсэнээс үл хамааран бүгдийг засах, устгах,
+  батлуулалгүйгээр нийтлэх, ковер зураг оруулах, өөрийн профайл/нууц үгээ удирдах. Хэрэг, харилцагч,
+  баримт, нэхэмжлэх, захидал, даалгавар, сэтгэгдэл, хуульчийн профайл, фирмийн тохиргоо, үйлдлийн
+  бүртгэл — бүгд **403**. `/portal` руу ч орохгүй.
 - **LAWYER** зөвхөн өөрийн багийн гишүүн болсон хэрэг, түүний үйл явдал, баримт, нэхэмжлэхийг удирдана (8-р хэсэг).
   Шинэ хэрэг үүсгэхдээ зөвхөн өөрийгөө хариуцагчаар сонгоно. Харилцагчдыг зөвхөн харна, нийтлэлээс өөрийнхөө нийтлэлийг л засна.
 - Хэргийн үндсэн мэдээлэл, төлөв, багийг зөвхөн ахлах хуульч (LEAD) эсвэл ADMIN өөрчилнө. Ахлахыг ADMIN «Тойм»-оос,
   эсвэл одоогийн ахлах хуульч «Баг» табаас шилжүүлнэ.
 - API дээр global `RolesGuard` + `CasesService`-ийн хэргийн хандалтын шалгалт (CLIENT scope-ийн логикийг дахин ашигладаг).
   Бүх POST/PATCH/DELETE хүсэлт `AuditLog`-д бичигдэнэ.
+- Эрхийн шийдвэрүүд `apps/api/src/common/permissions.ts`-д төвлөрнө (`CLIENT_DATA_ROLES`,
+  `CASE_PARTICIPANT_ROLES`, `POST_MANAGER_ROLES`, `managesEveryPost()`). Маршрут бүр дүрээ **нэрлэж**
+  бичдэг — бүлэгт багтсанаар эрх олдохгүй.
+- `apps/api/src/common/editor-access.spec.ts` нь Nest-ийн модулийн графаас **бүх** маршрутыг гаргаж аваад
+  EDITOR-ээр дуудаж, цагаан жагсаалтаас гадуурх бүгд 403 буцаахыг шалгана. Тиймээс **хожим нэмэгдэх
+  endpoint автоматаар** энэ шалгалтад орно.
+
+### Нийтлэлийн зохиогч
+
+Нийтлэл дээр **гурван хүн** бүртгэгдэнэ:
+
+| Талбар | Утга |
+| --- | --- |
+| `authorId` | Сайт дээр харагдах зохиогч — хариуцлага хүлээх **хуульч**. Хоосон бол нэр огт харагдахгүй |
+| `createdById` | Хэн бичсэн (редактор байж болно) |
+| `updatedById` | Хэн сүүлд хадгалсан |
+
+Редактор «Зохиогчоор харуулах»-аас хуульч сонгоно; сонгохгүй бол нийтлэл нэргүй гарна — **редакторын нэр
+нийтэд хэзээ ч гарахгүй**. Зохиогчоор зөвхөн идэвхтэй `LAWYER`-ийг зөвшөөрнө (`post.authorNotLawyer`).
+Хэн бичсэн/зассаныг нийтлэлийн засварлагчийн баруун талд харуулдаг, мөн бүх өөрчлөлт `AuditLog`-д үлдэнэ.
+
+### Редактор бүртгэх
+
+Seed-д редактор байхгүй — шаардлагатай үед ADMIN өөрөө үүсгэнэ:
+
+1. `/admin/lawyers` → доод хэсгийн **«Шинэ редактор»**.
+2. И-мэйл, нэр, овог. Нууц үг бичихгүй бол урилгын захидал явна (SMTP тохируулсан үед), эс бөгөөс
+   нэг удаа харагдах түр нууц үг буцна.
+3. Тэр хүн нэвтрэхэд шууд `/admin/posts` дээр очно.
+
+API-аар: `POST /users` `{ "email": "...", "firstName": "...", "lastName": "...", "role": "EDITOR" }` (ADMIN).
 
 ### Хуудсууд
 
@@ -252,13 +287,13 @@ ADMIN болон LAWYER портал login-оор нэвтэрмэгц `/admin` 
 | `/admin/tasks` | ADMIN, LAWYER | Даалгаврын жагсаалт ба Kanban самбар, шүүлт (URL-д хадгалагдана) |
 | `/admin/tasks/[id]` | ADMIN, харах эрхтэй LAWYER | Даалгаврын дэлгэрэнгүй, төлөв, засах, устгах, коммент |
 | `/admin/clients`, `/admin/clients/[id]` | ADMIN (LAWYER харна) | Харилцагч бүртгэх (түр нууц үг), засах, идэвхгүй болгох, хэргүүд |
-| `/admin/lawyers`, `/admin/lawyers/[id]` | ADMIN | Хуульчийн бүртгэл, нийтийн профайл |
-| `/admin/posts`, `/admin/posts/new`, `/admin/posts/[id]/edit` | ADMIN, LAWYER | Markdown editor + preview, cover зураг, slug автомат, Ноорог / Нийтлэх / Архивлах |
+| `/admin/lawyers`, `/admin/lawyers/[id]` | ADMIN | Хуульчийн бүртгэл, нийтийн профайл; мөн редакторуудын жагсаалт ба «Шинэ редактор» |
+| `/admin/posts`, `/admin/posts/new`, `/admin/posts/[id]/edit` | ADMIN, EDITOR (бүгд), LAWYER (өөрийн) | Markdown editor + preview, cover зураг, slug автомат, «Зохиогчоор харуулах», Ноорог / Нийтлэх / Архивлах |
 | `/admin/invoices` | ADMIN, LAWYER | Нэхэмжлэх үүсгэх, төлөвийн шилжилт, баталгаажуулах хүлээгдэж буй төлбөрийн шүүлт |
 | `/admin/invoices/[id]` | ADMIN, багийн LAWYER | Нэхэмжлэхийн дэлгэрэнгүй, харилцагчийн төлбөрийн тэмдэглэл, баталгаажуулах / татгалзах |
 | `/admin/requests`, `/admin/requests/[id]` | ADMIN | Үйлчилгээний хүсэлт: шүүлт, хүлээж авах / татгалзах / өмгөөлөгч эсвэл баг хуваарилах. Хуучин `/admin/contact` энд шилждэг |
-| `/admin/profile` | ADMIN, LAWYER | Бүртгэлийн мэдээлэл, нууц үг, (LAWYER) нийтийн профайл |
-| `/admin/notifications` | ADMIN, LAWYER | Өөрийн мэдэгдэл: бүгд / уншаагүй / уншсан, «Цааш үзэх», бүгдийг уншсан болгох |
+| `/admin/profile` | ADMIN, LAWYER, EDITOR | Бүртгэлийн мэдээлэл, нууц үг, (LAWYER) нийтийн профайл |
+| `/admin/notifications` | ADMIN, LAWYER, EDITOR | Өөрийн мэдэгдэл: бүгд / уншаагүй / уншсан, «Цааш үзэх», бүгдийг уншсан болгох |
 | `/admin/performance` | ADMIN, LAWYER | Даалгаврын ачаалал ба явц: хугацааны таб, тоймын карт, график, хүн бүрийн хүснэгт |
 | `/admin/performance/[userId]` | ADMIN, багийн хамтрагч LAWYER | Нэг ажилтны үзүүлэлт, төлөв/ач холбогдлын задаргаа, сүүлийн даалгавар |
 
@@ -279,8 +314,10 @@ ADMIN болон LAWYER портал login-оор нэвтэрмэгц `/admin` 
 | `POST /users`, `PATCH /users/:id` | ADMIN | Нууц үг өгөөгүй бол 12 тэмдэгттэй түр нууц үг буцаана |
 | `GET/POST/PATCH /lawyers/:userId/profile` | ADMIN, LAWYER (өөрийн) | Нийтийн профайл |
 | `GET /admin/stats` | ADMIN, LAWYER | Хэрэглэгчийн scope-оор тооцно |
-| `GET /posts/manage`, `GET /posts/manage/:id` | ADMIN, LAWYER (өөрийн) | Ноорог, архив орно |
-| `POST /posts/cover` | ADMIN, LAWYER | JPG/PNG/WEBP, ≤5MB → нийтийн bucket → `{ url }` |
+| `GET /posts/manage`, `GET /posts/manage/:id` | ADMIN, EDITOR (бүгд), LAWYER (өөрийн) | Ноорог, архив орно |
+| `POST /posts`, `PATCH /posts/:id`, `DELETE /posts/:id` | ADMIN, EDITOR (бүгд), LAWYER (өөрийн) | `authorId` — нийтэд харагдах зохиогч; `null` бол нэр харагдахгүй |
+| `GET /posts/authors` | ADMIN, LAWYER, EDITOR | Зохиогчоор сонгож болох идэвхтэй хуульчид |
+| `POST /posts/cover` | ADMIN, LAWYER, EDITOR | JPG/PNG/WEBP, ≤5MB → нийтийн bucket → `{ url }` |
 | `GET /contact` | ADMIN | Хуучин «Холбоо барих» маягтын мессежүүд, зөвхөн унших |
 
 Web талын `POST /api/revalidate` route нь нэвтэрсэн ADMIN/LAWYER-ийн хүсэлтээр `/`, `/news`, `/news/[slug]`-ийг
@@ -1059,21 +1096,24 @@ grace дотор зэрэг ирсэн хүсэлт бүх сесс хаахгү
 хамгаалалт (400/404), нэг өмгөөлөгч ба багаар хуваарилахад Case + CaseMember, `NEW`/давхар/зэрэгцээ хуваарилалт → 400, идэвхгүй
 өмгөөлөгч → 400, хэргийн дугаар давхцахад дахин оролдох, хуваарилсны дараах хэргийн scope, мэргэшлээр санал болгох, эрх
 (CLIENT/LAWYER → 403) ба validation → 400, дөрвөн event-ийн мэдэгдэл. Хуучин contact: зөвхөн унших жагсаалт, PATCH → 404.
-Нийт 460 тест, DB шаардахгүй (Prisma mock). Баг нэмэхээс өмнөх 249 тест хэвээр ногоон.
+EDITOR: `editor-access.spec.ts` нь Nest-ийн модулийн графаас бүх маршрутыг гаргаж аваад EDITOR-ээр
+дуудаж, цагаан жагсаалтаас гадуурх бүгд 403 гэдгийг шалгана (жагсаалтад байгаа нь эсрэгээрээ 403
+**болохгүй**); нийтлэлийн эрх ба зохиогчийн дүрмүүд `posts.service.spec.ts`-д (ADMIN/EDITOR бүгдийг,
+LAWYER өөрийнхөө, зохиогчоор зөвхөн идэвхтэй хуульч). Нийт 635 тест, DB шаардахгүй (Prisma mock).
 
 Хадгалалт (S3 клиентийг mock хийнэ): R2 тохиргоо (`region: 'auto'`, path-style), upload-ийн content type/length,
 хувийн/нийтийн bucket-ийн хуваарилалт, татах URL-ийн `Content-Disposition` болон хугацаа, устгах,
 хоёр bucket-ийг boot дээр шалгах, локалд bucket үүсгэх, production-д хэзээ ч үүсгэхгүй бөгөөд алдаанд унахгүй.
 
-`packages/shared` дээр 10 тест: тестийн өгөгдлийн угтвар (`E2E `, `e2e.`), холболтын мөрөөс DB-ийн нэр
+`packages/shared` дээр 34 тест: тестийн өгөгдлийн угтвар (`E2E `, `e2e.`), холболтын мөрөөс DB-ийн нэр
 унших, `pnpm db:clean`-ий хамгаалалт (dev DB → алдаа, `--force` нь DB-ийн нэртэй яг таарах ёстой).
-Нийт `pnpm test` → **470 тест**.
+Нийт `pnpm test` → **669 тест**.
 
 ```bash
 pnpm --filter @law-firm/web e2e     # Playwright, web :3001 + api :4000 ажиллаж байх ёстой
 ```
 
-Playwright (42 тест): нийтийн сайт (2), портал (2), админ (4), баримтын хүсэлт (3), мессеж (3), төлбөр (3), даалгавар (3), мэдэгдэл (2), гүйцэтгэл (3), хонх/Kanban/хавсралт (3), сесс (4), тохиргоо/ноорог нэхэмжлэх (5), үйлчилгээний хүсэлт (4):
+Playwright (58 тест): нийтийн сайт (2), портал (2), админ (4), баримтын хүсэлт (3), мессеж (3), төлбөр (3), даалгавар (3), мэдэгдэл (2), гүйцэтгэл (3), хонх/Kanban/хавсралт (3), сесс (4), тохиргоо/ноорог нэхэмжлэх (5), үйлчилгээний хүсэлт (4), и-мэйл (4), редактор (3):
 - LAWYER хэрэг үүсгэж шүүх хурал нэмэхэд харилцагч порталдаа болон мэдэгдлээс харна.
 - ADMIN нийтлэл нийтлэхэд нийтийн `/news` болон нийтлэлийн хуудсанд шууд гарна (тест дараа нь устгана).
 - LAWYER өөр хуульчийн хэрэг рүү `/admin/cases/[id]`-ээр орвол 403 хуудас, `PATCH /cases/:id` нь 403.
@@ -1101,6 +1141,13 @@ Playwright (42 тест): нийтийн сайт (2), портал (2), адм�
 - `access_token` дууссан ч refresh хүчинтэй бол портал чимээгүй сэргэх; хүчингүй cookie үлдсэн бол цэвэрлэгдэж login гацалгүй гарах.
 - ADMIN `/admin/settings` дээр хүлээн авагчийг солиход CLIENT-ийн «Төлбөрийн заавар»-т шинэ нэр гарах; буруу дансны дугаар хадгалагдахгүй (тест дараа нь буцаана).
 - LAWYER-т «Тохиргоо» цэс харагдахгүй, хуудас 403, `PUT /settings/bank-account` 403.
+- EDITOR нэвтрэх → цэсэнд зөвхөн «Нийтлэл», «Профайл» → нийтлэл бичих → ковер зураг оруулах →
+  хуульчийг зохиогчоор сонгож нийтлэх → нийтийн хуудсанд тэр хуульчийн нэрээр гарах, редакторын нэр
+  хаана ч байхгүй; үйлдэл нь `AuditLog`-д бичигдсэн байх.
+- EDITOR `/portal`, `/portal/cases`, `/admin`, `/admin/cases`, `/admin/clients`, `/admin/settings` рүү
+  орвол бүгд `/admin/posts` руу буцаана; `/cases`, `/users`, `/invoices`, `/admin/stats`,
+  `/messages/conversations`, `/tasks` API бүгд 403.
+- EDITOR өөр хүний нийтлэлийг засаж, устгаж чадна; LAWYER тэр нийтлэлд 403 авна.
 - ADMIN ноорог нэхэмжлэхийн дүн, тайлбарыг «Засах»-аар өөрчлөх → илгээсний дараа «Засах» алга болох.
 - Нэг refresh токеныг хоёр удаа илгээхэд хоёулаа 200, тухайн хэрэглэгчийн өөр сесс хаагдахгүй; хоёр табын access token зэрэг дуусахад хоёулаа порталд үлдэх.
 - ADMIN фирмийн утсыг солиход (буруу регистр хадгалагдахгүй) нийтийн хөл, «Холбоо барих», нэвтрэх хуудас, CLIENT-ийн нэхэмжлэхийн «Нэхэмжлэгч» дээр шинэ утас гарах (тест дараа нь буцаана).

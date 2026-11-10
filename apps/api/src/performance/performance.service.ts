@@ -16,12 +16,12 @@ import {
   type Prisma,
 } from '@law-firm/shared';
 import { err } from '../common/errors/app-error';
+import { CLIENT_DATA_ROLES, handlesClientData } from '../common/permissions';
 import type { RequestUser } from '../common/types/request-user';
 import { PrismaService } from '../prisma/prisma.service';
 import { TasksService } from '../tasks/tasks.service';
 
 const ACTIVE_STATUSES: TaskStatus[] = [TaskStatus.TODO, TaskStatus.IN_PROGRESS, TaskStatus.REVIEW];
-const STAFF_ROLES: Role[] = [Role.LAWYER, Role.ADMIN];
 const RECENT_TASKS = 8;
 const MAX_MONTH_BUCKETS = 24;
 
@@ -198,7 +198,11 @@ export class PerformanceService {
 
   /** ADMIN: all active lawyers and admins. LAWYER: themselves plus everyone on any case team they belong to. */
   async visibleStaff(viewer: RequestUser): Promise<PerformancePerson[]> {
-    const where: Prisma.UserWhereInput = { role: { in: STAFF_ROLES }, isActive: true };
+    if (!handlesClientData(viewer.role)) {
+      throw new ForbiddenException(err('performance.staffOnly', 'Гүйцэтгэлийн мэдээлэл зөвхөн ажилтанд харагдана'));
+    }
+    // The list is the people who carry cases — an editor is staff but never appears here.
+    const where: Prisma.UserWhereInput = { role: { in: [...CLIENT_DATA_ROLES] }, isActive: true };
     if (viewer.role === Role.LAWYER) {
       const teammates = await this.prisma.caseMember.findMany({
         where: { case: { members: { some: { userId: viewer.id } } } },
@@ -206,8 +210,6 @@ export class PerformanceService {
         distinct: ['userId'],
       });
       where.id = { in: [...new Set([viewer.id, ...teammates.map((member) => member.userId)])] };
-    } else if (viewer.role !== Role.ADMIN) {
-      throw new ForbiddenException(err('performance.staffOnly', 'Гүйцэтгэлийн мэдээлэл зөвхөн ажилтанд харагдана'));
     }
     const people = await this.prisma.user.findMany({ where, select: STAFF_SELECT, orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }] });
     return people as PerformancePerson[];

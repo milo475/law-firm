@@ -98,6 +98,16 @@ export function canOpenAdmin(role: Role | string | undefined): boolean {
   return role === 'ADMIN' || role === 'LAWYER' || role === 'EDITOR';
 }
 
+/** ADMIN and EDITOR work on every post whoever wrote it; a LAWYER only on their own. */
+export function managesEveryPost(role: Role | string | undefined): boolean {
+  return role === 'ADMIN' || role === 'EDITOR';
+}
+
+/** Who may write and publish posts — and therefore refresh the public pages afterwards. */
+export function managesPosts(role: Role | string | undefined): boolean {
+  return role === 'ADMIN' || role === 'LAWYER' || role === 'EDITOR';
+}
+
 /**
  * Who may see anything belonging to a client — cases, documents, invoices, messages, tasks.
  * Mirrors CLIENT_DATA_ROLES in the API, which is what actually enforces it.

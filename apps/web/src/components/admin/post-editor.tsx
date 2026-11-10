@@ -177,6 +177,9 @@ export function PostEditor({ post }: { post?: ManagedPost }) {
           <Controller control={control} name="authorId" render={({ field }) => (
             <Select
               label="Зохиогчоор харуулах"
+              // Radix clears the trigger when the value is '', so the placeholder is the state
+              // itself — "no name" — rather than an invitation to choose.
+              placeholder="Нэр харуулахгүй"
               options={authorOptions}
               value={field.value}
               onValueChange={field.onChange}

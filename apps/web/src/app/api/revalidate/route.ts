@@ -1,10 +1,12 @@
 import { revalidatePath } from 'next/cache';
 import { NextResponse, type NextRequest } from 'next/server';
+import { managesPosts } from '@/lib/admin';
 import { getApiBaseUrl } from '@/lib/api';
 
 /**
  * On-demand revalidation after staff publish/edit/delete a post or a testimonial, so the public
- * pages do not wait for the 60 s ISR window. The caller's session is checked against the API.
+ * pages do not wait for the 60 s ISR window. The caller's session is checked against the API —
+ * an editor publishes posts, so they may refresh the pages a post appears on.
  *
  * `slugs` are article slugs; `paths` are extra public routes (e.g. /reviews, /services/civil).
  */
@@ -16,7 +18,7 @@ export async function POST(request: NextRequest) {
   if (!me?.ok) return NextResponse.json({ message: 'Нэвтрэх шаардлагатай' }, { status: 401 });
 
   const user = (await me.json()) as { role?: string };
-  if (user.role !== 'ADMIN' && user.role !== 'LAWYER') {
+  if (!managesPosts(user.role)) {
     return NextResponse.json({ message: 'Энэ үйлдлийг хийх эрх танд байхгүй байна' }, { status: 403 });
   }
 

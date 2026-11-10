@@ -18,6 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } fro
 import { toast } from '@/components/ui/toast';
 import { ApiError, api, type Paginated } from '@/lib/api';
 import type { ManagedPost } from '@/lib/admin';
+import { managesEveryPost } from '@/lib/admin';
 import { CATEGORY_LABELS, formatDate } from '@/lib/format';
 import { cn, shortName } from '@/lib/utils';
 
@@ -71,7 +72,7 @@ export default function AdminPostsPage() {
     <div className="flex flex-col gap-6">
       <AdminPageTitle
         title="Нийтлэл"
-        description={user.role === 'ADMIN' ? 'Сайтын мэдээ, зөвлөгөө, хуулийн шинэчлэл.' : 'Таны бичсэн нийтлэлүүд.'}
+        description={managesEveryPost(user.role) ? 'Сайтын мэдээ, зөвлөгөө, хуулийн шинэчлэл.' : 'Таны бичсэн нийтлэлүүд.'}
         actions={<Button asChild size="md"><Link href="/admin/posts/new"><PlusIcon size={18} />Шинэ нийтлэл</Link></Button>}
       />
 

@@ -136,7 +136,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           bellSlot={<NotificationBell area="admin" />}
           profileHref="/admin/profile"
           searchPlaceholder="Хэргийн дугаар, нэрээр хайх"
-          onSearch={(q) => router.push(q.trim() ? `/admin/cases?search=${encodeURIComponent(q.trim())}` : '/admin/cases')}
+          // The search looks through cases, which an editor has no part in; without a handler the
+          // field is not rendered at all.
+          onSearch={isEditor ? undefined : (q) => router.push(q.trim() ? `/admin/cases?search=${encodeURIComponent(q.trim())}` : '/admin/cases')}
         />
         <main id="main" className="flex-1 px-5 pb-28 pt-6 md:px-8 md:pb-12 md:pt-8">{children}</main>
       </div>

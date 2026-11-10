@@ -12,14 +12,17 @@ export const LAWYER2 = { identifier: 'oyunbileg@lawfirm.mn', password: 'Lawyer12
 
 type Credentials = { identifier: string; password: string };
 
-/** Logs in through the portal form. Clients land on /portal, staff on /admin. */
-export async function login(page: Page, user: Credentials = CLIENT1) {
+/**
+ * Logs in through the portal form. Clients land on /portal and staff on /admin — except an editor,
+ * who has no dashboard and lands on the posts list, so that case passes its own `landsOn`.
+ */
+export async function login(page: Page, user: Credentials = CLIENT1, landsOn?: RegExp) {
   await page.goto('/portal/login');
   await page.locator('input[name="identifier"]').fill(user.identifier);
   await page.locator('input[name="password"]').fill(user.password);
   await page.getByRole('button', { name: 'Нэвтрэх', exact: true }).click();
   const isStaff = user.identifier.endsWith('@lawfirm.mn');
-  await expect(page).toHaveURL(isStaff ? /\/admin$/ : /\/portal$/);
+  await expect(page).toHaveURL(landsOn ?? (isStaff ? /\/admin$/ : /\/portal$/));
 }
 
 /** Logs in against the API directly; the returned context keeps the session cookies. */
