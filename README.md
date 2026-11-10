@@ -313,10 +313,15 @@ Baseline зургууд **зөвхөн `lawfirm_test` DB-гээс** авагда
 тиймээс baseline авахдаа API-г dev горимд асаана. `pnpm e2e` нь screenshot spec-ийг хасдаг тул
 хуучин зангаараа үлдэнэ.
 
+Энэ шалгалт барьдаггүй ганц зүйл бол **Next-ийн fetch-cache**: `apps/web/.next/cache/fetch-cache`
+нь dev сервертэй хуваалцдаг тул API-г тест DB руу шилжүүлсэн ч хуудас хуучин (dev DB) хариуг
+үзүүлсээр байж болно. Тиймээс DB сольсны дараа кэшийг устгаад **дахин build** хийнэ.
+
 ```bash
 export DATABASE_URL="postgresql://lawfirm:lawfirm@localhost:5432/lawfirm_test?schema=public"
-pnpm build
 node apps/api/dist/main &                           # api :4000 (NODE_ENV=development)
+rm -rf apps/web/.next/cache/fetch-cache             # dev DB-гийн хариуг хаяна
+pnpm build                                          # API асаалттай үед → prerender тест DB-гээс
 pnpm --filter @law-firm/web start &                 # web :3001 (production build)
 pnpm --filter @law-firm/web e2e:screenshots
 ```
