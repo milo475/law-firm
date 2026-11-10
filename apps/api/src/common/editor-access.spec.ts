@@ -1,8 +1,8 @@
-import { RequestMethod, type INestApplication, type Type } from '@nestjs/common';
-import { METHOD_METADATA, MODULE_METADATA, PATH_METADATA } from '@nestjs/common/constants';
+import { type INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../app.module';
 import { TEST_ROLE_HEADER, createGuardedApp } from './testing/http';
+import { collectControllers, mockDependencies, routesOf, type ApiRoute } from './testing/routes';
 
 /**
  * An EDITOR writes the firm's articles and must reach nothing else. The danger in a new role is
@@ -51,17 +51,9 @@ const EDITOR_MAY_REACH = new Set([
   'POST /posts/cover',
 ]);
 
-interface Route {
-  key: string;
-  method: 'get' | 'post' | 'patch' | 'put' | 'delete';
-  url: string;
-}
-
-const ANY_ID = '00000000-0000-4000-8000-000000000000';
-
 describe('EDITOR reaches posts and nothing else', () => {
   let app: INestApplication;
-  let routes: Route[];
+  let routes: ApiRoute[];
 
   beforeAll(async () => {
     const controllers = collectControllers(AppModule);
@@ -111,65 +103,3 @@ describe('EDITOR reaches posts and nothing else', () => {
     expect(response.status).toBe(403);
   });
 });
-
-/** Every controller Nest would register, read from the module graph instead of a list. */
-function collectControllers(module: unknown, seen = new Set<unknown>()): Type[] {
-  const target = unwrapModule(module);
-  if (!target || seen.has(target)) return [];
-  seen.add(target);
-  const own = [
-    ...((Reflect.getMetadata(MODULE_METADATA.CONTROLLERS, target) as Type[] | undefined) ?? []),
-    ...(((module as { controllers?: Type[] }).controllers as Type[] | undefined) ?? []),
-  ];
-  const imports = [
-    ...((Reflect.getMetadata(MODULE_METADATA.IMPORTS, target) as unknown[] | undefined) ?? []),
-    ...(((module as { imports?: unknown[] }).imports as unknown[] | undefined) ?? []),
-  ];
-  return [...new Set([...own, ...imports.flatMap((imported) => collectControllers(imported, seen))])];
-}
-
-/** A module entry is a class, a dynamic module (`{ module }`) or a forwardRef. */
-function unwrapModule(module: unknown): Type | null {
-  if (typeof module === 'function') return module as Type;
-  if (module && typeof module === 'object') {
-    const wrapper = module as { module?: Type; forwardRef?: () => Type };
-    if (typeof wrapper.forwardRef === 'function') return wrapper.forwardRef();
-    if (wrapper.module) return wrapper.module;
-  }
-  return null;
-}
-
-/** The routes one controller registers, with `:params` filled in so the call can be made. */
-function routesOf(controller: Type): Route[] {
-  const prefix = segment(Reflect.getMetadata(PATH_METADATA, controller) as string | undefined);
-  const prototype = controller.prototype as Record<string, unknown>;
-  return Object.getOwnPropertyNames(prototype)
-    .filter((name) => name !== 'constructor')
-    .flatMap((name) => {
-      const handler = prototype[name];
-      if (typeof handler !== 'function') return [];
-      const path = Reflect.getMetadata(PATH_METADATA, handler) as string | undefined;
-      const verb = Reflect.getMetadata(METHOD_METADATA, handler) as number | undefined;
-      if (path === undefined || verb === undefined) return [];
-      const method = RequestMethod[verb].toLowerCase() as Route['method'];
-      const full = [prefix, segment(path)].filter(Boolean).join('/');
-      return [{ key: `${RequestMethod[verb]} /${full}`, method, url: `/${full}`.replace(/:[^/]+/g, ANY_ID) }];
-    });
-}
-
-function segment(path: string | undefined): string {
-  return (path ?? '').replace(/^\/+|\/+$/g, '');
-}
-
-/**
- * The controllers are booted without their services: authorization runs before anything they would
- * call, so an empty object is enough to construct them.
- */
-function mockDependencies(controllers: Type[]): { provide: Type; useValue: object }[] {
-  const dependencies = new Set<Type>();
-  for (const controller of controllers) {
-    const types = (Reflect.getMetadata('design:paramtypes', controller) as Type[] | undefined) ?? [];
-    for (const type of types) if (typeof type === 'function' && type !== Object) dependencies.add(type);
-  }
-  return [...dependencies].map((provide) => ({ provide, useValue: {} }));
-}
