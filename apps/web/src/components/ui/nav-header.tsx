@@ -23,12 +23,14 @@ export function NavHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border-default bg-bg-surface">
-      {/* Desktop — 1440 frame: 88px (Figma uses a 1200 content column; the row is allowed to run to
-          1320 so the seven links, the language switcher and both actions fit without shrinking).
+      {/* Desktop — 1440 frame: 88px (Figma uses a 1200 content column; the row is allowed to run
+          wider so the seven links, the language switcher and both actions fit without shrinking).
+          Mongolian has the longest labels — 650px of text — so the row is sized from them: a 1400px
+          row leaves 24px between links and ~44px around the group, a 1320px row only 12px and ~20px.
           Below 1280 the compact header with the drawer menu takes over. */}
-      <div className="mx-auto hidden h-[88px] max-w-[1320px] items-center justify-between gap-4 px-6 xl:flex">
+      <div className="mx-auto hidden h-[88px] max-w-[1320px] items-center justify-between gap-4 px-6 xl:flex min-[1360px]:max-w-[1400px]">
         <span className="shrink-0"><Logo /></span>
-        <nav aria-label={t('menu')} className="flex items-center gap-2">
+        <nav aria-label={t('menu')} className="flex items-center gap-3 min-[1360px]:gap-6">
           {PUBLIC_NAV.map((item) => (
             <Link
               key={item}
