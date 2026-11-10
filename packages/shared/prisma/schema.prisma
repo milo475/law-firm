@@ -19,6 +19,8 @@ enum Role {
   ADMIN
   LAWYER
   CLIENT
+  /// Writes and publishes posts. No case, client, document, invoice or message is ever theirs.
+  EDITOR
 }
 
 enum PostCategory {
@@ -169,7 +171,9 @@ model User {
   authTokens               AuthToken[]
   emailLogs                EmailLog[]        @relation("EmailLogUser")
   lawyerProfile            LawyerProfile?
-  posts                    Post[]
+  posts                    Post[]            @relation("PostAuthor")
+  createdPosts             Post[]            @relation("PostCreator")
+  updatedPosts             Post[]            @relation("PostEditor")
   clientCases              Case[]            @relation("CaseClient")
   lawyerCases              Case[]            @relation("CaseLawyer")
   createdEvents            CaseEvent[]
@@ -279,8 +283,14 @@ model Post {
   category      PostCategory
   status        PostStatus   @default(DRAFT)
   publishedAt   DateTime?
-  authorId      String       @db.Uuid
-  author        User         @relation(fields: [authorId], references: [id])
+  /// The byline on the public site: the lawyer who answers for the text. Null prints no name.
+  authorId      String?      @db.Uuid
+  author        User?        @relation("PostAuthor", fields: [authorId], references: [id])
+  /// Who typed it and who saved it last — an editor's name never reaches the public site.
+  createdById   String?      @db.Uuid
+  createdBy     User?        @relation("PostCreator", fields: [createdById], references: [id])
+  updatedById   String?      @db.Uuid
+  updatedBy     User?        @relation("PostEditor", fields: [updatedById], references: [id])
   viewCount     Int          @default(0)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
