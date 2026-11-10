@@ -83,7 +83,7 @@ Seed нь **идемпотент**: дахин ажиллуулахад өөри
 | `pnpm lint` / `pnpm typecheck` | ESLint / tsc |
 | `pnpm test` | Jest (apps/api + packages/shared) |
 | `pnpm --filter @law-firm/web e2e` | Playwright e2e (web :3001 + api :4000 ажиллаж байх ёстой) |
-| `pnpm --filter @law-firm/web e2e:screenshots` | Бүх хуудасны (админ орно) desktop/mobile screenshot → `apps/web/screenshots/` |
+| `pnpm --filter @law-firm/web e2e:screenshots` | Бүх хуудасны (админ орно) desktop/mobile screenshot → `apps/web/screenshots/`. Зөвхөн тест DB-гээс — §4-ийг үз |
 | `pnpm db:generate` | Prisma client generate |
 | `pnpm db:migrate` | `prisma migrate dev` (dev) — prod-д `pnpm db:deploy` |
 | `pnpm db:seed` | `prisma db seed` — жишээ өгөгдөл (идемпотент) |
@@ -298,6 +298,27 @@ pnpm build
 THROTTLE_LIMIT=5000 node apps/api/dist/main &                       # api :4000 (test DB); e2e нэг IP-ээс олон хүсэлт илгээдэг
 pnpm --filter @law-firm/web start &                                 # web :3001
 pnpm --filter @law-firm/web e2e
+```
+
+### Screenshot baseline (`apps/web/screenshots/`)
+
+Baseline зургууд **зөвхөн `lawfirm_test` DB-гээс** авагдана: dev DB дээр мэдээний огноо, үзсэн тоо
+өөр байдаг тул dev DB-гээс авбал шалгах гэж буй өөрчлөлт нь хамаагүй зөрүүний дор дарагдана.
+
+Үүнийг механикаар хаасан: baseline бичиж болох ажиллагаанд Playwright-ийн `globalSetup` нь
+`DATABASE_URL`-ыг өөрөө `<DB>_test` руу эргүүлж (`TEST_DATABASE_URL` өгсөн бол түүнийг авна),
+дараа нь зураг авах API үнэхээр тэр DB-г үйлчилж байгааг `GET /health`-ийн `databaseName`-ээр
+шалгана. Таарахгүй, эсвэл API хариулахгүй бол **алгасахгүй — алдаа өгч зогсоно**. `/health` нь
+энэ нэрийг зөвхөн `NODE_ENV≠production` үед буцаадаг (production-д нийтэд ил гаргах шаардлагагүй),
+тиймээс baseline авахдаа API-г dev горимд асаана. `pnpm e2e` нь screenshot spec-ийг хасдаг тул
+хуучин зангаараа үлдэнэ.
+
+```bash
+export DATABASE_URL="postgresql://lawfirm:lawfirm@localhost:5432/lawfirm_test?schema=public"
+pnpm build
+node apps/api/dist/main &                           # api :4000 (NODE_ENV=development)
+pnpm --filter @law-firm/web start &                 # web :3001 (production build)
+pnpm --filter @law-firm/web e2e:screenshots
 ```
 
 ### Тест өгөгдлийг цэвэрлэх (`pnpm db:clean`)
