@@ -475,7 +475,11 @@ async function seedMessages(users: Awaited<ReturnType<typeof seedUsers>>) {
   return messages.length;
 }
 
-/** Example staff tasks: case work and internal chores in different statuses, with a few comments. */
+/**
+ * Example staff tasks: case work and internal chores in different statuses, with a few comments.
+ * The dates are written out rather than left to default: the task page prints `updatedAt` to the
+ * minute, so a row stamped "now" would move every time the database is seeded.
+ */
 async function seedTasks(users: Awaited<ReturnType<typeof seedUsers>>) {
   const year = new Date().getFullYear();
   const caseIds = new Map(
@@ -485,12 +489,12 @@ async function seedTasks(users: Awaited<ReturnType<typeof seedUsers>>) {
   );
   const caseId = (n: number) => caseIds.get(formatCaseNumber(year, n)) ?? null;
   const tasks = [
-    { title: 'Урьдчилсан хэлэлцүүлгийн тайлбар бэлтгэх', description: 'Нэхэмжлэлийн шаардлага бүрт нотлох баримтыг хавсаргасан тайлбар.', caseId: caseId(1), assigneeId: users.lawyer1.id, createdById: users.lawyer1.id, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, dueDate: daysFromNow(2, 18), completedAt: null },
-    { title: 'Шинжээчийн дүгнэлт гаргуулах хүсэлт илгээх', description: 'Хохирлын хэмжээг тогтоолгох шинжээчийн байгууллагад хүсэлт.', caseId: caseId(1), assigneeId: users.admin.id, createdById: users.lawyer1.id, status: TaskStatus.TODO, priority: TaskPriority.MEDIUM, dueDate: daysFromNow(5, 17), completedAt: null },
-    { title: 'Орлогын тодорхойлолтыг шалгах', description: 'Тэтгэмжийн тооцоонд ашиглах 6 сарын орлогыг нягтлах.', caseId: caseId(2), assigneeId: users.lawyer2.id, createdById: users.admin.id, status: TaskStatus.REVIEW, priority: TaskPriority.URGENT, dueDate: daysAgo(1, 17), completedAt: null },
-    { title: 'Хөдөлмөрийн хуулийн нэмэлт өөрчлөлттэй танилцах', description: null, caseId: null, assigneeId: users.lawyer1.id, createdById: users.lawyer1.id, status: TaskStatus.TODO, priority: TaskPriority.LOW, dueDate: daysFromNow(10, 12), completedAt: null },
-    { title: 'Сарын үйл ажиллагааны тайлан бэлтгэх', description: 'Хэрэг, нэхэмжлэхийн тоон мэдээлэл.', caseId: null, assigneeId: users.lawyer2.id, createdById: users.admin.id, status: TaskStatus.DONE, priority: TaskPriority.MEDIUM, dueDate: daysAgo(3, 18), completedAt: daysAgo(2, 15) },
-    { title: 'Эвлэрлийн гэрээг архивт шилжүүлэх', description: null, caseId: caseId(3), assigneeId: users.lawyer2.id, createdById: users.lawyer2.id, status: TaskStatus.CANCELLED, priority: TaskPriority.LOW, dueDate: null, completedAt: null },
+    { title: 'Урьдчилсан хэлэлцүүлгийн тайлбар бэлтгэх', description: 'Нэхэмжлэлийн шаардлага бүрт нотлох баримтыг хавсаргасан тайлбар.', caseId: caseId(1), assigneeId: users.lawyer1.id, createdById: users.lawyer1.id, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, dueDate: daysFromNow(2, 18), completedAt: null, createdAt: daysAgo(3, 10), updatedAt: daysAgo(0, 11) },
+    { title: 'Шинжээчийн дүгнэлт гаргуулах хүсэлт илгээх', description: 'Хохирлын хэмжээг тогтоолгох шинжээчийн байгууллагад хүсэлт.', caseId: caseId(1), assigneeId: users.admin.id, createdById: users.lawyer1.id, status: TaskStatus.TODO, priority: TaskPriority.MEDIUM, dueDate: daysFromNow(5, 17), completedAt: null, createdAt: daysAgo(2, 9), updatedAt: daysAgo(2, 9) },
+    { title: 'Орлогын тодорхойлолтыг шалгах', description: 'Тэтгэмжийн тооцоонд ашиглах 6 сарын орлогыг нягтлах.', caseId: caseId(2), assigneeId: users.lawyer2.id, createdById: users.admin.id, status: TaskStatus.REVIEW, priority: TaskPriority.URGENT, dueDate: daysAgo(1, 17), completedAt: null, createdAt: daysAgo(4, 14), updatedAt: daysAgo(1, 16) },
+    { title: 'Хөдөлмөрийн хуулийн нэмэлт өөрчлөлттэй танилцах', description: null, caseId: null, assigneeId: users.lawyer1.id, createdById: users.lawyer1.id, status: TaskStatus.TODO, priority: TaskPriority.LOW, dueDate: daysFromNow(10, 12), completedAt: null, createdAt: daysAgo(1, 12), updatedAt: daysAgo(1, 12) },
+    { title: 'Сарын үйл ажиллагааны тайлан бэлтгэх', description: 'Хэрэг, нэхэмжлэхийн тоон мэдээлэл.', caseId: null, assigneeId: users.lawyer2.id, createdById: users.admin.id, status: TaskStatus.DONE, priority: TaskPriority.MEDIUM, dueDate: daysAgo(3, 18), completedAt: daysAgo(2, 15), createdAt: daysAgo(6, 9), updatedAt: daysAgo(2, 15) },
+    { title: 'Эвлэрлийн гэрээг архивт шилжүүлэх', description: null, caseId: caseId(3), assigneeId: users.lawyer2.id, createdById: users.lawyer2.id, status: TaskStatus.CANCELLED, priority: TaskPriority.LOW, dueDate: null, completedAt: null, createdAt: daysAgo(5, 11), updatedAt: daysAgo(3, 9) },
   ];
   await prisma.task.deleteMany({ where: { title: { in: tasks.map((task) => task.title) } } });
   const created = [];
@@ -509,10 +513,12 @@ async function seedNotifications(users: Awaited<ReturnType<typeof seedUsers>>) {
   await prisma.notification.deleteMany({ where: { userId: { in: [users.client1.id, users.client2.id] } } });
   await prisma.notification.createMany({
     data: [
-      { userId: users.client1.id, type: 'CASE_EVENT', title: 'Шүүх хурлын товыг зарлалаа', body: 'LF хэргийн урьдчилсан хэлэлцүүлэг 6 хоногийн дараа болно.', link: '/portal/cases', isRead: false },
-      { userId: users.client1.id, type: 'INVOICE', title: 'Шинэ нэхэмжлэх ирлээ', body: 'INV нэхэмжлэх (800,000₮) 10 хоногийн дотор төлөгдөх ёстой.', link: '/portal/invoices', isRead: false },
-      { userId: users.client1.id, type: 'DOCUMENT', title: 'Шинэ баримт нэмэгдлээ', body: 'Нэхэмжлэлийн төсөл таны хэрэгт хавсаргагдлаа.', link: '/portal/documents', isRead: true },
-      { userId: users.client2.id, type: 'INVOICE', title: 'Нэхэмжлэхийн хугацаа хэтэрлээ', body: 'INV нэхэмжлэх (600,000₮) төлөгдөөгүй байна.', link: '/portal/invoices', isRead: false },
+      // Dated like the staff ones: without an explicit `createdAt` these read "Дөнгөж сая" and the
+      // wording changes with every passing minute, which makes the screenshot baseline drift.
+      { userId: users.client1.id, type: 'CASE_EVENT', title: 'Шүүх хурлын товыг зарлалаа', body: 'LF хэргийн урьдчилсан хэлэлцүүлэг 6 хоногийн дараа болно.', link: '/portal/cases', isRead: false, createdAt: daysAgo(0, 9) },
+      { userId: users.client1.id, type: 'INVOICE', title: 'Шинэ нэхэмжлэх ирлээ', body: 'INV нэхэмжлэх (800,000₮) 10 хоногийн дотор төлөгдөх ёстой.', link: '/portal/invoices', isRead: false, createdAt: daysAgo(1, 15) },
+      { userId: users.client1.id, type: 'DOCUMENT', title: 'Шинэ баримт нэмэгдлээ', body: 'Нэхэмжлэлийн төсөл таны хэрэгт хавсаргагдлаа.', link: '/portal/documents', isRead: true, createdAt: daysAgo(2, 11) },
+      { userId: users.client2.id, type: 'INVOICE', title: 'Нэхэмжлэхийн хугацаа хэтэрлээ', body: 'INV нэхэмжлэх (600,000₮) төлөгдөөгүй байна.', link: '/portal/invoices', isRead: false, createdAt: daysAgo(0, 8) },
     ],
   });
   return seedStaffNotifications(users);

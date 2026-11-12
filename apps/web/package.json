@@ -14,7 +14,7 @@
     "i18n:import": "node scripts/i18n.mjs import",
     "i18n:check": "node scripts/i18n.mjs check",
     "e2e": "playwright test --project=desktop --grep-invert screenshots",
-    "e2e:screenshots": "playwright test --grep screenshots",
+    "e2e:screenshots": "SCREENSHOT_RUN=1 playwright test --grep screenshots --workers=1",
     "devices": "node device-audit.mjs"
   },
   "dependencies": {

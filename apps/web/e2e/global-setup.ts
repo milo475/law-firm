@@ -21,7 +21,8 @@ const ROOT = path.resolve(__dirname, '../../..');
  * assertions keep matching.
  */
 export default async function globalSetup(config: FullConfig): Promise<void> {
-  if (writesBaseline(config)) await requireTestDatabase();
+  const baseline = writesBaseline(config);
+  if (baseline) await requireTestDatabase();
 
   const database = databaseNameFromUrl(process.env.DATABASE_URL);
   if (!isTestDatabaseName(database)) {
@@ -32,6 +33,13 @@ export default async function globalSetup(config: FullConfig): Promise<void> {
     cwd: ROOT,
     stdio: 'inherit',
   });
+  // A baseline has to be the sample data itself, not the sample data plus what earlier runs left
+  // in it: reading a news page counts a view, the settings test rewrites the firm's phone number,
+  // the editor tests add users. `db:clean` cannot reach any of that — the seed overwrites all of
+  // it, and only here, on a test database, for the run that rewrites the images.
+  if (baseline) {
+    execFileSync('pnpm', ['--filter', '@law-firm/shared', 'db:seed'], { cwd: ROOT, stdio: 'inherit' });
+  }
 }
 
 /** Every run except the one that explicitly leaves the screenshot spec out (`pnpm e2e`). */

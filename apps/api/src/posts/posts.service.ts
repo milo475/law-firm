@@ -56,7 +56,9 @@ export class PostsService {
       this.prisma.post.findMany({
         where,
         select: POST_LIST_SELECT,
-        orderBy: { publishedAt: 'desc' },
+        // `id` only breaks ties: two posts published in the same second would otherwise come back
+        // in whatever order the database felt like, which repeats or drops a row across pages.
+        orderBy: [{ publishedAt: 'desc' }, { id: 'desc' }],
         ...skipTake(query.page, query.limit),
       }),
       this.prisma.post.count({ where }),
@@ -93,7 +95,7 @@ export class PostsService {
       this.prisma.post.findMany({
         where,
         select: POST_LIST_SELECT,
-        orderBy: { updatedAt: 'desc' },
+        orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
         ...skipTake(query.page, query.limit),
       }),
       this.prisma.post.count({ where }),

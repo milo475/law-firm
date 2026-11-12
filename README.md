@@ -158,6 +158,7 @@ law-firm/
 │   │       └── config/env.ts    zod env schema
 │   └── web/                     Next.js 15 (Figma "00 Design System"-ээс хэрэгжүүлсэн UI)
 │       ├── e2e/                 Playwright тестүүд + screenshot скрипт; global-setup.ts (DB цэвэрлэгээ)
+│       │                        Нийтийн сайтад `loading.tsx` **байхгүй** — доорх CLS-ийн тайлбарыг үз
 │       ├── public/brand/        лого, тэмдэг; нүүрний hero зураг (`hero-4x5` desktop, `hero-1x1` утас),
 │       │                        `lawyer-card-4x5` нь хуульчийн профайл DB-д үүсэх хүртэл хэрэглэгдэхгүй
 │       └── src/
@@ -194,7 +195,31 @@ law-firm/
 - Figma файл: `orRAIFzEIO9o3X5a6cDFb3` — "00 Design System" хуудас (variable 4 collection, 15 text style, 4 effect style, 21 компонент).
 - Токенууд `apps/web/src/app/globals.css`-д Figma-ийн WEB syntax нэрээрээ (`--navy-800`, `--bg-surface`, `--text-primary` …); Tailwind utility нь `bg-bg-surface`, `text-text-primary`, `border-border-default` гэх мэт.
 - Алтлаг `--gold-500` (#C9A227)-г цагаан дээр текстэнд хэрэглэхгүй; текстэнд `--text-accent` (= gold-700).
-- Фонт: Source Serif 4 (гарчиг) + Inter (бие), кирилл subset, `next/font/google`.
+- Фонт: Source Serif 4 (гарчиг) + Inter (бие), `next/font/google`, subset нь `latin` + `cyrillic` +
+  **`cyrillic-ext`**. Сүүлийнх заавал: Ө, Ү зэрэг монгол үсэг нь U+0460–052F мужид байдаг бөгөөд
+  Google Fonts үүнийг тусдаа файл болгон хуваадаг. Жагсаалтад байхгүй бол Next түүнийг preload
+  хийхгүй, хөтөч эхний Ө-г тааралдахдаа шинээр татаж, гарчиг хойш нь дахин эгнэдэг.
+
+### Нийтийн хуудасны CLS
+
+Нийтийн сайт дээр **`loading.tsx` байхгүй** бөгөөд энэ нь санаатай. `(site)` бүлэгт `loading.tsx`
+байх үед Next тэр бүлгийн хуудас бүрийг Suspense-ээр ороодог. Хуудсууд нь статик prerender хийгдсэн
+ч HTML нь streaming хэлбэрээрээ хадгалагддаг: эхлээд бүрхүүл (толгой + хоосон `main` + **хөл**),
+дараа нь `<div hidden>` доторх жинхэнэ агуулгыг script залгадаг. Үр дүнд нь хөл эхлээд дэлгэцийн
+дунд зурагдаад, агуулга ирэхэд доош үсэрдэг — desktop дээр **CLS 0.481** (Google-ийн «муу» босго 0.25).
+
+| Хуудас | Өмнө (desktop / mobile) | Одоо |
+| --- | --- | --- |
+| `/` | 0.481 / 0.053 | **0 / 0** |
+| `/services`, `/news`, `/about`, `/faq` | 0.481 / 0.053 | **0 / 0** |
+| `/contact` | 0.309 / 0.053 | **0 / 0** |
+| `/lawyers` | 0.227 / 0.048 | **0 / 0** |
+| `/reviews` | 0.195 / 0.010 | **0 / 0** |
+
+Үлдсэн жижиг шилжилтийг (0.056) дээрх `cyrillic-ext` subset арилгасан. `/portal`, `/admin` нь
+өөрийн `loading.tsx`-тэй хэвээр: тэдгээр нь нэвтэрсний дараах, браузер талаас өгөгдлөө татдаг
+хуудсууд тул skeleton нь жинхэнэ хэрэгтэй (`/portal` 0.17 desktop / 0.27 mobile, `/portal/documents`
+0.20 mobile, `/admin` 0.10 mobile — хойшдын ажил).
 
 ### Нэвтрэлтийн загвар
 
@@ -369,11 +394,30 @@ Baseline зургууд **зөвхөн `lawfirm_test` DB-гээс** авагда
 ```bash
 export DATABASE_URL="postgresql://lawfirm:lawfirm@localhost:5432/lawfirm_test?schema=public"
 node apps/api/dist/main &                           # api :4000 (NODE_ENV=development)
+pnpm db:clean && pnpm db:seed                       # prerender нь жишээ өгөгдлөөс гарахын тулд
 rm -rf apps/web/.next/cache/fetch-cache             # dev DB-гийн хариуг хаяна
 pnpm build                                          # API асаалттай үед → prerender тест DB-гээс
 pnpm --filter @law-firm/web start &                 # web :3001 (production build)
 pnpm --filter @law-firm/web e2e:screenshots
 ```
+
+#### Хоёр удаа ажиллуулахад яг ижил зураг гарна
+
+Нэг DB дээр дараалан хоёр удаа авахад **нэг ч зураг зөрөхгүй** — эс бөгөөс жинхэнэ регресс
+шуугианы дор дарагдана. Нуух биш, хөдөлдөг зүйл бүрийг нь **тогтмол болгосон**:
+
+| Хөдөлдөг зүйл | Шийдэл |
+| --- | --- |
+| «5 минутын өмнө» гэх харьцангуй цаг | `page.clock.setFixedTime(өнөөдөр 18:00)` — зөвхөн `Date` хуурамч, timer-ууд хэвийн |
+| Өмнөх ажиллагааны үлдэгдэл (үзсэн тоо, фирмийн утас, нэмэгдсэн хэрэглэгч) | `globalSetup` baseline авахын өмнө `db:seed` хийнэ (зөвхөн тест DB) |
+| Нэвтрэх бүрт шинэчлэгддэг `lastLoginAt` (4 хуудсанд минут хүртэл харагдана) | Нэвтэрсний дараа тогтмол утга руу буцаана |
+| Мэдээний хуудсыг нээхэд нэмэгддэг `viewCount` | Нийтийн хуудсуудын тест өөрийн нэмсэнийг буцаана (`updatedAt`-ыг нь хөдөлгөхгүй) |
+| Үргэлж шинэ и-мэйлтэй үүсдэг тестийн редактор | Хаяг нь project-ийн нэрээр тогтмол |
+| Chromium-ийн хэсэгчилсэн растер (sub-pixel) | Baseline ажиллагаа `--disable-partial-raster`, `--disable-checker-imaging`, `--disable-lcd-text`, `--force-color-profile=srgb`-тэй; `animations: 'disabled'` |
+| Хоёр project зэрэг ажиллаж бие биенийхээ өгөгдлийг хөдөлгөх | `e2e:screenshots` нь `--workers=1` |
+
+Эдгээр нь **зөвхөн baseline ажиллагаанд** үйлчилнэ. `pnpm e2e` нь screenshot spec-ийг хасдаг тул
+цаг нь ч, DB нь ч хуурамч биш, хөтөч жирийн байдлаараа зурдаг.
 
 ### Тест өгөгдлийг цэвэрлэх (`pnpm db:clean`)
 

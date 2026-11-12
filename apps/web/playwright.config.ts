@@ -2,6 +2,21 @@ import { defineConfig, devices } from '@playwright/test';
 
 const WEB_URL = process.env.E2E_WEB_URL ?? 'http://localhost:3001';
 
+/**
+ * Chromium rasterises the same pixels slightly differently from one load to the next — partial
+ * raster and checkerboard imaging reuse tiles, and sub-pixel text antialiasing follows. It is
+ * invisible, but it rewrites baseline images for no reason, so the run that photographs them asks
+ * for plain, repeatable rasterisation. `pnpm e2e` runs without it and renders like a browser does.
+ */
+const DETERMINISTIC_RENDERING =
+  process.env.SCREENSHOT_RUN === '1'
+    ? {
+        launchOptions: {
+          args: ['--force-color-profile=srgb', '--disable-lcd-text', '--disable-partial-raster', '--disable-checker-imaging'],
+        },
+      }
+    : {};
+
 export default defineConfig({
   testDir: './e2e',
   // Removes the leftovers of earlier runs from the test database (a no-op elsewhere).
@@ -15,6 +30,7 @@ export default defineConfig({
     baseURL: WEB_URL,
     trace: 'retain-on-failure',
     locale: 'mn-MN',
+    ...DETERMINISTIC_RENDERING,
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } },
