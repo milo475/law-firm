@@ -9,15 +9,22 @@ import { BCP47, routing, type Locale } from '@/i18n/routing';
 import { alternateLanguages, siteUrl } from '@/lib/seo';
 import '../globals.css';
 
-// Figma: headings — Source Serif 4, body — Inter (both with Cyrillic subset).
+/**
+ * Figma: headings — Source Serif 4, body — Inter.
+ *
+ * `cyrillic-ext` is not optional here: Ө, Ү and the other letters Mongolian needs live in
+ * U+0460–052F, which Google Fonts splits into its own subset. Without it Next preloads the basic
+ * Cyrillic file only, the browser discovers the rest when it meets the first Ө, and the heading
+ * reflows a few hundred milliseconds in — a layout shift on every public page.
+ */
 const inter = Inter({
-  subsets: ['latin', 'cyrillic'],
+  subsets: ['latin', 'cyrillic', 'cyrillic-ext'],
   variable: '--font-inter',
   display: 'swap',
 });
 
 const sourceSerif = Source_Serif_4({
-  subsets: ['latin', 'cyrillic'],
+  subsets: ['latin', 'cyrillic', 'cyrillic-ext'],
   weight: ['600', '700'],
   variable: '--font-source-serif',
   display: 'swap',
