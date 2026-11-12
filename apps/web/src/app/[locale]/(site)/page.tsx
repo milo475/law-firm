@@ -1,7 +1,8 @@
 // Figma: 01 Public Site / Public / 01 Home / Desktop (15:19) + Mobile (24:1007)
+import { getImageProps } from 'next/image';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Button } from '@/components/ui/button';
-import { ImagePlaceholder, LawyerCard, NewsCard, ServiceCard } from '@/components/ui/card';
+import { LawyerCard, NewsCard, ServiceCard } from '@/components/ui/card';
 import { OriginalLanguageNote, TestimonialCard } from '@/components/ui/testimonial-card';
 import { SERVICES } from '@/content/services';
 import { Link } from '@/i18n/navigation';
@@ -66,7 +67,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               <Button asChild variant="secondary" size="lg" className="w-full md:w-auto"><Link href="/services">{t('hero.secondaryCta')}</Link></Button>
             </div>
           </div>
-          <ImagePlaceholder className="h-[220px] rounded-lg xl:h-[480px] xl:w-[520px] xl:shrink-0" markSize={72} />
+          <HeroPortrait alt={t('hero.imageAlt')} />
         </div>
       </section>
 
@@ -226,6 +227,47 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       </section>
     </>
+  );
+}
+
+/**
+ * The lawyer in the hero. Two crops of one photo: 4:5 beside the text from `xl` up, where the
+ * layout turns two-column, and the square crop below that — 4:5 across a phone screen would push
+ * the two call-to-action buttons out of the first screenful.
+ *
+ * `<picture>` rather than two `<Image>`s toggled with `hidden`: a display:none image is still
+ * downloaded, so the phone would pay for both files. `getImageProps` keeps the optimizer (AVIF/WebP,
+ * the srcset per DPR) behind that `<picture>`; what it cannot emit is the `<link rel=preload>` the
+ * `<Image>` component adds, so `priority` here means eager + fetchpriority=high on the element.
+ *
+ * Both boxes are sized in CSS and both files carry their intrinsic size, so nothing reflows when
+ * the image lands.
+ */
+const PORTRAIT = {
+  /** The layout breakpoint, not a guess about devices: below `xl` the image sits under the text. */
+  twoColumn: '(min-width: 1280px)',
+  tall: { src: '/brand/hero-4x5.jpg', width: 1086, height: 1357 },
+  square: { src: '/brand/hero-1x1.jpg', width: 1086, height: 1086 },
+};
+
+function HeroPortrait({ alt }: { alt: string }) {
+  // `priority` only takes the element off lazy loading here; getImageProps leaves fetchPriority to
+  // the caller, so the LCP hint is passed by hand.
+  const eager = { alt, priority: true, fetchPriority: 'high' } as const;
+  const tall = getImageProps({ ...PORTRAIT.tall, ...eager, sizes: '520px' });
+  const { props: square } = getImageProps({ ...PORTRAIT.square, ...eager, sizes: '(min-width: 440px) 420px, 100vw' });
+  return (
+    // The <picture> is the flex item and carries the box; `display: contents` would promote the
+    // <source> to an item of its own and the row would pay for a second 80px gap.
+    <picture className="block aspect-square w-full max-w-[420px] xl:aspect-[4/5] xl:w-[520px] xl:max-w-none xl:shrink-0">
+      <source media={PORTRAIT.twoColumn} srcSet={tall.props.srcSet} sizes="520px" />
+      <img
+        {...square}
+        // Spread already carries it; named again so jsx-a11y can see an alt on the element.
+        alt={alt}
+        className="h-full w-full rounded-lg object-cover"
+      />
+    </picture>
   );
 }
 

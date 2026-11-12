@@ -158,6 +158,8 @@ law-firm/
 │   │       └── config/env.ts    zod env schema
 │   └── web/                     Next.js 15 (Figma "00 Design System"-ээс хэрэгжүүлсэн UI)
 │       ├── e2e/                 Playwright тестүүд + screenshot скрипт; global-setup.ts (DB цэвэрлэгээ)
+│       ├── public/brand/        лого, тэмдэг; нүүрний hero зураг (`hero-4x5` desktop, `hero-1x1` утас),
+│       │                        `lawyer-card-4x5` нь хуульчийн профайл DB-д үүсэх хүртэл хэрэглэгдэхгүй
 │       └── src/
 │           ├── app/globals.css  Figma variable → CSS var + Tailwind v4 @theme, text-h1…text-caption, shadow токен
 │           ├── app/(site)/      /, about, services[/slug], lawyers[/id], news[/slug], faq, contact, privacy, terms, 404
